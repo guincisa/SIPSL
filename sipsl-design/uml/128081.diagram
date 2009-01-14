@@ -1,0 +1,117 @@
+format 56
+
+classinstancecanvas 128081 classinstance_ref 128134 // A
+  xyz 7 4 2005 life_line_z 2000
+classinstancecanvas 128209 classinstance_ref 128390 // B
+  xyz 1047 4 2005 life_line_z 2000
+classinstancecanvas 128337 classinstance_ref 129030 // CO_callidxx
+  xyz 154 4 2005 life_line_z 2000
+classinstancecanvas 128465 classinstance_ref 128646 // SM_CL_callidxx
+  xyz 374 4 2005 life_line_z 2000
+classinstancecanvas 128593 classinstance_ref 128774 // SM_SV_callidyy
+  xyz 630 4 2010 life_line_z 2000
+classinstancecanvas 128721 classinstance_ref 129286 // (static) TIMER
+  xyz 873 4 2015 life_line_z 2000
+durationcanvas 128849 classinstance_ref 128081 // A:PHONE
+  xyzwh 31 69 2010 11 40
+end
+durationcanvas 128977 classinstance_ref 128337 // CO_callidxx:CSL_CC_CO
+  xyzwh 216 69 2010 11 126
+end
+durationcanvas 129233 classinstance_ref 128465 // SM_CL_callidxx:CSL_CC_SM_CL
+  xyzwh 456 84 2010 11 35
+end
+durationcanvas 129617 classinstance_ref 128593 // SM_SV_callidyy:CSL_CC_SM_SV
+  xyzwh 711 135 2010 11 34
+end
+durationcanvas 130001 classinstance_ref 128209 // B:PHONE
+  xyzwh 1071 184 2010 11 29
+end
+durationcanvas 130257 classinstance_ref 128209 // B:PHONE
+  xyzwh 1071 236 2010 11 40
+end
+durationcanvas 130385 classinstance_ref 128337 // CO_callidxx:CSL_CC_CO
+  xyzwh 216 236 2010 11 145
+end
+durationcanvas 130897 classinstance_ref 128593 // SM_SV_callidyy:CSL_CC_SM_SV
+  xyzwh 711 268 2010 11 38
+end
+durationcanvas 131409 classinstance_ref 128465 // SM_CL_callidxx:CSL_CC_SM_CL
+  xyzwh 456 322 2010 11 34
+end
+durationcanvas 131793 classinstance_ref 128081 // A:PHONE
+  xyzwh 31 370 2010 11 25
+end
+msg 129105 asynchronous
+  from durationcanvas_ref 128849
+  to durationcanvas_ref 128977
+  yz 69 2015 explicitmsg "p&w(BYE_1)"
+  show_full_operations_definition default drawing_language default
+  label_xy 102 53
+msg 129361 synchronous
+  from durationcanvas_ref 128977
+  to durationcanvas_ref 129233
+  yz 84 2015 explicitmsg "action(ntw_bye_1)"
+  show_full_operations_definition default drawing_language default
+  label_xy 298 68
+msg 129489 return
+  from durationcanvas_ref 129233
+  to durationcanvas_ref 128977
+  yz 108 2020 explicitmsg "action(sm_sv_bye_2)"
+  show_full_operations_definition default drawing_language default
+  label_xy 290 92
+msg 129745 synchronous
+  from durationcanvas_ref 128977
+  to durationcanvas_ref 129617
+  yz 135 2015 explicitmsg "event(sm_sv_bye_2)"
+  show_full_operations_definition default drawing_language default
+  label_xy 420 119
+msg 129873 return
+  from durationcanvas_ref 129617
+  to durationcanvas_ref 128977
+  yz 158 2020 explicitmsg "action(ntw_bye_2)"
+  show_full_operations_definition default drawing_language default
+  label_xy 426 142
+msg 130129 asynchronous
+  from durationcanvas_ref 128977
+  to durationcanvas_ref 130001
+  yz 184 2015 explicitmsg "BYE_2"
+  show_full_operations_definition default drawing_language default
+  label_xy 633 168
+msg 130513 asynchronous
+  from durationcanvas_ref 130257
+  to durationcanvas_ref 130385
+  yz 236 2015 explicitmsg "200OK_2"
+  show_full_operations_definition default drawing_language default
+  label_xy 629 220
+msg 131025 synchronous
+  from durationcanvas_ref 130385
+  to durationcanvas_ref 130897
+  yz 268 2015 explicitmsg "event(ntw_200ok_2)"
+  show_full_operations_definition default drawing_language default
+  label_xy 424 252
+msg 131281 return
+  from durationcanvas_ref 130897
+  to durationcanvas_ref 130385
+  yz 295 2015 explicitmsg "action(sm_cl_200ok_1)"
+  show_full_operations_definition default drawing_language default
+  label_xy 416 279
+msg 131537 synchronous
+  from durationcanvas_ref 130385
+  to durationcanvas_ref 131409
+  yz 322 2015 explicitmsg "event(sm_cl_200ok_1)"
+  show_full_operations_definition default drawing_language default
+  label_xy 289 306
+msg 131665 return
+  from durationcanvas_ref 131409
+  to durationcanvas_ref 130385
+  yz 345 2015 explicitmsg "action(ntw_200ok_1)"
+  show_full_operations_definition default drawing_language default
+  label_xy 294 329
+msg 131921 asynchronous
+  from durationcanvas_ref 130385
+  to durationcanvas_ref 131793
+  yz 370 2015 explicitmsg "200OK_1"
+  show_full_operations_definition default drawing_language default
+  label_xy 109 354
+end

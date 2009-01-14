@@ -1,0 +1,497 @@
+format 61
+"SIPSL"
+  revision 36
+  modified_by 2 "gugli"
+
+
+  
+  // class settings
+  default_attribute_visibility protected default_relation_visibility protected default_operation_visibility public
+  //class diagram settings
+  draw_all_relations yes hide_attributes no hide_operations no show_members_full_definition no show_members_visibility no show_members_stereotype no show_members_multiplicity no show_members_initialization no member_max_width 127 show_parameter_dir yes show_parameter_name yes package_name_in_tab no class_drawing_mode natural drawing_language uml show_context_mode no auto_label_position yes show_infonote no shadow yes show_stereotype_properties no
+  //use case diagram settings
+  package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes class_drawing_mode actor shadow yes show_stereotype_properties no
+  //sequence diagram settings
+  show_full_operations_definition no write_horizontally yes class_drawing_mode natural drawing_language uml draw_all_relations yes shadow yes show_stereotype_properties no
+  //collaboration diagram settings
+  show_full_operations_definition no show_hierarchical_rank no write_horizontally yes drawing_language uml package_name_in_tab no show_context no draw_all_relations yes shadow yes show_stereotype_properties no
+  //object diagram settings
+   write_horizontally yes package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes shadow yes show_stereotype_properties no
+  //component diagram settings
+  package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes shadow yes
+  draw_component_as_icon no show_component_req_prov no show_component_rea no show_stereotype_properties no
+  //deployment diagram settings
+  package_name_in_tab no show_context no write_horizontally yes auto_label_position yes draw_all_relations yes shadow yes
+  draw_component_as_icon no show_component_req_prov no show_component_rea no show_stereotype_properties no
+  //state diagram settings
+  package_name_in_tab no show_context no auto_label_position yes write_trans_label_horizontally yes show_trans_definition no draw_all_relations yes shadow yes
+  show_activities yes region_horizontally yes drawing_language uml show_stereotype_properties no
+  //activity diagram settings
+  package_name_in_tab no show_context no show_opaque_action_definition no auto_label_position yes write_flow_label_horizontally no draw_all_relations yes shadow yes
+  show_infonote yes drawing_language uml show_stereotype_properties no
+  
+  class_color yellow duration_color transparent continuation_color gray note_color blue fragment_color transparent subject_color transparent usecase_color yellow package_color transparent component_color green artifact_color green deploymentnode_color gray state_color yellow stateaction_color transparent activity_color transparent activityregion_color transparent activityaction_color transparent parameterpin_color white 
+  font_size 8
+  diagram_format A2
+
+  mark_for_import
+  
+  usecaseview 128134 "VANILLA_CALL"
+    //use case diagram settings
+    package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    state 128134 "CSL_CC_SM"
+      stereotype "machine"
+      statediagram 128134 "SM_CL"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A4
+      end
+
+      statediagram 128262 "SM_SV"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A4
+      end
+
+      pseudostate 128134 initial 
+      end
+    end
+
+    class 128134 "PHONE"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "sip phone"
+    end
+
+    classinstance 128134 "A"
+      type class_ref 128134 // PHONE
+      attributes
+        end
+      relations
+        end
+      comment "caller"
+    end
+
+    class 128262 "SL_CC"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "call control"
+    end
+
+    classinstance 128262 "BB2UA"
+      type class_ref 128262 // SL_CC
+      attributes
+        end
+      relations
+        end
+    end
+
+    classinstance 128390 "B"
+      type class_ref 128134 // PHONE
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128390 "SL_CO"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128518 "B2BUA / CO"
+      type class_ref 128390 // SL_CO
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128518 "SL_SM_SV"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128646 "smsv_x"
+      type class_ref 128518 // SL_SM_SV
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128646 "SL_SM_CL"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128774 "smcl_y"
+      type class_ref 128646 // SL_SM_CL
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128774 "ALARM"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128902 "AL_CL"
+      type class_ref 128774 // ALARM
+      attributes
+        end
+      relations
+        end
+    end
+
+    sequencediagram 128774 "CO-CL-SV setup call (old)"
+      show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+      overlapping_bars size A3
+    end
+
+    classinstance 129030 "co_x"
+      type class_ref 128390 // SL_CO
+      attributes
+        end
+      relations
+        end
+    end
+
+    classinstance 129158 "(static)ALARM"
+      type class_ref 128774 // ALARM
+      attributes
+        end
+      relations
+        end
+      comment "statica"
+    end
+
+    class 128902 "TIMER"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 129286 "(static) TIMER"
+      type class_ref 128902 // TIMER
+      attributes
+        end
+      relations
+        end
+    end
+
+    sequencediagram 128081 "CO-CL-SV end of call (old)"
+      show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+      overlapping_bars size A3
+    end
+
+    class 128083 "SUDP"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128339 "_sudp"
+      type class_ref 128083 // SUDP
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128339 "SIPENGINE"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128467 "_rt"
+      type class_ref 128339 // SIPENGINE
+      attributes
+        end
+      relations
+        end
+    end
+
+    classinstance 128595 "_cc"
+      type class_ref 128262 // SL_CC
+      attributes
+        end
+      relations
+        end
+      comment "instance of call control"
+    end
+
+    class 128467 "COMAP"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "call map: stores an array of Coll Object, Server state machine and Client state machine"
+    end
+
+    classinstance 128723 "_callmap"
+      type class_ref 128467 // COMAP
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128595 "ALO"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128851 "alo_x"
+      type class_ref 128595 // ALO
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128723 "TP"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128979 "Thread"
+      type class_ref 128723 // TP
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128067 "Sas"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128067 "Sipping:SIPFACTRY"
+      type class_ref 128067 // Sas
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128195 "SIPFCTRY"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    sequencediagram 132738 "F3_FULL erdi (fix PB3, PB4, CL2)"
+      show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+      comment "Oct 13 - 2008
+"
+      overlapping_bars size A2
+    end
+
+    sequencediagram 128033 "F4_full early dialog"
+      show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+      comment "Oct 17- 2008
+errore nel try, non viene ritrasmesso
+e' l'invite che viene ritrasmesso
+
+"
+      overlapping_bars size A2
+    end
+
+    sequencediagram 133890 "F5 dialog"
+      show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+      comment "Oct 17- 2008
+"
+      overlapping_bars size A2
+    end
+
+    state 128033 "SL_SM_SV"
+      stereotype "machine"
+      statediagram 129185 "X"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+
+      pseudostate 128033 entry_point "init"
+	transition 128033 "<transition>"
+	  on state_ref 128161 // 1
+	  ncouples 2
+	  key "s" value "sss"
+	  key "b" value "bbb"
+	  external 
+	end
+
+	transition 128161 "<transition>"
+	  on state_ref 128161 // 1
+	  external 
+	end
+
+	transition 128289 "<transition>eeee"
+	  stereotype "eeee"
+	  on state_ref 128161 // 1
+	  comment "asasasa
+a
+sa
+s
+as
+a
+s
+as
+a
+s
+"
+	  external 
+	end
+
+	transition 128417 "event<INVITEx, s=A, d=sv_x>"
+	  on state_ref 128161 // 1
+	  external 
+	end
+      end
+
+      state 128161 "1"
+	transition 128545 "event<INVITEx, s=A, d=sv_x>"
+	  on state_ref 128161 // 1
+	end
+
+	transition 128673 "event<180RINGy, s=cl_y, d=sv_x>"
+	  on state_ref 128289 // 2
+	  external 
+	end
+      end
+
+      pseudostate 128161 shallow_history 
+      end
+
+      pseudostate 128289 junction 
+      end
+
+      pseudostate 128417 choice 
+      end
+
+      stateaction 128033
+      end
+
+      state 128289 "2"
+	transition 128801 "event<180RINGy, s=cl_y, d=sv_x>"
+	  on state_ref 128289 // 2
+	end
+
+	transition 128929 "event<200OKx, s=alo_x, d=sv_x>"
+	  on state_ref 128417 // 3
+	  external 
+	end
+
+	transition 129057 "event<200OKy, s=cl_y, d=sv_x>"
+	  on state_ref 128417 // 3
+	  external 
+	end
+      end
+
+      state 128417 "3"
+	transition 129185 "event<ACKx, s=A, d=sv_x>"
+	  on state_ref 128545 // 4
+	  external 
+	end
+      end
+
+      state 128545 "4"
+      end
+    end
+  end
+end

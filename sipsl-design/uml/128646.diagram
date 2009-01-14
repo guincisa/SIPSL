@@ -1,0 +1,149 @@
+format 48
+
+classinstancecanvas 128006 classinstance_ref 128134 // A
+  xyz 38 4 2005 life_line_z 2000
+classinstancecanvas 129798 classinstance_ref 128390 // B
+  xyz 1017 4 2005 life_line_z 2000
+classinstancecanvas 129926 classinstance_ref 128518 // B2BUA / CO
+  xyz 250 4 2005 life_line_z 2000
+classinstancecanvas 130054 classinstance_ref 128646 // SM_CL
+  xyz 497 5 2005 life_line_z 2000
+classinstancecanvas 130182 classinstance_ref 128774 // SM_SV
+  xyz 821 4 2010 life_line_z 2000
+classinstancecanvas 133766 classinstance_ref 128902 // AL_CL
+  xyz 724 4 2010 life_line_z 2000
+durationcanvas 136710 classinstance_ref 128006 // A:PHONE
+  xyzwh 65 73 2010 11 233
+end
+durationcanvas 136838 classinstance_ref 129926 // B2BUA / CO:CSL_CC_CO
+  xyzwh 322 52 2010 11 389
+end
+durationcanvas 137350 classinstance_ref 130054 // SM_CL:CSL_CC_SM_CL
+  xyzwh 567 87 2010 11 322
+  overlappingdurationcanvas 139014
+    xyzwh 573 116 2020 11 113
+  end
+end
+durationcanvas 139270 classinstance_ref 133766 // AL_CL:ALARM
+  xyzwh 765 133 2010 11 74
+end
+durationcanvas 140166 classinstance_ref 130182 // SM_SV:CSL_CC_SM_SV
+  xyzwh 891 303 2010 11 30
+end
+durationcanvas 141702 classinstance_ref 130182 // SM_SV:CSL_CC_SM_SV
+  xyzwh 891 337 2010 11 25
+end
+durationcanvas 141958 classinstance_ref 129798 // B:PHONE
+  xyzwh 1044 363 2010 11 33
+end
+durationcanvas 142342 classinstance_ref 130054 // SM_CL:CSL_CC_SM_CL
+  xyzwh 567 419 2010 11 25
+end
+msg 136966 asynchronous
+  from durationcanvas_ref 136710
+  to durationcanvas_ref 136838
+  yz 73 2015 explicitmsg "INVITE_1"
+  show_full_operations_definition default drawing_language default
+  label_xy 173 57
+msg 137478 synchronous
+  from durationcanvas_ref 136838
+  to durationcanvas_ref 137350
+  yz 87 2020 explicitmsg "<<new>>"
+  show_full_operations_definition default drawing_language default
+  label_xy 410 71
+msg 137606 asynchronous
+  from durationcanvas_ref 136838
+  to durationcanvas_ref 137350
+  yz 109 2025 explicitmsg "in_invite(invite_1)"
+  show_full_operations_definition default drawing_language default
+  label_xy 413 93
+msg 138246 asynchronous
+  from durationcanvas_ref 136838
+  to durationcanvas_ref 136710
+  yz 175 2020 explicitmsg "100TRYING"
+  show_full_operations_definition default drawing_language default
+  label_xy 166 159
+msg 138886 asynchronous
+  from durationcanvas_ref 136838
+  to durationcanvas_ref 136710
+  yz 222 2015 explicitmsg "100TRYING"
+  show_full_operations_definition default drawing_language default
+  label_xy 166 206
+reflexivemsg 139142 synchronous
+  to durationcanvas_ref 139014
+  yz 116 3005 explicitmsg "create_alarm"
+  show_full_operations_definition default drawing_language default
+  label_xy 583 100
+msg 139398 asynchronous
+  from durationcanvas_ref 139014
+  to durationcanvas_ref 139270
+  yz 133 3010 explicitmsg "new(100trying,time,rec)"
+  show_full_operations_definition default drawing_language default
+  label_xy 623 118
+msg 139526 asynchronous
+  from durationcanvas_ref 139270
+  to durationcanvas_ref 139014
+  yz 159 3015 explicitmsg "100trying"
+  show_full_operations_definition default drawing_language default
+  label_xy 647 145
+msg 139654 asynchronous
+  from durationcanvas_ref 139014
+  to durationcanvas_ref 136838
+  yz 166 3020 explicitmsg "se_ntw(100trying)"
+  show_full_operations_definition default drawing_language default
+  label_xy 390 150
+msg 139782 asynchronous
+  from durationcanvas_ref 139270
+  to durationcanvas_ref 139014
+  yz 196 3025 explicitmsg "100trying"
+  show_full_operations_definition default drawing_language default
+  label_xy 647 180
+msg 139910 asynchronous
+  from durationcanvas_ref 139014
+  to durationcanvas_ref 136838
+  yz 206 3030 explicitmsg "se_ntw(100trying)"
+  show_full_operations_definition default drawing_language default
+  label_xy 390 190
+msg 140038 asynchronous
+  from durationcanvas_ref 137350
+  to durationcanvas_ref 136838
+  yz 237 2020 explicitmsg "create_sv_sm"
+  show_full_operations_definition default drawing_language default
+  label_xy 398 221
+msg 140294 synchronous
+  from durationcanvas_ref 136838
+  to durationcanvas_ref 140166
+  yz 303 2015 explicitmsg "<<new>>"
+  show_full_operations_definition default drawing_language default
+  label_xy 586 287
+msg 140422 asynchronous
+  from durationcanvas_ref 137350
+  to durationcanvas_ref 136838
+  yz 284 2020 explicitmsg "se_sv(new invite from invite_1)"
+  show_full_operations_definition default drawing_language default
+  label_xy 374 270
+msg 141830 synchronous
+  from durationcanvas_ref 136838
+  to durationcanvas_ref 141702
+  yz 337 2015 explicitmsg "ou_invite(invite_2)"
+  show_full_operations_definition default drawing_language default
+  label_xy 561 321
+msg 142086 asynchronous
+  from durationcanvas_ref 136838
+  to durationcanvas_ref 141958
+  yz 363 2015 explicitmsg "INVITE_2"
+  show_full_operations_definition default drawing_language default
+  label_xy 662 347
+msg 142214 asynchronous
+  from durationcanvas_ref 141958
+  to durationcanvas_ref 136838
+  yz 385 2020 explicitmsg "180 RINGING_2"
+  show_full_operations_definition default drawing_language default
+  label_xy 643 369
+msg 142470 synchronous
+  from durationcanvas_ref 136838
+  to durationcanvas_ref 142342
+  yz 419 2015 unspecifiedmsg
+  show_full_operations_definition default drawing_language default
+preferred_whz 974 525 1
+end
