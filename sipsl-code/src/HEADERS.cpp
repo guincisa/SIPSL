@@ -86,7 +86,22 @@ HeadGeneric::HeadGeneric(string buffer, int _genEntity) {
 
     parsed = false;
     correct = true;
-};
+    isSet = true;
+
+}
+void HeadGeneric::setContent(string _content, int _genEntity) {
+
+    if (isSet) {
+        return;
+    }
+    genEntity = _genEntity;
+    content = _content;
+    parsed = false;
+    correct = true;
+    isSet = true;
+    return;
+
+}
 string HeadGeneric::getContent(void) {
     return content;
 }
@@ -261,6 +276,20 @@ void AttMethod::doParse(void){
     correct = false;
     return;
 }
+int AttMethod::getMethodID(void) {
+
+    if (!parsed) {
+        doParse();
+    }
+    return methodID;
+}
+string AttMethod::getMethodName(void) {
+    
+    if (!parsed){
+        doParse();
+    }
+    return methodName;
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // AttReply
@@ -327,5 +356,68 @@ string AttReply::getReply(void){
         doParse();
    }
    return reply;
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// AttSipVersion
+// Fake
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+void AttSipVersion::doParse(void){
+
+    if(parsed){
+        return;
+    }
+    //TODO
+    parsed = true;
+}
+string AttSipVersion::getProtocol(void) {
+    //TODO
+    return("SIP");
+}
+int AttSipVersion::getVersion(void){
+    //TODO
+    return(2);
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// HeadSipReply
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+void HeadSipReply::doParse(void){
+
+    if(parsed){
+        return;
+    }
+
+    vector<string> elements = brkSpaces(content);
+    
+    vector<string>::iterator iter;
+    iter = elements.begin();
+    sipvs.setContent(*iter);
+
+    iter ++;
+    //TODO AttReply will re-parse it...
+    reply.setContent(*iter + " " +*(++iter));
+
+    parsed = true;
+    //TODO
+    correct = true;
+
+    return;
+}
+AttReply HeadSipReply::getReply(void) {
+
+    if(!parsed) {
+        doParse();
+    }
+    return reply;
+}
+AttSipVersion HeadSipReply::getSipVersion(void) {
+
+    if(!parsed) {
+        doParse();
+    }
+    return sipvs;
 }
 

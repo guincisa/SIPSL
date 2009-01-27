@@ -71,6 +71,8 @@ class HeadGeneric { //i
         bool isCorrect(void);
         bool isParsed(void);
         string getContent(void);
+        void setContent(string buff, int genEntity);
+        
 
         // created using buffer and endpoint id which generates header
 	HeadGeneric(string buff, int genEntity);
@@ -78,6 +80,7 @@ class HeadGeneric { //i
     protected:
         bool parsed;
         bool correct;
+        bool isSet;
         
         // Id of the generating endpoint
         // same as SODE_*
@@ -267,7 +270,7 @@ class AttSipUri : public AttGeneric{ // sip or sips
 //    SIP/2.0
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class AttSipVersion : public AttGeneric{
+class AttSipVersion : public AttGeneric{ //fake i
 //NEW REVISION 
     private:
         void doParse(void);
@@ -283,7 +286,6 @@ class AttSipVersion : public AttGeneric{
 //   ???? based on old sipsl
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
 class AttVia : public AttGeneric {
 //NEW REVISION
 
@@ -344,19 +346,21 @@ class AttReply : public AttGeneric{ //i
 // HeadSipReply
 // HeadSipReply "SIP/2.0 200 OK"
 // HeadSipReply "SIP/2.0 xxx reply"
+// Status-Line	= SIP-Version Status-Code Reason-Phrase 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class HeadSipReply : public HeadGeneric {
-private:
-    void doParse(void);
+class HeadSipReply : public HeadGeneric { //i
+//NEW REVISION
+    private:
+        void doParse(void);
 
-    AttReply reply;
-    AttSipVersion sipvs;
+        AttSipVersion sipvs;
+        AttReply reply;
 
-public:
+    public:
 
-    AttReply getReply(void);
-    AttSipVersion getSipVersion(void);
+        AttReply getReply(void);
+        AttSipVersion getSipVersion(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
