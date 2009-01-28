@@ -23,63 +23,20 @@
 #include <string>
 #include <map>
 #include <vector>
-#ifndef HEADER 
-#include "HEADERS.h"
+#ifndef CS_HEADERS 
+#include "CS_HEADERS.h"
 #endif
 
 #ifndef UTIL
 #include "UTIL.h"
 #endif
 
-inline vector<string> parse(string par, string head, string sep) {
-
-    int h = 0; // if has head then 1
-
-    vector<string> output;
-
-    if (par.substr(0,1) == head) {
-        h = 1;
-    }
-    int a = par.find(sep.c_str(),0);
-    while (a > 0) {
-       output.push_back(par.substr(h,a-h));
-       par = par.substr(a+1,-1);
-       h=0;
-       a = par.find(sep.c_str(),0);
-    }
-    if (a < 0) {
-       output.push_back(par.substr(h,a-1));
-    }
-    return output;
-}
-inline Tuple getLRvalue(string couple) {
-
-    int a = couple.find("=", 0);
-    Tuple tt;
-    tt.Lvalue = couple.substr(0, a);
-    tt.Rvalue = couple.substr(a+1, -1);
-}
-inline vector<string> brkSpaces(string s) {
-
-    //separate string into words
-    //TODO TOKENIZER????
-    vector<string> output;
-    int a = 0;
-    a = s.find(" ", 0);
-    while (a > 0) {
-        output.push_back(s.substr(0,a));
-        s = s.substr(a+1,-1);
-        a = s.find(" ", 0);
-    }
-    output.push_back(s);
-    return output;
-} 
 // *********************************************************************************
 // *********************************************************************************
-// HeadGeneric
+// S_HeadGeneric
 // *********************************************************************************
 // *********************************************************************************
-HeadGeneric::HeadGeneric(string buffer, int _genEntity) {
+S_HeadGeneric::S_HeadGeneric(string buffer, int _genEntity) {
 
     content = buffer;
     genEntity = _genEntity;
@@ -89,7 +46,7 @@ HeadGeneric::HeadGeneric(string buffer, int _genEntity) {
     isSet = true;
 
 }
-void HeadGeneric::setContent(string _content, int _genEntity) {
+void S_HeadGeneric::setContent(string _content, int _genEntity) {
 
     if (isSet) {
         return;
@@ -102,41 +59,41 @@ void HeadGeneric::setContent(string _content, int _genEntity) {
     return;
 
 }
-string HeadGeneric::getContent(void) {
+string S_HeadGeneric::getContent(void) {
     return content;
 }
-bool HeadGeneric::isParsed(void) {
+bool S_HeadGeneric::isParsed(void) {
     return parsed;
 }
-bool HeadGeneric::isCorrect(void) {
+bool S_HeadGeneric::isCorrect(void) {
     return correct;
 }
 // *********************************************************************************
 // *********************************************************************************
-// AttGeneric
+// S_AttGeneric
 // *********************************************************************************
 // *********************************************************************************
-AttGeneric::AttGeneric(string _content) {
+S_AttGeneric::S_AttGeneric(string _content) {
    content = _content;
    parsed = false;
    correct = true;
    isSet = false;
 }
-AttGeneric::AttGeneric(void) {
+S_AttGeneric::S_AttGeneric(void) {
    parsed = false;
    correct = true;
    isSet = false;
 }
-string AttGeneric::getContent(void) {
+string S_AttGeneric::getContent(void) {
    return content;
 }
-bool AttGeneric::isParsed(void) {
+bool S_AttGeneric::isParsed(void) {
     return parsed;
 }
-bool AttGeneric::isCorrect(void) {
+bool S_AttGeneric::isCorrect(void) {
     return correct;
 }
-void AttGeneric::setContent(string _content){
+void S_AttGeneric::setContent(string _content){
     if (isSet)
         return;
     else {
@@ -149,13 +106,13 @@ void AttGeneric::setContent(string _content){
 // TupleVector
 // *********************************************************************************
 // *********************************************************************************
-TupleVector::TupleVector(string tuples, string _separator) : AttGeneric(tuples) {
+TupleVector::TupleVector(string tuples, string _separator) : S_AttGeneric(tuples) {
 
    separator = _separator;
    hasheader = false;
    
 }
-TupleVector::TupleVector(string tuples, string _separator, string _header) : AttGeneric(tuples) {
+TupleVector::TupleVector(string tuples, string _separator, string _header) : S_AttGeneric(tuples) {
 
    separator = _separator;
    header = _header;
@@ -201,14 +158,14 @@ string TupleVector::findRvalue(string _Lvalue){
 // HeadSipRequest "Method RequestURI SipVersion<CRLF>"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void HeadSipRequest::doParse(void) {
+void C_HeadSipRequest::doParse(void) {
 
     if(parsed)
         return;
 
     vector<string> elements = brkSpaces(content);
     
-    //AttMethod
+    //S_AttMethod
     vector<string>::iterator iter;
     iter = elements.begin();
     method.setContent(*iter);
@@ -219,27 +176,31 @@ void HeadSipRequest::doParse(void) {
     iter++;
     sipvs.setContent(*iter);
 }
-AttMethod HeadSipRequest::getMethod(void){
+S_AttMethod C_HeadSipRequest::getMethod(void){
     if(!parsed)
         doParse();
     return method;
 }
-AttSipUri HeadSipRequest::getAttSipUri(void){
+C_AttSipUri C_HeadSipRequest::getC_AttSipUri(void){
     if(!parsed)
         doParse();
+
     return reqUri;
 }
-AttSipVersion HeadSipRequest::getSipVs(void){
+S_AttSipVersion C_HeadSipRequest::getSipVs(void){
     if(!parsed)
         doParse();
     return sipvs;
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// AttMethod
+// S_AttMethod
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void AttMethod::doParse(void){
+S_AttMethod::S_AttMethod(string _content) 
+    : S_AttGeneric(_content) {
+}
+void S_AttMethod::doParse(void){
 
     if(parsed) {
         return;
@@ -276,14 +237,14 @@ void AttMethod::doParse(void){
     correct = false;
     return;
 }
-int AttMethod::getMethodID(void) {
+int S_AttMethod::getMethodID(void) {
 
     if (!parsed) {
         doParse();
     }
     return methodID;
 }
-string AttMethod::getMethodName(void) {
+string S_AttMethod::getMethodName(void) {
     
     if (!parsed){
         doParse();
@@ -292,10 +253,10 @@ string AttMethod::getMethodName(void) {
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// AttReply
+// S_AttReply
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void AttReply::doParse(void) {
+void S_AttReply::doParse(void) {
 
     if (parsed) {
         return;
@@ -336,21 +297,21 @@ void AttReply::doParse(void) {
     correct = false;
     return;
 }
-int AttReply::getCode(void){
+int S_AttReply::getCode(void){
 
    if(!parsed) {
         doParse();
    }
    return code;
 }
-int AttReply::getReplyID(void){
+int S_AttReply::getReplyID(void){
 
    if(!parsed) {
         doParse();
    }
    return replyID;
 }
-string AttReply::getReply(void){
+string S_AttReply::getReply(void){
 
    if(!parsed) {
         doParse();
@@ -359,11 +320,26 @@ string AttReply::getReply(void){
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// AttSipVersion
+// S_AttSipVersion
 // Fake
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void AttSipVersion::doParse(void){
+S_AttSipVersion::S_AttSipVersion(string content)
+    : S_AttGeneric(content) {
+}
+S_AttSipVersion::S_AttSipVersion(string _protocol, string _version) {
+
+    parsed = true;
+    correct = true;
+    isSet = true;
+
+    version = _version;
+    protocol = _protocol;
+
+    content = protocol + "/" + version;
+}
+
+void S_AttSipVersion::doParse(void){
 
     if(parsed){
         return;
@@ -371,20 +347,20 @@ void AttSipVersion::doParse(void){
     //TODO
     parsed = true;
 }
-string AttSipVersion::getProtocol(void) {
+string S_AttSipVersion::getProtocol(void) {
     //TODO
     return("SIP");
 }
-int AttSipVersion::getVersion(void){
+string S_AttSipVersion::getVersion(void){
     //TODO
-    return(2);
+    return("2.0");
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// HeadSipReply
+// C_HeadSipReply
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void HeadSipReply::doParse(void){
+void C_HeadSipReply::doParse(void){
 
     if(parsed){
         return;
@@ -397,7 +373,7 @@ void HeadSipReply::doParse(void){
     sipvs.setContent(*iter);
 
     iter ++;
-    //TODO AttReply will re-parse it...
+    //TODO S_AttReply will re-parse it...
     reply.setContent(*iter + " " +*(++iter));
 
     parsed = true;
@@ -406,14 +382,14 @@ void HeadSipReply::doParse(void){
 
     return;
 }
-AttReply HeadSipReply::getReply(void) {
+S_AttReply C_HeadSipReply::getReply(void) {
 
     if(!parsed) {
         doParse();
     }
     return reply;
 }
-AttSipVersion HeadSipReply::getSipVersion(void) {
+S_AttSipVersion C_HeadSipReply::getSipVersion(void) {
 
     if(!parsed) {
         doParse();
