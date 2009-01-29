@@ -38,6 +38,7 @@ class P_AttUriParms : public S_AttGeneric{
 
     public:
         TupleVector *getTuples(void);
+        P_AttUriParms(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,9 +77,9 @@ class P_AttSipUri : public S_AttGeneric {
         bool getIsSec(void);
         S_AttUserInfo *getS_AttUserInfo(void);
         S_AttHostPort *getS_AttHostPort(void);
-        P_AttUriParms *getAttUriParms(void);
-        P_AttUriHeaders *getAttUriHeads(void); 
-        P_AttSipUri(string);
+        P_AttUriParms *getP_AttUriParms(void);
+        P_AttUriHeaders *getP_AttUriHeads(void); 
+        P_AttSipUri(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -105,7 +106,7 @@ class P_AttVia : public S_AttGeneric {
 // P_HeadSipRequest "Method RequestURI SipVersion<CRLF>"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class P_HeadSipRequest : public S_HeadGeneric { //i
+class P_HeadSipRequest : public S_HeadGeneric { //i 
 //27 01 2009
 
     private:
@@ -121,6 +122,7 @@ class P_HeadSipRequest : public S_HeadGeneric { //i
         S_AttMethod *getMethod(void);
         P_AttSipUri *getAttSipUri(void);
         S_AttSipVersion *getSipVs(void);
+        P_HeadSipRequest(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,7 +132,7 @@ class P_HeadSipRequest : public S_HeadGeneric { //i
 // Status-Line	= SIP-Version Status-Code Reason-Phrase 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class P_HeadSipReply : public S_HeadGeneric { //i
+class P_HeadSipReply : public S_HeadGeneric {  //i partial
 //NEW REVISION
     private:
         void doParse(void);
@@ -142,6 +144,8 @@ class P_HeadSipReply : public S_HeadGeneric { //i
 
         S_AttReply *getReply(void);
         S_AttSipVersion *getSipVersion(void);
+        P_HeadSipReply(string content, int genEntity);
+        P_HeadSipReply(S_AttSipVersion version, S_AttReply reply);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

@@ -23,6 +23,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <assert.h>
 #ifndef CS_HEADERS 
 #include "CS_HEADERS.h"
 #endif
@@ -83,6 +84,7 @@ S_AttGeneric::S_AttGeneric(void) {
    parsed = false;
    correct = true;
    isSet = false;
+   assert(0);
 }
 string S_AttGeneric::getContent(void) {
    return content;
@@ -110,6 +112,7 @@ TupleVector::TupleVector(string tuples, string _separator) : S_AttGeneric(tuples
 
    separator = _separator;
    hasheader = false;
+   header = "";
    
 }
 TupleVector::TupleVector(string tuples, string _separator, string _header) : S_AttGeneric(tuples) {
@@ -148,8 +151,10 @@ string TupleVector::findRvalue(string _Lvalue){
     if (parsed != true) {
         doParse();
     }
+    DEBOUT("_Lvalue",_Lvalue)
     map<string,string>::iterator ii = tuples.find(_Lvalue);
     string s = ii->second;
+    DEBOUT("s",s)
     return(s);
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -256,6 +261,20 @@ string S_AttMethod::getMethodName(void) {
 // S_AttReply
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+S_AttReply::S_AttReply(string _replyID, string _code) {
+
+    if (!compare_it(_replyID)) {
+        parsed = true;
+        correct = false;
+        return;
+    }
+    else {
+        code = atoi(_code.c_str());
+    }
+    parsed = true;
+    correct = false;
+    return;
+} 
 void S_AttReply::doParse(void) {
 
     if (parsed) {
@@ -275,27 +294,33 @@ void S_AttReply::doParse(void) {
     ii++; 
     reply = *ii;
 
-    if (reply.compare("OK") == 0){
-        replyID = OK_RESPONSE;
-        parsed = true;
-        correct = true;
+    if (compare_it(reply))
         return;
-    }
-    if (content.compare("RINGING") == 0){
-        replyID = RINGING_RESPONSE;
-        parsed = true;
-        correct = true;
-        return;
-    }
-    if (content.compare("TRY") == 0){
-        replyID = TRY_RESPONSE;
-        parsed = true;
-        correct = true;
-        return;
-    }
+
     parsed = true;
     correct = false;
     return;
+}
+inline bool S_AttReply::compare_it(string _reply) {
+
+        if (reply.compare("OK") == 0){
+        replyID = OK_RESPONSE;
+        parsed = true;
+        correct = true;
+        return true;
+    }
+    if (reply.compare("RINGING") == 0){
+        replyID = RINGING_RESPONSE;
+        parsed = true;
+        correct = true;
+        return true;
+    }
+    if (reply.compare("TRY") == 0){
+        replyID = TRY_RESPONSE;
+        parsed = true;
+        correct = true;
+        return true;
+    }
 }
 int S_AttReply::getCode(void){
 
@@ -395,5 +420,64 @@ S_AttSipVersion C_HeadSipReply::getSipVersion(void) {
         doParse();
     }
     return sipvs;
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// S_AttUserInfo
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+S_AttUserInfo::S_AttUserInfo(string _content){assert(0);return;}
+void S_AttUserInfo::doParse(void){assert(0);return;}
+string S_AttUserInfo::getUserName(void){assert(0);return "EMPTY";}
+string S_AttUserInfo::getPassword(void){assert(0);return "EMPTY";}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// S_AttHostPort
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+S_AttHostPort::S_AttHostPort(string _content){assert(0);return;}
+void S_AttHostPort::doParse(void){assert(0);return;}
+string S_AttHostPort::getHostName(void){assert(0);return "EMPTY";}
+int S_AttHostPort::getPort(void){assert(0);return -1;}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// C_AttUriParms
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_AttUriParms::C_AttUriParms(string _content)
+    : tuples(_content, "=")
+    {assert(0);return;}
+void C_AttUriParms::doParse(void){assert(0);return;}
+TupleVector C_AttUriParms::getTuples(void){assert(0);return tuples;}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// C_AttUriHeaders
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_AttUriHeaders::C_AttUriHeaders(string _content)
+    : tuples(_content, "&", "?")
+    {assert(0);return;}
+void C_AttUriHeaders::doParse(void){assert(0);return;}
+TupleVector C_AttUriHeaders::getTuples(void){assert(0);return tuples;}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// C_AttSipUri
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+void C_AttSipUri::doParse(void){assert(0);return;}
+bool C_AttSipUri::getIsSec(void){assert(0);return false;}
+S_AttUserInfo C_AttSipUri::getS_AttUserInfo(void){assert(0);return userInfo;}
+S_AttHostPort C_AttSipUri::getS_AttHostPort(void){assert(0);return hostPort;}
+C_AttUriParms C_AttSipUri::getC_AttUriParms(void){assert(0);return uriParms;}
+C_AttUriHeaders C_AttSipUri::getC_AttUriHeads(void){assert(0);return uriHeads;}
+C_AttSipUri::C_AttSipUri(string _content)
+    : S_AttGeneric(_content) ,
+//TODO ???
+    userInfo(""),
+    hostPort(""),
+    uriParms(""),
+    uriHeads(""){
+
+    assert(0);return;
 }
 

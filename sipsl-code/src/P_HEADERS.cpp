@@ -40,6 +40,13 @@
 // P_HeadSipRequest "Method RequestURI SipVersion<CRLF>"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+P_HeadSipRequest::P_HeadSipRequest(string _content, int genEntity) 
+    : S_HeadGeneric(_content, genEntity) {
+
+    method = NULL;
+    reqUri = NULL;
+    sipvs = NULL;
+}
 void P_HeadSipRequest::doParse(void) {
 
     if(parsed)
@@ -51,15 +58,12 @@ void P_HeadSipRequest::doParse(void) {
     vector<string>::iterator iter;
     iter = elements.begin();
     method = new S_AttMethod(*iter);
-    //method.setContent(*iter);
 
     iter ++;
     reqUri = new P_AttSipUri(*iter);
-    //reqUri.setContent(*iter);
 
     iter++;
     sipvs = new S_AttSipVersion(*iter);
-    //sipvs.setContent(*iter);
 }
 S_AttMethod *P_HeadSipRequest::getMethod(void){
     if(!parsed)
@@ -81,160 +85,33 @@ S_AttSipVersion *P_HeadSipRequest::getSipVs(void){
 // P_AttSipUri
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+void P_AttSipUri::doParse(void){return;}
+bool P_AttSipUri::getIsSec(void){return false;}
+S_AttUserInfo *P_AttSipUri::getS_AttUserInfo(void){return userInfo;}
+S_AttHostPort *P_AttSipUri::getS_AttHostPort(void){return hostPort;}
+P_AttUriParms *P_AttSipUri::getP_AttUriParms(void){return uriParms;}
+P_AttUriHeaders *P_AttSipUri::getP_AttUriHeads(void){return uriHeads;}
 P_AttSipUri::P_AttSipUri(string content) 
     : S_AttGeneric(content) {
-}
-/*
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// AttMethod
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-void AttMethod::doParse(void){
 
-    if(parsed) {
-        return;
-    }
-    if (content.compare("INVITE") == 0){
-        methodName = "INVITE";
-        methodID = INVITE_REQUEST;
-        parsed = true;
-        correct = true;
-        return;
-    }
-    if (content.compare("ACK") == 0){
-        methodName = "ACK";
-        methodID = ACK_REQUEST;
-        parsed = true;
-        correct = true;
-        return;
-    }
-    if (content.compare("BYE") == 0){
-        methodName = "BYE";
-        methodID = BYE_REQUEST;
-        parsed = true;
-        correct = true;
-        return;
-    }
-    if (content.compare("CANCEL") == 0){
-        methodName = "CANCEL";
-        methodID = CANCEL_REQUEST;
-        parsed = true;
-        correct = true;
-        return;
-    }
-    parsed = true;
-    correct = false;
+    userInfo = NULL;
+    hostPort = NULL;
+    uriParms = NULL;
+    uriHeads = NULL;
+
     return;
-}
-int AttMethod::getMethodID(void) {
-
-    if (!parsed) {
-        doParse();
-    }
-    return methodID;
-}
-string AttMethod::getMethodName(void) {
-    
-    if (!parsed){
-        doParse();
-    }
-    return methodName;
-}
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// AttReply
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-void AttReply::doParse(void) {
-
-    if (parsed) {
-        return;
-    }
-   
-    vector<string> s;
-    vector<string>::iterator ii;
-
-    s = brkSpaces(content);
-    ii = s.begin();
-    
-    string s1;
-    s1 = *ii;
-    code = atoi(s1.c_str());
-    
-    ii++; 
-    reply = *ii;
-
-    if (reply.compare("OK") == 0){
-        replyID = OK_RESPONSE;
-        parsed = true;
-        correct = true;
-        return;
-    }
-    if (content.compare("RINGING") == 0){
-        replyID = RINGING_RESPONSE;
-        parsed = true;
-        correct = true;
-        return;
-    }
-    if (content.compare("TRY") == 0){
-        replyID = TRY_RESPONSE;
-        parsed = true;
-        correct = true;
-        return;
-    }
-    parsed = true;
-    correct = false;
-    return;
-}
-int AttReply::getCode(void){
-
-   if(!parsed) {
-        doParse();
-   }
-   return code;
-}
-int AttReply::getReplyID(void){
-
-   if(!parsed) {
-        doParse();
-   }
-   return replyID;
-}
-string AttReply::getReply(void){
-
-   if(!parsed) {
-        doParse();
-   }
-   return reply;
-}
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// AttSipVersion
-// Fake
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-void AttSipVersion::doParse(void){
-
-    if(parsed){
-        return;
-    }
-    //TODO
-    parsed = true;
-}
-string AttSipVersion::getProtocol(void) {
-    //TODO
-    return("SIP");
-}
-int AttSipVersion::getVersion(void){
-    //TODO
-    return(2);
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // P_HeadSipReply
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+P_HeadSipReply::P_HeadSipReply(string _content, int _genEntity)
+    :S_HeadGeneric(_content, genEntity) {
+
+    sipvs = NULL;
+    reply = NULL;
+}
 void P_HeadSipReply::doParse(void){
 
     if(parsed){
@@ -245,11 +122,11 @@ void P_HeadSipReply::doParse(void){
     
     vector<string>::iterator iter;
     iter = elements.begin();
-    sipvs.setContent(*iter);
+
+    sipvs = new S_AttSipVersion(*iter);
 
     iter ++;
-    //TODO AttReply will re-parse it...
-    reply.setContent(*iter + " " +*(++iter));
+    reply = new S_AttReply(*iter, *(++iter));
 
     parsed = true;
     //TODO
@@ -257,19 +134,17 @@ void P_HeadSipReply::doParse(void){
 
     return;
 }
-AttReply P_HeadSipReply::getReply(void) {
+S_AttReply *P_HeadSipReply::getReply(void) {
 
     if(!parsed) {
         doParse();
     }
     return reply;
 }
-AttSipVersion P_HeadSipReply::getSipVersion(void) {
+S_AttSipVersion *P_HeadSipReply::getSipVersion(void) {
 
     if(!parsed) {
         doParse();
     }
     return sipvs;
 }
-
-*/

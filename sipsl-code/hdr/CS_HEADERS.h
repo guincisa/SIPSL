@@ -21,8 +21,10 @@
 //**********************************************************************************
 
 #define CS_HEADERS
+#ifndef UTIL
+#include "UTIL.h"
+#endif
 using namespace std;
-
 #define REGISTER_REQUEST 1
 #define INVITE_REQUEST 2
 #define ACK_REQUEST 3
@@ -82,6 +84,8 @@ inline Tuple getLRvalue(string couple) {
     Tuple tt;
     tt.Lvalue = couple.substr(0, a);
     tt.Rvalue = couple.substr(a+1, -1);
+
+    return tt;
 }
 inline vector<string> brkSpaces(string s) {
 
@@ -116,7 +120,6 @@ class S_HeadGeneric { //i
         string getContent(void);
         void setContent(string buff, int genEntity);
         
-
         // created using buffer and endpoint id which generates header
 	S_HeadGeneric(string buff, int genEntity);
 
@@ -180,6 +183,7 @@ class TupleVector : public S_AttGeneric{ //i
     public:
         TupleVector(string tuples, string separator, string header);
         TupleVector(string tuples, string separator);
+        TupleVector();
         //header can be ? or whaterver the string begins with 
         string findRvalue(string Lvalue);
 };
@@ -216,7 +220,8 @@ class S_AttUserInfo : public S_AttGeneric{
 
     public:
         string getUserName(void);
-        string getPasssword(void);
+        string getPassword(void);
+        S_AttUserInfo(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -235,6 +240,7 @@ class S_AttHostPort : public S_AttGeneric{
     public:
         string getHostName(void);
         int getPort(void);
+        S_AttHostPort(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -252,6 +258,7 @@ class C_AttUriParms : public S_AttGeneric{
 
     public:
         TupleVector getTuples(void);
+        C_AttUriParms(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -269,6 +276,7 @@ class C_AttUriHeaders : public S_AttGeneric{
 
     public:
         TupleVector getTuples(void);
+        C_AttUriHeaders(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -293,7 +301,8 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips
         S_AttUserInfo getS_AttUserInfo(void);
         S_AttHostPort getS_AttHostPort(void);
         C_AttUriParms getC_AttUriParms(void);
-        C_AttUriHeaders getAttUriHeads(void); 
+        C_AttUriHeaders getC_AttUriHeads(void); 
+        C_AttSipUri(string content);
         
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -324,8 +333,8 @@ class S_AttSipVersion : public S_AttGeneric{ //fake i
     public:
         string getProtocol(void);
         string getVersion();
-        S_AttSipVersion(string);
-        S_AttSipVersion(string, string);
+        S_AttSipVersion(string content);
+        S_AttSipVersion(string protocol, string version);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -382,10 +391,15 @@ class S_AttReply : public S_AttGeneric{ //i
         int code;
         int replyID;
         string reply;
+        bool compare_it(string reply);
+
     public:
         int getCode(void);
         int getReplyID(void);
         string getReply(void);
+        S_AttReply(string content);
+        S_AttReply(int replyID, int code);
+        S_AttReply(string replyID, string code);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
