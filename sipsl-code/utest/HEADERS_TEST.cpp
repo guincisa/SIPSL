@@ -12,11 +12,46 @@
 #define NEWS cout << "\n* * * * * * * * * * * * * * * * * * * * * * *\n NEW SUITE\n* * * * * * * * * * * * * * * * * * * * * * *\n" << endl;
 int main(void) {
 
-    NEWS
     cout << "Begin HEADERS test" << endl << flush;
+
+    NEWS
+    {
+        cout << "Begin brkin2 test" << endl << flush;
+        NEWT
+        string ss = "aaa;bbb";
+        Tuple s = brkin2(ss, ";");
+        cout << ss << " left " << s.Lvalue << " right " << s.Rvalue << endl;
+        assert(!s.Lvalue.compare("aaa"));
+        assert(!s.Rvalue.compare("bbb"));
+    }
+    {
+        NEWT
+        string ss = "aaa;";
+        Tuple s = brkin2(ss, ";");
+        cout << ss << " left " << s.Lvalue << " right " << s.Rvalue << endl;
+        assert(!s.Lvalue.compare("aaa"));
+        assert(!s.Rvalue.compare(""));
+    }
+    {
+        NEWT
+        string ss = "aaa";
+        Tuple s = brkin2(ss, ";");
+        cout << ss << " left " << s.Lvalue << " right " << s.Rvalue << endl;
+        assert(!s.Lvalue.compare("aaa"));
+        assert(!s.Rvalue.compare(""));
+    }
+    {
+        NEWT
+        string ss = ";aaa";
+        Tuple s = brkin2(ss, ";");
+        cout << ss << " left " << s.Lvalue << " right " << s.Rvalue << endl;
+        assert(!s.Lvalue.compare(""));
+        assert(!s.Rvalue.compare("aaa"));
+    }
 
     
     {
+    NEWS
     cout << "Begin TupleVector test" << endl << flush;
     cout << "Sunny Day" << endl << flush;
 
@@ -183,6 +218,25 @@ int main(void) {
     assert(!s1.getVersion().compare("2.0"));
     }
 
-    return 0;
+    NEWS
+    //C_AttSipUri
+    /*
+    NEWS
+    {
+        NEWT
+        string r = "INVITE gi4@lucent.com SIP/2.0";
+        C_HeadSipRequest rs(r);
+        cout << "Request [" << r <<"]" <<endl;
+        S_AttMethod s = rs.getS_AttMethod(); ;
+        cout << "INVITE getMethodID [" << s.getMethodID()<<"] getMethodName [" << s.getMethodName() <<"]"<<endl;
+        assert(!(s.getMethodID() - INVITE_REQUEST));
+        assert(!s.getMethodName().compare("INVITE"));
+        C_AttSipUri t = rs.getC_AttSipUri();
 
+    }
+    */
+
+    return 0;
 }
+
+

@@ -181,7 +181,7 @@ void C_HeadSipRequest::doParse(void) {
     iter++;
     sipvs.setContent(*iter);
 }
-S_AttMethod C_HeadSipRequest::getMethod(void){
+S_AttMethod C_HeadSipRequest::getS_AttMethod(void){
     if(!parsed)
         doParse();
     return method;
@@ -192,7 +192,7 @@ C_AttSipUri C_HeadSipRequest::getC_AttSipUri(void){
 
     return reqUri;
 }
-S_AttSipVersion C_HeadSipRequest::getSipVs(void){
+S_AttSipVersion C_HeadSipRequest::getS_AttSipVersion(void){
     if(!parsed)
         doParse();
     return sipvs;
@@ -437,7 +437,7 @@ S_AttSipVersion C_HeadSipReply::getSipVersion(void) {
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// S_AttUserInfo
+// S_AttUserInfo stub
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 S_AttUserInfo::S_AttUserInfo(string _content){assert(0);return;}
@@ -446,7 +446,7 @@ string S_AttUserInfo::getUserName(void){assert(0);return "EMPTY";}
 string S_AttUserInfo::getPassword(void){assert(0);return "EMPTY";}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// S_AttHostPort
+// S_AttHostPort stub
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 S_AttHostPort::S_AttHostPort(string _content){assert(0);return;}
@@ -455,7 +455,7 @@ string S_AttHostPort::getHostName(void){assert(0);return "EMPTY";}
 int S_AttHostPort::getPort(void){assert(0);return -1;}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// C_AttUriParms
+// C_AttUriParms stub
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 C_AttUriParms::C_AttUriParms(string _content)
@@ -465,7 +465,7 @@ void C_AttUriParms::doParse(void){assert(0);return;}
 TupleVector C_AttUriParms::getTuples(void){assert(0);return tuples;}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// C_AttUriHeaders
+// C_AttUriHeaders stub
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 C_AttUriHeaders::C_AttUriHeaders(string _content)
@@ -475,23 +475,36 @@ void C_AttUriHeaders::doParse(void){assert(0);return;}
 TupleVector C_AttUriHeaders::getTuples(void){assert(0);return tuples;}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// C_AttSipUri
+// C_AttSipUri implementing
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void C_AttSipUri::doParse(void){assert(0);return;}
-bool C_AttSipUri::getIsSec(void){assert(0);return false;}
-S_AttUserInfo C_AttSipUri::getS_AttUserInfo(void){assert(0);return userInfo;}
-S_AttHostPort C_AttSipUri::getS_AttHostPort(void){assert(0);return hostPort;}
-C_AttUriParms C_AttSipUri::getC_AttUriParms(void){assert(0);return uriParms;}
-C_AttUriHeaders C_AttSipUri::getC_AttUriHeads(void){assert(0);return uriHeads;}
 C_AttSipUri::C_AttSipUri(string _content)
     : S_AttGeneric(_content) ,
-//TODO ???
     userInfo(""),
     hostPort(""),
     uriParms(""),
     uriHeads(""){
 
-    assert(0);return;
+    return;
 }
 
+void C_AttSipUri::doParse(void){
+
+    // "sip:alice:secretword@atlanta.com;transport=tcp;ttl=15?to=alice%40atalnta.com&priority=urgent"
+    // break ;
+
+    Tuple s1 = brkin2(content, ":");
+    // sip
+    // alice:secretword@atlanta.com;transport=tcp;ttl=15?to=alice%40atalnta.com&priority=urgent"
+    assert(s1.Lvalue.compare("sips"));
+
+    Tuple s2 = brkin2(s1.Rvalue, ";");
+    
+    assert(0);
+    return;
+}
+bool C_AttSipUri::getIsSec(void){assert(0);return false;}
+S_AttUserInfo C_AttSipUri::getS_AttUserInfo(void){assert(0);return userInfo;}
+S_AttHostPort C_AttSipUri::getS_AttHostPort(void){assert(0);return hostPort;}
+C_AttUriParms C_AttSipUri::getC_AttUriParms(void){assert(0);return uriParms;}
+C_AttUriHeaders C_AttSipUri::getC_AttUriHeads(void){assert(0);return uriHeads;}

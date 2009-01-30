@@ -102,6 +102,27 @@ inline vector<string> brkSpaces(string s) {
     output.push_back(s);
     return output;
 } 
+inline Tuple brkin2(string couple, string separator) {
+
+    int a = couple.find(separator, 0);
+    Tuple tt;
+    if (a < 0) {
+        tt.Lvalue = couple.substr(0, a);
+        tt.Rvalue = "";
+        return tt;
+    }
+    if (a == couple.length()) {
+        tt.Lvalue = couple.substr(0, a);
+        tt.Rvalue = "";
+        return tt;
+    }
+    
+    tt.Lvalue = couple.substr(0, a);
+    tt.Rvalue = couple.substr(a+1, -1);
+
+    return tt;
+}
+
 //Att* are attibutes
 //Head* are headers
 ///////////////////////////////////////////////////////////////////////////////
@@ -352,7 +373,7 @@ class C_AttVia : public S_AttGeneric {
         TupleVector viaParms;
 
     public:
-        S_AttHostPort getHostPort(void);
+        S_AttHostPort getS_HostHostPort(void);
         TupleVector getViaParms(void);
 } ;       
 ///////////////////////////////////////////////////////////////////////////////
@@ -374,9 +395,9 @@ class C_HeadSipRequest : public S_HeadGeneric { //i
 
     public:
 
-        S_AttMethod getMethod(void);
+        S_AttMethod getS_AttMethod(void);
         C_AttSipUri getC_AttSipUri(void);
-        S_AttSipVersion getSipVs(void);
+        S_AttSipVersion getS_AttSipVersion(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
