@@ -1,5 +1,5 @@
 export OPT="-I./../hdr" 
-rm HEADERS_TEST
-g++  $OPT -c HEADERS_TEST.cpp -o HEADERS_TEST.o
-g++  $OPT -o HEADERS_TEST ../CS_HEADERS.o ../P_HEADERS.o HEADERS_TEST.o
+rm ../../build/HEADERS_TEST
+g++  $OPT -c HEADERS_TEST.cpp -o ../../build/HEADERS_TEST.o
+g++  $OPT -o ../../build/HEADERS_TEST ../../build/CS_HEADERS.o ../../build/P_HEADERS.o ../../build/HEADERS_TEST.o
 

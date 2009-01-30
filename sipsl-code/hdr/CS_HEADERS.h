@@ -28,8 +28,8 @@ using namespace std;
 #define REGISTER_REQUEST 1
 #define INVITE_REQUEST 2
 #define ACK_REQUEST 3
-#define BYE_REQUEST 4;
-#define CANCEL_REQUEST 4;
+#define BYE_REQUEST 4
+#define CANCEL_REQUEST 5
 
 #define TRY_RESPONSE 51
 #define RINGING_RESPONSE 52

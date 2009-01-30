@@ -204,6 +204,9 @@ S_AttSipVersion C_HeadSipRequest::getSipVs(void){
 ///////////////////////////////////////////////////////////////////////////////
 S_AttMethod::S_AttMethod(string _content) 
     : S_AttGeneric(_content) {
+
+    methodID = 0;
+    methodName = "";
 }
 void S_AttMethod::doParse(void){
 
@@ -261,14 +264,24 @@ string S_AttMethod::getMethodName(void) {
 // S_AttReply
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-S_AttReply::S_AttReply(string _replyID, string _code) {
+S_AttReply::S_AttReply(string _content) 
+    :S_AttGeneric(_content){
+
+    code = 0;
+    replyID = 0;
+    reply = "";
+}
+S_AttReply::S_AttReply(string _replyID, string _code) 
+    :S_AttGeneric(_code + " " +_replyID){
 
     if (!compare_it(_replyID)) {
+DEBOUT("","")
         parsed = true;
         correct = false;
         return;
     }
     else {
+DEBOUT("","")
         code = atoi(_code.c_str());
     }
     parsed = true;
@@ -292,9 +305,9 @@ void S_AttReply::doParse(void) {
     code = atoi(s1.c_str());
     
     ii++; 
-    reply = *ii;
+    string _reply = *ii;
 
-    if (compare_it(reply))
+    if (compare_it(_reply))
         return;
 
     parsed = true;
@@ -303,19 +316,19 @@ void S_AttReply::doParse(void) {
 }
 inline bool S_AttReply::compare_it(string _reply) {
 
-        if (reply.compare("OK") == 0){
+    if (_reply.compare("OK") == 0){
         replyID = OK_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
-    if (reply.compare("RINGING") == 0){
+    if (_reply.compare("RINGING") == 0){
         replyID = RINGING_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
-    if (reply.compare("TRY") == 0){
+    if (_reply.compare("TRY") == 0){
         replyID = TRY_RESPONSE;
         parsed = true;
         correct = true;
@@ -352,7 +365,8 @@ string S_AttReply::getReply(void){
 S_AttSipVersion::S_AttSipVersion(string content)
     : S_AttGeneric(content) {
 }
-S_AttSipVersion::S_AttSipVersion(string _protocol, string _version) {
+S_AttSipVersion::S_AttSipVersion(string _protocol, string _version)
+    :S_AttGeneric(_protocol + "/" + _version) {
 
     parsed = true;
     correct = true;

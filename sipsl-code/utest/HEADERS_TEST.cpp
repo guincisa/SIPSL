@@ -16,6 +16,7 @@ int main(void) {
     cout << "Begin HEADERS test" << endl << flush;
 
     
+    {
     cout << "Begin TupleVector test" << endl << flush;
     cout << "Sunny Day" << endl << flush;
 
@@ -76,8 +77,111 @@ int main(void) {
     assert(!tv6.findRvalue("cc").compare("dd"));
     cout << "find R value for ee [" << tv6.findRvalue("ee") <<"]"<< endl << flush;
     assert(!tv6.findRvalue("ee").compare("ff"));
+    }
  
     NEWS
+    {
+    cout << "Begin S_AttMethod test" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    NEWT
+    S_AttMethod s1("INVITE");
+    cout << "INVITE getMethodID [" << s1.getMethodID()<<"] getMethodName [" << s1.getMethodName() <<"]"<<endl;
+    assert(!(s1.getMethodID() - INVITE_REQUEST));
+    assert(!s1.getMethodName().compare("INVITE"));
+    NEWT
+    S_AttMethod s2("BYE");
+    cout << "BYE getMethodID [" << s2.getMethodID()<<"] getMethodName [" << s2.getMethodName() <<"]"<<endl;
+    assert(!(s2.getMethodID() - BYE_REQUEST));
+    assert(!s2.getMethodName().compare("BYE"));
+    NEWT
+    S_AttMethod s3("CANCEL");
+    cout << "CANCEL getMethodID [" << s3.getMethodID()<<"] getMethodName [" << s3.getMethodName() <<"]"<<endl;
+    assert(!(s3.getMethodID() - CANCEL_REQUEST));
+    assert(!s3.getMethodName().compare("CANCEL"));
+    NEWT
+    S_AttMethod s4("ACK");
+    cout << "ACK getMethodID [" << s4.getMethodID()<<"] getMethodName [" << s4.getMethodName() <<"]"<<endl;
+    assert(!(s4.getMethodID() - ACK_REQUEST));
+    assert(!s4.getMethodName().compare("ACK"));
+
+    cout << "Rainy Day" << endl << flush;
+    NEWT
+    S_AttMethod s5("INVI");
+    cout << "INVI getMethodID [" << s5.getMethodID()<<"] getMethodName [" << s5.getMethodName() <<"]"<<endl;
+    assert(!(s5.getMethodID()));
+    assert(s5.getMethodName().compare("INVITE"));
+    assert(s5.getMethodName().compare("CANCEL"));
+    assert(s5.getMethodName().compare("ACK"));
+    assert(s5.getMethodName().compare("BYE"));
+    NEWT
+    S_AttMethod s6("");
+    cout << "empty getMethodID [" << s6.getMethodID()<<"] getMethodName [" << s6.getMethodName() <<"]"<<endl;
+    assert(!(s6.getMethodID()));
+    assert(s6.getMethodName().compare("INVITE"));
+    assert(s6.getMethodName().compare("CANCEL"));
+    assert(s6.getMethodName().compare("ACK"));
+    assert(s6.getMethodName().compare("BYE"));
+    }
+
+    NEWS
+    {
+    cout << "Begin S_AttReply test" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    NEWT
+    S_AttReply s1("180 RINGING");
+    cout << "180 RINGING getCode [" << s1.getCode()<<"] getReplyID [" << s1.getReplyID() <<"]"<<endl;
+    assert(!(s1.getCode() - 180));
+    assert(!s1.getReplyID() - RINGING_RESPONSE);
+    NEWT
+    S_AttReply s2("RINGING", "180");
+    cout << "180 and RINGING getCode [" << s2.getCode()<<"] getReplyID [" << s2.getReplyID() <<"]"<<endl;
+    assert(!(s2.getCode() - 180));
+    assert(!s2.getReplyID() - RINGING_RESPONSE);
+    }
+    {
+    NEWT
+    S_AttReply s1("200 OK");
+    cout << "200 OK getCode [" << s1.getCode()<<"] getReplyID [" << s1.getReplyID() <<"]"<<endl;
+    assert(!(s1.getCode() - 200));
+    assert(!s1.getReplyID() - OK_RESPONSE);
+    NEWT
+    S_AttReply s2("OK", "200");
+    cout << "200 and OK getCode [" << s2.getCode()<<"] getReplyID [" << s2.getReplyID() <<"]"<<endl;
+    assert(!(s2.getCode() - 200));
+    assert(!s2.getReplyID() - OK_RESPONSE);
+    }
+    {
+    NEWT
+    S_AttReply s1("100 TRY");
+    cout << "100 TRY getCode [" << s1.getCode()<<"] getReplyID [" << s1.getReplyID() <<"]"<<endl;
+    assert(!(s1.getCode() - 100));
+    assert(!s1.getReplyID() - RINGING_RESPONSE);
+    NEWT
+    S_AttReply s2("TRY", "100");
+    cout << "100 and TRY getCode [" << s2.getCode()<<"] getReplyID [" << s2.getReplyID() <<"]"<<endl;
+    assert(!(s2.getCode() - 100));
+    assert(!s2.getReplyID() - TRY_RESPONSE);
+    }
+
+    {
+    NEWS
+    cout << "Begin S_SipVersion test" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    }
+    {
+    NEWT
+    S_AttSipVersion s1("SIP/2.0");
+    cout << "SIP/2.0 getProtocol [" << s1.getProtocol()<<"] getVersion [" << s1.getVersion() <<"]"<<endl;
+    assert(!(s1.getProtocol().compare("SIP")));
+    assert(!s1.getVersion().compare("2.0"));
+    }
+    {
+    NEWT
+    S_AttSipVersion s1("SIP","2.0");
+    cout << "SIP and 2.0 getProtocol [" << s1.getProtocol()<<"] getVersion [" << s1.getVersion() <<"]"<<endl;
+    assert(!(s1.getProtocol().compare("SIP")));
+    assert(!s1.getVersion().compare("2.0"));
+    }
 
     return 0;
 
