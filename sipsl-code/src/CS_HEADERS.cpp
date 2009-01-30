@@ -127,8 +127,6 @@ void TupleVector::doParse(void) {
     if (parsed)
         return;
 
-    DEBOUT("Parsing TupleVector",content)
-
     vector<string> lval_rval;
     if (hasheader) {
         lval_rval = parse(content, header, separator);
@@ -151,10 +149,11 @@ string TupleVector::findRvalue(string _Lvalue){
     if (parsed != true) {
         doParse();
     }
-    DEBOUT("_Lvalue",_Lvalue)
     map<string,string>::iterator ii = tuples.find(_Lvalue);
+    if (ii == tuples.end()) {
+        return"";
+    }
     string s = ii->second;
-    DEBOUT("s",s)
     return(s);
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -437,42 +436,106 @@ S_AttSipVersion C_HeadSipReply::getSipVersion(void) {
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// S_AttUserInfo stub
+// S_AttUserInfo
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-S_AttUserInfo::S_AttUserInfo(string _content){assert(0);return;}
-void S_AttUserInfo::doParse(void){assert(0);return;}
-string S_AttUserInfo::getUserName(void){assert(0);return "EMPTY";}
-string S_AttUserInfo::getPassword(void){assert(0);return "EMPTY";}
+S_AttUserInfo::S_AttUserInfo(string _content)
+    :S_AttGeneric(_content){
+    return;
+}
+void S_AttUserInfo::doParse(void){
+
+    if (parsed) {
+        return;
+    }
+
+    Tuple s1 = brkin2(content, ":");
+
+    userName = s1.Lvalue;
+    password = s1.Rvalue;
+    
+    correct = true;
+    parsed = true;
+    return;
+}
+string S_AttUserInfo::getUserName(void){
+    if (!parsed)
+        doParse();
+    return userName;
+}
+string S_AttUserInfo::getPassword(void){
+    if (!parsed)
+        doParse();
+    return password;
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // S_AttHostPort stub
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-S_AttHostPort::S_AttHostPort(string _content){assert(0);return;}
-void S_AttHostPort::doParse(void){assert(0);return;}
-string S_AttHostPort::getHostName(void){assert(0);return "EMPTY";}
-int S_AttHostPort::getPort(void){assert(0);return -1;}
+S_AttHostPort::S_AttHostPort(string _content)
+    :S_AttGeneric(_content){
+    return;
+}
+void S_AttHostPort::doParse(void){
+
+    if (parsed) {
+        return;
+    }
+
+    Tuple s1 = brkin2(content, ":");
+
+    hostName = s1.Lvalue;
+    if (s1.Rvalue.compare("")!=0){
+        port = atoi(s1.Rvalue.c_str());
+    }
+    
+    correct = true;
+    parsed = true;
+    return;
+}
+string S_AttHostPort::getHostName(void){
+    if (!parsed)
+        doParse();
+    return hostName;
+}
+int S_AttHostPort::getPort(void){
+    if (!parsed)
+        doParse();
+    return port;
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// C_AttUriParms stub
+// C_AttUriParms
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 C_AttUriParms::C_AttUriParms(string _content)
-    : tuples(_content, "=")
-    {assert(0);return;}
-void C_AttUriParms::doParse(void){assert(0);return;}
-TupleVector C_AttUriParms::getTuples(void){assert(0);return tuples;}
+    : S_AttGeneric(_content),
+      tuples(_content, ";") {
+    return;
+}
+void C_AttUriParms::doParse(void){
+    return;
+}
+TupleVector C_AttUriParms::getTuples(void){
+    return tuples;
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// C_AttUriHeaders stub
+// C_AttUriHeaders
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 C_AttUriHeaders::C_AttUriHeaders(string _content)
-    : tuples(_content, "&", "?")
-    {assert(0);return;}
-void C_AttUriHeaders::doParse(void){assert(0);return;}
-TupleVector C_AttUriHeaders::getTuples(void){assert(0);return tuples;}
+    : S_AttGeneric(_content),
+      tuples(_content, "&", "?") {
+    return;
+}
+void C_AttUriHeaders::doParse(void){
+    return;
+}
+TupleVector C_AttUriHeaders::getTuples(void){
+    return tuples;
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // C_AttSipUri implementing
@@ -490,21 +553,64 @@ C_AttSipUri::C_AttSipUri(string _content)
 
 void C_AttSipUri::doParse(void){
 
+    if(parsed) {
+        return;
+    }
     // "sip:alice:secretword@atlanta.com;transport=tcp;ttl=15?to=alice%40atalnta.com&priority=urgent"
     // break ;
 
     Tuple s1 = brkin2(content, ":");
-    // sip
-    // alice:secretword@atlanta.com;transport=tcp;ttl=15?to=alice%40atalnta.com&priority=urgent"
-    assert(s1.Lvalue.compare("sips"));
+    isSecure = false;
+    if (s1.Lvalue.compare("sips") == 0) {
+        isSecure= true;
+    }
 
-    Tuple s2 = brkin2(s1.Rvalue, ";");
+    Tuple s2 = brkin2(s1.Rvalue, "@");
+    userInfo.setContent(s2.Lvalue);
+
+    Tuple s3 = brkin2(s2.Rvalue,";");
+    hostPort.setContent(s3.Lvalue);
+
+    if (s3.Rvalue.compare("") != 0) {
+        C_AttUriHeaders getC_AttUriHeads(void); 
+        Tuple s4 = brkin2(s3.Rvalue,"?");
+        uriParms.setContent(s4.Lvalue);
+        uriHeads.setContent(s4.Rvalue);
+    }
+    else {
+        uriParms.setContent("");
+        uriHeads.setContent("");
+    }
+
     
-    assert(0);
+    parsed = true;
+    correct = true;
+    
     return;
 }
-bool C_AttSipUri::getIsSec(void){assert(0);return false;}
-S_AttUserInfo C_AttSipUri::getS_AttUserInfo(void){assert(0);return userInfo;}
-S_AttHostPort C_AttSipUri::getS_AttHostPort(void){assert(0);return hostPort;}
-C_AttUriParms C_AttSipUri::getC_AttUriParms(void){assert(0);return uriParms;}
-C_AttUriHeaders C_AttSipUri::getC_AttUriHeads(void){assert(0);return uriHeads;}
+bool C_AttSipUri::getIsSec(void){
+    if (!parsed)
+        doParse();
+    return isSecure;
+    
+}
+S_AttUserInfo C_AttSipUri::getS_AttUserInfo(void){
+    if (!parsed)
+        doParse();
+    return userInfo;
+}
+S_AttHostPort C_AttSipUri::getS_AttHostPort(void){
+    if (!parsed)
+        doParse();
+    return hostPort;
+}
+C_AttUriParms C_AttSipUri::getC_AttUriParms(void){
+    if (!parsed)
+        doParse();
+    return uriParms;
+}
+C_AttUriHeaders C_AttSipUri::getC_AttUriHeads(void){
+    if (!parsed)
+        doParse();
+    return uriHeads;
+}

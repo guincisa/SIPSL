@@ -219,9 +219,200 @@ int main(void) {
     }
 
     NEWS
+    {
     //C_AttSipUri
-    /*
+    cout << "Begin C_AttSipUri test" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    string sipuri1 = "alice:secretword";
+    string sipuri2 = "atlanta.com:4040";
+    string sipuri3 = "transport=tcp;ttl=15";
+    string sipuri4 = "to=alice%40atalnta.com&priority=urgent";
+    {
+        NEWT
+        string sipuri = "sip:" + sipuri1 + "@" + sipuri2 + ";" + sipuri3 + "?" + sipuri4;
+        C_AttSipUri s(sipuri);
+        cout << "SipUri " + sipuri <<endl;
+        cout << "IsSecure " + s.getIsSec()<<endl;
+        assert(!s.getIsSec());
+        cout << "UserInfo [" + s.getS_AttUserInfo().getContent() + "]" <<endl;
+        assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
+        cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
+        assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
+        cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
+        assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
+    }
+    {
+        NEWT
+        sipuri1 = "alice";
+        string sipuri = "sip:" + sipuri1 + "@" + sipuri2 + ";" + sipuri3 + "?" + sipuri4;
+        C_AttSipUri s(sipuri);
+        cout << "SipUri " + sipuri <<endl;
+        cout << "IsSecure " + s.getIsSec()<<endl;
+        assert(!s.getIsSec());
+        cout << "UserInfo [" + s.getS_AttUserInfo().getContent() + "]" <<endl;
+        assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
+        cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
+        assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
+        cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
+        assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
+    }
+    {
+        NEWT
+        sipuri2 = "atlanta.com";
+        string sipuri = "sip:" + sipuri1 + "@" + sipuri2 + ";" + sipuri3 +"?" + sipuri4;
+        C_AttSipUri s(sipuri);
+        cout << "SipUri " + sipuri <<endl;
+        cout << "IsSecure " + s.getIsSec()<<endl;
+        assert(!s.getIsSec());
+        cout << "UserInfo [" + s.getS_AttUserInfo().getContent() + "]" <<endl;
+        assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
+        cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
+        assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
+        cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
+        assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
+    }
+    {
+        NEWT
+        sipuri4 = "";
+        string sipuri = "sip:" + sipuri1 + "@" + sipuri2 + ";" + sipuri3 ;
+        C_AttSipUri s(sipuri);
+        cout << "SipUri " + sipuri <<endl;
+        cout << "IsSecure " + s.getIsSec()<<endl;
+        assert(!s.getIsSec());
+        cout << "UserInfo [" + s.getS_AttUserInfo().getContent() + "]" <<endl;
+        assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
+        cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
+        assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
+        cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
+        assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
+    }
+    {
+        NEWT
+        sipuri3 = "";
+        sipuri4 = "";
+        string sipuri = "sip:" + sipuri1 + "@" + sipuri2 ;
+        C_AttSipUri s(sipuri);
+        cout << "SipUri " + sipuri <<endl;
+        cout << "IsSecure " + s.getIsSec()<<endl;
+        assert(!s.getIsSec());
+        cout << "UserInfo [" + s.getS_AttUserInfo().getContent() + "]" <<endl;
+        assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
+        cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
+        assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
+        cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
+        assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
+    }
+    }
     NEWS
+    {
+    //S_AttUserInfo
+    cout << "Begin C_AttUserInfo test" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    string sipuri1 = "alice";
+    string sipuri2 = "passwx";
+    {
+        NEWT
+        S_AttUserInfo s(sipuri1 + ":" + sipuri2);
+        cout << "UserInfo [" + sipuri1 + ":" + sipuri2 + "]"  <<endl;
+        cout << "User [" + s.getUserName() + "]" <<endl;
+        assert(!s.getUserName().compare(sipuri1));
+        cout << "Password [" + s.getPassword() + "]" <<endl;
+        assert(!s.getPassword().compare(sipuri2));
+    }
+    {
+        NEWT
+        string sipuri2 = "";
+        S_AttUserInfo s(sipuri1);
+        cout << "UserInfo [" + sipuri1 + "]"  <<endl;
+        cout << "User [" + s.getUserName() + "]" <<endl;
+        assert(!s.getUserName().compare(sipuri1));
+        cout << "Password [" + s.getPassword() + "]" <<endl;
+        assert(!s.getPassword().compare(sipuri2));
+    }
+    
+    }
+    NEWS
+    {
+    //S_AttHostPort
+    cout << "Begin S_AttHostPort" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    string sipuri1 = "gugli.net";
+    string sipuri2 = "1234";
+    {
+        NEWT
+        S_AttHostPort s(sipuri1 + ":" + sipuri2);
+        cout << "HostPort [" + sipuri1 + ":" + sipuri2 + "]"  <<endl;
+        cout << "Host [" + s.getHostName() + "]" <<endl;
+        assert(!s.getHostName().compare(sipuri1));
+        cout << "Port [" << s.getPort() << "]" <<endl;
+        assert(!(s.getPort()- 1234));
+    }
+    {
+        NEWT
+        string sipuri2 = "";
+        S_AttHostPort s(sipuri1 );
+        cout << "HostPort [" + sipuri1  + "]"  <<endl;
+        cout << "Host [" + s.getHostName() + "]" <<endl;
+        assert(!s.getHostName().compare(sipuri1));
+        cout << "Port [" << s.getPort() << "]" <<endl;
+        assert(!(s.getPort()- 1234));
+    }
+    
+    }
+    NEWS
+    {
+    //C_AttUriParms
+    cout << "Begin C_UriParms" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    NEWT
+    {
+        string sipuri = "transport=tcp;ttl=15;name=ciccio;age=2";
+        C_AttUriParms s(sipuri );
+        cout << "UriParms [" + sipuri  + "]"  <<endl;
+        cout << "transport [" + s.getTuples().findRvalue("transport") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("transport").compare("tcp"));
+        cout << "ttl [" + s.getTuples().findRvalue("ttl") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("ttl").compare("15"));
+        cout << "name [" + s.getTuples().findRvalue("name") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("name").compare("ciccio"));
+        cout << "age [" + s.getTuples().findRvalue("age") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("age").compare("2"));
+        cout << "sex [" + s.getTuples().findRvalue("sex") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("sex").compare(""));
+    }
+    }
+    NEWS
+    {
+    //C_AttUriHeads
+    cout << "Begin C_UriHeads" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    NEWT
+    {
+        string sipuri = "to=alice%40atalnta.com&priority=urgent";
+        C_AttUriHeaders s(sipuri );
+        cout << "UriHeads [" + sipuri  + "]"  <<endl;
+        cout << "to [" + s.getTuples().findRvalue("to") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("to").compare("alice%40atalnta.com"));
+        cout << "priority [" + s.getTuples().findRvalue("priority") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("priority").compare("urgent"));
+        cout << "sex [" + s.getTuples().findRvalue("sex") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("sex").compare(""));
+    }
+    }
+
+
+
+/*
     {
         NEWT
         string r = "INVITE gi4@lucent.com SIP/2.0";
@@ -233,8 +424,7 @@ int main(void) {
         assert(!s.getMethodName().compare("INVITE"));
         C_AttSipUri t = rs.getC_AttSipUri();
 
-    }
-    */
+    }*/
 
     return 0;
 }
