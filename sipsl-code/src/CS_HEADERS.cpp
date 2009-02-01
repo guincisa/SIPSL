@@ -364,8 +364,19 @@ string S_AttReply::getReply(void){
 S_AttSipVersion::S_AttSipVersion(string content)
     : S_AttGeneric(content) {
 }
-S_AttSipVersion::S_AttSipVersion(string _protocol, string _version)
+S_AttSipVersion::S_AttSipVersion(string _protocol, string _version) 
     :S_AttGeneric(_protocol + "/" + _version) {
+    parsed = true;
+    correct = true;
+    isSet = true;
+
+    version = _version;
+    protocol = _protocol;
+
+    content = protocol + "/" + version;
+}
+
+void S_AttSipVersion::setbContent(string _protocol, string _version) {
 
     parsed = true;
     correct = true;
@@ -538,7 +549,7 @@ TupleVector C_AttUriHeaders::getTuples(void){
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// C_AttSipUri implementing
+// C_AttSipUri 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 C_AttSipUri::C_AttSipUri(string _content)
@@ -614,3 +625,60 @@ C_AttUriHeaders C_AttSipUri::getC_AttUriHeads(void){
         doParse();
     return uriHeads;
 }
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// C_AttVia
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_AttVia::C_AttVia(string _content) :
+    S_AttGeneric(_content),
+    version(""),
+    transport(""),
+    hostPort(""),
+    viaParms() {
+
+    return;
+}
+void C_AttVia::doParse(void){
+    
+    if(parsed)
+        return;
+
+    Tuple s1 = brkin2(content, " ");
+    
+    Tuple s2 = brkin2(s1.Lvalue, "/");
+    Tuple s3 = brkin2(s2.Rvalue, "/");
+    transport = s3.Rvalue;
+    version.setbContent(s2.Lvalue, s3.Lvalue);
+
+    Tuple s4 = brkin2(s1.Rvalue, ":");
+    hostPort.setContent(s4.Lvalue);
+    viaParms.setContent(s4.Rvalue);
+
+    correct = true;
+    parsed = true;
+
+    return;
+}
+S_AttSipVersion C_AttVia::getS_AttSipVersion(void) {
+    if (!parsed)
+        doParse();
+    return version;
+}
+string C_AttVia::getTransport(void) {
+    if (!parsed)
+        doParse();
+    return transport;
+}
+S_AttHostPort C_AttVia::getS_HostHostPort(void) {
+    if (!parsed)
+        doParse();
+    return hostPort;
+}
+TupleVector C_AttVia::getViaParms(void) {
+    if (!parsed)
+        doParse();
+    return viaParms;
+}
+
+     

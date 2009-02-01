@@ -191,7 +191,7 @@ class S_AttGeneric { //i
 // TODO ??? C or S???
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class TupleVector : public S_AttGeneric{ //i
+class TupleVector : public S_AttGeneric{ //i //t
 //NEW REVISON
     private:
         vector<string> lval_rval;
@@ -213,7 +213,7 @@ class TupleVector : public S_AttGeneric{ //i
 // S_AttMethod
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttMethod : public S_AttGeneric{ //i
+class S_AttMethod : public S_AttGeneric{ //i //t
 //NEW REVISION
 
     private:
@@ -232,7 +232,7 @@ class S_AttMethod : public S_AttGeneric{ //i
 //    alice:secretword@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttUserInfo : public S_AttGeneric{
+class S_AttUserInfo : public S_AttGeneric{ //i //t
 //NEW REVISION
     private:
         void doParse(void);
@@ -250,7 +250,7 @@ class S_AttUserInfo : public S_AttGeneric{
 //    gateway.conm:123
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttHostPort : public S_AttGeneric{
+class S_AttHostPort : public S_AttGeneric{ //i //t
 //NEW REVISION
 
     private:
@@ -269,7 +269,7 @@ class S_AttHostPort : public S_AttGeneric{
 //    transport=tcp;ttl=15;...
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_AttUriParms : public S_AttGeneric{
+class C_AttUriParms : public S_AttGeneric{ //i //t
 //NEW REVISION
 //
     private:
@@ -287,7 +287,7 @@ class C_AttUriParms : public S_AttGeneric{
 //    ?to=alice%40atalnta.com&priority=urgent&...
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_AttUriHeaders : public S_AttGeneric{
+class C_AttUriHeaders : public S_AttGeneric{ //i //t
 //NEW REVISION
 
     private:
@@ -305,7 +305,7 @@ class C_AttUriHeaders : public S_AttGeneric{
 //     "sip:alice:secretword@atlanta.com;transport=tcp"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_AttSipUri : public S_AttGeneric{ // sip or sips
+class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
 //NEW REVISION 26 12 08
 
     private:
@@ -345,7 +345,7 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips
 //    SIP/2.0
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttSipVersion : public S_AttGeneric{ //fake i
+class S_AttSipVersion : public S_AttGeneric{ //i //t
 //NEW REVISION 
     private:
         void doParse(void);
@@ -356,25 +356,30 @@ class S_AttSipVersion : public S_AttGeneric{ //fake i
         string getVersion();
         S_AttSipVersion(string content);
         S_AttSipVersion(string protocol, string version);
+        void setbContent(string protocol, string version);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //C_AttVia
-//   ???? based on old sipsl
+//   Via: SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_AttVia : public S_AttGeneric {
+class C_AttVia : public S_AttGeneric { //i //not tested
 //NEW REVISION
 
     private:
         void doParse(void);
-// OLD CODE
+        S_AttSipVersion version;
+        string transport;
         S_AttHostPort hostPort;
         TupleVector viaParms;
 
     public:
+        S_AttSipVersion getS_AttSipVersion(void);
+        string getTransport(void);
         S_AttHostPort getS_HostHostPort(void);
         TupleVector getViaParms(void);
+        C_AttVia(string content);
 } ;       
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -382,7 +387,7 @@ class C_AttVia : public S_AttGeneric {
 // C_HeadSipRequest "Method RequestURI SipVersion<CRLF>"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadSipRequest : public S_HeadGeneric { //i
+class C_HeadSipRequest : public S_HeadGeneric { //i 
 //NEW REVISION
 
     private:

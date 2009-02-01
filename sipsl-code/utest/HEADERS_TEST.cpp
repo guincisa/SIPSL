@@ -409,6 +409,10 @@ int main(void) {
         assert(!s.getTuples().findRvalue("sex").compare(""));
     }
     }
+    
+    C_AttUriHeaders *pippo; 
+
+    pippo = new C_AttUriHeaders("to=alice%40atalnta.com&priority=urgent");
 
 
 
