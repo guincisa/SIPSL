@@ -365,7 +365,7 @@ int main(void) {
         cout << "Host [" + s.getHostName() + "]" <<endl;
         assert(!s.getHostName().compare(sipuri1));
         cout << "Port [" << s.getPort() << "]" <<endl;
-        assert(!(s.getPort()- 1234));
+        assert(!(s.getPort()));
     }
     
     }
@@ -453,22 +453,56 @@ int main(void) {
         assert(!s.getViaParms().findRvalue("branch").compare("z9hG4bK74b76"));
     }
     }
-
-
-
-/*
+    NEWS
+    {
     {
         NEWT
-        string r = "INVITE gi4@lucent.com SIP/2.0";
-        C_HeadSipRequest rs(r);
-        cout << "Request [" << r <<"]" <<endl;
-        S_AttMethod s = rs.getS_AttMethod(); ;
-        cout << "INVITE getMethodID [" << s.getMethodID()<<"] getMethodName [" << s.getMethodName() <<"]"<<endl;
-        assert(!(s.getMethodID() - INVITE_REQUEST));
-        assert(!s.getMethodName().compare("INVITE"));
-        C_AttSipUri t = rs.getC_AttSipUri();
+        string r1 = "INVITE";
+        int invite = 2;
+        string r2 = "gi4";
+        string pass = "";
+        string r3 = "lucent.com";
+        string r4 = "SIP";
+        string r5 = "2.0";
+        string up = "";
+        string uh = "";
+        string req = r1+" sip:"+r2+"@"+r3 +" "+r4+"/"+r5;
+        C_HeadSipRequest rs(req, 1);
+        cout << "Request [" << req <<"]" <<endl;
+        cout << "Request [" << rs.getContent() <<"]" <<endl;
+        assert(!(rs.getContent().compare(req)));
 
-    }*/
+        cout << "Method [" << rs.getS_AttMethod().getMethodID() << "]" << endl;
+        assert(!(rs.getS_AttMethod().getMethodID() - invite));
+
+        cout << "MethodName [" << rs.getS_AttMethod().getMethodName() << "]" << endl;
+        assert(!(rs.getS_AttMethod().getMethodName().compare(r1)));
+
+        cout << "SipUri username[" << rs.getC_AttSipUri().getS_AttUserInfo().getUserName() << "]" << endl;
+        assert(!(rs.getC_AttSipUri().getS_AttUserInfo().getUserName().compare(r2)));
+
+        cout << "SipUri password[" << rs.getC_AttSipUri().getS_AttUserInfo().getPassword() << "]" << endl;
+        assert(!(rs.getC_AttSipUri().getS_AttUserInfo().getPassword().compare(pass)));
+
+        cout << "HostPort host[" << rs.getC_AttSipUri().getS_AttHostPort().getHostName() << "]" << endl;
+        assert(!(rs.getC_AttSipUri().getS_AttHostPort().getHostName().compare(r3)));
+
+        cout << "HostPort port[" << rs.getC_AttSipUri().getS_AttHostPort().getPort() << "]" << endl;
+        assert(!(rs.getC_AttSipUri().getS_AttHostPort().getPort()));
+
+        cout << "Sip version [" << rs.getS_AttSipVersion().getProtocol() << "]" << endl;
+        assert(!(rs.getS_AttSipVersion().getProtocol().compare(r4)));
+
+        cout << "Sip version [" << rs.getS_AttSipVersion().getVersion() << "]" << endl;
+        assert(!(rs.getS_AttSipVersion().getVersion().compare(r5)));
+
+        cout << "UriParms[" << rs.getC_AttSipUri().getC_AttUriParms().getContent() << "]" << endl;
+        assert(!(rs.getC_AttSipUri().getC_AttUriParms().getContent().compare(up)));
+        cout << "UriHeads[" << rs.getC_AttSipUri().getC_AttUriHeads().getContent() << "]" << endl;
+        assert(!(rs.getC_AttSipUri().getC_AttUriHeads().getContent().compare(uh)));
+    }
+
+    }
 
     return 0;
 }

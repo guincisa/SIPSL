@@ -158,46 +158,6 @@ string TupleVector::findRvalue(string _Lvalue){
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// HeadSipRequest
-// HeadSipRequest "Method RequestURI SipVersion<CRLF>"
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-void C_HeadSipRequest::doParse(void) {
-
-    if(parsed)
-        return;
-
-    vector<string> elements = brkSpaces(content);
-    
-    //S_AttMethod
-    vector<string>::iterator iter;
-    iter = elements.begin();
-    method.setContent(*iter);
-
-    iter ++;
-    reqUri.setContent(*iter);
-
-    iter++;
-    sipvs.setContent(*iter);
-}
-S_AttMethod C_HeadSipRequest::getS_AttMethod(void){
-    if(!parsed)
-        doParse();
-    return method;
-}
-C_AttSipUri C_HeadSipRequest::getC_AttSipUri(void){
-    if(!parsed)
-        doParse();
-
-    return reqUri;
-}
-S_AttSipVersion C_HeadSipRequest::getS_AttSipVersion(void){
-    if(!parsed)
-        doParse();
-    return sipvs;
-}
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 // S_AttMethod
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -500,6 +460,9 @@ void S_AttHostPort::doParse(void){
     if (s1.Rvalue.compare("")!=0){
         port = atoi(s1.Rvalue.c_str());
     }
+    else {
+        port = 0;
+    }
     
     correct = true;
     parsed = true;
@@ -561,7 +524,12 @@ C_AttSipUri::C_AttSipUri(string _content)
 
     return;
 }
-
+void C_AttSipUri::setContent(string _content) {
+    content = _content;
+    isSet = true;
+    parsed = false;
+    correct = true;
+}
 void C_AttSipUri::doParse(void){
 
     if(parsed) {
@@ -569,13 +537,11 @@ void C_AttSipUri::doParse(void){
     }
     // "sip:alice:secretword@atlanta.com;transport=tcp;ttl=15?to=alice%40atalnta.com&priority=urgent"
     // break ;
-
     Tuple s1 = brkin2(content, ":");
     isSecure = false;
     if (s1.Lvalue.compare("sips") == 0) {
         isSecure= true;
     }
-
     Tuple s2 = brkin2(s1.Rvalue, "@");
     userInfo.setContent(s2.Lvalue);
 
@@ -593,10 +559,10 @@ void C_AttSipUri::doParse(void){
         uriHeads.setContent("");
     }
 
-    
+
     parsed = true;
     correct = true;
-    
+
     return;
 }
 bool C_AttSipUri::getIsSec(void){
@@ -679,4 +645,53 @@ TupleVector C_AttVia::getViaParms(void) {
     if (!parsed)
         doParse();
     return viaParms;
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// HeadSipRequest
+// HeadSipRequest "Method RequestURI SipVersion<CRLF>"
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_HeadSipRequest::C_HeadSipRequest(string _content, int genEntity)
+    : S_HeadGeneric(_content, genEntity),
+        method(""),
+        reqUri(""),
+        sipvs(""){
+}
+void C_HeadSipRequest::doParse(void) {
+
+    if(parsed)
+        return;
+
+    vector<string> elements = brkSpaces(content);
+
+    //S_AttMethod
+    vector<string>::iterator iter;
+    iter = elements.begin();
+    method.setContent(*iter);
+
+    iter ++;
+    reqUri.setContent(*iter);
+
+    iter++;
+    sipvs.setContent(*iter);
+
+    correct = true;
+    parsed = true;
+}
+S_AttMethod C_HeadSipRequest::getS_AttMethod(void){
+    if(!parsed)
+        doParse();
+    return method;
+}
+C_AttSipUri C_HeadSipRequest::getC_AttSipUri(void){
+    if(!parsed)
+        doParse();
+
+    return reqUri;
+}
+S_AttSipVersion C_HeadSipRequest::getS_AttSipVersion(void){
+    if(!parsed)
+        doParse();
+    return sipvs;
 }
