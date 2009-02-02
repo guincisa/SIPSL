@@ -10,6 +10,54 @@
 
 #define NEWT cout << "##############################################\nNEW TEST\n##############################################"<<endl;
 #define NEWS cout << "\n* * * * * * * * * * * * * * * * * * * * * * *\n NEW SUITE\n* * * * * * * * * * * * * * * * * * * * * * *\n" << endl;
+void test_C_AttVia(
+	string protocol,
+	string version,
+	string transport,
+	string host,
+	string port,
+	string pL1,
+        string pR1,
+	string pL2,
+	string pR2) {
+
+	NEWT
+	cout << "Begin C_AttVia" << endl << flush;
+	cout << "Sunny Day" << endl << flush;
+
+	//string via = "SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101";
+	string via = protocol + "/" + version + "/" + transport + " " + host + ":" + port + ";" + pL1 + "=" + pR1 + ";" + pL2 + "=" +pR2;
+	C_AttVia s(via);
+
+	cout << "Att Via [" + via  + "]"  <<endl;
+        cout << "Att Via [" + s.getContent()  + "]"  <<endl;
+        assert(!s.getContent().compare(via));
+
+        cout << "version [" + s.getS_AttSipVersion().getVersion() + "]" <<endl;
+        assert(!s.getS_AttSipVersion().getVersion().compare(version));
+
+        cout << "protocol [" + s.getS_AttSipVersion().getProtocol() + "]" <<endl;
+        assert(!s.getS_AttSipVersion().getProtocol().compare(protocol));
+
+        cout << "transport [" + s.getTransport() + "]" <<endl;
+        assert(!s.getTransport().compare(transport));
+
+        cout << "host [" + s.getS_HostHostPort().getHostName() + "]" <<endl;
+        assert(!s.getS_HostHostPort().getHostName().compare(host));
+
+        cout << "port [" << s.getS_HostHostPort().getPort() << "]" <<endl;
+        assert(!(s.getS_HostHostPort().getPort()-atoi(port.c_str())));
+
+        cout << "parms [" + s.getViaParms().getContent() + "]" <<endl;
+        assert(!s.getViaParms().getContent().compare(pL1 + "=" + pR1 + ";" + pL2 + "=" +pR2));
+
+        cout << pL1 + "[" + s.getViaParms().findRvalue(pL1) + "]" <<endl;
+        assert(!s.getViaParms().findRvalue(pL1).compare(pR1));
+
+        cout << pL2 + "[" + s.getViaParms().findRvalue(pL2) + "]" <<endl;
+        assert(!s.getViaParms().findRvalue(pL2).compare(pR2));
+    }
+
 int main(void) {
 
     cout << "Begin HEADERS test" << endl << flush;
@@ -422,35 +470,41 @@ int main(void) {
     }
     NEWS
     {
-    //C_AttVia
-    cout << "Begin C_AttVia" << endl << flush;
+    	//C_AttVia
+	//string via = "SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101";
+     test_C_AttVia(
+	"SIP",
+	"2.0",
+	"TCP",
+	"client.atlanta.example.com",
+	"5060",
+	"branch",
+        "z9hG4bK74b76",
+	"received",
+	"192.0.2.101");
+    }
+    NEWS
+    {
+    //S_AttReply
+    cout << "Begin S_AttReply" << endl << flush;
     cout << "Sunny Day" << endl << flush;
     NEWT
     {
-        string via = "SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101";
-        string version = "SIP/20";
-        string transport = "TCP";
-        string hostp = "client.atlanta.example.com:5060";
-        string params = "branch=z9hG4bK74b76;received=192.0.2.101";
-        C_AttVia s(version + "/" + transport + " " + hostp+";"+params );
-        cout << "Att Via [" + s.getContent()  + "]"  <<endl;
-        cout << "version [" + s.getS_AttSipVersion().getVersion() + "]" <<endl;
-        assert(!s.getS_AttSipVersion().getVersion().compare("2.0"));
-        cout << "protocol [" + s.getS_AttSipVersion().getProtocol() + "]" <<endl;
-        assert(!s.getS_AttSipVersion().getProtocol().compare("SIP"));
-        cout << "transport [" + s.getTransport() + "]" <<endl;
-        assert(!s.getTransport().compare("TCP"));
-        cout << "host [" + s.getS_HostHostPort().getHostName() + "]" <<endl;
-        assert(!s.getS_HostHostPort().getHostName().compare("client.atlanta.example.com"));
-        cout << "port [" << s.getS_HostHostPort().getPort() << "]" <<endl;
-        assert(!(s.getS_HostHostPort().getPort()-5060));
-        cout << "parms [" + s.getViaParms().getContent() + "]" <<endl;
-        assert(!s.getViaParms().getContent().compare("branch=z9hG4bK74b76;received=192.0.2.101"));
+        string r1 = "200";
+        int val = 200;
+        string r2 = "OK";
+        S_AttReply s(r1+" "+r2);
+        cout << "Att Reply [" + s.getContent()  + "]"  <<endl;
+        assert(!s.getContent().compare(r1+" "+r2));
 
-        cout << "received[" + s.getViaParms().findRvalue("received") + "]" <<endl;
-        assert(!s.getViaParms().findRvalue("received").compare("192.0.2.101"));
-        cout << "branch [" + s.getViaParms().findRvalue("branch") + "]" <<endl;
-        assert(!s.getViaParms().findRvalue("branch").compare("z9hG4bK74b76"));
+        cout << "Code [" << s.getCode() << "]" <<endl;
+        assert(!(s.getCode()-val));
+
+        cout << "reply id [" << s.getReplyID() << "]" <<endl;
+        assert(!s.getReplyID()- 53);
+
+        cout << "reply [" + s.getReply() + "]" <<endl;
+        assert(!s.getReply().compare(r2));
     }
     }
     NEWS
@@ -503,7 +557,44 @@ int main(void) {
     }
 
     }
+    NEWS
+    {
+    {
+        NEWT
+        string r1 = "SIP";
+        string r2 = "2.0";
+        string r3 = "200";
+        int val = 200;
+        string r4 = "OK";
 
+        string req = r1+"/"+r2+" "+r3 +" "+r4;
+        C_HeadSipReply rs(req, 1);
+        cout << "Reply [" << req <<"]" <<endl;
+        cout << "Reply [" << rs.getContent() <<"]" <<endl;
+        assert(!(rs.getContent().compare(req)));
+
+        cout << "Version [" << rs.getSipVersion().getVersion() << "]" << endl;
+        assert(!(rs.getSipVersion().getVersion().compare(r2)));
+
+        cout << "Protocol [" << rs.getSipVersion().getProtocol() << "]" << endl;
+        assert(!(rs.getSipVersion().getProtocol().compare(r1)));
+
+        cout << "Code [" << rs.getReply().getCode() << "]" <<endl;
+        assert(!(rs.getReply().getCode()-val));
+
+        cout << "reply id [" << rs.getReply().getReplyID() << "]" <<endl;
+        assert(!rs.getReply().getReplyID()- 53);
+
+        cout << "reply [" + rs.getReply().getReply() + "]" <<endl;
+        assert(!rs.getReply().getReply().compare(r4));
+    }
+
+    }
+    NEWS
+    {
+    //C_HeadVia
+    
+    }
     return 0;
 }
 

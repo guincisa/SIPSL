@@ -230,17 +230,29 @@ S_AttReply::S_AttReply(string _content)
     replyID = 0;
     reply = "";
 }
-S_AttReply::S_AttReply(string _replyID, string _code) 
-    :S_AttGeneric(_code + " " +_replyID){
+void S_AttReply::setContent(string _code, string _reply) {
 
-    if (!compare_it(_replyID)) {
-DEBOUT("","")
+    if (!compare_it(_reply)) {
         parsed = true;
         correct = false;
         return;
     }
     else {
-DEBOUT("","")
+        code = atoi(_code.c_str());
+    }
+    parsed = true;
+    correct = false;
+    return;
+} 
+S_AttReply::S_AttReply(string _replyID, string _code) 
+    :S_AttGeneric(_code + " " +_replyID){
+
+    if (!compare_it(_replyID)) {
+        parsed = true;
+        correct = false;
+        return;
+    }
+    else {
         code = atoi(_code.c_str());
     }
     parsed = true;
@@ -276,18 +288,21 @@ void S_AttReply::doParse(void) {
 inline bool S_AttReply::compare_it(string _reply) {
 
     if (_reply.compare("OK") == 0){
+        reply = "OK";
         replyID = OK_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
     if (_reply.compare("RINGING") == 0){
+        reply = "RINGING";
         replyID = RINGING_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
     if (_reply.compare("TRY") == 0){
+        reply = "TRY";
         replyID = TRY_RESPONSE;
         parsed = true;
         correct = true;
@@ -363,47 +378,6 @@ string S_AttSipVersion::getProtocol(void) {
 string S_AttSipVersion::getVersion(void){
     //TODO
     return("2.0");
-}
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// C_HeadSipReply
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-void C_HeadSipReply::doParse(void){
-
-    if(parsed){
-        return;
-    }
-
-    vector<string> elements = brkSpaces(content);
-    
-    vector<string>::iterator iter;
-    iter = elements.begin();
-    sipvs.setContent(*iter);
-
-    iter ++;
-    //TODO S_AttReply will re-parse it...
-    reply.setContent(*iter + " " +*(++iter));
-
-    parsed = true;
-    //TODO
-    correct = true;
-
-    return;
-}
-S_AttReply C_HeadSipReply::getReply(void) {
-
-    if(!parsed) {
-        doParse();
-    }
-    return reply;
-}
-S_AttSipVersion C_HeadSipReply::getSipVersion(void) {
-
-    if(!parsed) {
-        doParse();
-    }
-    return sipvs;
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -695,3 +669,62 @@ S_AttSipVersion C_HeadSipRequest::getS_AttSipVersion(void){
         doParse();
     return sipvs;
 }
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// C_HeadSipReply
+// C_HeadSipReply "SIP/2.0 200 OK"
+// C_HeadSipReply "SIP/2.0 xxx reply"
+// Status-Line	= SIP-Version Status-Code Reason-Phrase 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_HeadSipReply::C_HeadSipReply(string _content, int genEntity)
+    : S_HeadGeneric(_content, genEntity),
+        reply(""),
+        sipvs(""){
+}
+void C_HeadSipReply::doParse(void){
+
+    if(parsed){
+        return;
+    }
+
+    vector<string> elements = brkSpaces(content);
+
+    vector<string>::iterator iter;
+    iter = elements.begin();
+    sipvs.setContent(*iter);
+
+    iter++;
+    string s1 = *iter;
+    iter++;
+    string s2 = *iter;
+    //TODO S_AttReply will re-parse it...
+    reply.setContent(s1, s2);
+
+    parsed = true;
+    //TODO
+    correct = true;
+
+    return;
+}
+S_AttReply C_HeadSipReply::getReply(void) {
+
+    if(!parsed) {
+        doParse();
+    }
+    return reply;
+}
+S_AttSipVersion C_HeadSipReply::getSipVersion(void) {
+
+    if(!parsed) {
+        doParse();
+    }
+    return sipvs;
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// HeadVia
+// Via: xxxxx 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+

@@ -205,7 +205,7 @@ class TupleVector : public S_AttGeneric{ //i //t
         TupleVector(string tuples, string separator, string header);
         TupleVector(string tuples, string separator);
         TupleVector();
-        //header can be ? or whaterver the string begins with 
+        //header can be ? or whatever the string begins with 
         string findRvalue(string Lvalue);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -365,7 +365,7 @@ class S_AttSipVersion : public S_AttGeneric{ //i //t
 //   Via: SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_AttVia : public S_AttGeneric { //i //not tested
+class C_AttVia : public S_AttGeneric { //i //t
 //NEW REVISION
 
     private:
@@ -388,7 +388,7 @@ class C_AttVia : public S_AttGeneric { //i //not tested
 //    200 OK
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttReply : public S_AttGeneric{ //i
+class S_AttReply : public S_AttGeneric{ //i //t
 //NEW REVISION 
     private:
         void doParse(void);
@@ -401,6 +401,7 @@ class S_AttReply : public S_AttGeneric{ //i
         int getCode(void);
         int getReplyID(void);
         string getReply(void);
+        void setContent(string _code, string reply);
         S_AttReply(string content);
         S_AttReply(int replyID, int code);
         S_AttReply(string replyID, string code);
@@ -411,7 +412,7 @@ class S_AttReply : public S_AttGeneric{ //i
 // C_HeadSipRequest "Method RequestURI SipVersion<CRLF>"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadSipRequest : public S_HeadGeneric { //i 
+class C_HeadSipRequest : public S_HeadGeneric { //i //t
 //NEW REVISION
 
     private:
@@ -437,7 +438,7 @@ class C_HeadSipRequest : public S_HeadGeneric { //i
 // Status-Line	= SIP-Version Status-Code Reason-Phrase 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadSipReply : public S_HeadGeneric { //i
+class C_HeadSipReply : public S_HeadGeneric { //i //t
 //NEW REVISION
     private:
         void doParse(void);
@@ -449,6 +450,7 @@ class C_HeadSipReply : public S_HeadGeneric { //i
 
         S_AttReply getReply(void);
         S_AttSipVersion getSipVersion(void);
+        C_HeadSipReply(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -463,9 +465,14 @@ class C_HeadVia : public S_HeadGeneric {
         void doParse(void);
 
         C_AttVia via;
+        int position;
 
     public:
         C_AttVia getC_AttVia(void);
+
+        int getPosition(void);
+        void setPosition(void);
+        C_HeadVia(string content, int genEntity, int position);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
