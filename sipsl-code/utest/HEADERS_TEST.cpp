@@ -10,8 +10,8 @@
 
 #define NEWT cout << "##############################################\nNEW TEST\n##############################################"<<endl;
 #define NEWS cout << "\n* * * * * * * * * * * * * * * * * * * * * * *\n NEW SUITE\n* * * * * * * * * * * * * * * * * * * * * * *\n" << endl;
-void test_C_AttVia(
-	string protocol,
+
+void subtest_C_AttVia(C_AttVia s, string protocol,
 	string version,
 	string transport,
 	string host,
@@ -21,13 +21,8 @@ void test_C_AttVia(
 	string pL2,
 	string pR2) {
 
-	NEWT
-	cout << "Begin C_AttVia" << endl << flush;
-	cout << "Sunny Day" << endl << flush;
-
-	//string via = "SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101";
 	string via = protocol + "/" + version + "/" + transport + " " + host + ":" + port + ";" + pL1 + "=" + pR1 + ";" + pL2 + "=" +pR2;
-	C_AttVia s(via);
+
 
 	cout << "Att Via [" + via  + "]"  <<endl;
         cout << "Att Via [" + s.getContent()  + "]"  <<endl;
@@ -56,7 +51,7 @@ void test_C_AttVia(
 
         cout << pL2 + "[" + s.getViaParms().findRvalue(pL2) + "]" <<endl;
         assert(!s.getViaParms().findRvalue(pL2).compare(pR2));
-    }
+}
 
 int main(void) {
 
@@ -472,16 +467,18 @@ int main(void) {
     {
     	//C_AttVia
 	//string via = "SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101";
-     test_C_AttVia(
-	"SIP",
-	"2.0",
-	"TCP",
-	"client.atlanta.example.com",
-	"5060",
-	"branch",
-        "z9hG4bK74b76",
-	"received",
-	"192.0.2.101");
+	string s1="SIP";
+	string s2="2.0";
+	string s3="TCP";
+	string s4="client.atlanta.example.com";
+	string s5="5060";
+	string s6="branch";
+	string s7="z9hG4bK74b76";
+	string s8="received";
+	string s9="192.0.2.101";
+	string tot = s1 + "/" + s2 + "/" + s3 + " " + s4 + ":" + s5 + ";" + s6 + "=" + s7 + ";" + s8 + "=" +s9;
+	C_AttVia s(tot);
+    	subtest_C_AttVia(s,s1,s2,s3,s4,s5,s6,s7,s8,s9);
     }
     NEWS
     {
@@ -592,9 +589,34 @@ int main(void) {
     }
     NEWS
     {
-    //C_HeadVia
-    
+        NEWT
+	//C_HeadVia
+	string s1="SIP";
+	string s2="2.0";
+	string s3="TCP";
+	string s4="client.atlanta.example.com";
+	string s5="5060";
+	string s6="branch";
+	string s7="z9hG4bK74b76";
+	string s8="received";
+	string s9="192.0.2.101";
+	string tot = "Via: " + s1 + "/" + s2 + "/" + s3 + " " + s4 + ":" + s5 + ";" + s6 + "=" + s7 + ";" + s8 + "=" +s9;
+	C_HeadVia s(tot,1,1);
+
+        cout << "Head Via [" + s.getContent() + "]" <<endl;
+        assert(!s.getContent().compare(tot));
+
+    	subtest_C_AttVia(s.getC_AttVia(),s1,s2,s3,s4,s5,s6,s7,s8,s9);
+
+        cout << "Head Via position [" << s.getPosition() << "]" <<endl;
+        assert(!(s.getPosition()-1));
+
+        cout << "Head Via genEntity [" << s.getGenEntity() << "]" <<endl;
+        assert(!(s.getGenEntity()-1));
+
     }
+    
+    
     return 0;
 }
 

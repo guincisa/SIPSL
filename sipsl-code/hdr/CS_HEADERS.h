@@ -140,15 +140,17 @@ class S_HeadGeneric { //i
         bool isParsed(void);
         string getContent(void);
         void setContent(string buff, int genEntity);
-        
+
         // created using buffer and endpoint id which generates header
-	S_HeadGeneric(string buff, int genEntity);
+        S_HeadGeneric(string buff, int genEntity);
+
+        int getGenEntity(void);
 
     protected:
         bool parsed;
         bool correct;
         bool isSet;
-        
+
         // Id of the generating endpoint
         // same as SODE_*
         int genEntity;
@@ -471,7 +473,7 @@ class C_HeadVia : public S_HeadGeneric {
         C_AttVia getC_AttVia(void);
 
         int getPosition(void);
-        void setPosition(void);
+        void setPosition(int position);
         C_HeadVia(string content, int genEntity, int position);
 };
 ///////////////////////////////////////////////////////////////////////////////

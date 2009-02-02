@@ -69,6 +69,9 @@ bool S_HeadGeneric::isParsed(void) {
 bool S_HeadGeneric::isCorrect(void) {
     return correct;
 }
+int S_HeadGeneric::getGenEntity(void) {
+    return genEntity;
+}
 // *********************************************************************************
 // *********************************************************************************
 // S_AttGeneric
@@ -727,4 +730,33 @@ S_AttSipVersion C_HeadSipReply::getSipVersion(void) {
 // Via: xxxxx 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+C_HeadVia::C_HeadVia(string _content, int _genEntity, int _position) :
+    S_HeadGeneric(_content, _genEntity),
+    via("") {
+
+    position = _position;
+}
+void C_HeadVia::doParse(void) {
+
+    if(parsed)
+        return;
+
+    Tuple s1 = brkin2(content, " ");
+    via.setContent(s1.Rvalue);
+
+    parsed = true;
+}
+int C_HeadVia::getPosition(void){
+    return position;
+}
+void C_HeadVia::setPosition(int _position){
+    position = _position;
+}
+C_AttVia C_HeadVia::getC_AttVia(void) {
+
+    if (!parsed)
+        doParse();
+
+    return via;
+}
 
