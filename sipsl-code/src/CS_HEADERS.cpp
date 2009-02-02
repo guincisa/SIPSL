@@ -635,23 +635,23 @@ C_AttVia::C_AttVia(string _content) :
     version(""),
     transport(""),
     hostPort(""),
-    viaParms() {
+    viaParms("",";"){
 
     return;
 }
 void C_AttVia::doParse(void){
-    
+
     if(parsed)
         return;
 
     Tuple s1 = brkin2(content, " ");
-    
+
     Tuple s2 = brkin2(s1.Lvalue, "/");
     Tuple s3 = brkin2(s2.Rvalue, "/");
     transport = s3.Rvalue;
     version.setbContent(s2.Lvalue, s3.Lvalue);
 
-    Tuple s4 = brkin2(s1.Rvalue, ":");
+    Tuple s4 = brkin2(s1.Rvalue, ";");
     hostPort.setContent(s4.Lvalue);
     viaParms.setContent(s4.Rvalue);
 
@@ -680,5 +680,3 @@ TupleVector C_AttVia::getViaParms(void) {
         doParse();
     return viaParms;
 }
-
-     

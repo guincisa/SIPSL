@@ -390,6 +390,17 @@ int main(void) {
         cout << "sex [" + s.getTuples().findRvalue("sex") + "]" <<endl;
         assert(!s.getTuples().findRvalue("sex").compare(""));
     }
+
+    NEWT
+    {
+        string sipuri = "branch=z9hG4bK74b76;received=192.0.2.101";
+        C_AttUriParms s(sipuri );
+        cout << "UriParms [" + sipuri  + "]"  <<endl;
+        cout << "received [" + s.getTuples().findRvalue("received") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("received").compare("192.0.2.101"));
+        cout << "branch [" + s.getTuples().findRvalue("branch") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("branch").compare("z9hG4bK74b76"));
+    }
     }
     NEWS
     {
@@ -409,10 +420,39 @@ int main(void) {
         assert(!s.getTuples().findRvalue("sex").compare(""));
     }
     }
-    
-    C_AttUriHeaders *pippo; 
+    NEWS
+    {
+    //C_AttVia
+    cout << "Begin C_AttVia" << endl << flush;
+    cout << "Sunny Day" << endl << flush;
+    NEWT
+    {
+        string via = "SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101";
+        string version = "SIP/20";
+        string transport = "TCP";
+        string hostp = "client.atlanta.example.com:5060";
+        string params = "branch=z9hG4bK74b76;received=192.0.2.101";
+        C_AttVia s(version + "/" + transport + " " + hostp+";"+params );
+        cout << "Att Via [" + s.getContent()  + "]"  <<endl;
+        cout << "version [" + s.getS_AttSipVersion().getVersion() + "]" <<endl;
+        assert(!s.getS_AttSipVersion().getVersion().compare("2.0"));
+        cout << "protocol [" + s.getS_AttSipVersion().getProtocol() + "]" <<endl;
+        assert(!s.getS_AttSipVersion().getProtocol().compare("SIP"));
+        cout << "transport [" + s.getTransport() + "]" <<endl;
+        assert(!s.getTransport().compare("TCP"));
+        cout << "host [" + s.getS_HostHostPort().getHostName() + "]" <<endl;
+        assert(!s.getS_HostHostPort().getHostName().compare("client.atlanta.example.com"));
+        cout << "port [" << s.getS_HostHostPort().getPort() << "]" <<endl;
+        assert(!(s.getS_HostHostPort().getPort()-5060));
+        cout << "parms [" + s.getViaParms().getContent() + "]" <<endl;
+        assert(!s.getViaParms().getContent().compare("branch=z9hG4bK74b76;received=192.0.2.101"));
 
-    pippo = new C_AttUriHeaders("to=alice%40atalnta.com&priority=urgent");
+        cout << "received[" + s.getViaParms().findRvalue("received") + "]" <<endl;
+        assert(!s.getViaParms().findRvalue("received").compare("192.0.2.101"));
+        cout << "branch [" + s.getViaParms().findRvalue("branch") + "]" <<endl;
+        assert(!s.getViaParms().findRvalue("branch").compare("z9hG4bK74b76"));
+    }
+    }
 
 
 
