@@ -57,9 +57,44 @@ typedef struct {
     string Rvalue;
 } Tuple;
 typedef map<string,string> TupleMap;
-inline vector<string> parse(string par, string head, string sep) {
+inline vector<string> brkSpaces(string s) {
+
+    //separate string into words
+    //TODO TOKENIZER????
+    vector<string> output;
+    int a = 0;
+    a = s.find(" ", 0);
+    while (a > 0) {
+        output.push_back(s.substr(0,a));
+        s = s.substr(a+1,-1);
+        a = s.find(" ", 0);
+    }
+    output.push_back(s);
+    return output;
+} 
+inline string trimSpaces(string s) {
+DEBOUT("trim",s)
+    string output = "";
+    int a = 0;
+    a = s.find(" ", 0);
+    string tmp;
+    while (a > 0) {
+DEBOUT("s",s)
+        tmp = s.substr(0,a);
+DEBOUT("tmp",tmp)
+        output = output + tmp;
+DEBOUT("output",output)
+        s = s.substr(a+1,-1);
+        a = s.find(" ", 0);
+    }
+    output = output+s;
+    return output;
+} 
+inline vector<string> parse(string _par, string head, string sep) {
 
     int h = 0; // if has head then 1
+
+    string par = trimSpaces(_par);
 
     vector<string> output;
 
@@ -87,21 +122,6 @@ inline Tuple getLRvalue(string couple) {
 
     return tt;
 }
-inline vector<string> brkSpaces(string s) {
-
-    //separate string into words
-    //TODO TOKENIZER????
-    vector<string> output;
-    int a = 0;
-    a = s.find(" ", 0);
-    while (a > 0) {
-        output.push_back(s.substr(0,a));
-        s = s.substr(a+1,-1);
-        a = s.find(" ", 0);
-    }
-    output.push_back(s);
-    return output;
-} 
 inline Tuple brkin2(string couple, string separator) {
 
     int a = couple.find(separator, 0);
@@ -180,6 +200,8 @@ class S_AttGeneric { //i
         S_AttGeneric(string content);
         S_AttGeneric(void);
 
+        S_AttGeneric(const S_AttGeneric& x);
+
         string getContent(void);
 
         void setContent(string);
@@ -207,6 +229,7 @@ class TupleVector : public S_AttGeneric{ //i //t
         TupleVector(string tuples, string separator, string header);
         TupleVector(string tuples, string separator);
         TupleVector();
+        TupleVector(const TupleVector& _t);
         //header can be ? or whatever the string begins with 
         string findRvalue(string Lvalue);
 };
@@ -276,12 +299,14 @@ class C_AttUriParms : public S_AttGeneric{ //i //t
 //
     private:
         void doParse(void);
-        
+
         TupleVector tuples;
 
     public:
-        TupleVector getTuples(void);
+        TupleVector &getTuples(void);
+        TupleVector getCopyTuples(void);
         C_AttUriParms(string content);
+        C_AttUriParms(const C_AttUriParms& _p);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -298,7 +323,7 @@ class C_AttUriHeaders : public S_AttGeneric{ //i //t
         TupleVector tuples;
 
     public:
-        TupleVector getTuples(void);
+        TupleVector &getTuples(void);
         C_AttUriHeaders(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -321,10 +346,10 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
 
      public:
         bool getIsSec(void);
-        S_AttUserInfo getS_AttUserInfo(void);
-        S_AttHostPort getS_AttHostPort(void);
-        C_AttUriParms getC_AttUriParms(void);
-        C_AttUriHeaders getC_AttUriHeads(void); 
+        S_AttUserInfo &getS_AttUserInfo(void);
+        S_AttHostPort &getS_AttHostPort(void);
+        C_AttUriParms &getC_AttUriParms(void);
+        C_AttUriHeaders &getC_AttUriHeads(void); 
         C_AttSipUri(string content);
         void setContent(string content);
         
@@ -381,7 +406,7 @@ class C_AttVia : public S_AttGeneric { //i //t
         S_AttSipVersion getS_AttSipVersion(void);
         string getTransport(void);
         S_AttHostPort getS_HostHostPort(void);
-        TupleVector getViaParms(void);
+        TupleVector &getViaParms(void);
         C_AttVia(string content);
 } ;
 ///////////////////////////////////////////////////////////////////////////////
@@ -407,6 +432,47 @@ class S_AttReply : public S_AttGeneric{ //i //t
         S_AttReply(string content);
         S_AttReply(int replyID, int code);
         S_AttReply(string replyID, string code);
+};
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// C_AttContactElem
+//    Contact: "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
+//       ;q=0.7; expires=3600,
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+class C_AttContactElem : public S_AttGeneric {
+
+    private:
+        void doParse(void);
+
+        string nameUri;
+        C_AttSipUri sipUri;
+        C_AttUriParms uriParms;
+
+    public:
+        string getNameUri(void);
+        C_AttSipUri getC_AttSipUri(void);
+        C_AttUriParms getC_AttUriParms(void);
+        C_AttContactElem(string content);
+};
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//      "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
+//       ;q=0.7; expires=3600,
+//      "Mr. Watson" <mailto:watson@bell-telephone.com>
+//        ;q=0.1 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+class C_AttContactList : public S_AttGeneric {
+
+    private:
+        void doParse(void);
+
+        vector<C_AttContactElem> contactList;
+
+    public:
+        vector<C_AttContactElem> getContactList(void);
+        C_AttContactList(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -460,7 +526,7 @@ class C_HeadSipReply : public S_HeadGeneric { //i //t
 // Via: xxxxx 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadVia : public S_HeadGeneric {
+class C_HeadVia : public S_HeadGeneric { //i //t
 //NEW CODE
 
     private:
@@ -478,10 +544,10 @@ class C_HeadVia : public S_HeadGeneric {
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// S_HeadMaxFwd
+// SHeadMaxFwd
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadMaxFwd : public S_HeadGeneric {
+class S_HeadMaxFwd : public S_HeadGeneric {
 //NEW REVISION
 
     private:
@@ -490,11 +556,17 @@ class C_HeadMaxFwd : public S_HeadGeneric {
 
      public:
         int getMaxFwd(void);
+        void setMaxFwd(int mxfwd);
+        S_HeadMaxFwd(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // C_HeadContact
 // TODO set as C_AttSipUri
+//    Contact: "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
+//       ;q=0.7; expires=3600,
+//      "Mr. Watson" <mailto:watson@bell-telephone.com>
+//        ;q=0.1 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_HeadContact : public S_HeadGeneric {
@@ -502,12 +574,13 @@ class C_HeadContact : public S_HeadGeneric {
 
     private:
         void doParse(void);
-        C_AttSipUri contactUri;
+        C_AttContactList contactList;
         bool star; // "Contact: *" in register
 
     public:
-        C_AttSipUri getContact(void);
+        C_AttContactList getContactList(void);
         bool isStar(void);
+        C_HeadContact(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

@@ -8,10 +8,10 @@
 #include "P_HEADERS.h"
 #include <assert.h>
 
-#define NEWT cout << "##############################################\nNEW TEST\n##############################################"<<endl;
+#define NEWT cout << "##############################################\nNEW TEST " << __LINE__ << "\n##############################################"<<endl;
 #define NEWS cout << "\n* * * * * * * * * * * * * * * * * * * * * * *\n NEW SUITE\n* * * * * * * * * * * * * * * * * * * * * * *\n" << endl;
 
-void subtest_C_AttVia(C_AttVia s, string protocol,
+void subtest_C_AttVia(C_AttVia &s, string protocol,
 	string version,
 	string transport,
 	string host,
@@ -279,10 +279,13 @@ int main(void) {
         assert(!s.getIsSec());
         cout << "UserInfo [" + s.getS_AttUserInfo().getContent() + "]" <<endl;
         assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
+
         cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
         assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
+
         cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
         assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
+
         cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
         assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
     }
@@ -424,8 +427,10 @@ int main(void) {
         cout << "UriParms [" + sipuri  + "]"  <<endl;
         cout << "transport [" + s.getTuples().findRvalue("transport") + "]" <<endl;
         assert(!s.getTuples().findRvalue("transport").compare("tcp"));
+
         cout << "ttl [" + s.getTuples().findRvalue("ttl") + "]" <<endl;
         assert(!s.getTuples().findRvalue("ttl").compare("15"));
+
         cout << "name [" + s.getTuples().findRvalue("name") + "]" <<endl;
         assert(!s.getTuples().findRvalue("name").compare("ciccio"));
         cout << "age [" + s.getTuples().findRvalue("age") + "]" <<endl;
@@ -437,6 +442,16 @@ int main(void) {
     NEWT
     {
         string sipuri = "branch=z9hG4bK74b76;received=192.0.2.101";
+        C_AttUriParms s(sipuri );
+        cout << "UriParms [" + sipuri  + "]"  <<endl;
+        cout << "received [" + s.getTuples().findRvalue("received") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("received").compare("192.0.2.101"));
+        cout << "branch [" + s.getTuples().findRvalue("branch") + "]" <<endl;
+        assert(!s.getTuples().findRvalue("branch").compare("z9hG4bK74b76"));
+    }
+    NEWT
+    {
+        string sipuri = "branch=z9hG4bK74b76; received=192.0.2.101";
         C_AttUriParms s(sipuri );
         cout << "UriParms [" + sipuri  + "]"  <<endl;
         cout << "received [" + s.getTuples().findRvalue("received") + "]" <<endl;
@@ -478,6 +493,8 @@ int main(void) {
 	string s9="192.0.2.101";
 	string tot = s1 + "/" + s2 + "/" + s3 + " " + s4 + ":" + s5 + ";" + s6 + "=" + s7 + ";" + s8 + "=" +s9;
 	C_AttVia s(tot);
+        cout <<"passed " << __LINE__ << endl;
+
     	subtest_C_AttVia(s,s1,s2,s3,s4,s5,s6,s7,s8,s9);
     }
     NEWS
@@ -615,7 +632,23 @@ int main(void) {
         assert(!(s.getGenEntity()-1));
 
     }
-    
+    NEWS
+    {
+        NEWT
+	//S_HeadMaxFwd
+	string s1="Max-Forwards: 44";
+        int mxfwd = 44;
+	S_HeadMaxFwd s(s1, 1);
+
+        cout << "Head Max-Forwards [" + s.getContent() + "]" <<endl;
+        assert(!s.getContent().compare(s1));
+
+        cout << "Head Max-Forwards [" << s.getMaxFwd() << "]" <<endl;
+        assert(!(s.getMaxFwd() - mxfwd));
+
+    }
+
+ 
     
     return 0;
 }

@@ -32,6 +32,8 @@
 #include "UTIL.h"
 #endif
 
+int *reparsing=NULL;
+
 // *********************************************************************************
 // *********************************************************************************
 // S_HeadGeneric
@@ -77,6 +79,10 @@ int S_HeadGeneric::getGenEntity(void) {
 // S_AttGeneric
 // *********************************************************************************
 // *********************************************************************************
+S_AttGeneric::S_AttGeneric(const S_AttGeneric& x){
+    DEBOUT("S_AttGeneric copy constructor", "")
+    assert(0);
+}
 S_AttGeneric::S_AttGeneric(string _content) {
    content = _content;
    parsed = false;
@@ -87,6 +93,7 @@ S_AttGeneric::S_AttGeneric(void) {
    parsed = false;
    correct = true;
    isSet = false;
+  DEBOUT("S_AttGeneric empty constructor", "")
    assert(0);
 }
 string S_AttGeneric::getContent(void) {
@@ -111,25 +118,30 @@ void S_AttGeneric::setContent(string _content){
 // TupleVector
 // *********************************************************************************
 // *********************************************************************************
+TupleVector::TupleVector(void) {
+DEBOUT("TupleVector::TupleVector(void)","")
+    assert(0);
+}
+TupleVector::TupleVector(const TupleVector& _t) {
+DEBOUT("COPY of TupleVector","")
+    assert(0);
+}
 TupleVector::TupleVector(string tuples, string _separator) : S_AttGeneric(tuples) {
 
    separator = _separator;
    hasheader = false;
    header = "";
-   
 }
 TupleVector::TupleVector(string tuples, string _separator, string _header) : S_AttGeneric(tuples) {
 
    separator = _separator;
    header = _header;
    hasheader = true;
-   
 }
 void TupleVector::doParse(void) {
 
     if (parsed)
         return;
-
     vector<string> lval_rval;
     if (hasheader) {
         lval_rval = parse(content, header, separator);
@@ -146,10 +158,11 @@ void TupleVector::doParse(void) {
         tt = getLRvalue(ss);
         tuples.insert(make_pair(tt.Lvalue, tt.Rvalue));
     }
+    parsed = true;
 }
 string TupleVector::findRvalue(string _Lvalue){
 
-    if (parsed != true) {
+    if (!parsed) {
         doParse();
     }
     map<string,string>::iterator ii = tuples.find(_Lvalue);
@@ -463,13 +476,19 @@ int S_AttHostPort::getPort(void){
 C_AttUriParms::C_AttUriParms(string _content)
     : S_AttGeneric(_content),
       tuples(_content, ";") {
+DEBOUT("C_AttUriHeaders::C_AttUriHeaders", "")
     return;
 }
 void C_AttUriParms::doParse(void){
+    parsed = true;
     return;
 }
-TupleVector C_AttUriParms::getTuples(void){
+TupleVector &C_AttUriParms::getTuples(void){
     return tuples;
+}
+C_AttUriParms::C_AttUriParms(const C_AttUriParms& _p) {
+DEBOUT("COPY of C_AttUriParms","")
+    assert(0);
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -484,7 +503,7 @@ C_AttUriHeaders::C_AttUriHeaders(string _content)
 void C_AttUriHeaders::doParse(void){
     return;
 }
-TupleVector C_AttUriHeaders::getTuples(void){
+TupleVector &C_AttUriHeaders::getTuples(void){
     return tuples;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -548,22 +567,22 @@ bool C_AttSipUri::getIsSec(void){
     return isSecure;
     
 }
-S_AttUserInfo C_AttSipUri::getS_AttUserInfo(void){
+S_AttUserInfo &C_AttSipUri::getS_AttUserInfo(void){
     if (!parsed)
         doParse();
     return userInfo;
 }
-S_AttHostPort C_AttSipUri::getS_AttHostPort(void){
+S_AttHostPort &C_AttSipUri::getS_AttHostPort(void){
     if (!parsed)
         doParse();
     return hostPort;
 }
-C_AttUriParms C_AttSipUri::getC_AttUriParms(void){
+C_AttUriParms &C_AttSipUri::getC_AttUriParms(void){
     if (!parsed)
         doParse();
     return uriParms;
 }
-C_AttUriHeaders C_AttSipUri::getC_AttUriHeads(void){
+C_AttUriHeaders &C_AttSipUri::getC_AttUriHeads(void){
     if (!parsed)
         doParse();
     return uriHeads;
@@ -579,7 +598,6 @@ C_AttVia::C_AttVia(string _content) :
     transport(""),
     hostPort(""),
     viaParms("",";"){
-
     return;
 }
 void C_AttVia::doParse(void){
@@ -618,7 +636,7 @@ S_AttHostPort C_AttVia::getS_HostHostPort(void) {
         doParse();
     return hostPort;
 }
-TupleVector C_AttVia::getViaParms(void) {
+TupleVector &C_AttVia::getViaParms(void) {
     if (!parsed)
         doParse();
     return viaParms;
@@ -759,4 +777,33 @@ C_AttVia C_HeadVia::getC_AttVia(void) {
 
     return via;
 }
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// S_HeadMaxFwd
+// Max-Forwards: 70
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+S_HeadMaxFwd::S_HeadMaxFwd(string _content, int _genEntity) :
+    S_HeadGeneric(_content, _genEntity){
 
+    mxfwd = 0;
+}
+void S_HeadMaxFwd::doParse(void) {
+
+    if(parsed)
+        return;
+
+    Tuple s1 = brkin2(content, " ");
+    mxfwd = atoi(s1.Rvalue.c_str());
+
+    parsed = true;
+}
+int S_HeadMaxFwd::getMaxFwd(void){
+    if (!parsed)
+        doParse();
+    return mxfwd;
+}
+void S_HeadMaxFwd::setMaxFwd(int _mxfwd){
+    mxfwd = _mxfwd;
+    return;
+}
