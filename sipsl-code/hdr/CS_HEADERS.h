@@ -73,17 +73,15 @@ inline vector<string> brkSpaces(string s) {
     return output;
 } 
 inline string trimSpaces(string s) {
-DEBOUT("trim",s)
+
     string output = "";
     int a = 0;
     a = s.find(" ", 0);
     string tmp;
     while (a > 0) {
-DEBOUT("s",s)
+
         tmp = s.substr(0,a);
-DEBOUT("tmp",tmp)
         output = output + tmp;
-DEBOUT("output",output)
         s = s.substr(a+1,-1);
         a = s.find(" ", 0);
     }
@@ -155,17 +153,6 @@ inline Tuple brkin2(string couple, string separator) {
 class S_HeadGeneric { //i
 //NEW REVISION
 
-    public: 
-        bool isCorrect(void);
-        bool isParsed(void);
-        string getContent(void);
-        void setContent(string buff, int genEntity);
-
-        // created using buffer and endpoint id which generates header
-        S_HeadGeneric(string buff, int genEntity);
-
-        int getGenEntity(void);
-
     protected:
         bool parsed;
         bool correct;
@@ -177,6 +164,20 @@ class S_HeadGeneric { //i
 
         string content;
         virtual void doParse(void) = 0;
+
+    public: 
+        bool isCorrect(void);
+        bool isParsed(void);
+
+        string &getContent(void);
+        string copyContent(void);
+
+        void setContent(string buff, int genEntity);
+
+        // created using buffer and endpoint id which generates header
+        S_HeadGeneric(string buff, int genEntity);
+
+        int getGenEntity(void);
 
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -202,7 +203,8 @@ class S_AttGeneric { //i
 
         S_AttGeneric(const S_AttGeneric& x);
 
-        string getContent(void);
+        string &getContent(void);
+        string copyContent(void);
 
         void setContent(string);
 
@@ -221,7 +223,7 @@ class TupleVector : public S_AttGeneric{ //i //t
         vector<string> lval_rval;
         TupleMap tuples;
         void doParse(void);
-        string separator; 
+        string separator;
         string header;
         bool hasheader;
 
@@ -238,7 +240,7 @@ class TupleVector : public S_AttGeneric{ //i //t
 // S_AttMethod
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttMethod : public S_AttGeneric{ //i //t
+class S_AttMethod : public S_AttGeneric{
 //NEW REVISION
 
     private:
@@ -248,7 +250,8 @@ class S_AttMethod : public S_AttGeneric{ //i //t
 
     public:
         int getMethodID(void);
-        string getMethodName(void);
+        string &getMethodName(void); //i t
+        string copyMethodName(void); //i t
         S_AttMethod(string);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -257,7 +260,7 @@ class S_AttMethod : public S_AttGeneric{ //i //t
 //    alice:secretword@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttUserInfo : public S_AttGeneric{ //i //t
+class S_AttUserInfo : public S_AttGeneric{
 //NEW REVISION
     private:
         void doParse(void);
@@ -265,9 +268,12 @@ class S_AttUserInfo : public S_AttGeneric{ //i //t
         string password;
 
     public:
-        string getUserName(void);
-        string getPassword(void);
+        string &getUserName(void);//i t
+        string copyUserName(void);//i t
+        string &getPassword(void);//i t
+        string copyPassword(void);//i t
         S_AttUserInfo(string content);
+        S_AttUserInfo(const S_AttUserInfo& x);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -275,7 +281,7 @@ class S_AttUserInfo : public S_AttGeneric{ //i //t
 //    gateway.conm:123
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttHostPort : public S_AttGeneric{ //i //t
+class S_AttHostPort : public S_AttGeneric{
 //NEW REVISION
 
     private:
@@ -284,7 +290,8 @@ class S_AttHostPort : public S_AttGeneric{ //i //t
         int port;
 
     public:
-        string getHostName(void);
+        string &getHostName(void);//i t 
+        string copyHostName(void);//i t
         int getPort(void);
         S_AttHostPort(string content);
 };
@@ -303,8 +310,8 @@ class C_AttUriParms : public S_AttGeneric{ //i //t
         TupleVector tuples;
 
     public:
-        TupleVector &getTuples(void);
-        TupleVector getCopyTuples(void);
+        TupleVector &getTuples(void); // i t 
+        TupleVector copyTuples(void); // i t
         C_AttUriParms(string content);
         C_AttUriParms(const C_AttUriParms& _p);
 };
@@ -323,7 +330,8 @@ class C_AttUriHeaders : public S_AttGeneric{ //i //t
         TupleVector tuples;
 
     public:
-        TupleVector &getTuples(void);
+        TupleVector &getTuples(void); // i t
+        TupleVector copyTuples(void); // i t
         C_AttUriHeaders(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -347,10 +355,19 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
      public:
         bool getIsSec(void);
         S_AttUserInfo &getS_AttUserInfo(void);
+        S_AttUserInfo copyS_AttUserInfo(void); //i t
+
         S_AttHostPort &getS_AttHostPort(void);
+        S_AttHostPort copyS_AttHostPort(void); //i t
+
         C_AttUriParms &getC_AttUriParms(void);
-        C_AttUriHeaders &getC_AttUriHeads(void); 
+        C_AttUriParms copyC_AttUriParms(void); //i t
+
+        C_AttUriHeaders &getC_AttUriHeads(void);
+        C_AttUriHeaders copyC_AttUriHeads(void); //i t
+
         C_AttSipUri(string content);
+        C_AttSipUri(const C_AttSipUri &x);
         void setContent(string content);
         
 };
@@ -380,10 +397,16 @@ class S_AttSipVersion : public S_AttGeneric{ //i //t
         string version;
         string protocol;
     public:
-        string getProtocol(void);
-        string getVersion();
+        string &getProtocol(void);
+        string copyProtocol(void);
+
+        string &getVersion();
+        string copyVersion();
+
         S_AttSipVersion(string content);
         S_AttSipVersion(string protocol, string version);
+
+        //to set it already parsed
         void setbContent(string protocol, string version);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -403,10 +426,18 @@ class C_AttVia : public S_AttGeneric { //i //t
         TupleVector viaParms;
 
     public:
-        S_AttSipVersion getS_AttSipVersion(void);
-        string getTransport(void);
-        S_AttHostPort getS_HostHostPort(void);
+        S_AttSipVersion &getS_AttSipVersion(void);
+        S_AttSipVersion copyS_AttSipVersion(void);
+
+        string &getTransport(void);
+        string copyTransport(void);
+
+        S_AttHostPort &getS_HostHostPort(void);
+        S_AttHostPort copyS_HostHostPort(void);
+
         TupleVector &getViaParms(void);
+        TupleVector copyViaParms(void);
+
         C_AttVia(string content);
 } ;
 ///////////////////////////////////////////////////////////////////////////////
@@ -427,8 +458,12 @@ class S_AttReply : public S_AttGeneric{ //i //t
     public:
         int getCode(void);
         int getReplyID(void);
-        string getReply(void);
+
+        string &getReply(void);
+        string copyReply(void);
+
         void setContent(string _code, string reply);
+
         S_AttReply(string content);
         S_AttReply(int replyID, int code);
         S_AttReply(string replyID, string code);
@@ -436,8 +471,8 @@ class S_AttReply : public S_AttGeneric{ //i //t
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // C_AttContactElem
-//    Contact: "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
-//       ;q=0.7; expires=3600,
+//    "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
+//       ;q=0.7; expires=3600
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_AttContactElem : public S_AttGeneric {
@@ -450,10 +485,17 @@ class C_AttContactElem : public S_AttGeneric {
         C_AttUriParms uriParms;
 
     public:
-        string getNameUri(void);
-        C_AttSipUri getC_AttSipUri(void);
-        C_AttUriParms getC_AttUriParms(void);
+        string &getNameUri(void);
+        string copyNameUri(void);
+
+        C_AttSipUri &getC_AttSipUri(void);
+        C_AttSipUri copyC_AttSipUri(void);
+
+        C_AttUriParms &getC_AttUriParms(void);
+        C_AttUriParms copyC_AttUriParms(void);
+
         C_AttContactElem(string content);
+        C_AttContactElem(const C_AttContactElem& x);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -471,7 +513,8 @@ class C_AttContactList : public S_AttGeneric {
         vector<C_AttContactElem> contactList;
 
     public:
-        vector<C_AttContactElem> getContactList(void);
+        vector<C_AttContactElem> &getContactList(void);
+        vector<C_AttContactElem> copyContactList(void);
         C_AttContactList(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -493,9 +536,15 @@ class C_HeadSipRequest : public S_HeadGeneric { //i //t
 
     public:
 
-        S_AttMethod getS_AttMethod(void);
-        C_AttSipUri getC_AttSipUri(void);
-        S_AttSipVersion getS_AttSipVersion(void);
+        S_AttMethod &getS_AttMethod(void);
+        S_AttMethod copyS_AttMethod(void);
+
+        C_AttSipUri &getC_AttSipUri(void);
+        C_AttSipUri copyC_AttSipUri(void);
+
+        S_AttSipVersion &getS_AttSipVersion(void);
+        S_AttSipVersion copyS_AttSipVersion(void);
+
         C_HeadSipRequest(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -516,8 +565,12 @@ class C_HeadSipReply : public S_HeadGeneric { //i //t
 
     public:
 
-        S_AttReply getReply(void);
-        S_AttSipVersion getSipVersion(void);
+        S_AttReply &getReply(void);
+        S_AttReply copyReply(void);
+
+        S_AttSipVersion &getSipVersion(void);
+        S_AttSipVersion copySipVersion(void);
+
         C_HeadSipReply(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -536,7 +589,8 @@ class C_HeadVia : public S_HeadGeneric { //i //t
         int position;
 
     public:
-        C_AttVia getC_AttVia(void);
+        C_AttVia &getC_AttVia(void);
+        C_AttVia copyC_AttVia(void);
 
         int getPosition(void);
         void setPosition(int position);
@@ -578,7 +632,8 @@ class C_HeadContact : public S_HeadGeneric {
         bool star; // "Contact: *" in register
 
     public:
-        C_AttContactList getContactList(void);
+        C_AttContactList &getContactList(void);
+        C_AttContactList copyContactList(void);
         bool isStar(void);
         C_HeadContact(string content, int genEntity);
 };
@@ -596,7 +651,8 @@ class C_HeadTo : public S_HeadGeneric {
         C_AttSipUri toUri;
 
     public:
-        C_AttSipUri getTo(void);
+        C_AttSipUri &getTo(void);
+        C_AttSipUri copyTo(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -612,7 +668,8 @@ class C_HeadFrom : public S_HeadGeneric {
         C_AttSipUri fromUri;
 
     public:
-        C_AttSipUri getFrom(void);
+        C_AttSipUri &getFrom(void);
+        C_AttSipUri copyFrom(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -627,7 +684,8 @@ class S_HeadCallID : public S_HeadGeneric {
         string callId;
 
     public:
-        string getCallID(void);
+        string &getCallID(void);
+        string copyCallID(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -643,8 +701,11 @@ class C_HeadCSeq : public S_HeadGeneric {
         S_AttMethod method;
 
     public:
-        string getCallID(void);
-        S_AttMethod getMethod(void);
+        string &getCallID(void);
+        string copyCallID(void);
+
+        S_AttMethod &getMethod(void);
+        S_AttMethod copyMethod(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -659,7 +720,8 @@ class C_HeadContentType : public S_HeadGeneric {
         Tuple contType;
 
     public:
-        Tuple getContentType(void);
+        Tuple &getContentType(void);
+        Tuple copyContentType(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -689,5 +751,6 @@ class C_SDPInfo : public S_HeadGeneric {
         TupleVector sdp;
 
     public:
-        TupleVector getSDP(void);
+        TupleVector &getSDP(void);
+        TupleVector copySDP(void);
 };

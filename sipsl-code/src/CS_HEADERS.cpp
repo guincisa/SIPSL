@@ -32,8 +32,6 @@
 #include "UTIL.h"
 #endif
 
-int *reparsing=NULL;
-
 // *********************************************************************************
 // *********************************************************************************
 // S_HeadGeneric
@@ -62,7 +60,10 @@ void S_HeadGeneric::setContent(string _content, int _genEntity) {
     return;
 
 }
-string S_HeadGeneric::getContent(void) {
+string &S_HeadGeneric::getContent(void) {
+    return content;
+}
+string S_HeadGeneric::copyContent(void) {
     return content;
 }
 bool S_HeadGeneric::isParsed(void) {
@@ -93,10 +94,13 @@ S_AttGeneric::S_AttGeneric(void) {
    parsed = false;
    correct = true;
    isSet = false;
-  DEBOUT("S_AttGeneric empty constructor", "")
+   DEBOUT("S_AttGeneric empty constructor", "")
    assert(0);
 }
-string S_AttGeneric::getContent(void) {
+string &S_AttGeneric::getContent(void) {
+   return content;
+}
+string S_AttGeneric::copyContent(void) {
    return content;
 }
 bool S_AttGeneric::isParsed(void) {
@@ -227,8 +231,15 @@ int S_AttMethod::getMethodID(void) {
     }
     return methodID;
 }
-string S_AttMethod::getMethodName(void) {
-    
+string &S_AttMethod::getMethodName(void) {
+
+    if (!parsed){
+        doParse();
+    }
+    return methodName;
+}
+string S_AttMethod::copyMethodName(void) {
+
     if (!parsed){
         doParse();
     }
@@ -339,7 +350,14 @@ int S_AttReply::getReplyID(void){
    }
    return replyID;
 }
-string S_AttReply::getReply(void){
+string &S_AttReply::getReply(void){
+
+   if(!parsed) {
+        doParse();
+   }
+   return reply;
+}
+string S_AttReply::copyReply(void){
 
    if(!parsed) {
         doParse();
@@ -366,7 +384,6 @@ S_AttSipVersion::S_AttSipVersion(string _protocol, string _version)
 
     content = protocol + "/" + version;
 }
-
 void S_AttSipVersion::setbContent(string _protocol, string _version) {
 
     parsed = true;
@@ -381,19 +398,41 @@ void S_AttSipVersion::setbContent(string _protocol, string _version) {
 
 void S_AttSipVersion::doParse(void){
 
-    if(parsed){
+    if(parsed)
         return;
-    }
-    //TODO
+
+    Tuple s1 = brkin2(content, "/");
+    protocol = s1.Lvalue;
+    version = s1.Rvalue;
+
+    correct = true;
     parsed = true;
+
+    return;
 }
-string S_AttSipVersion::getProtocol(void) {
-    //TODO
-    return("SIP");
+string &S_AttSipVersion::getProtocol(void) {
+    if(!parsed){
+        doParse();
+    }
+    return protocol;
 }
-string S_AttSipVersion::getVersion(void){
-    //TODO
-    return("2.0");
+string &S_AttSipVersion::getVersion(void){
+    if(!parsed){
+        doParse();
+    }
+    return version;
+}
+string S_AttSipVersion::copyProtocol(void) {
+    if(!parsed){
+        doParse();
+    }
+    return protocol;
+}
+string S_AttSipVersion::copyVersion(void){
+    if(!parsed){
+        doParse();
+    }
+    return version;
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -403,6 +442,9 @@ string S_AttSipVersion::getVersion(void){
 S_AttUserInfo::S_AttUserInfo(string _content)
     :S_AttGeneric(_content){
     return;
+}
+S_AttUserInfo::S_AttUserInfo(const S_AttUserInfo& x){
+assert(0);
 }
 void S_AttUserInfo::doParse(void){
 
@@ -419,12 +461,22 @@ void S_AttUserInfo::doParse(void){
     parsed = true;
     return;
 }
-string S_AttUserInfo::getUserName(void){
+string &S_AttUserInfo::getUserName(void){
     if (!parsed)
         doParse();
     return userName;
 }
-string S_AttUserInfo::getPassword(void){
+string &S_AttUserInfo::getPassword(void){
+    if (!parsed)
+        doParse();
+    return password;
+}
+string S_AttUserInfo::copyUserName(void){
+    if (!parsed)
+        doParse();
+    return userName;
+}
+string S_AttUserInfo::copyPassword(void){
     if (!parsed)
         doParse();
     return password;
@@ -453,12 +505,17 @@ void S_AttHostPort::doParse(void){
     else {
         port = 0;
     }
-    
+
     correct = true;
     parsed = true;
     return;
 }
-string S_AttHostPort::getHostName(void){
+string &S_AttHostPort::getHostName(void){
+    if (!parsed)
+        doParse();
+    return hostName;
+}
+string S_AttHostPort::copyHostName(void){
     if (!parsed)
         doParse();
     return hostName;
@@ -476,7 +533,6 @@ int S_AttHostPort::getPort(void){
 C_AttUriParms::C_AttUriParms(string _content)
     : S_AttGeneric(_content),
       tuples(_content, ";") {
-DEBOUT("C_AttUriHeaders::C_AttUriHeaders", "")
     return;
 }
 void C_AttUriParms::doParse(void){
@@ -484,6 +540,9 @@ void C_AttUriParms::doParse(void){
     return;
 }
 TupleVector &C_AttUriParms::getTuples(void){
+    return tuples;
+}
+TupleVector C_AttUriParms::copyTuples(void){
     return tuples;
 }
 C_AttUriParms::C_AttUriParms(const C_AttUriParms& _p) {
@@ -506,6 +565,9 @@ void C_AttUriHeaders::doParse(void){
 TupleVector &C_AttUriHeaders::getTuples(void){
     return tuples;
 }
+TupleVector C_AttUriHeaders::copyTuples(void){
+    return tuples;
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // C_AttSipUri 
@@ -519,6 +581,14 @@ C_AttSipUri::C_AttSipUri(string _content)
     uriHeads(""){
 
     return;
+}
+C_AttSipUri::C_AttSipUri(const C_AttSipUri& x):
+    userInfo(""),
+    hostPort(""),
+    uriParms(""),
+    uriHeads(""){
+    DEBOUT("C_AttSipUri copy constructor", "")
+assert(0);
 }
 void C_AttSipUri::setContent(string _content) {
     content = _content;
@@ -587,6 +657,26 @@ C_AttUriHeaders &C_AttSipUri::getC_AttUriHeads(void){
         doParse();
     return uriHeads;
 }
+S_AttUserInfo C_AttSipUri::copyS_AttUserInfo(void){
+    if (!parsed)
+        doParse();
+    return userInfo;
+}
+S_AttHostPort C_AttSipUri::copyS_AttHostPort(void){
+    if (!parsed)
+        doParse();
+    return hostPort;
+}
+C_AttUriParms C_AttSipUri::copyC_AttUriParms(void){
+    if (!parsed)
+        doParse();
+    return uriParms;
+}
+C_AttUriHeaders C_AttSipUri::copyC_AttUriHeads(void){
+    if (!parsed)
+        doParse();
+    return uriHeads;
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // C_AttVia
@@ -621,17 +711,17 @@ void C_AttVia::doParse(void){
 
     return;
 }
-S_AttSipVersion C_AttVia::getS_AttSipVersion(void) {
+S_AttSipVersion &C_AttVia::getS_AttSipVersion(void) {
     if (!parsed)
         doParse();
     return version;
 }
-string C_AttVia::getTransport(void) {
+string &C_AttVia::getTransport(void) {
     if (!parsed)
         doParse();
     return transport;
 }
-S_AttHostPort C_AttVia::getS_HostHostPort(void) {
+S_AttHostPort &C_AttVia::getS_HostHostPort(void) {
     if (!parsed)
         doParse();
     return hostPort;
@@ -640,6 +730,148 @@ TupleVector &C_AttVia::getViaParms(void) {
     if (!parsed)
         doParse();
     return viaParms;
+}
+S_AttSipVersion C_AttVia::copyS_AttSipVersion(void) {
+    if (!parsed)
+        doParse();
+    return version;
+}
+string C_AttVia::copyTransport(void) {
+    if (!parsed)
+        doParse();
+    return transport;
+}
+S_AttHostPort C_AttVia::copyS_HostHostPort(void) {
+    if (!parsed)
+        doParse();
+    return hostPort;
+}
+TupleVector C_AttVia::copyViaParms(void) {
+    if (!parsed)
+        doParse();
+    return viaParms;
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// C_AttContactElem
+//    "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
+//       ;q=0.7; expires=3600
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_AttContactElem::C_AttContactElem(string _content) :
+    S_AttGeneric(_content),
+    sipUri(""),
+    uriParms(""){
+}
+C_AttContactElem::C_AttContactElem(const C_AttContactElem& x):
+    S_AttGeneric(x.content),
+    sipUri(""),
+    uriParms(""){
+    DEBOUT("C_AttContactElem copy constructor", x.content)
+
+    //content = x.copyContent();
+    parsed = false;
+}
+void C_AttContactElem::doParse(void){
+
+    if(parsed)
+        return;
+
+    Tuple s1 = brkin2(content, "<");
+    nameUri = s1.Lvalue; // "Mr. Watson"
+    string tmp = "<" + s1.Rvalue;
+
+    Tuple s2 = brkin2(tmp, ";");
+    sipUri.setContent(s2.Lvalue);
+    uriParms.setContent(s2.Rvalue);
+
+    parsed = true;
+    return;
+}
+string &C_AttContactElem::getNameUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return nameUri;
+}
+string C_AttContactElem::copyNameUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return nameUri;
+}
+
+C_AttSipUri &C_AttContactElem::getC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return sipUri;
+}
+C_AttSipUri C_AttContactElem::copyC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return sipUri;
+}
+C_AttUriParms &C_AttContactElem::getC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+
+    return uriParms;
+}
+C_AttUriParms C_AttContactElem::copyC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+
+    return uriParms;
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//      "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
+//       ;q=0.7; expires=3600,
+//      "Mr. Watson" <mailto:watson@bell-telephone.com>
+//        ;q=0.1 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_AttContactList::C_AttContactList(string _content):
+    S_AttGeneric(_content) {
+}
+void C_AttContactList::doParse(void){
+
+    if (parsed)
+        return;
+
+    vector<string> lines = parse(content, "", ",");
+
+    vector<string>::iterator iter;
+    for( iter = lines.begin(); iter != lines.end(); iter++ ) {
+        C_AttContactElem tmp(*iter);
+        contactList.push_back(tmp);
+    }
+
+    parsed = true;
+
+    return;
+}
+vector<C_AttContactElem> &C_AttContactList::getContactList(void){
+
+    if (!parsed)
+        doParse();
+
+    return contactList;
+}
+vector<C_AttContactElem> C_AttContactList::copyContactList(void){
+
+    if (!parsed)
+        doParse();
+
+    return contactList;
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -674,18 +906,18 @@ void C_HeadSipRequest::doParse(void) {
     correct = true;
     parsed = true;
 }
-S_AttMethod C_HeadSipRequest::getS_AttMethod(void){
+S_AttMethod &C_HeadSipRequest::getS_AttMethod(void){
     if(!parsed)
         doParse();
     return method;
 }
-C_AttSipUri C_HeadSipRequest::getC_AttSipUri(void){
+C_AttSipUri &C_HeadSipRequest::getC_AttSipUri(void){
     if(!parsed)
         doParse();
 
     return reqUri;
 }
-S_AttSipVersion C_HeadSipRequest::getS_AttSipVersion(void){
+S_AttSipVersion &C_HeadSipRequest::getS_AttSipVersion(void){
     if(!parsed)
         doParse();
     return sipvs;
@@ -728,14 +960,14 @@ void C_HeadSipReply::doParse(void){
 
     return;
 }
-S_AttReply C_HeadSipReply::getReply(void) {
+S_AttReply &C_HeadSipReply::getReply(void) {
 
     if(!parsed) {
         doParse();
     }
     return reply;
 }
-S_AttSipVersion C_HeadSipReply::getSipVersion(void) {
+S_AttSipVersion &C_HeadSipReply::getSipVersion(void) {
 
     if(!parsed) {
         doParse();
@@ -770,7 +1002,7 @@ int C_HeadVia::getPosition(void){
 void C_HeadVia::setPosition(int _position){
     position = _position;
 }
-C_AttVia C_HeadVia::getC_AttVia(void) {
+C_AttVia &C_HeadVia::getC_AttVia(void) {
 
     if (!parsed)
         doParse();

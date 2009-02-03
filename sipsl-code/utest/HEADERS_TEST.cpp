@@ -635,7 +635,7 @@ int main(void) {
     NEWS
     {
         NEWT
-	//S_HeadMaxFwd
+	cout << "S_HeadMaxFwd" << endl;
 	string s1="Max-Forwards: 44";
         int mxfwd = 44;
 	S_HeadMaxFwd s(s1, 1);
@@ -647,7 +647,27 @@ int main(void) {
         assert(!(s.getMaxFwd() - mxfwd));
 
     }
+    NEWS
+    {
+        NEWT
+	//C_AttContactList
+	string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+	C_AttContactList s(s1);
 
+        cout << "C_AttContactList [" + s.getContent() + "]" <<endl;
+        assert(!s.getContent().compare(s1));
+
+	vector<C_AttContactElem> list;
+        list = s.getContactList();
+        cout << "C_AttContactList element [" + list[0].getContent() + "]" <<endl;
+        cout << "C_AttContactList element [" + list[1].getContent() + "]" <<endl;
+
+	cout << "C_AttContactList name [" + list[0].getNameUri() + "]" <<endl;
+	cout << "C_AttContactList getC_AttSipUri [" + list[0].getC_AttSipUri().getContent() + "]" <<endl;
+	cout << "C_AttContactList getC_AttUriParms [" + list[0].getC_AttUriParms().getContent() + "]" <<endl;
+
+
+    }
  
     
     return 0;
