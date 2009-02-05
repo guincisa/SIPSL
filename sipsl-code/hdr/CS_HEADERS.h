@@ -1,7 +1,7 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer 
+// SIPSL Sip Service Layer
 // Copyright (C) 2007 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -71,7 +71,7 @@ inline vector<string> brkSpaces(string s) {
     }
     output.push_back(s);
     return output;
-} 
+}
 inline string trimSpaces(string s) {
 
     string output = "";
@@ -87,10 +87,75 @@ inline string trimSpaces(string s) {
     }
     output = output+s;
     return output;
-} 
+}
+inline Tuple brkin2(string couple, string separator) {
+
+    int a = couple.find(separator, 0);
+    Tuple tt;
+    if (a < 0) {
+        tt.Lvalue = couple.substr(0, a);
+        tt.Rvalue = "";
+        return tt;
+    }
+    if (a == couple.length()) {
+        tt.Lvalue = couple.substr(0, a);
+        tt.Rvalue = "";
+        return tt;
+    }
+
+    tt.Lvalue = couple.substr(0, a);
+    tt.Rvalue = couple.substr(a+1, -1);
+
+    return tt;
+}
+inline int hasQuote(string s) {
+
+    int a = s.find("\"", 0);
+
+    if (a >= 0) {
+    	//has a quote
+    	return a;
+    }
+    else
+    	return a;
+}
+inline string replaceHttpChars(string s){
+
+	int a = s.find(" ", 0);
+	if (a >= 0){
+		Tuple t = brkin2(s," ");
+		return t.Lvalue + "%20" + t.Rvalue;
+	}
+	else
+		return s;
+
+}
 inline vector<string> parse(string _par, string head, string sep) {
 
     int h = 0; // if has head then 1
+
+    // look for "
+    string _paq;
+    bool hasq = true;
+    while (hasq) {
+		int hq = hasQuote(_par);
+		if (hq >= 0){
+			DEBOUT("",_par.substr(hq+1,-1))
+			int hqq = _par.substr(hq+1,-1).find("\"", 0);
+			DEBOUT("http",_par.substr(hq+1,-1).substr(0,hqq))
+			string ht = replaceHttpChars(_par.substr(hq+1,-1).substr(0,hqq));
+			DEBOUT("http2",ht)
+			_paq = _paq + _par.substr(0,hq) + "\"" + ht + "\"";
+			DEBOUT("",_paq)
+			_par = _par.substr(hqq+1+hq+1,-1);
+			DEBOUT("",_par)
+		}
+		else {
+			hasq = false;
+			_par = _paq + _par;
+		}
+    }
+    DEBOUT("final",_par)
 
     string par = trimSpaces(_par);
 
@@ -120,26 +185,7 @@ inline Tuple getLRvalue(string couple) {
 
     return tt;
 }
-inline Tuple brkin2(string couple, string separator) {
 
-    int a = couple.find(separator, 0);
-    Tuple tt;
-    if (a < 0) {
-        tt.Lvalue = couple.substr(0, a);
-        tt.Rvalue = "";
-        return tt;
-    }
-    if (a == couple.length()) {
-        tt.Lvalue = couple.substr(0, a);
-        tt.Rvalue = "";
-        return tt;
-    }
-    
-    tt.Lvalue = couple.substr(0, a);
-    tt.Rvalue = couple.substr(a+1, -1);
-
-    return tt;
-}
 
 //Att* are attibutes
 //Head* are headers
@@ -165,7 +211,7 @@ class S_HeadGeneric { //i
         string content;
         virtual void doParse(void) = 0;
 
-    public: 
+    public:
         bool isCorrect(void);
         bool isParsed(void);
 
@@ -232,7 +278,7 @@ class TupleVector : public S_AttGeneric{ //i //t
         TupleVector(string tuples, string separator);
         TupleVector();
         TupleVector(const TupleVector& _t);
-        //header can be ? or whatever the string begins with 
+        //header can be ? or whatever the string begins with
         string findRvalue(string Lvalue);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -290,7 +336,7 @@ class S_AttHostPort : public S_AttGeneric{
         int port;
 
     public:
-        string &getHostName(void);//i t 
+        string &getHostName(void);//i t
         string copyHostName(void);//i t
         int getPort(void);
         S_AttHostPort(string content);
@@ -310,7 +356,7 @@ class C_AttUriParms : public S_AttGeneric{ //i //t
         TupleVector tuples;
 
     public:
-        TupleVector &getTuples(void); // i t 
+        TupleVector &getTuples(void); // i t
         TupleVector copyTuples(void); // i t
         C_AttUriParms(string content);
         C_AttUriParms(const C_AttUriParms& _p);
@@ -369,7 +415,7 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
         C_AttSipUri(string content);
         C_AttSipUri(const C_AttSipUri &x);
         void setContent(string content);
-        
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -383,7 +429,7 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
 //    public
 //        int type; //??
 //        C_AttSipUri reqUri;
-//} 
+//}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //S_AttSipVersion
@@ -391,7 +437,7 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class S_AttSipVersion : public S_AttGeneric{ //i //t
-//NEW REVISION 
+//NEW REVISION
     private:
         void doParse(void);
         string version;
@@ -447,7 +493,7 @@ class C_AttVia : public S_AttGeneric { //i //t
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class S_AttReply : public S_AttGeneric{ //i //t
-//NEW REVISION 
+//NEW REVISION
     private:
         void doParse(void);
         int code;
@@ -502,7 +548,7 @@ class C_AttContactElem : public S_AttGeneric {
 //      "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
 //       ;q=0.7; expires=3600,
 //      "Mr. Watson" <mailto:watson@bell-telephone.com>
-//        ;q=0.1 
+//        ;q=0.1
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_AttContactList : public S_AttGeneric {
@@ -552,7 +598,7 @@ class C_HeadSipRequest : public S_HeadGeneric { //i //t
 // C_HeadSipReply
 // C_HeadSipReply "SIP/2.0 200 OK"
 // C_HeadSipReply "SIP/2.0 xxx reply"
-// Status-Line	= SIP-Version Status-Code Reason-Phrase 
+// Status-Line	= SIP-Version Status-Code Reason-Phrase
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_HeadSipReply : public S_HeadGeneric { //i //t
@@ -576,7 +622,7 @@ class C_HeadSipReply : public S_HeadGeneric { //i //t
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // HeadVia
-// Via: xxxxx 
+// Via: xxxxx
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_HeadVia : public S_HeadGeneric { //i //t
@@ -620,7 +666,7 @@ class S_HeadMaxFwd : public S_HeadGeneric {
 //    Contact: "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
 //       ;q=0.7; expires=3600,
 //      "Mr. Watson" <mailto:watson@bell-telephone.com>
-//        ;q=0.1 
+//        ;q=0.1
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_HeadContact : public S_HeadGeneric {

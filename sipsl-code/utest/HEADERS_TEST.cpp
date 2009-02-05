@@ -92,7 +92,7 @@ int main(void) {
         assert(!s.Rvalue.compare("aaa"));
     }
 
-    
+
     {
     NEWS
     cout << "Begin TupleVector test" << endl << flush;
@@ -104,8 +104,8 @@ int main(void) {
     string s4 = "*aa=bb";
     string s5 = "*aa=bb,cc=dd";
     string s6 = "*aa=bb,cc=dd,ee=ff";
-    
- 
+
+
     NEWT
     cout << "utest 1 [" << s1 << "]" << endl << flush;
     TupleVector tv1(s1,",");
@@ -156,7 +156,7 @@ int main(void) {
     cout << "find R value for ee [" << tv6.findRvalue("ee") <<"]"<< endl << flush;
     assert(!tv6.findRvalue("ee").compare("ff"));
     }
- 
+
     NEWS
     {
     cout << "Begin S_AttMethod test" << endl << flush;
@@ -283,7 +283,7 @@ int main(void) {
         cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
         assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
 
-        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;
         assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
 
         cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
@@ -301,7 +301,7 @@ int main(void) {
         assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
         cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
         assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
-        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;
         assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
         cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
         assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
@@ -318,7 +318,7 @@ int main(void) {
         assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
         cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
         assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
-        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;
         assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
         cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
         assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
@@ -335,7 +335,7 @@ int main(void) {
         assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
         cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
         assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
-        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;
         assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
         cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
         assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
@@ -353,7 +353,7 @@ int main(void) {
         assert(!s.getS_AttUserInfo().getContent().compare(sipuri1));
         cout << "HostPort [" + s.getS_AttHostPort().getContent() + "]" <<endl;
         assert(!s.getS_AttHostPort().getContent().compare(sipuri2));
-        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;  
+        cout << "UriParms [" + s.getC_AttUriParms().getContent() + "]" <<endl;
         assert(!s.getC_AttUriParms().getContent().compare(sipuri3));
         cout << "UriHeads [" + s.getC_AttUriHeads().getContent() + "]" <<endl;
         assert(!s.getC_AttUriHeads().getContent().compare(sipuri4));
@@ -385,7 +385,7 @@ int main(void) {
         cout << "Password [" + s.getPassword() + "]" <<endl;
         assert(!s.getPassword().compare(sipuri2));
     }
-    
+
     }
     NEWS
     {
@@ -413,7 +413,7 @@ int main(void) {
         cout << "Port [" << s.getPort() << "]" <<endl;
         assert(!(s.getPort()));
     }
-    
+
     }
     NEWS
     {
@@ -651,11 +651,20 @@ int main(void) {
     {
         NEWT
 	//C_AttContactList
-	string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
-	C_AttContactList s(s1);
+	//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+	string s2 = "\"Mr. Watson\"";
+	string s3 = "<sip:watson@worcester.bell-telephone.com>";
+	string s4 ="q=0.7; expires=3600";
+	string s5 = "<mailto:watson@uffa.com>";
+	string s6 = "q=0.1";
+
+	string stot = s2+ " " + s3 + "; " + s4 +", " + s2 + " "+ s5 + "; " + s6;
+	cout << "To parse " << stot << endl;
+
+    C_AttContactList s(stot);
 
         cout << "C_AttContactList [" + s.getContent() + "]" <<endl;
-        assert(!s.getContent().compare(s1));
+        assert(!s.getContent().compare(stot));
 
 	vector<C_AttContactElem> list;
         list = s.getContactList();
@@ -668,8 +677,8 @@ int main(void) {
 
 
     }
- 
-    
+
+
     return 0;
 }
 
