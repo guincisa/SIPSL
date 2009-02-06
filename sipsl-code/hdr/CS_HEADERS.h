@@ -137,25 +137,22 @@ inline vector<string> parse(string _par, string head, string sep) {
     // look for "
     string _paq;
     bool hasq = true;
+    int hq=0, hqq=0;
+    string ht="";
     while (hasq) {
-		int hq = hasQuote(_par);
+		hq = hasQuote(_par);
 		if (hq >= 0){
-			DEBOUT("",_par.substr(hq+1,-1))
-			int hqq = _par.substr(hq+1,-1).find("\"", 0);
-			DEBOUT("http",_par.substr(hq+1,-1).substr(0,hqq))
-			string ht = replaceHttpChars(_par.substr(hq+1,-1).substr(0,hqq));
-			DEBOUT("http2",ht)
+			hqq = _par.substr(hq+1,-1).find("\"", 0);
+			ht = replaceHttpChars(_par.substr(hq+1,-1).substr(0,hqq));
 			_paq = _paq + _par.substr(0,hq) + "\"" + ht + "\"";
-			DEBOUT("",_paq)
 			_par = _par.substr(hqq+1+hq+1,-1);
-			DEBOUT("",_par)
+
 		}
 		else {
 			hasq = false;
 			_par = _paq + _par;
 		}
     }
-    DEBOUT("final",_par)
 
     string par = trimSpaces(_par);
 

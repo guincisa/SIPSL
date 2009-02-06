@@ -653,12 +653,14 @@ int main(void) {
 	//C_AttContactList
 	//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
 	string s2 = "\"Mr. Watson\"";
+    string s2x = "\"Mr.%20Watson\"";
 	string s3 = "<sip:watson@worcester.bell-telephone.com>";
-	string s4 ="q=0.7; expires=3600";
+	string s4a ="q=0.7";
+	string s4b ="expires=3600";
 	string s5 = "<mailto:watson@uffa.com>";
 	string s6 = "q=0.1";
 
-	string stot = s2+ " " + s3 + "; " + s4 +", " + s2 + " "+ s5 + "; " + s6;
+	string stot = s2+ " " + s3 + "; " + s4a + "; " + s4b +", " + s2 + " "+ s5 + "; " + s6;
 	cout << "To parse " << stot << endl;
 
     C_AttContactList s(stot);
@@ -669,12 +671,26 @@ int main(void) {
 	vector<C_AttContactElem> list;
         list = s.getContactList();
         cout << "C_AttContactList element [" + list[0].getContent() + "]" <<endl;
+        cout << "C_AttContactList element c [" + s2x+  s3 + ";" + s4a + ";" + s4b + "]" <<endl;
+        assert(!list[0].getContent().compare(s2x + s3 + ";" + s4a + ";" + s4b));
+
         cout << "C_AttContactList element [" + list[1].getContent() + "]" <<endl;
+        cout << "C_AttContactList element c [" + s2x + s5 + ";" + s6 + "]" <<endl;
+        assert(!list[1].getContent().compare(s2x+ s5 + ";" + s6));
 
 	cout << "C_AttContactList name [" + list[0].getNameUri() + "]" <<endl;
+    assert(!list[0].getNameUri().compare(s2x));
 	cout << "C_AttContactList getC_AttSipUri [" + list[0].getC_AttSipUri().getContent() + "]" <<endl;
+    assert(!list[0].getC_AttSipUri().getContent().compare(s3));
 	cout << "C_AttContactList getC_AttUriParms [" + list[0].getC_AttUriParms().getContent() + "]" <<endl;
+    assert(!list[0].getC_AttUriParms().getContent().compare(s4a+";"+s4b));
 
+	cout << "C_AttContactList name [" + list[1].getNameUri() + "]" <<endl;
+    assert(!list[1].getNameUri().compare(s2x));
+	cout << "C_AttContactList getC_AttSipUri [" + list[1].getC_AttSipUri().getContent() + "]" <<endl;
+    assert(!list[1].getC_AttSipUri().getContent().compare(s5));
+	cout << "C_AttContactList getC_AttUriParms [" + list[1].getC_AttUriParms().getContent() + "]" <<endl;
+    assert(!list[1].getC_AttUriParms().getContent().compare(s6));
 
     }
 
