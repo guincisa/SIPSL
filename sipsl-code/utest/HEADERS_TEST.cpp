@@ -649,48 +649,240 @@ int main(void) {
     }
     NEWS
     {
-        NEWT
-	//C_AttContactList
-	//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
-	string s2 = "\"Mr. Watson\"";
-    string s2x = "\"Mr.%20Watson\"";
-	string s3 = "<sip:watson@worcester.bell-telephone.com>";
-	string s4a ="q=0.7";
-	string s4b ="expires=3600";
-	string s5 = "<mailto:watson@uffa.com>";
-	string s6 = "q=0.1";
+			NEWT
+		//C_AttContactList
+		//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+		string s2 = "\"Mr. Watson\"";
+		string s2x = "\"Mr.%20Watson\"";
+		string s3 = "<sip:watson@worcester.bell-telephone.com>";
+		string s4a ="q=0.7";
+		string s4b ="expires=3600";
+		string s5 = "<mailto:watson@uffa.com>";
+		string s6 = "q=0.1";
 
-	string stot = s2+ " " + s3 + "; " + s4a + "; " + s4b +", " + s2 + " "+ s5 + "; " + s6;
-	cout << "To parse " << stot << endl;
+		string stot = s2+ " " + s3 + "; " + s4a + "; " + s4b +", " + s2 + " "+ s5 + "; " + s6;
+		cout << "To parse " << stot << endl;
 
-    C_AttContactList s(stot);
+		C_AttContactList s(stot);
 
         cout << "C_AttContactList [" + s.getContent() + "]" <<endl;
         assert(!s.getContent().compare(stot));
 
-	vector<C_AttContactElem> list;
+        vector<C_AttContactElem> list;
         list = s.getContactList();
         cout << "C_AttContactList element [" + list[0].getContent() + "]" <<endl;
-        cout << "C_AttContactList element c [" + s2x+  s3 + ";" + s4a + ";" + s4b + "]" <<endl;
-        assert(!list[0].getContent().compare(s2x + s3 + ";" + s4a + ";" + s4b));
+        assert(!list[0].getContent().compare(s2 + " " + s3 + "; " + s4a + "; " + s4b));
 
         cout << "C_AttContactList element [" + list[1].getContent() + "]" <<endl;
-        cout << "C_AttContactList element c [" + s2x + s5 + ";" + s6 + "]" <<endl;
+        assert(!list[1].getContent().compare(" " + s2+ " " +s5 + "; " + s6));
+
+
+		cout << "C_AttContactList name [" + list[0].getNameUri() + "] " + s2x <<endl;
+		assert(!list[0].getNameUri().compare(s2x));
+		cout << "C_AttContactList getC_AttSipUri [" + list[0].getC_AttSipUri().getContent() + "]" <<endl;
+		assert(!list[0].getC_AttSipUri().getContent().compare(s3));
+		cout << "C_AttContactList getC_AttUriParms [" + list[0].getC_AttUriParms().getContent() + "]" <<endl;
+		assert(!list[0].getC_AttUriParms().getContent().compare(s4a+";"+s4b));
+
+		cout << "C_AttContactList name [" + list[1].getNameUri() + "]" <<endl;
+		assert(!list[1].getNameUri().compare(s2x));
+		cout << "C_AttContactList getC_AttSipUri [" + list[1].getC_AttSipUri().getContent() + "]" <<endl;
+		assert(!list[1].getC_AttSipUri().getContent().compare(s5));
+		cout << "C_AttContactList getC_AttUriParms [" + list[1].getC_AttUriParms().getContent() + "]" <<endl;
+		assert(!list[1].getC_AttUriParms().getContent().compare(s6));
+
+    }    NEWS
+    {
+			NEWT
+		//C_HEadContact
+		//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+		string s2 = "\"Mr. Watson\"";
+		string s2x = "\"Mr.%20Watson\"";
+		string s3 = "<sip:watson@worcester.bell-telephone.com>";
+		string s4a ="q=0.7";
+		string s4b ="expires=3600";
+		string s5 = "<mailto:watson@uffa.com>";
+		string s6 = "q=0.1";
+
+		string stot = s2+ " " + s3 + "; " + s4a + "; " + s4b +", " + s2 + " "+ s5 + "; " + s6;
+		cout << "To parse " << stot << endl;
+
+		C_HeadContact s(stot,1);
+
+        cout << "C_HeadContact [" + s.getContent() + "]" <<endl;
+        assert(!s.getContent().compare(stot));
+
+
+        C_AttContactList &cl = s.getContactList();
+        vector<C_AttContactElem> &list = cl.getContactList();
+
+        /*
+        cout << "C_HeadContact element [" + list[0].getContent() + "]" <<endl;
+        cout << "C_HeadContact element c [" + s2x+  s3 + ";" + s4a + ";" + s4b + "]" <<endl;
+        assert(!list[0].getContent().compare(s2x + s3 + ";" + s4a + ";" + s4b));
+
+        cout << "C_HeadContact element [" + list[1].getContent() + "]" <<endl;
+        cout << "C_HeadContact element c [" + s2x + s5 + ";" + s6 + "]" <<endl;
         assert(!list[1].getContent().compare(s2x+ s5 + ";" + s6));
+        */
 
-	cout << "C_AttContactList name [" + list[0].getNameUri() + "]" <<endl;
-    assert(!list[0].getNameUri().compare(s2x));
-	cout << "C_AttContactList getC_AttSipUri [" + list[0].getC_AttSipUri().getContent() + "]" <<endl;
-    assert(!list[0].getC_AttSipUri().getContent().compare(s3));
-	cout << "C_AttContactList getC_AttUriParms [" + list[0].getC_AttUriParms().getContent() + "]" <<endl;
-    assert(!list[0].getC_AttUriParms().getContent().compare(s4a+";"+s4b));
+		cout << "C_HeadContact name [" + list[0].getNameUri() + "]" <<endl;
+		assert(!list[0].getNameUri().compare(s2x));
+		cout << "C_HeadContact getC_AttSipUri [" + list[0].getC_AttSipUri().getContent() + "]" <<endl;
+		assert(!list[0].getC_AttSipUri().getContent().compare(s3));
+		cout << "C_HeadContact getC_AttUriParms [" + list[0].getC_AttUriParms().getContent() + "]" <<endl;
+		assert(!list[0].getC_AttUriParms().getContent().compare(s4a+";"+s4b));
 
-	cout << "C_AttContactList name [" + list[1].getNameUri() + "]" <<endl;
-    assert(!list[1].getNameUri().compare(s2x));
-	cout << "C_AttContactList getC_AttSipUri [" + list[1].getC_AttSipUri().getContent() + "]" <<endl;
-    assert(!list[1].getC_AttSipUri().getContent().compare(s5));
-	cout << "C_AttContactList getC_AttUriParms [" + list[1].getC_AttUriParms().getContent() + "]" <<endl;
-    assert(!list[1].getC_AttUriParms().getContent().compare(s6));
+		cout << "C_HeadContact name [" + list[1].getNameUri() + "]" <<endl;
+		assert(!list[1].getNameUri().compare(s2x));
+		cout << "C_HeadContact getC_AttSipUri [" + list[1].getC_AttSipUri().getContent() + "]" <<endl;
+		assert(!list[1].getC_AttSipUri().getContent().compare(s5));
+		cout << "C_HeadContact getC_AttUriParms [" + list[1].getC_AttUriParms().getContent() + "]" <<endl;
+		assert(!list[1].getC_AttUriParms().getContent().compare(s6));
+
+    }
+    NEWS
+    {
+			NEWT{
+		//C_HEadTo
+		//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+		string s2 = "\"Mr. Watson\"";
+		string s2x = "\"Mr.%20Watson\"";
+		string s3 = "<sip:watson@worcester.bell-telephone.com>";
+		string s4a ="tag=1234";
+
+
+		string stot = s2+ " " + s3 + "; " + s4a;
+		cout << "To parse " << stot << endl;
+
+		C_HeadTo s(stot,1);
+
+        cout << "C_HeadTo [" + s.getContent() + "]" <<endl;
+        assert(!s.getTo().getContent().compare(stot));
+
+
+        C_AttContactElem &ce = s.getTo();
+
+        /*
+        cout << "C_HeadTo element [" + ce.getContent() + "]" <<endl;
+        cout << "C_HeadTo element c [" + s2x+  s3 + ";" + s4a + "]" <<endl;
+        assert(!ce.getContent().compare(s2x + s3 + ";" + s4a));
+        */
+
+
+		cout << "C_HeadTo name [" + ce.getNameUri() + "]" <<endl;
+		assert(!ce.getNameUri().compare(s2x));
+		cout << "C_HeadTo getC_AttSipUri [" + ce.getC_AttSipUri().getContent() + "]" <<endl;
+		assert(!ce.getC_AttSipUri().getContent().compare(s3));
+		cout << "C_HeadTo getC_AttUriParms [" + ce.getC_AttUriParms().getContent() + "]" <<endl;
+		assert(!ce.getC_AttUriParms().getContent().compare(s4a));
+
+		}
+		NEWT{
+			//C_HEadTo
+			//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+			string s2 = "Watson";
+			string s3 = "<sip:watson@worcester.bell-telephone.com>";
+			string s4a ="tag=1234";
+
+
+			string stot = s2+ " " + s3 + "; " + s4a;
+			cout << "To parse " << stot << endl;
+
+			C_HeadTo s(stot,1);
+
+			cout << "C_HeadTo [" + s.getContent() + "]" <<endl;
+	        assert(!s.getTo().getContent().compare(stot));
+
+
+			C_AttContactElem &ce = s.getTo();
+
+
+			/*
+			cout << "C_HeadTo element [" + ce.getContent() + "]" <<endl;
+			assert(!ce.getContent().compare(s2 + s3 + ";" + s4a));
+			*/
+
+
+			cout << "C_HeadTo name [" + ce.getNameUri() + "]" <<endl;
+			assert(!ce.getNameUri().compare(s2));
+			cout << "C_HeadTo getC_AttSipUri [" + ce.getC_AttSipUri().getContent() + "]" <<endl;
+			assert(!ce.getC_AttSipUri().getContent().compare(s3));
+			cout << "C_HeadTo getC_AttUriParms [" + ce.getC_AttUriParms().getContent() + "]" <<endl;
+			assert(!ce.getC_AttUriParms().getContent().compare(s4a));
+		}
+
+    }
+    NEWS
+    {
+			NEWT{
+		//C_HEadFrom
+		//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+		string s2 = "\"Mr. Watson\"";
+		string s2x = "\"Mr.%20Watson\"";
+		string s3 = "<sip:watson@worcester.bell-telephone.com>";
+		string s4a ="tag=1234";
+
+
+		string stot = s2+ " " + s3 + "; " + s4a;
+		cout << "To parse " << stot << endl;
+
+		C_HeadFrom s(stot,1);
+
+        cout << "C_HeadFrom [" + s.getContent() + "]" <<endl;
+        assert(!s.getFrom().getContent().compare(stot));
+
+
+        C_AttContactElem &ce = s.getFrom();
+
+        /*
+        cout << "C_HeadTo element [" + ce.getContent() + "]" <<endl;
+        cout << "C_HeadTo element c [" + s2x+  s3 + ";" + s4a + "]" <<endl;
+        assert(!ce.getContent().compare(s2x + s3 + ";" + s4a));
+        */
+
+
+		cout << "C_HeadFrom name [" + ce.getNameUri() + "]" <<endl;
+		assert(!ce.getNameUri().compare(s2x));
+		cout << "C_HeadFrom getC_AttSipUri [" + ce.getC_AttSipUri().getContent() + "]" <<endl;
+		assert(!ce.getC_AttSipUri().getContent().compare(s3));
+		cout << "C_HeadFrom getC_AttUriParms [" + ce.getC_AttUriParms().getContent() + "]" <<endl;
+		assert(!ce.getC_AttUriParms().getContent().compare(s4a));
+
+		}
+		NEWT{
+			//C_HEadTo
+			//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+			string s2 = "Watson";
+			string s3 = "<sip:watson@worcester.bell-telephone.com>";
+			string s4a ="tag=1234";
+
+
+			string stot = s2+ " " + s3 + "; " + s4a;
+			cout << "To parse " << stot << endl;
+
+			C_HeadFrom s(stot,1);
+
+			cout << "C_HeadFrom [" + s.getContent() + "]" <<endl;
+	        assert(!s.getFrom().getContent().compare(stot));
+
+
+			C_AttContactElem &ce = s.getFrom();
+
+
+			/*
+			cout << "C_HeadTo element [" + ce.getContent() + "]" <<endl;
+			assert(!ce.getContent().compare(s2 + s3 + ";" + s4a));
+			*/
+
+
+			cout << "C_HeadFrom name [" + ce.getNameUri() + "]" <<endl;
+			assert(!ce.getNameUri().compare(s2));
+			cout << "C_HeadFrom getC_AttSipUri [" + ce.getC_AttSipUri().getContent() + "]" <<endl;
+			assert(!ce.getC_AttSipUri().getContent().compare(s3));
+			cout << "C_HeadFrom getC_AttUriParms [" + ce.getC_AttUriParms().getContent() + "]" <<endl;
+			assert(!ce.getC_AttUriParms().getContent().compare(s4a));
+		}
 
     }
 

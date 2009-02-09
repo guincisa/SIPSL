@@ -78,7 +78,7 @@ inline string trimSpaces(string s) {
     int a = 0;
     a = s.find(" ", 0);
     string tmp;
-    while (a > 0) {
+    while (a >= 0) {
 
         tmp = s.substr(0,a);
         output = output + tmp;
@@ -130,12 +130,12 @@ inline string replaceHttpChars(string s){
 		return s;
 
 }
-inline vector<string> parse(string _par, string head, string sep) {
+inline vector<string> parse(string _par, string head, string sep, bool _trimspaces) {
 
     int h = 0; // if has head then 1
 
     // look for "
-    string _paq;
+    /*string _paq;
     bool hasq = true;
     int hq=0, hqq=0;
     string ht="";
@@ -152,9 +152,12 @@ inline vector<string> parse(string _par, string head, string sep) {
 			hasq = false;
 			_par = _paq + _par;
 		}
-    }
-
-    string par = trimSpaces(_par);
+    }*/
+    string par;
+    if (_trimspaces)
+    	par = trimSpaces(_par);
+    else
+    	par = _par;
 
     vector<string> output;
 
@@ -684,6 +687,7 @@ class C_HeadContact : public S_HeadGeneric {
 ///////////////////////////////////////////////////////////////////////////////
 // HeadTo
 // TODO set as C_AttSipUri
+//   To: Bob <sip:bob@biloxi.example.com>;tag=8321234356
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_HeadTo : public S_HeadGeneric {
@@ -691,11 +695,12 @@ class C_HeadTo : public S_HeadGeneric {
 
     private:
         void doParse(void);
-        C_AttSipUri toUri;
+        C_AttContactElem to;
 
     public:
-        C_AttSipUri &getTo(void);
-        C_AttSipUri copyTo(void);
+    	C_AttContactElem &getTo(void);
+    	C_AttContactElem copyTo(void);
+        C_HeadTo(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -708,11 +713,12 @@ class C_HeadFrom : public S_HeadGeneric {
 
     private:
         void doParse(void);
-        C_AttSipUri fromUri;
+        C_AttContactElem from;
 
     public:
-        C_AttSipUri &getFrom(void);
-        C_AttSipUri copyFrom(void);
+    	C_AttContactElem &getFrom(void);
+    	C_AttContactElem copyFrom(void);
+        C_HeadFrom(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
