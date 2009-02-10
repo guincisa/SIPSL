@@ -1,7 +1,7 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer 
+// SIPSL Sip Service Layer
 // Copyright (C) 2007 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -21,41 +21,33 @@
 //**********************************************************************************
 
 #define MESSAGE
-//#include <pthread.h>
-//#include <string>
-//#include <iostream>
-//#include <memory>
-//#include <sys/time.h>
-//#include <sys/socket.h>
-//#include <arpa/inet.h>
 
-#define REGISTER_METHOD 1
-#define INVITE_METHOD 2
-#define TRY_METHOD 3
-#define RINGING_METHOD 4
-#define OK_METHOD 5
+#ifndef UTIL
+#include "UTIL.h"
+#endif
+
+#ifndef CS_HEADERS
+#include "CS_HEADERS.h"
+#endif
+
 #define INTERNALS_METHOD 9000
-
-#define TRY_TIMER 1003
-
 
 using namespace std;
 
-//NEW REVISION START
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // Source / Destination of the message:
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 #define SODE_NOPOINT 0
-#define SODE_STOPPOINT 9999 
+#define SODE_STOPPOINT 9999
 #define SODE_APOINT 1
 #define SODE_BPOINT 2
 #define SODE_ALOPOINT 3
 #define SODE_SMCLPOINT 4
 #define SODE_SMSVPOINT 5
 #define SODE_TIMERPOINT 6
-//NEW REVISION END
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,7 +66,7 @@ class BASEMESSAGE {
         int internal_id; //SPINBUFFER ??
 
         string line[MAXLINES];
-        
+
         // reply network info
         hrtime_t inc_ts;
         int sock;
@@ -125,18 +117,18 @@ class SIPMESSAGE : public BASEMESSAGE {
     private:
     // INTERNAL params
         int headerType[MAXLINES];
-        
+
         // Internal call id limited to 32 chars
         string _CallID32;
-        int source;  
+        int source;
         int destination;
 
 //NEW REVISION END
 
         // in case this message is generated for the same side
-	SIPMESSAGE * replygenmessage;    
+	SIPMESSAGE * replygenmessage;
         // in case this message is generated for the other side
-	SIPMESSAGE * b2bgenmessage; 
+	SIPMESSAGE * b2bgenmessage;
 
         //TIMER
         int deltams;
@@ -146,11 +138,11 @@ class SIPMESSAGE : public BASEMESSAGE {
 
 
         void setMethodPointer(void);
-        
-        
-        //REPLY 
+
+
+        //REPLY
         REGISTER200OK * p_create200ok(void);
-        
+
 
         //REPLY TEMPLATE
         REPLY replyTemplate;
@@ -196,7 +188,7 @@ class HeaderValue {
 
 	// basic header value
 	// xxx: yyy
-	
+
     public:
     string value; // unparsed
 
@@ -227,7 +219,7 @@ class HeaderValue {
 class Parameters  { // lista di ;header=value
     private:
         string listofparms;
-        string namevalue[2][16]; //couple 
+        string namevalue[2][16]; //couple
         int freeval; // next free position in the array
     public:
         void setParms(string);
@@ -243,7 +235,7 @@ class URI : public HeaderValue {  // not really an header...
         bool secure; //sips
         bool iscorrect;
 
-        string user; //mandatory 
+        string user; //mandatory
         string host; // FQDN or ip?
         Parameters uriparms; // parameters before the ">"
         int port;
@@ -275,7 +267,7 @@ class StringParse {
 class SIPURI : public StringParse{ // sip or sips
     private:
         bool doParse(void);
-        
+
         bool issecure;
         string userinfo;
         string username;
@@ -304,7 +296,7 @@ class RURI : public StringParse{ // SIP or SIPS URI or absoluteURI es: sip
         SIPURI sipUri;
         bool doParse(void);
         //ABSURI absUri;
-        
+
     public:
         int getType(void);
         SIPURI& getSipUri(void);
@@ -328,7 +320,7 @@ class RequestLine : public HeaderValue {
     private:
         int methodId; // 1 REGISTER
         RURI reqUri;
-        string protVs; // "SIP" "/" 1*DIGIT "." 1*DIGIT 
+        string protVs; // "SIP" "/" 1*DIGIT "." 1*DIGIT
         bool doParse(void);
 
     public:
@@ -480,12 +472,12 @@ class REGISTER200OK : public SIPREPLYMESSAGE {
 };
 //*****************************************************************************
 /*
- XXX XXX XXXXXX   XXX X   XXX X    XX     XXX X  XXXXXX 
-  XX XX   X   X  X   XX  X   XX     X    XX  X    X   X 
-  XX XX   XXX     XXXX    XXXX     X X   X        XXX   
-  X X X   X           X       X    XXX   X   XXX  X     
-  X   X   X   X  X    X  X    X   X   X  XX   X   X   X 
- XXX XXX XXXXXX  XXXXX   XXXXX   XXX XXX  XXXX   XXXXXX 
+ XXX XXX XXXXXX   XXX X   XXX X    XX     XXX X  XXXXXX
+  XX XX   X   X  X   XX  X   XX     X    XX  X    X   X
+  XX XX   XXX     XXXX    XXXX     X X   X        XXX
+  X X X   X           X       X    XXX   X   XXX  X
+  X   X   X   X  X    X  X    X   X   X  XX   X   X   X
+ XXX XXX XXXXXX  XXXXX   XXXXX   XXX XXX  XXXX   XXXXXX
 */
 //*****************************************************************************
 
@@ -510,7 +502,7 @@ class SPINB;
 class ROTQ {
     private:
         MESSAGE Q[ARR];
-        int top,bot; // da scrivere, da leggere 
+        int top,bot; // da scrivere, da leggere
         int state;
         SPINB *sb;
 
@@ -534,7 +526,7 @@ class SPINB {
     int readbuff, writebuff, freebuff;
 
     public:
-    
+
     int DIM;
     pthread_mutex_t readmu;
     pthread_mutex_t writemu;
@@ -555,7 +547,7 @@ template<class MESS> class SPINBTMP;
 template<class MESS> class ROTQTMP {
     private:
         MESS Q[ARR];
-        int top,bot; // da scrivere, da leggere 
+        int top,bot; // da scrivere, da leggere
         int state;
         SPINBTMP *sb;
 
@@ -579,7 +571,7 @@ template<class MESS> class SPINBTMP {
     int readbuff, writebuff, freebuff;
 
     public:
-    
+
     int DIM;
     pthread_mutex_t readmu;
     pthread_mutex_t writemu;

@@ -1074,6 +1074,8 @@ void C_HeadContact::doParse(void){
 
 	//TODO if *
 
+	parsed = true;
+
 }
 C_AttContactList &C_HeadContact::getContactList(void){
 	if (!parsed)
@@ -1105,6 +1107,8 @@ void C_HeadTo::doParse(void){
 	if (parsed)
 		return;
 
+	parsed = true;
+
 }
 C_AttContactElem &C_HeadTo::getTo(void){
 	if (!parsed)
@@ -1131,6 +1135,8 @@ void C_HeadFrom::doParse(void){
 	if (parsed)
 		return;
 
+	parsed = true;
+
 }
 C_AttContactElem &C_HeadFrom::getFrom(void){
 	if (!parsed)
@@ -1141,4 +1147,79 @@ C_AttContactElem C_HeadFrom::copyFrom(void){
 	if (!parsed)
 		doParse();
 	return from;
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// HeadCallID
+// 238556723098563298463789@hsfalkgjhaslgh.com
+// id1@id2
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_HeadCallId::C_HeadCallId(string _content, int _genEntity):
+	S_HeadGeneric(_content, _genEntity){
+}
+void C_HeadCallId::doParse(void){
+
+	if (parsed)
+		return;
+
+	callId = brkin2(content, "@");
+
+	parsed = true;
+
+	return;
+}
+Tuple &C_HeadCallId::getCallId(void){
+	if (!parsed){
+		doParse();
+	}
+	return callId;
+}
+Tuple C_HeadCallId::copyCallId(void){
+	if (!parsed){
+		doParse();
+	}
+	return callId;
+}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// HeadCSeq
+// CSeq: 1 INVITE
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_HeadCSeq::C_HeadCSeq(string _content, int _genEntity):
+	S_HeadGeneric(_content, _genEntity),
+	method(""){
+}
+void C_HeadCSeq::doParse(void){
+
+	if(parsed)
+		return;
+
+	Tuple s = brkin2(content, " ");
+	sequence = atoi(s.Lvalue.c_str());
+	method.setContent(s.Rvalue);
+
+	parsed = true;
+
+	return;
+
+}
+int C_HeadCSeq::getSequence(void){
+
+	if(!parsed)
+		doParse();
+	return sequence;
+}
+S_AttMethod &C_HeadCSeq::getMethod(void){
+
+	if(!parsed)
+		doParse();
+	return method;
+}
+S_AttMethod C_HeadCSeq::copyMethod(void){
+
+	if(!parsed)
+		doParse();
+	return method;
 }

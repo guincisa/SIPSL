@@ -886,7 +886,66 @@ int main(void) {
 
     }
 
+    NEWS
+       {
+   			NEWT{
+   		//C_HeadCallId
+   		//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+   		string s1 = "53208975320573805738";
+   		string s2 = "fjkdjkshfahfjksaslkasdfjkl.com";
 
+
+
+      	C_HeadCallId s(s1+"@"+s2,1);
+
+           cout << "C_HeadCallId [" + s.getContent() + "]" <<endl;
+           assert(!s.getContent().compare(s1+"@"+s2));
+           cout << "C_HeadCallId 1 [" + s.getCallId().Lvalue + "]" <<endl;
+           assert(!s.getCallId().Lvalue.compare(s1));
+           cout << "C_HeadCallId 2[" + s.getCallId().Rvalue + "]" <<endl;
+           assert(!s.getCallId().Rvalue.compare(s2));
+
+   		}
+   			NEWT{
+   		//C_HeadCallId
+   		//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+   		string s1 = "53208975320573805738";
+   		string s2 = "";
+
+
+
+   		C_HeadCallId s(s1,1);
+
+           cout << "C_HeadCallId [" + s.getContent() + "]" <<endl;
+           assert(!s.getContent().compare(s1));
+           cout << "C_HeadCallId 1 [" + s.getCallId().Lvalue + "]" <<endl;
+           assert(!s.getCallId().Lvalue.compare(s1));
+           cout << "C_HeadCallId 2[" + s.getCallId().Rvalue + "]" <<endl;
+           assert(!s.getCallId().Rvalue.compare(s2));
+
+   		}
+       }
+    NEWS
+           {
+       			NEWT{
+       		//C_HeadCSeq
+       		//string s1="\"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>;q=0.7; expires=3600, \"Mr. Watson\" <mailto:watson@uffa.com> ;q=0.1 ";
+       		string s1 = "3";
+       		string s2 = "INVITE";
+
+
+
+       		C_HeadCSeq s(s1+" "+s2,1);
+
+               cout << "C_HeadCSeq [" + s.getContent() + "]" <<endl;
+               assert(!s.getContent().compare(s1+" "+s2));
+               cout << "C_HeadCSeq 1 [" << s.getSequence() << "]" <<endl;
+               assert(!(s.getSequence()-3));
+               cout << "C_HeadCSeq 2[" + s.getMethod().getMethodName() + "]" <<endl;
+               assert(!s.getMethod().getMethodName().compare(s2));
+
+       		}
+           }
     return 0;
 }
 

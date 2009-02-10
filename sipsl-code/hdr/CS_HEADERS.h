@@ -45,7 +45,6 @@ using namespace std;
 //#include <sys/socket.h>
 //#include <arpa/inet.h>
 
-//NEW REVISION START
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // tuples
@@ -134,25 +133,6 @@ inline vector<string> parse(string _par, string head, string sep, bool _trimspac
 
     int h = 0; // if has head then 1
 
-    // look for "
-    /*string _paq;
-    bool hasq = true;
-    int hq=0, hqq=0;
-    string ht="";
-    while (hasq) {
-		hq = hasQuote(_par);
-		if (hq >= 0){
-			hqq = _par.substr(hq+1,-1).find("\"", 0);
-			ht = replaceHttpChars(_par.substr(hq+1,-1).substr(0,hqq));
-			_paq = _paq + _par.substr(0,hq) + "\"" + ht + "\"";
-			_par = _par.substr(hqq+1+hq+1,-1);
-
-		}
-		else {
-			hasq = false;
-			_par = _paq + _par;
-		}
-    }*/
     string par;
     if (_trimspaces)
     	par = trimSpaces(_par);
@@ -197,7 +177,6 @@ inline Tuple getLRvalue(string couple) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class S_HeadGeneric { //i
-//NEW REVISION
 
     protected:
         bool parsed;
@@ -723,22 +702,26 @@ class C_HeadFrom : public S_HeadGeneric {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // HeadCallID
+// 238556723098563298463789@hsfalkgjhaslgh.com
+// id1@id2
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_HeadCallID : public S_HeadGeneric {
+class C_HeadCallId : public S_HeadGeneric {
 //NEW REVISION
 
     private:
         void doParse(void);
-        string callId;
+        Tuple callId;
 
     public:
-        string &getCallID(void);
-        string copyCallID(void);
+        Tuple &getCallId(void);
+        Tuple copyCallId(void);
+        C_HeadCallId(string content, int getEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // HeadCSeq
+// CSeq: 1 INVITE
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_HeadCSeq : public S_HeadGeneric {
@@ -750,18 +733,17 @@ class C_HeadCSeq : public S_HeadGeneric {
         S_AttMethod method;
 
     public:
-        string &getCallID(void);
-        string copyCallID(void);
-
+        int getSequence(void);
         S_AttMethod &getMethod(void);
         S_AttMethod copyMethod(void);
+        C_HeadCSeq(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // HeadContentType
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadContentType : public S_HeadGeneric {
+class C_HeadContentType : public S_HeadGeneric { //TODO
 //NEW REVISION
 
     private:
@@ -777,7 +759,7 @@ class C_HeadContentType : public S_HeadGeneric {
 // HeadContentLength
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_HeadContentLength : public S_HeadGeneric {
+class S_HeadContentLength : public S_HeadGeneric { //TODO
 //NEW REVISION
 
     private:
@@ -792,7 +774,7 @@ class S_HeadContentLength : public S_HeadGeneric {
 // SDPInfo
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_SDPInfo : public S_HeadGeneric {
+class C_SDPInfo : public S_HeadGeneric { //TODO
 //NEW REVISION
 
     private:
