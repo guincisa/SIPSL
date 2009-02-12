@@ -1,8 +1,8 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPCSL Sip Core And Service Layer 
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// SIPCSL Sip Core And Service Layer
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -29,10 +29,9 @@
 #include <stdlib.h>     /* for atoi() and exit() */
 #include <string.h>     /* for memset() */
 
-#include "COMPAR.h"
-#include "COMM.h"
-#include "ENGINE.h"
-#include "SUDP.h"
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
 
 // *****************************************************************************************
 // ************************************
@@ -50,30 +49,48 @@ extern "C" void* SUPDSTACK (void*);
 
 void * SUDPSTACK(void *_tgtObject) {
     int res;
-    DEBOUT("SUDPSTACK start","")
-    SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
+
+DEBOUT("SUDPSTACK start","")
+
+	SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
+
     tgtObject->st->listen();
-    DEBOUT("SUDPSTACK started","")
+
+DEBOUT("SUDPSTACK started","")
+
     return (NULL);
 }
 
 // *****************************************************************************************
+// SUDP
 // Initialize Stack
 // *****************************************************************************************
 // *****************************************************************************************
-void SUDP::init(int port, ENGINE *ra, string _domain){
+SUDP::SUDP(void) {
+	instance == NULL;
+}
 
-    DEBOUT("SUDP init","")
+SUDP * SUDP::getInstance(void){
+
+	if (instance == NULL){
+		instance = new SUDP;
+	}
+	return & instance;
+}
+
+void SUDP::init(int _port, ENGINE *_ra, string _domain){
+
+    DEBOUT("SUDP init",_domain)
 
     domain = _domain;
 
     _ENGINE = ra;
-    echoServPort = port;
+
+    echoServPort = _port;
 
     /* Create socket for sending/receiving datagrams */
     if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
         DEBERROR("socket() failed)")
-        //perror("socket() failed");
         return;
     }
 
@@ -82,14 +99,15 @@ void SUDP::init(int port, ENGINE *ra, string _domain){
     echoServAddr.sin_family = AF_INET;                /* Internet address family */
     echoServAddr.sin_addr.s_addr = htonl(INADDR_ANY); /* Any incoming interface */
     echoServAddr.sin_port = htons(echoServPort);      /* Local port */
-    
+
     /* Bind to the local address */
     if (bind(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
-        DEBERROR("bind() failed)")
-        //perror("bind() failed");
+        DEBERROR("bind() failed)");
         return;
     }
-    DEBOUT("SUDP inited and ready","")
+
+DEBOUT("SUDP init done","")
+
     return;
 }
 
@@ -100,13 +118,13 @@ void SUDP::init(int port, ENGINE *ra, string _domain){
 void SUDP::start(void) {
     // allocate thread and starts
 
-    cout << "SUDP::start" << endl;
+    DEBOUT("SUDP::start","")
 
     listenerThread = new ThreadWrapper;
     SUDPtuple *t1;
     t1 = new SUDPtuple;
     t1->st = this;;
-    // TODO boooh
+    // TODO ???
     int res;
     res = pthread_create(&(listenerThread->thread), NULL, SUDPSTACK, (void *) t1 );
     return;
@@ -125,24 +143,23 @@ void SUDP::listen() {
         memset(&echoBuffer, 0x0, ECHOMAX);   /* Zero out structure */
         if ((recvMsgSize = recvfrom(sock, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
-            DEBERROR("rcvfrom() failed)")
-            //perror("recvfrom() failed");
+            DEBERROR("rcvfrom() failed")
             return;
         }
 
-    MESSAGE im(echoBuffer,sock, echoClntAddr);
-    im.source = 1;
-    //im.in_ts = gethrtime();
-    GETTIME(im.in_ts)
-    DEBOUT("Incoming<n",im.incomingMessage)
-    //cout << " Incoming -----------------------------------"<<endl << im.incomingMessage << endl<< "-------------------------" << endl;
+		MESSAGE im(echoBuffer,sock, echoClntAddr);
+		im.source = SODE_APOINT;
 
-    DECTIME
-    STARTTIME
-    _ENGINE->p_w(im);
-    ENDTIME
-    
-    }
+		GETTIME(im.in_ts)
+
+		DEBOUT("Incoming",im.incomingMessage)
+
+		DECTIME
+		STARTTIME
+		_ENGINE->p_w(im);
+		ENDTIME
+
+	}
 }
 
 // *****************************************************************************************

@@ -1,7 +1,7 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPCSL Sip Core And Service Layer 
+// SIPCSL Sip Core And Service Layer
 // Copyright (C) 2007 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ void MESSAGE::createReplyTemplate(string pay) {
 }
 void MESSAGE::sendReply(string message) {
         char ecco[ECHOMAX];
-        //replyTemplate.out_ts = gethrtime();  
+        //replyTemplate.out_ts = gethrtime();
         GETTIME(replyTemplate.out_ts)
         sprintf(ecco, "%s\nTI:%lld\nTO:%lld", replyTemplate.message.c_str(), in_ts, replyTemplate.out_ts);
         sendto(sock, ecco, ECHOMAX, 0, (struct sockaddr *) &(echoClntAddr), sizeof(echoClntAddr));
@@ -94,163 +94,6 @@ REGISTER200OK * MESSAGE::p_create200ok(void) {
 // *****************************************************************************************
 // *****************************************************************************************
 // *****************************************************************************************
-//SPINBUFFER
-// *****************************************************************************************
-// *****************************************************************************************
-// *****************************************************************************************
-
-ROTQ::ROTQ(void) {
-    //cout << "Init ROTQ"<< endl;
-     top = 0;
-    bot = 0;
-
-}
-void ROTQ::setSpinb(SPINB * _sb) {
-    sb = _sb;
-}
-
-int ROTQ::getState() {
-    return state;
-}
-void ROTQ::setState(int s) {
-    state = s;
-}
-void ROTQ::put(MESSAGE m) {
-    
-    if (state != WW) {
-        cout << "ERROR not write buffer" << endl;
-        return;
-    }
-    Q[top] = m;
-
-    top ++ ;
-    top = top % ARR;
-    if (top == bot) {
-        // discard old message
-        cout << "FULL TRASHING" << endl;
-        pthread_mutex_lock(&(sb->mudim));
-        (sb->DIM)--;
-        pthread_mutex_unlock(&(sb->mudim));
-        bot ++;
-        bot = bot % ARR;
-    }
-}
-MESSAGE ROTQ::get(void) {
-    MESSAGE m;
-    if (state != RR) {
-        m.id = -55555;
-        cout << "ERROR not read buffer" << endl;
-        return m;
-    }
-    if (bot == top ) {
-        cout << " top = bot " << endl;
-        m.id = -99999;
-        return m;
-    }
-    else {
-
-        m = Q[bot];
-        bot ++;
-        bot = bot % ARR;
-    }
-    return m;
-}
-bool ROTQ::isEmpty(void) {
-    return bot == top;
-}
-
-SPINB::SPINB(void) {
-
-
-    Q[0].setSpinb(this);
-    Q[1].setSpinb(this);
-    Q[2].setSpinb(this);
-
-    Q[0].setState(RR);
-    Q[1].setState(WW);
-    Q[2].setState(FF);
-    readbuff = 0;
-    writebuff = 1;
-    freebuff = 2;
-    DIM = 0;
-
-    pthread_mutex_init(&mudim, NULL);
-    pthread_mutex_init(&readmu, NULL);
-    pthread_mutex_init(&writemu, NULL);
-    pthread_mutex_init(&condvarmutex, NULL);
-    pthread_cond_init(&condvar, NULL);
-
-}
-
-bool SPINB::isEmpty(void) {
-    return (Q[0].isEmpty() && Q[1].isEmpty() && Q[2].isEmpty());
-}
-void SPINB::put(MESSAGE m) {
-    // mutex if multi thread
-    //
-    //cout << "         PUT writebuff " << writebuff << " mess " << m.id << endl;
-
-    int nextbuff = (writebuff +1 ) ;
-    nextbuff = nextbuff % 3;
-
-    pthread_mutex_lock(&writemu);
-    Q[writebuff].put(m);
-
-    if (Q[nextbuff].getState() == FF) {
-        //cout <<" PUT spin" << endl;
-        Q[nextbuff].setState(WW);
-        Q[writebuff].setState(FF);
-        writebuff = nextbuff;
-    }
-    pthread_mutex_unlock(&writemu);
-    pthread_mutex_lock(&mudim);
-    DIM++;
-    pthread_mutex_unlock(&mudim);
-}            
-MESSAGE SPINB::get(void) {
-    // MUTEX
-    MESSAGE m;
-
-    int nextbuff = (readbuff + 1);
-    nextbuff = nextbuff % 3;
-    pthread_mutex_lock(&readmu);
-    if (Q[readbuff].isEmpty() && Q[nextbuff].getState() == FF) {
-        //cout <<" Get spin" << endl;
-            Q[nextbuff].setState(RR);
-            Q[readbuff].setState(FF); 
-            readbuff = nextbuff;
-    }
-    m = Q[readbuff].get();
-    pthread_mutex_unlock(&readmu);
-    if (m.id != -99999) {
-        pthread_mutex_lock(&mudim);
-        DIM--;
-        pthread_mutex_unlock(&mudim);
-        //cout << "         GET readbuff " << readbuff << " mess " << m.id << endl;
-    }
-
-
-    return m;
-}
-
-void SPINB::move(void) {
-    pthread_mutex_lock(&writemu);
-
-    int nextbuff = (writebuff +1 ) ;
-    nextbuff = nextbuff % 3;
-
-    if (Q[nextbuff].getState() == FF) {
-        Q[nextbuff].setState(WW);
-        Q[writebuff].setState(FF);
-        writebuff = nextbuff;
-    }
-    pthread_mutex_unlock(&writemu);
-    cout <<"MOVE" << endl;
-
-}
-// *****************************************************************************************
-// *****************************************************************************************
-// *****************************************************************************************
 // BASEMESSAGE
 // *****************************************************************************************
 // *****************************************************************************************
@@ -266,7 +109,7 @@ void BASEMESSAGE::parseLines(void){
     linePosition[0] = 0;
     while (stilllines  && iii < MAXLINES) {
         //search: METHOD, CallId, To, From, Cseq, expires
-        kkk = incomingMessage.find("\n", jjj ); 
+        kkk = incomingMessage.find("\n", jjj );
         if ( kkk < 0) {
             stilllines = false;
         }
@@ -306,7 +149,7 @@ string BASEMESSAGE::getLineMessage(int pos){
 
     if (pos >= totLines)
         pos = totLines-1;
-    
+
     return(lineMessage[pos]);
 }
 // *****************************************************************************************
@@ -318,7 +161,7 @@ int BASEMESSAGE::getLineParsed(int pos){
 
     if (pos >= totLines)
         pos = totLines-1;
-    
+
     return(lineParsed[pos]);
 }
 // *****************************************************************************************
@@ -334,7 +177,7 @@ bool CallID::doParse(void){
         return iscorrect;
 
     int iii = 1, iPos=0;
-    int totlines = baseMessage->getTotLines(); 
+    int totlines = baseMessage->getTotLines();
     hasValue = 0;
     while ( iii <= totlines) {
        if (baseMessage->getLineParsed(iii) > 0){  // skip linekk
@@ -350,7 +193,7 @@ bool CallID::doParse(void){
               callid = baseMessage->getLineMessage(iii).substr(9, -1 );
               hasValue = 1;
               baseMessage->setLineParsed(iii,1);
-              iii = totlines + 1; 
+              iii = totlines + 1;
           }
        }
     }
@@ -383,10 +226,10 @@ string CallID::getCallId(void) {
 bool To::doParse(void){
 
     if (isparsed)
-        return iscorrect; 
+        return iscorrect;
 
     int iii = 1,iPos,ePos,iiPos,eePos;
-    int totlines = baseMessage->getTotLines(); 
+    int totlines = baseMessage->getTotLines();
     while ( iii <= totlines ) {
            if (baseMessage->getLineParsed(iii) > 0){  // skip line
                iii ++;
@@ -400,7 +243,7 @@ bool To::doParse(void){
                   value = baseMessage->getLineMessage(iii).substr(4, -1 );
                   hasValue = 1;
                   baseMessage->setLineParsed(iii,1);
-                  iii = totlines + 1; 
+                  iii = totlines + 1;
               }
            }
         }
@@ -416,7 +259,7 @@ bool To::doParse(void){
 }
 ERURI& To::getToEruri(void){
 
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return ToEruri;
 
@@ -431,10 +274,10 @@ ERURI& To::getToEruri(void){
 //
 bool Contact::doParse(void){
     if (isparsed)
-        return iscorrect; 
+        return iscorrect;
 
     int iii = 1,iPos,iiPos,eePos,iiiPos,sPos;
-    int totlines = baseMessage->getTotLines(); 
+    int totlines = baseMessage->getTotLines();
 
     star = false;
 
@@ -451,7 +294,7 @@ bool Contact::doParse(void){
                   value = baseMessage->getLineMessage(iii).substr(9, -1 );
                   hasValue = 1;
                   baseMessage->setLineParsed(iii,1);
-                  iii = totlines + 1; 
+                  iii = totlines + 1;
               }
            }
         }
@@ -460,7 +303,7 @@ bool Contact::doParse(void){
             iscorrect = false;
             return false;
         }
-        
+
         iiPos = value.find("<", iPos);
         eePos = value.find(">", iiPos+1);
         if (iiPos < 0 && eePos < 0) {
@@ -479,7 +322,7 @@ bool Contact::doParse(void){
 }
 ERURI& Contact::getContEruri(void){
 
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return contEruri;
 }
@@ -501,7 +344,7 @@ bool URI::doParse(void) {
     int iPos,ePos,iiPos,eePos,add;
 
     if (isparsed)
-        return iscorrect; 
+        return iscorrect;
 
     if(!hasValue) {
         iscorrect = false;
@@ -583,7 +426,7 @@ bool HeaderValue::isCorrect(void){
     return(doParse());
 }
 void HeaderValue::setBaseMessage(MESSAGE * p){
-       
+
     baseMessage = p;
 }
 string HeaderValue::getHeader(int pos) {
@@ -618,7 +461,7 @@ string Parameters::getParmValue(string head) {
     }
     string outps = listofparms.substr(iPos+head.length() + 1,iiPos-iPos-head.length() -1 );
     DEBOUT("Extracted",outps)
-    
+
     return outps;
 }
 string Parameters::getValue(void) {
@@ -701,7 +544,7 @@ DEBOUT("","")
         if (methodId == -1) {
             isparsed = true;
             iscorrect = false;
-            return false; 
+            return false;
         }
         value = baseMessage->getLineMessage(0);
         // PARSE SIPURI SIPSURI ABSURI
@@ -726,7 +569,7 @@ DEBOUT("","")
                 reqUri.setInitValue( baseMessage->getLineMessage(0).substr(iPos, ePos-iPos));
 
                 //cout << "*RequestLine::doParse end [" << baseMessage->getLineMessage(0).substr(ePos + 1,-1) << "]*" << endl;
-                protVs = baseMessage->getLineMessage(0).substr(ePos + 1,-1); 
+                protVs = baseMessage->getLineMessage(0).substr(ePos + 1,-1);
                 isparsed = true;
                 iscorrect = true;
 
@@ -744,7 +587,7 @@ int RequestLine::getMethodId(void) {
         doParse();
     }
     return methodId;
-}    
+}
 RURI& RequestLine::getURI(void) {
 
     if (!isparsed) {
@@ -855,7 +698,7 @@ bool SIPURI::doParse(void) {
         if (iiiPos < 0) {
             // no uriparms
         }
-        
+
         hostport = value.substr(iPos + 1,iiiPos - iPos -1);
         iiiiPos = hostport.find(":", 1);
         if (iiiiPos < 0) {
@@ -1023,7 +866,7 @@ Parameters& SIPURI::getUriParms(void) {
 bool ERURI::doParse(void) {
 
     if (isparsed)
-        return iscorrect; 
+        return iscorrect;
 
     int iii = 1,iPos,ePos,iiPos,eePos;
     //display name
@@ -1089,10 +932,10 @@ Parameters& ERURI::getEruriParms(void) {
 bool From::doParse(void){
 
     if (isparsed)
-        return iscorrect; 
+        return iscorrect;
 
     int iii = 1,iPos,ePos,iiPos,eePos;
-    int totlines = baseMessage->getTotLines(); 
+    int totlines = baseMessage->getTotLines();
     while ( iii <= totlines ) {
            if (baseMessage->getLineParsed(iii) > 0){  // skip line
                iii ++;
@@ -1106,7 +949,7 @@ bool From::doParse(void){
                   value = baseMessage->getLineMessage(iii).substr(6, -1 );
                   hasValue = 1;
                   baseMessage->setLineParsed(iii,1);
-                  iii = totlines + 1; 
+                  iii = totlines + 1;
               }
            }
         }
@@ -1122,7 +965,7 @@ bool From::doParse(void){
 }
 ERURI& From::getFromEruri(void){
 
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return fromEruri;
 
@@ -1138,10 +981,10 @@ ERURI& From::getFromEruri(void){
 bool Expires::doParse(void){
 
     if (isparsed)
-        return iscorrect; 
+        return iscorrect;
 
     int iii = 1,iPos,ePos,iiPos,eePos;
-    int totlines = baseMessage->getTotLines(); 
+    int totlines = baseMessage->getTotLines();
     while ( iii <= totlines ) {
            if (baseMessage->getLineParsed(iii) > 0){  // skip line
                iii ++;
@@ -1155,7 +998,7 @@ bool Expires::doParse(void){
                   value = baseMessage->getLineMessage(iii).substr(9, -1 );
                   hasValue = 1;
                   baseMessage->setLineParsed(iii,1);
-                  iii = totlines + 1; 
+                  iii = totlines + 1;
               }
            }
         }
@@ -1174,14 +1017,14 @@ bool Expires::doParse(void){
 }
 int Expires::getExpires(void){
 
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return expires;
 
 }
 bool Expires::isPresent(void){
 
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return present;
 
@@ -1196,10 +1039,10 @@ bool Expires::isPresent(void){
 bool Via::doParse(void){
 
     if (isparsed)
-        return iscorrect; 
+        return iscorrect;
 
     int iii,iPos,ePos,iiPos,eePos;
-    int totlines = baseMessage->getTotLines(); 
+    int totlines = baseMessage->getTotLines();
     iii = totlines;
     while ( iii > 0 ) {
            if (baseMessage->getLineParsed(iii) > 0){  // skip line
@@ -1214,7 +1057,7 @@ bool Via::doParse(void){
                   value = baseMessage->getLineMessage(iii).substr(5, -1 );
                   hasValue = 1;
                   baseMessage->setLineParsed(iii,1);
-                  iii = -1; 
+                  iii = -1;
               }
            }
         }
@@ -1241,17 +1084,17 @@ bool Via::doParse(void){
 }
 bool Via::isPresent(void) {
 
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return present;
 }
 string Via::getViaHost(void) {
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return host;
 }
 string Via::getViaHostPort(void) {
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return hostport;
 }
@@ -1274,10 +1117,10 @@ Parameters& Via::getViaParms(void) {
 bool CSeq::doParse(void) {
 
     if (isparsed)
-        return iscorrect; 
+        return iscorrect;
 
     int iii,iPos,ePos,iiPos,eePos;
-    int totlines = baseMessage->getTotLines(); 
+    int totlines = baseMessage->getTotLines();
     iii = totlines;
     while ( iii > 0 ) {
            if (baseMessage->getLineParsed(iii) > 0){  // skip line
@@ -1292,7 +1135,7 @@ bool CSeq::doParse(void) {
                   value = baseMessage->getLineMessage(iii).substr(6, -1 );
                   hasValue = 1;
                   baseMessage->setLineParsed(iii,1);
-                  iii = -1; 
+                  iii = -1;
               }
            }
         }
@@ -1303,7 +1146,7 @@ bool CSeq::doParse(void) {
         }
         iiPos = value.find(" ");
         sequence =  atoi(value.substr(0, iiPos).c_str());
-        //DEBOUT("method",value.substr(iiPos +1, -1)); 
+        //DEBOUT("method",value.substr(iiPos +1, -1));
         method = value.substr(iiPos +1, -1);
         isparsed = true;
         iscorrect = true;
@@ -1312,14 +1155,14 @@ bool CSeq::doParse(void) {
 }
 int CSeq::getCSeq(void){
 
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return sequence;
 
 }
 string CSeq::getCSeqMethod(void){
 
-    if (!isparsed) 
+    if (!isparsed)
         doParse();
     return method;
 
@@ -1345,7 +1188,7 @@ void REGISTER200OK::setHeaders(string _to, string _from, string _callid, string 
     DEBOUT("s_toetHeaders FROM",_from)
     _From = _from;
     DEBOUT("setHeaders CallID",_callid)
-    _CallID = _callid;  
+    _CallID = _callid;
     DEBOUT("setHeaders CSEQ",_cseq)
     _CSeq = _cseq;
     for (int i = 0; i < 16 ; i++) {

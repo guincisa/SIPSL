@@ -1,7 +1,7 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer 
+// SIPSL Sip Service Layer
 // Copyright (C) 2007 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -20,19 +20,28 @@
 //**********************************************************************************
 //**********************************************************************************
 
-#define UTIL
+#define UTIL_H
 //#include <pthread.h>
 //#include <string>
-#include <iostream>
+
 //#include <memory>
-//#include <sys/time.h>
+
 //#include <sys/socket.h>
 //#include <arpa/inet.h>
 
+#include <iostream>
+#include <sys/time.h>
+
 using namespace std;
+
+typedef struct {
+	struct timeval tv;
+	struct timezone tz;
+} SysTime;
+
 #define GETTIME(mytime) gettimeofday(&mytime.tv, &mytime.tz);
 
-#define DECTIME char bu[512];hrtime_t inittime;hrtime_t endtime;
+//#define DECTIME char bu[512];hrtime_t inittime;hrtime_t endtime;
 #define STARTTIME {GETTIME(inittime)}
 #define ENDTIME {GETTIME(endtime); sprintf(bu, "[%s %d] init %lld end %lld tot %lld\n",__FILE__, __LINE__, inittime.tv.tv_sec*1000000+inittime.tv.tv_usec,endtime.tv.tv_sec*1000000+endtime.tv.tv_usec ,endtime.tv.tv_sec*1000000+endtime.tv.tv_usec  - inittime.tv.tv_sec*1000000+inittime.tv.tv_usec ); cout << bu << flush;}
 

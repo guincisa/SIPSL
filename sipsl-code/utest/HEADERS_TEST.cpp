@@ -4,9 +4,15 @@
 #include <stdio.h>
 #include <map>
 #include <vector>
+#include <string>
 #include "CS_HEADERS.h"
 #include "P_HEADERS.h"
 #include <assert.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <stack>
+#include "MESSAGE.h"
 
 #define NEWT cout << "##############################################\nNEW TEST " << __LINE__ << "\n##############################################"<<endl;
 #define NEWS cout << "\n* * * * * * * * * * * * * * * * * * * * * * *\n NEW SUITE\n* * * * * * * * * * * * * * * * * * * * * * *\n" << endl;
@@ -946,6 +952,40 @@ int main(void) {
 
        		}
            }
+
+
+    NEWS{
+    	NEWT{
+    		string messaggio ="aaaa bbbb\ncc dd\neeeee\nuffa";
+
+    		SysTime mytime;
+    		GETTIME(mytime);
+    		BASEMESSAGE bm(messaggio, mytime);
+
+    		cout << "Mess [" << messaggio <<"]" << endl;
+    		cout << "Tot lines " << bm.getTotLines() << endl;
+    		cout << "Get line [" << bm.getLine(0) <<"]" <<endl;
+    		cout << "Get line [" << bm.getLine(1) <<"]" <<endl;
+    		cout << "Get line [" << bm.getLine(2) <<"]" <<endl;
+    		cout << "Get line [" << bm.getLine(3) <<"]" <<endl;
+    		cout << "Get line [" << bm.getLine(4) <<"]" <<endl;
+    	}
+    	NEWT{
+    		string messaggio ="aaaa bbbb\ncc dd\neeeee\nuffa\n";
+
+    		SysTime mytime;
+    		GETTIME(mytime);
+    		BASEMESSAGE bm(messaggio, mytime);
+
+    		cout << "Mess [" << messaggio <<"]" << endl;
+    		cout << "Tot lines " << bm.getTotLines() << endl;
+    		cout << "Get line [" << bm.getLine(0) <<"]" <<endl;
+    		cout << "Get line [" << bm.getLine(1) <<"]" <<endl;
+    		cout << "Get line [" << bm.getLine(2) <<"]" <<endl;
+    		cout << "Get line [" << bm.getLine(3) <<"]" <<endl;
+    		cout << "Get line [" << bm.getLine(4) <<"]" <<endl;
+    	}
+    }
     return 0;
 }
 

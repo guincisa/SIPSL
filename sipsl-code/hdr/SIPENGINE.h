@@ -1,8 +1,8 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer 
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// SIPSL Sip Service Layer
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
   SIPENGINE.h
   parses the SIP protocol
   messages must inherit from MESSAGE
-  SIPENGINE class must inherit from ENGINEADAPTER
+  SIPENGINE class must inherit from ENGINE
 ************************************************************/
 
 //**********************************************************************************

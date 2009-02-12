@@ -2,7 +2,7 @@
 //**********************************************************************************
 //**********************************************************************************
 // SIPSL Sip Service Layer
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -20,8 +20,10 @@
 //**********************************************************************************
 //**********************************************************************************
 
-#define CS_HEADERS
-#ifndef UTIL
+#define CS_HEADERS_H
+
+
+#ifndef UTIL_H
 #include "UTIL.h"
 #endif
 using namespace std;

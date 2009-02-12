@@ -2,7 +2,7 @@
 //**********************************************************************************
 //**********************************************************************************
 // SIPCSL Sip Core And Service Layer
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -24,11 +24,12 @@
 #include <map>
 #include <vector>
 #include <assert.h>
-#ifndef CS_HEADERS
+
+#ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
 
-#ifndef UTIL
+#ifndef UTIL_H
 #include "UTIL.h"
 #endif
 

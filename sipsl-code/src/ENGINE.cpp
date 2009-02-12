@@ -1,8 +1,8 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPCSL Sip Core And Service Layer 
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// SIPCSL Sip Core And Service Layer
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -19,25 +19,17 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-#include <pthread.h>
-#include <unistd.h>
-#include <iostream>
-#include <stdio.h>
-#include <string>
-#include <sys/socket.h> /* for socket() and bind() */
-#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
-#include <stdlib.h>     /* for atoi() and exit() */
-#include <string.h>     /* for memset() */
 
-#include "COMPAR.h"
-#include "COMM.h"
+#ifndef ENGINE_H
 #include "ENGINE.h"
+#endif
 
 extern "C" void* threadparser (void*);
 
 //**********************************************************************************
 //**********************************************************************************
-ENGINE::ENGINE() {
+ENGINE::ENGINE(void) {
+
     DEBOUT("ENGINE::ENGINE()","")
     int res;
     // unlock the CONSmutex once the derived class contructor has ended
@@ -66,7 +58,7 @@ ENGINE::ENGINE() {
     parsethread[2] = new ThreadWrapper();
     parsethread[3] = new ThreadWrapper();
     parsethread[4] = new ThreadWrapper();
-    
+
     res = pthread_create(&(parsethread[0]->thread), NULL, threadparser, (void *) t1);
     res = pthread_create(&(parsethread[1]->thread), NULL, threadparser, (void *) t2);
     res = pthread_create(&(parsethread[2]->thread), NULL, threadparser, (void *) t3);
@@ -77,6 +69,7 @@ ENGINE::ENGINE() {
 //**********************************************************************************
 void ENGINE::parse(MESSAGE m) {
     DEBERROR("ENGINE::parse illegal invocation")
+    assert(0);
     //cout << "RATYPE::parseMessage " << message[i].incomingMessage << endl;
     // invoke AC?
 }
@@ -118,25 +111,3 @@ void * threadparser (void * _pt){
     }
     return (NULL);
 }
-
-//**********************************************************************************
-//**********************************************************************************
-//void ENGINE::associateCB(ENGCALLBACK *_engcb) {
-//    engcb = _engcb;
-//}
-
-//**********************************************************************************
-//**********************************************************************************
-//ENGCALLBACK::ENGCALLBACK() {
-//}
-
-//**********************************************************************************
-//**********************************************************************************
-//ENGCALLBACK::ENGCALLBACK(ENGINE * eng) {
-//        rata = eng;
-//}
-
-//**********************************************************************************
-//**********************************************************************************
-//void ENGCALLBACK::parsecallback(MESSAGE m, ENGINE * ra1, ENGINE * ra2) {
-//}

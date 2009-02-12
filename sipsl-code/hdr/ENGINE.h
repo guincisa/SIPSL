@@ -1,7 +1,7 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer 
+// SIPSL Sip Service Layer
 // Copyright (C) 2007 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -23,59 +23,31 @@
 /****************************************************
   ENGINE.h
 *****************************************************/
-//#include <pthread.h>
-//#include <unistd.h>
-//#include <iostream>
-//#include <stdio.h>
-//#include <string>
-//#include <sys/socket.h> /* for socket() and bind() */
-//#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
-//#include <stdlib.h>     /* for atoi() and exit() */
-//#include <string.h>     /* for memset() */
-//#include "COMM.h"
+#define ENGINE_H
 
 using namespace std;
 
 class ENGINE;
 
-typedef struct tuple2 {
+typedef struct _ENGtuple {
     ENGINE * ps;
     int id;
 } ENGtuple;
 
-//class ENGCALLBACK {
-//    public:
-//       ENGINE * rata;
-//       ENGCALLBACK();
-//       ENGCALLBACK(ENGINE * );
-//       virtual void parsecallback(MESSAGE, ENGINE *, ENGINE *); //TODO RESPONSE
-//};
-
 class ENGINE {
-    //TODO construtor mutex
+
+	private:
+
+		ENGINE * instance;
+		ENGINE(void);
+
+    	SPINB sb;
+		ThreadWrapper * parsethread[5];
+		virtual void parse(MESSAGE) = 0;
+
     public:
-    ENGINE();
-    //ENGCALLBACK *engcb;
+    	void p_w(MESSAGE message);
 
-    //SPINBUFFER
-    SPINB sb;
-
-    //MESSAGE message[5];
-    void p_w(MESSAGE);
-
-
-    //reply socket?
-    //int sock;
-    //struct sockaddr_in echoClntAddr;
-
-    //int busy[5];
-    //int avail;
-    //pthread_mutex_t waitavail, accessavail;
-    ThreadWrapper * parsethread[5];
-    //virtual void parse(int);
-    virtual void parse(MESSAGE);
-
-    //void associateCB(ENGCALLBACK*);
 };
 
 

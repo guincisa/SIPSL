@@ -20,17 +20,15 @@
 //**********************************************************************************
 //**********************************************************************************
 
-#define MESSAGE
+#define MESSAGE_H
 
-#ifndef UTIL
+#ifndef UTIL_H
 #include "UTIL.h"
 #endif
 
-#ifndef CS_HEADERS
+#ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
-
-#define INTERNALS_METHOD 9000
 
 using namespace std;
 
@@ -39,6 +37,7 @@ using namespace std;
 // Source / Destination of the message:
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
 #define SODE_NOPOINT 0
 #define SODE_STOPPOINT 9999
 #define SODE_APOINT 1
@@ -47,6 +46,8 @@ using namespace std;
 #define SODE_SMCLPOINT 4
 #define SODE_SMSVPOINT 5
 #define SODE_TIMERPOINT 6
+
+#define MAXLINES 50
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,77 +59,77 @@ class BASEMESSAGE {
 //NEW REVISION START
     public:
 
-        BASEMESSAGE(string inMessBuff, int internal_id, hrtime_t inc_ts, int sock,
+        BASEMESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
                     struct sockaddr_in echoClntAddr);
+        BASEMESSAGE(string incMessBuff, SysTime inc_ts);
+
+        string &getLine(int);
+        int getTotLines(void);
 
     private:
         string incMessBuff;
-        int internal_id; //SPINBUFFER ??
+        int genEntity;
 
-        string line[MAXLINES];
+        vector<string> flex_line;
 
         // reply network info
-        hrtime_t inc_ts;
+        SysTime inc_ts;
         int sock;
         struct sockaddr_in echoClntAddr;
-
-    public:
-        string getLine(int);
-        // execute the parsing on the line
-        int runParseLine(int);
-        int getTotLines(void);
 
     private:
 
         void fillLineArray(void);
         int totLines;
-	bool arrayFilled;
+        bool arrayFilled;
 
-        int lineParsedStatus[MAXLINES]; // 0 not parsed, 1 parsed, 2 ....
-
-//NEW REVISION END
-
-//???
-int linePosition[MAXLINES];
+        vector<int> linePosition;
 
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//// SIPMESSAGE
+//// MESSAGE
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class SIPMESSAGE : public BASEMESSAGE {
-
-//NEW REVISION START
-    private:
-    // SIP headers
-        HeadSipRequest     hSipReq;
-        vector<HeadVia>    hVia;
-        HeadMaxFwd         hMxFwd;
-        HeadContact        hContact;
-        HeadTo             hTo;
-        HeadFrom           hFrom;
-        HeadCallID         hCallID;
-        HeadCSeq           hCSeq;
-        HeadContentType    hContType;
-        HeadContentLength  hContLength;
-	SDPInfo            cSDPInfo;
+class MESSAGE : public BASEMESSAGE {
 
     private:
+    	//Headers
+    	C_HeadSipRequest 	headSipRequest;
+    	C_HeadSipReply   	headSipReply;
+    	stack<C_HeadVia>	s_headVia;
+    	S_HeadMaxFwd	 	headMaxFwd;
+    	C_HeadContact	 	headContact;
+    	C_HeadTo	     	headTo;
+    	C_HeadFrom       	headFrom;
+    	C_HeadCallId     	headCallId;
+    	C_HeadCSeq			headCSeq;
+    	C_HeadContentType	headContentType;
+    	S_HeadContentLength headContentLenght;
+    	C_SDPInfo			headSDPInfo;
+
+    public:
+
+    	C_HeadSipRequest 	&getHeadSipRequest(void);
+    	C_HeadSipReply   	&getHeadSipReply(void);
+    	stack<C_HeadVia>	&getS_headVia(void);
+    	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
+    	C_HeadContact	 	&getHeadContact(void);
+    	C_HeadTo	     	&getHeadTo(void);
+    	C_HeadFrom       	&getHeadFrom(void);
+    	C_HeadCallId     	&getHeadCallId(void);
+    	C_HeadCSeq			&getHeadCSeq(void);
+    	C_HeadContentType	&getHeadContentType(void);
+    	S_HeadContentLength &getHeadContentLenght(void);
+    	C_SDPInfo			&getHeadSDPInfo(void);
+
+
+    	/*
     // INTERNAL params
         int headerType[MAXLINES];
 
-        // Internal call id limited to 32 chars
-        string _CallID32;
-        int source;
-        int destination;
-
-//NEW REVISION END
-
-        // in case this message is generated for the same side
-	SIPMESSAGE * replygenmessage;
-        // in case this message is generated for the other side
-	SIPMESSAGE * b2bgenmessage;
+        int genEntity;
+        int destEntity;
 
         //TIMER
         int deltams;
@@ -157,434 +158,5 @@ class SIPMESSAGE : public BASEMESSAGE {
         private:
         // TODO use pointer...
         char *echoBuffer;
-
+		*/
 };
-
-
-class BASEREPLY {
-    public:
-        int dummy;
-        hrtime_t out_ts;
-
-};
-///////////////////////////////////////////////////////////////////////////////
-class REPLY : public BASEREPLY{
-public:
-    string message;
-};
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//// HEADERS
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-class MESSAGE;
-class Method;
-class CallID;
-class To;
-class From;
-
-class HeaderValue {
-
-	// basic header value
-	// xxx: yyy
-
-    public:
-    string value; // unparsed
-
-    //needed???
-    int hasValue;
-
-    //needed???
-    void setBaseMessage(MESSAGE *);
-
-    virtual bool isCorrect(void);
-    virtual string getHeader(int);
-
-    //needed???
-    int position[20];
-
-    string getValue(void); // recreates the header by lookinginto components
-
-    protected:
-        bool isparsed;
-        bool iscorrect;
-		bool isgenerated;
-        MESSAGE *baseMessage;
-    private:
-        virtual bool doParse(void);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-class Parameters  { // lista di ;header=value
-    private:
-        string listofparms;
-        string namevalue[2][16]; //couple
-        int freeval; // next free position in the array
-    public:
-        void setParms(string);
-        string getParmValue(string);
-        string getValue(void);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/*
-class URI : public HeaderValue {  // not really an header...
-    private:
-        bool doParse(void);
-        bool secure; //sips
-        bool iscorrect;
-
-        string user; //mandatory
-        string host; // FQDN or ip?
-        Parameters uriparms; // parameters before the ">"
-        int port;
-
-    public:
-        Parameters getParms(void);
-        string getUser(void);
-        int getPort(void);
-        string getHost(void);
-        bool isSecure(void);
-
-};
-*/
-///////////////////////////////////////////////////////////////////////////////
-class StringParse {
-    protected:
-        string value;
-        bool iscorrect;
-        bool isparsed;
-    private:
-        virtual bool doParse(void);
-    public:
-        StringParse(void);
-        void setInitValue(string);
-        string getValue(void);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-class SIPURI : public StringParse{ // sip or sips
-    private:
-        bool doParse(void);
-
-        bool issecure;
-        string userinfo;
-        string username;
-        string password;
-        string hostport;
-         string host;
-         int port;
-        //TODO
-        string restof;
-        Parameters uriParms;
-        string headers; // EXPAND::::
-
-    public:
-        bool isSecure(void);
-        string getUserInfo(void);
-        string getHost(void);
-        int getPort(void);
-        Parameters &getUriParms(void);
-        string getHeaders(void);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-class RURI : public StringParse{ // SIP or SIPS URI or absoluteURI es: sip
-    private:
-        int type; // 1 SIP or SIPS, 2 absoluteURI
-        SIPURI sipUri;
-        bool doParse(void);
-        //ABSURI absUri;
-
-    public:
-        int getType(void);
-        SIPURI& getSipUri(void);
-        //ABSURI getAbsUri(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-// extended RURI
-class ERURI : public StringParse {
-    private:
-        string displayname;
-        RURI eruriRuri;
-        Parameters eruriParms;
-        bool doParse(void);
-    public:
-        string getEruriDisplayname(void);
-        RURI& getEruriRuri(void);
-        Parameters& getEruriParms(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-class RequestLine : public HeaderValue {
-    private:
-        int methodId; // 1 REGISTER
-        RURI reqUri;
-        string protVs; // "SIP" "/" 1*DIGIT "." 1*DIGIT
-        bool doParse(void);
-
-    public:
-        int getMethodId(void);
-        RURI& getURI(void);
-        string getProtVs(void);
-		void setMethodId(int);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-class CallID : public HeaderValue {
-    private:
-        bool doParse(void);
-        string callid;
-    public:
-        string getCallId(void);
-///////////////////////////////////////////////////////////////////////////////
-};
-class Contact : public HeaderValue {
-    private:
-        ERURI contEruri;
-        int star;
-        bool doParse(void);
-
-    public:
-
-        ERURI& getContEruri(void);
-        bool isStar(void);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-class From : public HeaderValue {
-    private:
-        ERURI fromEruri;
-        bool doParse(void);
-    public:
-        ERURI& getFromEruri(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-class To : public HeaderValue {
-    private:
-        ERURI ToEruri;
-        bool doParse(void);
-    public:
-        ERURI& getToEruri(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-class Expires : public HeaderValue {
-    private:
-        bool doParse(void);
-        int expires;
-        bool present;
-    public:
-        int getExpires(void);
-        bool isPresent(void);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-class Via : public HeaderValue {
-    private:
-        string host;
-        int port;
-        string hostport;
-        Parameters viaParms;
-        bool doParse(void);
-        bool present;
-    public:
-        string getViaHost(void);
-        int getViaPort(void);
-        string getViaHostPort(void);
-        Parameters& getViaParms(void);
-        bool isPresent(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-class CSeq : public HeaderValue {
-    private:
-        int sequence;
-        string method;
-        bool doParse();
-    public:
-        int getCSeq(void);
-        string getCSeqMethod(void);
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//TODO
-///////////////////////////////////////////////////////////////////////////////
-class MaxForwards : public HeaderValue {
-    public:
-        int mxf;
-};
-///////////////////////////////////////////////////////////////////////////////
-class Allow: public HeaderValue {
-    public:
-        long allowMask;
-};
-///////////////////////////////////////////////////////////////////////////////
-class UserAgent: public HeaderValue {
-    public:
-        int a;
-};
-///////////////////////////////////////////////////////////////////////////////
-class ContentLength: public HeaderValue {
-    public:
-        int content;
-};
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-class SIPREPLYMESSAGE {
-    public:
-    string placeholder;
-};
-class REGISTERREPLY : public SIPREPLYMESSAGE {
-    public:
-    string anotherplaceholder;
-};
-class REGISTER200OK : public SIPREPLYMESSAGE {
-    private:
-        string statusLine;
-        string _To;
-        string _From;
-        string _CallID;
-        string _CSeq;
-        string _Via[16];
-        string _Contact;
-        string _Date;
-        string _Server;
-        int _ContentLength;
-
-        int sock;
-        struct sockaddr_in echoClntAddr;
-
-    public:
-        void setSock(int);
-        void setSockAddr(struct sockaddr_in);
-        void setHeaders(string,string,string,string,string[],string);
-        void setTo(From);
-        void setFrom(From);
-        void setCallID(CallID);
-        void setCSeq(CSeq);
-        void setVia(Via[]);
-        void setContact(Contact);
-
-        void send(void);
-
-        REGISTER200OK(void);
-        ~REGISTER200OK(void);
-};
-//*****************************************************************************
-/*
- XXX XXX XXXXXX   XXX X   XXX X    XX     XXX X  XXXXXX
-  XX XX   X   X  X   XX  X   XX     X    XX  X    X   X
-  XX XX   XXX     XXXX    XXXX     X X   X        XXX
-  X X X   X           X       X    XXX   X   XXX  X
-  X   X   X   X  X    X  X    X   X   X  XX   X   X   X
- XXX XXX XXXXXX  XXXXX   XXXXX   XXX XXX  XXXX   XXXXXX
-*/
-//*****************************************************************************
-
-class REPLYNOK {
-        string message;
-};
-
-class ThreadWrapper {
-    public:
-        pthread_t thread;
-        pthread_mutex_t mutex;
-        ThreadWrapper();
-};
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//SPINBUFFER
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-class SPINB;
-///////////////////////////////////////////////////////////////////////////////
-class ROTQ {
-    private:
-        MESSAGE Q[ARR];
-        int top,bot; // da scrivere, da leggere
-        int state;
-        SPINB *sb;
-
-    public:
-        ROTQ(void);
-        void setSpinb(SPINB *);
-        void setState(int);
-        int getState(void);
-        void put(MESSAGE);
-        MESSAGE get(void);
-        bool isEmpty(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-class SPINB {
-    private:
-
-    //queue<MESSAGE> Q0,Q1,Q2;
-    ROTQ Q[3];
-
-    //int state[3]; // 0 free, 1 write, 2 read
-    int readbuff, writebuff, freebuff;
-
-    public:
-
-    int DIM;
-    pthread_mutex_t readmu;
-    pthread_mutex_t writemu;
-
-    pthread_mutex_t mudim;
-    pthread_mutex_t condvarmutex;
-    pthread_cond_t condvar;
-
-    SPINB(void);
-    void put(MESSAGE);
-    MESSAGE get(void);
-    void move(void);
-    bool isEmpty(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-/*
-template<class MESS> class SPINBTMP;
-template<class MESS> class ROTQTMP {
-    private:
-        MESS Q[ARR];
-        int top,bot; // da scrivere, da leggere
-        int state;
-        SPINBTMP *sb;
-
-    public:
-        ROTQTMP(void);
-        void setSpinb(SPINBTMP *);
-        void setState(int);
-        int getState(void);
-        void put(MESS);
-        MESS get(void);
-        bool isEmpty(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-template<class MESS> class SPINBTMP {
-    private:
-
-    //queue<MESSAGE> Q0,Q1,Q2;
-    ROTQTMP Q[3];
-
-    //int state[3]; // 0 free, 1 write, 2 read
-    int readbuff, writebuff, freebuff;
-
-    public:
-
-    int DIM;
-    pthread_mutex_t readmu;
-    pthread_mutex_t writemu;
-
-    pthread_mutex_t mudim;
-    pthread_mutex_t condvarmutex;
-    pthread_cond_t condvar;
-
-    SPINBTMP(void);
-    void put(MESS);
-    MESS get(void);
-    void move(void);
-    bool isEmpty(void);
-};
-*/
-//

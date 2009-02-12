@@ -1,8 +1,8 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer 
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// SIPSL Sip Service Layer
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -20,19 +20,19 @@
 //**********************************************************************************
 //**********************************************************************************
 
-#define SIPN
-//#include <pthread.h>
-//#include <string>
-//#include <iostream>
-//#include <memory>
-//#include <sys/time.h>
-//#include <sys/socket.h>
-//#include <arpa/inet.h>
+#define SPIN_H
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+
 
 //SPINBUFFER
-#define WW  2
-#define RR  1
-#define FF  0
+#define SPIN_WW  2
+#define SPIN_RR  1
+#define SPIN_FF  0
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ class SPINB;
 class ROTQ {
     private:
         MESSAGE Q[ARR];
-        int top,bot; // da scrivere, da leggere 
+        int top,bot; // da scrivere, da leggere
         int state;
         SPINB *sb;
 
@@ -68,7 +68,7 @@ class SPINB {
     int readbuff, writebuff, freebuff;
 
     public:
-    
+
     int DIM;
     pthread_mutex_t readmu;
     pthread_mutex_t writemu;
@@ -83,50 +83,3 @@ class SPINB {
     void move(void);
     bool isEmpty(void);
 };
-///////////////////////////////////////////////////////////////////////////////
-/*
-template<class MESS> class SPINBTMP;
-template<class MESS> class ROTQTMP {
-    private:
-        MESS Q[ARR];
-        int top,bot; // da scrivere, da leggere 
-        int state;
-        SPINBTMP *sb;
-
-    public:
-        ROTQTMP(void);
-        void setSpinb(SPINBTMP *);
-        void setState(int);
-        int getState(void);
-        void put(MESS);
-        MESS get(void);
-        bool isEmpty(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-template<class MESS> class SPINBTMP {
-    private:
-
-    //queue<MESSAGE> Q0,Q1,Q2;
-    ROTQTMP Q[3];
-
-    //int state[3]; // 0 free, 1 write, 2 read
-    int readbuff, writebuff, freebuff;
-
-    public:
-    
-    int DIM;
-    pthread_mutex_t readmu;
-    pthread_mutex_t writemu;
-
-    pthread_mutex_t mudim;
-    pthread_mutex_t condvarmutex;
-    pthread_cond_t condvar;
-
-    SPINBTMP(void);
-    void put(MESS);
-    MESS get(void);
-    void move(void);
-    bool isEmpty(void);
-};
-*/
-//

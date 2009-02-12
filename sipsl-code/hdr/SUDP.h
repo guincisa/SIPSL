@@ -1,8 +1,8 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer 
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// SIPSL Sip Service Layer
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -30,18 +30,7 @@
   ENGINE class which will parse message
 *****************************************************************************************/
 
-//#include <pthread.h>
-//#include <unistd.h>
-//#include <iostream>
-//#include <stdio.h>
-//#include <string>
-//#include <sys/socket.h> /* for socket() and bind() */
-//#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
-//#include <stdlib.h>     /* for atoi() and exit() */
-//#include <string.h>     /* for memset() */
-//#include "ENGINE.h"
-
-
+#define SUDP_H
 
 //**********************************************************************************
 //**********************************************************************************
@@ -60,16 +49,13 @@ class SUDP;
 typedef struct tuple {
     SUDP *st;
 } SUDPtuple;
-
-
-
 //**********************************************************************************
 //**********************************************************************************
 class SUDP {
     //TODO must be singleton
     //
-    //Must run on two threads one for 
-    //listening messages one for 
+    //Must run on two threads one for
+    //listening messages one for
     //commands
     public:
         //SUDP stack
@@ -78,7 +64,7 @@ class SUDP {
         void init(int _PORT, ENGINE *_ENGINE,string);
 
         // Start call processing
-        void start(void); 
+        void start(void);
 
         // Suspend call processing, finish active calls
         //void suspend(void);
@@ -91,7 +77,14 @@ class SUDP {
 
         string getDomain(void);
 
+        SUDP * getInstance(void);
+
     private:
+
+    	SUDP(void);
+
+    	SUDP * instance;
+
         ENGINE *_ENGINE;
 
         ThreadWrapper *listenerThread;
@@ -104,5 +97,5 @@ class SUDP {
         unsigned int cliAddrLen;
         struct sockaddr_in echoClntAddr;
         char echoBuffer[ECHOMAX];
-        int recvMsgSize;        
+        int recvMsgSize;
 };
