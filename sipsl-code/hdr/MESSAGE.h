@@ -56,7 +56,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class BASEMESSAGE {
-//NEW REVISION START
+
     public:
 
         BASEMESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
@@ -96,17 +96,33 @@ class MESSAGE : public BASEMESSAGE {
     private:
     	//Headers
     	C_HeadSipRequest 	headSipRequest;
+    	bool 				headSipRequest_p;
     	C_HeadSipReply   	headSipReply;
+    	bool 				headSipReply_p;
     	stack<C_HeadVia>	s_headVia;
+    	bool 				s_headVia_p;
     	S_HeadMaxFwd	 	headMaxFwd;
+    	bool 				headMaxFwd_p;
     	C_HeadContact	 	headContact;
+    	bool 				headContact_p;
     	C_HeadTo	     	headTo;
+    	bool 				headTo_p;
     	C_HeadFrom       	headFrom;
+    	bool 				headFrom_p;
     	C_HeadCallId     	headCallId;
+    	bool 				headCallId_p;
     	C_HeadCSeq			headCSeq;
+    	bool 				headCSeq_p;
     	C_HeadContentType	headContentType;
+    	bool 				headContentType_p;
     	S_HeadContentLength headContentLenght;
+    	bool 				headContentLenght_p;
     	C_SDPInfo			headSDPInfo;
+    	bool 				headSDPInfo_p;
+    	C_HeadAllow			headAllow;
+    	bool 				headAllow_p;
+    	C_HeadSubject		headSubject;
+    	bool 				headSubject_p;
 
     public:
 
@@ -122,6 +138,8 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadContentType	&getHeadContentType(void);
     	S_HeadContentLength &getHeadContentLenght(void);
     	C_SDPInfo			&getHeadSDPInfo(void);
+    	C_HeadAllow			&getHheadAllow(void);
+    	C_HeadSubject		&getHeadSubject(void);
 
 
     	/*

@@ -985,6 +985,20 @@ int main(void) {
     		cout << "Get line [" << bm.getLine(3) <<"]" <<endl;
     		cout << "Get line [" << bm.getLine(4) <<"]" <<endl;
     	}
+    	NEWT{
+			string messaggio ="INVITE sip:gugli@lucent.com SIP/2.0\nVia: SIP/2.0/UDP 192.168.0.3:6003;rport;branch=z9hG4bKykvnbfuj\nMax-Forwards: 70\nTo: <sip:gugli@lucent.com>\nFrom: \"Ciccio\" <sip:ciccio@es.atosorigin.com>;tag=qcirp\nCall-ID: tgucxgkqjhkdltj@192.168.0.3\nCSeq: 134 INVITE\nContact: <sip:ciccio@192.168.0.3:6003>\nContent-Type: application/sdp\nAllow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE\nOrganization: ATOS ORIGIN\nSubject: ciao\nSupported: replaces,norefersub,100rel\nUser-Agent: Twinkle/1.1\nContent-Length: 306\n\nv=0\no=ciccio 1320585760 1779093879 IN IP4 192.168.0.3\ns=-\nc=IN IP4 192.168.0.3\nt=0 0\nm=audio 8000 RTP/AVP 98 97 8 0 3 101\na=rtpmap:98 speex/16000\na=rtpmap:97 speex/8000\na=rtpmap:8 PCMA/8000\na=rtpmap:0 PCMU/8000\na=rtpmap:3 GSM/8000\na=rtpmap:101 telephone-event/8000\na=fmtp:101 0-15\na=ptime:20";
+    		SysTime mytime;
+    		GETTIME(mytime);
+    		BASEMESSAGE bm(messaggio, mytime);
+
+    		cout << "Mess [" << messaggio <<"]" << endl;
+    		cout << "Tot lines " << bm.getTotLines() << endl;
+    		int i ;
+    		for(i = 0; i <60; i++){
+    			cout << "Get line [" << bm.getLine(i) <<"]" <<endl;
+    		}
+
+    	}
     }
     return 0;
 }

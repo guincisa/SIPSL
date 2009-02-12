@@ -43,7 +43,9 @@ class ENGINE {
 
     	SPINB sb;
 		ThreadWrapper * parsethread[5];
-		virtual void parse(MESSAGE) = 0;
+		//pure virtual only after end of tests
+		// virtual void parse(MESSAGE) = 0;
+		virtual void parse(MESSAGE);
 
     public:
     	void p_w(MESSAGE message);
