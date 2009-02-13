@@ -45,19 +45,14 @@ S_HeadGeneric::S_HeadGeneric(string buffer, int _genEntity) {
 
     parsed = false;
     correct = true;
-    isSet = true;
 
 }
 void S_HeadGeneric::setContent(string _content, int _genEntity) {
 
-    if (isSet) {
-        return;
-    }
     genEntity = _genEntity;
     content = _content;
     parsed = false;
     correct = true;
-    isSet = true;
     return;
 
 }
@@ -893,8 +888,8 @@ vector<C_AttContactElem> C_AttContactList::copyContactList(void){
 // HeadSipRequest "Method RequestURI SipVersion<CRLF>"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadSipRequest::C_HeadSipRequest(string _content, int genEntity)
-    : S_HeadGeneric(_content, genEntity),
+C_HeadSipRequest::C_HeadSipRequest(string _content, int _genEntity)
+    : S_HeadGeneric(_content, _genEntity),
         method(""),
         reqUri(""),
         sipvs(""){
@@ -919,6 +914,7 @@ void C_HeadSipRequest::doParse(void) {
 
     correct = true;
     parsed = true;
+
 }
 S_AttMethod &C_HeadSipRequest::getS_AttMethod(void){
     if(!parsed)
@@ -944,8 +940,8 @@ S_AttSipVersion &C_HeadSipRequest::getS_AttSipVersion(void){
 // Status-Line	= SIP-Version Status-Code Reason-Phrase
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadSipReply::C_HeadSipReply(string _content, int genEntity)
-    : S_HeadGeneric(_content, genEntity),
+C_HeadSipReply::C_HeadSipReply(string _content, int _genEntity)
+    : S_HeadGeneric(_content, _genEntity),
         reply(""),
         sipvs(""){
 }

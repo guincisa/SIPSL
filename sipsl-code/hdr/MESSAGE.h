@@ -49,6 +49,11 @@ using namespace std;
 
 #define MAXLINES 50
 
+#define REQSUPP 1
+#define REQUNSUPP 3
+#define REPSUPP 2
+#define REPUNSUPP 4
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,14 +71,16 @@ class BASEMESSAGE {
         string &getLine(int);
         int getTotLines(void);
 
+    protected:
+        int genEntity;
+        vector<string> flex_line;
+        SysTime inc_ts;
+
     private:
         string incMessBuff;
-        int genEntity;
-
-        vector<string> flex_line;
 
         // reply network info
-        SysTime inc_ts;
+
         int sock;
         struct sockaddr_in echoClntAddr;
 
@@ -96,9 +103,12 @@ class MESSAGE : public BASEMESSAGE {
     private:
     	//Headers
     	C_HeadSipRequest 	headSipRequest;
-    	bool 				headSipRequest_p;
     	C_HeadSipReply   	headSipReply;
-    	bool 				headSipReply_p;
+    	//S_HeadGeneric	headSipReqRep;
+    	// REQSUPP request supported, REPSUPP reply supported
+    	// REQUNSUPP request unsupported, REPUNSUPP reply unsupported ??? defined latefr
+    	int reqRep;
+
     	stack<C_HeadVia>	s_headVia;
     	bool 				s_headVia_p;
     	S_HeadMaxFwd	 	headMaxFwd;
@@ -113,21 +123,29 @@ class MESSAGE : public BASEMESSAGE {
     	bool 				headCallId_p;
     	C_HeadCSeq			headCSeq;
     	bool 				headCSeq_p;
-    	C_HeadContentType	headContentType;
-    	bool 				headContentType_p;
-    	S_HeadContentLength headContentLenght;
-    	bool 				headContentLenght_p;
-    	C_SDPInfo			headSDPInfo;
-    	bool 				headSDPInfo_p;
-    	C_HeadAllow			headAllow;
-    	bool 				headAllow_p;
-    	C_HeadSubject		headSubject;
-    	bool 				headSubject_p;
+    	//C_HeadContentType	headContentType;
+    	//bool 				headContentType_p;
+    	//S_HeadContentLength headContentLenght;
+    	//bool 				headContentLenght_p;
+    	//C_SDPInfo			headSDPInfo;
+    	//bool 				headSDPInfo_p;
+    	//C_HeadAllow			headAllow;
+    	//bool 				headAllow_p;
+    	//C_HeadSubject		headSubject;
+    	//bool 				headSubject_p;
 
     public:
 
-    	C_HeadSipRequest 	&getHeadSipRequest(void);
+        MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
+                    struct sockaddr_in echoClntAddr);
+        MESSAGE(string incMessBuff, SysTime inc_ts);
+
+    	int getReqRepType(void);
+
+    	//S_HeadGeneric 	&getHeadSipReqRep(void);
     	C_HeadSipReply   	&getHeadSipReply(void);
+    	C_HeadSipRequest 	&getHeadSipRequest(void);
+
     	stack<C_HeadVia>	&getS_headVia(void);
     	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
     	C_HeadContact	 	&getHeadContact(void);

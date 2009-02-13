@@ -183,7 +183,6 @@ class S_HeadGeneric { //i
     protected:
         bool parsed;
         bool correct;
-        bool isSet;
 
         // Id of the generating endpoint
         // same as SODE_*
@@ -755,6 +754,7 @@ class C_HeadContentType : public S_HeadGeneric { //TODO
     public:
         Tuple &getContentType(void);
         Tuple copyContentType(void);
+        C_HeadContentType(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -770,6 +770,7 @@ class S_HeadContentLength : public S_HeadGeneric { //TODO
 
     public:
         int getContentLength(void);
+        S_HeadContentLength(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -786,6 +787,7 @@ class C_SDPInfo : public S_HeadGeneric { //TODO
     public:
         TupleVector &getSDP(void);
         TupleVector copySDP(void);
+        C_SDPInfo(string content, int genEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -803,10 +805,12 @@ class C_HeadAllow : public S_HeadGeneric {
 		vector<S_AttMethod> copyAllowedMethods(void);
 		bool isAllowed(string method);
 		bool isAllowed(S_AttMethod method);
+		C_HeadAllow(string content, int genEntity);
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// Allow
+// Subject
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class C_HeadSubject : public S_HeadGeneric {
@@ -816,7 +820,9 @@ class C_HeadSubject : public S_HeadGeneric {
 		string subject;
 
 	public:
-		string &getSubject(void)
+		string &getSubject(void);
+		C_HeadSubject(string content, int genEntity);
+
 };
 /*
 [Organization: GUGLICORP]

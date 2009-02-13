@@ -158,42 +158,229 @@ string &BASEMESSAGE::getLine(int pos){
 // *****************************************************************************************
 MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock,
         struct sockaddr_in _echoClntAddr):
-	BASEMESSAGE(_incMessBuff, _genEntity, _inc_ts, _sock, _echoClntAddr){
+	BASEMESSAGE(_incMessBuff, _genEntity, _inc_ts, _sock, _echoClntAddr),
+	headSipRequest("",_genEntity),
+	headSipReply("",_genEntity),
+	headMaxFwd("",_genEntity),
+	headContact("",_genEntity),
+	headTo("",_genEntity),
+	headFrom("",_genEntity),
+	headCallId("",_genEntity),
+	headCSeq("",_genEntity){
 
-	headersPlaced = false;
+	reqRep = 0;
+}
+//ONLY FOR TEST
+MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
+	BASEMESSAGE(_incMessBuff, inc_ts),
+	headSipRequest("",0),
+	headSipReply("",0),
+	headMaxFwd("",0),
+	headContact("",0),
+	headTo("",0),
+	headFrom("",0),
+	headCallId("",0),
+	headCSeq("",0){
+
+	reqRep = 0;
+}
+int MESSAGE::getReqRepType(void){
+
+	if (reqRep != 0)
+		return reqRep;
+
+	if(flex_line[0].substr(0,3).compare("SIP")){
+		headSipReply.setContent(flex_line[0],genEntity);
+		reqRep = REPSUPP;
+	}
+	if(flex_line[0].substr(0,7).compare("INVITE")){
+		headSipRequest.setContent(flex_line[0],genEntity);
+		reqRep = REQSUPP;
+	}
+	else if(flex_line[0].substr(0,3).compare("ACK")){
+		headSipRequest.setContent(flex_line[0],genEntity);
+		reqRep = REQSUPP;
+	}
+	else if(flex_line[0].substr(0,3).compare("BYE")){
+		headSipRequest.setContent(flex_line[0],genEntity);
+		reqRep = REQSUPP;
+	}
+	else if(flex_line[0].substr(0,6).compare("CANCEL")){
+		headSipRequest.setContent(flex_line[0],genEntity);
+		reqRep = REQSUPP;
+	}
+	else if(flex_line[0].substr(0,8).compare("REGISTER")){
+		headSipRequest.setContent(flex_line[0],genEntity);
+		reqRep = REQUNSUPP;
+	}
+	return reqRep;
 }
 C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
-	if (headSipRequest_p)
+
+	if(reqRep == 0){
+		int i = getReqRepType();
+	}
+
+	if (reqRep == REQSUPP || reqRep == REQUNSUPP){
 		return headSipRequest;
+	}
 
-	bool stillLines = true;
-	int j = 0;
+}
+C_HeadSipReply &MESSAGE::getHeadSipReply(void){
 
-	for(j = 0, j < flex_line.size(); j++){
-		if(flex_line[j].substr(0,7).compare("INVITE")){
-			headSipRequest.setContent(flex_line[j]);
-			break;
-		}
-		if(flex_line[j].substr(0,3).compare("ACK")){
-			headSipRequest.setContent(flex_line[j]);
-			break;
-		}
-		if(flex_line[j].substr(0,3).compare("BYE")){
-			headSipRequest.setContent(flex_line[j]);
-			break;
-		}
-		if(flex_line[j].substr(0,6).compare("CANCEL")){
-			headSipRequest.setContent(flex_line[j]);
-			break;
-		}
-		if(flex_line[j].substr(0,8).compare("REGISTER")){
-			headSipRequest.setContent(flex_line[j]);
-			break;
+	if(reqRep == 0){
+		int i = getReqRepType();
+	}
+
+	if (reqRep == REPSUPP || reqRep == REPUNSUPP){
+		return headSipReply;
+	}
+
+}
+stack<C_HeadVia> &MESSAGE::getS_headVia(void){
+
+	if(s_headVia_p){
+		return s_headVia;
+	}
+
+	int i;
+	int j = 1;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,4).compare("Via:")){
+			C_HeadVia s(flex_line[i],genEntity,j++);
+			s_headVia.push(s);
 		}
 	}
-	headSipRequest_ p= true;
-	return headSipRequest;
+	s_headVia_p = true;
+		return s_headVia;
 }
+S_HeadMaxFwd &MESSAGE::getHeadMaxFwd(void){
+
+	if(headMaxFwd_p){
+		return headMaxFwd;
+	}
+
+	int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,13).compare("Max-Forwards:")){
+			headMaxFwd.setContent(flex_line[i],genEntity);
+		}
+	}
+	headMaxFwd_p = true;
+		return headMaxFwd;
+}
+C_HeadContact &MESSAGE::getHeadContact(void){
+
+	if(headContact_p){
+		return headContact;
+	}
+
+	int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,8).compare("Contact:")){
+			headContact.setContent(flex_line[i],genEntity);
+		}
+	}
+	headContact_p = true;
+		return headContact;
+}
+C_HeadTo &MESSAGE::getHeadTo(void){
+
+	if(headTo_p){
+		return headTo;
+	}
+
+	int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,3).compare("To:")){
+			headTo.setContent(flex_line[i],genEntity);
+		}
+	}
+	headTo_p = true;
+		return headTo;
+}
+C_HeadFrom &MESSAGE::getHeadFrom(void){
+
+	if(headFrom_p){
+		return headFrom;
+	}
+
+	int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,5).compare("From:")){
+			headFrom.setContent(flex_line[i],genEntity);
+		}
+	}
+	headFrom_p = true;
+		return headFrom;
+}
+C_HeadCallId &MESSAGE::getHeadCallId(void){
+
+	if(headCallId_p){
+		return headCallId;
+	}
+
+	int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,8).compare("Call-ID:")){
+			headCallId.setContent(flex_line[i],genEntity);
+		}
+	}
+	headCallId_p = true;
+		return headCallId;
+}
+C_HeadCSeq &MESSAGE::getHeadCSeq(void){
+
+	if(headCSeq_p){
+		return headCSeq;
+	}
+
+	int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,5).compare("CSeq:")){
+			headCSeq.setContent(flex_line[i],genEntity);
+		}
+	}
+	headCSeq_p = true;
+		return headCSeq;
+}
+/*
+C_HeadContentType &MESSAGE::getHeadContentType(void){
+
+	if(headContentType_p){
+		return headContentType;
+	}
+
+	int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,13).compare("Content-Type:")){
+			headContentType.setContent(flex_line[i],genEntity);
+		}
+	}
+	headContentType_p = true;
+		return headContentType;
+}
+*/
+/*
+C_HeadSipReply &MESSAGE::getHeadSipReply(void){
+
+	if(reqRep == 0){
+		int i = getReqRepType();
+	}
+
+	if (reqRep == REPSUPP || REPUNSUPP)
+		return headSipReply;
+
+	headSipReply.setContent(flex_line[0])
+}*/
 
 /*
 void MESSAGE::headPlacement(void){
