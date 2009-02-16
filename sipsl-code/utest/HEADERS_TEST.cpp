@@ -964,11 +964,17 @@ int main(void) {
 
     		cout << "Mess [" << messaggio <<"]" << endl;
     		cout << "Tot lines " << bm.getTotLines() << endl;
+    		assert(!(bm.getTotLines()-4));
     		cout << "Get line [" << bm.getLine(0) <<"]" <<endl;
+			assert(!(bm.getLine(0).compare("aaaa bbbb")));
     		cout << "Get line [" << bm.getLine(1) <<"]" <<endl;
+			assert(!(bm.getLine(1).compare("cc dd")));
     		cout << "Get line [" << bm.getLine(2) <<"]" <<endl;
+			assert(!(bm.getLine(2).compare("eeeee")));
     		cout << "Get line [" << bm.getLine(3) <<"]" <<endl;
+			assert(!(bm.getLine(3).compare("uffa")));
     		cout << "Get line [" << bm.getLine(4) <<"]" <<endl;
+			assert(!(bm.getLine(4).compare("uffa")));
     	}
     	NEWT{
     		string messaggio ="aaaa bbbb\ncc dd\neeeee\nuffa\n";
@@ -979,14 +985,62 @@ int main(void) {
 
     		cout << "Mess [" << messaggio <<"]" << endl;
     		cout << "Tot lines " << bm.getTotLines() << endl;
+    		assert(!(bm.getTotLines()-4));
+
     		cout << "Get line [" << bm.getLine(0) <<"]" <<endl;
+			assert(!(bm.getLine(0).compare("aaaa bbbb")));
+
     		cout << "Get line [" << bm.getLine(1) <<"]" <<endl;
+			assert(!(bm.getLine(1).compare("cc dd")));
+
     		cout << "Get line [" << bm.getLine(2) <<"]" <<endl;
+			assert(!(bm.getLine(2).compare("eeeee")));
+
     		cout << "Get line [" << bm.getLine(3) <<"]" <<endl;
+			assert(!(bm.getLine(3).compare("uffa")));
+
     		cout << "Get line [" << bm.getLine(4) <<"]" <<endl;
+			assert(!(bm.getLine(5).compare("uffa")));
     	}
     	NEWT{
-				string messaggio ="INVITE sip:gugli@lucent.com SIP/2.0\nVia: SIP/2.0/UDP 192.168.0.3:6003;rport;branch=z9hG4bKykvnbfuj\nMax-Forwards: 70\nTo: <sip:gugli@lucent.com>\nFrom: \"Ciccio\" <sip:ciccio@es.atosorigin.com>;tag=qcirp\nCall-ID: tgucxgkqjhkdltj@192.168.0.3\nCSeq: 134 INVITE\nContact: <sip:ciccio@192.168.0.3:6003>\nContent-Type: application/sdp\nAllow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE\nOrganization: ATOS ORIGIN\nSubject: ciao\nSupported: replaces,norefersub,100rel\nUser-Agent: Twinkle/1.1\nContent-Length: 306\n\nv=0\no=ciccio 1320585760 1779093879 IN IP4 192.168.0.3\ns=-\nc=IN IP4 192.168.0.3\nt=0 0\nm=audio 8000 RTP/AVP 98 97 8 0 3 101\na=rtpmap:98 speex/16000\na=rtpmap:97 speex/8000\na=rtpmap:8 PCMA/8000\na=rtpmap:0 PCMU/8000\na=rtpmap:3 GSM/8000\na=rtpmap:101 telephone-event/8000\na=fmtp:101 0-15\na=ptime:20";
+				//string messaggio1 ="INVITE sip:gugli@lucent.com SIP/2.0\nVia: SIP/2.0/UDP 192.168.0.3:6003;rport;branch=z9hG4bKykvnbfuj\nMax-Forwards: 70\nTo: <sip:gugli@lucent.com>\nFrom: \"Ciccio\" <sip:ciccio@es.atosorigin.com>;tag=qcirp\nCall-ID: tgucxgkqjhkdltj@192.168.0.3\nCSeq: 134 INVITE\nContact: <sip:ciccio@192.168.0.3:6003>\nContent-Type: application/sdp\nAllow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE\nOrganization: ATOS ORIGIN\nSubject: ciao\nSupported: replaces,norefersub,100rel\nUser-Agent: Twinkle/1.1\nContent-Length: 306\n\nv=0\no=ciccio 1320585760 1779093879 IN IP4 192.168.0.3\ns=-\nc=IN IP4 192.168.0.3\nt=0 0\nm=audio 8000 RTP/AVP 98 97 8 0 3 101\na=rtpmap:98 speex/16000\na=rtpmap:97 speex/8000\na=rtpmap:8 PCMA/8000\na=rtpmap:0 PCMU/8000\na=rtpmap:3 GSM/8000\na=rtpmap:101 telephone-event/8000\na=fmtp:101 0-15\na=ptime:20";
+				string mess[100] ={
+						"INVITE sip:gugli@lucent.com SIP/2.0",
+						"Via: SIP/2.0/UDP 192.168.0.3:6003;rport;branch=z9hG4bKykvnbfuj",
+						"Max-Forwards: 70",
+						"To: <sip:gugli@lucent.com>",
+						"From: \"Ciccio\" <sip:ciccio@es.atosorigin.com>;tag=qcirp",
+						"Call-ID: tgucxgkqjhkdltj@192.168.0.3",
+						"CSeq: 134 INVITE",
+						"Contact: <sip:ciccio@192.168.0.3:6003>",
+						"Content-Type: application/sdp",
+						"Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE",
+						"Organization: ATOS ORIGIN",
+						"Subject: ciao",
+						"Supported: replaces,norefersub,100rel",
+						"User-Agent: Twinkle/1.1",
+						"Content-Length: 306",
+						"",
+						"v=0",
+						"o=ciccio 1320585760 1779093879 IN IP4 192.168.0.3",
+						"s=-",
+						"c=IN IP4 192.168.0.3",
+						"t=0 0",
+						"m=audio 8000 RTP/AVP 98 97 8 0 3 101",
+						"a=rtpmap:98 speex/16000",
+						"a=rtpmap:97 speex/8000",
+						"a=rtpmap:8 PCMA/8000",
+						"a=rtpmap:0 PCMU/8000",
+						"a=rtpmap:3 GSM/8000",
+						"a=rtpmap:101 telephone-event/8000",
+						"a=fmtp:101 0-15",
+						"a=ptime:20"};
+				string messaggio = mess[0]+"\n"+ mess[1]+"\n"+mess[2]+"\n"+mess[3]+"\n"+mess[4]+"\n"+mess[5]+"\n"+mess[6]+"\n"+mess[7]+"\n"+mess[8]+"\n"+mess[9]+"\n"+mess[10]+"\n"+mess[11]+"\n"+mess[12]+"\n"+mess[13]
+				+"\n"+mess[14]+"\n"+mess[15]+"\n"+mess[16]+"\n"+mess[17]+"\n"+mess[18]+"\n"+mess[19]+"\n"+mess[20]+"\n"+mess[21]+"\n"+mess[22]+"\n"+mess[23]+"\n"+mess[24]+"\n"+mess[25]+"\n"+mess[26]+"\n"+mess[27]+"\n"
+				+mess[28]+"\n"+mess[29];
+
+
+
 				SysTime mytime;
 				GETTIME(mytime);
 				BASEMESSAGE bm(messaggio, mytime);
@@ -999,8 +1053,40 @@ int main(void) {
 				}
     		}
         NEWT{
-    			string messaggio ="INVITE sip:gugli@lucent.com SIP/2.0\nVia: SIP/2.0/UDP 192.168.0.3:6003;rport;branch=z9hG4bKykvnbfuj\nMax-Forwards: 70\nTo: <sip:gugli@lucent.com>\nFrom: \"Ciccio\" <sip:ciccio@es.atosorigin.com>;tag=qcirp\nCall-ID: tgucxgkqjhkdltj@192.168.0.3\nCSeq: 134 INVITE\nContact: <sip:ciccio@192.168.0.3:6003>\nContent-Type: application/sdp\nAllow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE\nOrganization: ATOS ORIGIN\nSubject: ciao\nSupported: replaces,norefersub,100rel\nUser-Agent: Twinkle/1.1\nContent-Length: 306\n\nv=0\no=ciccio 1320585760 1779093879 IN IP4 192.168.0.3\ns=-\nc=IN IP4 192.168.0.3\nt=0 0\nm=audio 8000 RTP/AVP 98 97 8 0 3 101\na=rtpmap:98 speex/16000\na=rtpmap:97 speex/8000\na=rtpmap:8 PCMA/8000\na=rtpmap:0 PCMU/8000\na=rtpmap:3 GSM/8000\na=rtpmap:101 telephone-event/8000\na=fmtp:101 0-15\na=ptime:20";
-        		SysTime mytime;
+			string mess[100] ={
+					"INVITE sip:gugli@lucent.com SIP/2.0",
+					"Via: SIP/2.0/UDP 192.168.0.3:6003;rport;branch=z9hG4bKykvnbfuj",
+					"Max-Forwards: 70",
+					"To: <sip:gugli@lucent.com>",
+					"From: \"Ciccio\" <sip:ciccio@es.atosorigin.com>;tag=qcirp",
+					"Call-ID: tgucxgkqjhkdltj@192.168.0.3",
+					"CSeq: 134 INVITE",
+					"Contact: <sip:ciccio@192.168.0.3:6003>",
+					"Content-Type: application/sdp",
+					"Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE",
+					"Organization: ATOS ORIGIN",
+					"Subject: ciao",
+					"Supported: replaces,norefersub,100rel",
+					"User-Agent: Twinkle/1.1",
+					"Content-Length: 306",
+					"",
+					"v=0",
+					"o=ciccio 1320585760 1779093879 IN IP4 192.168.0.3",
+					"s=-",
+					"c=IN IP4 192.168.0.3",
+					"t=0 0",
+					"m=audio 8000 RTP/AVP 98 97 8 0 3 101",
+					"a=rtpmap:98 speex/16000",
+					"a=rtpmap:97 speex/8000",
+					"a=rtpmap:8 PCMA/8000",
+					"a=rtpmap:0 PCMU/8000",
+					"a=rtpmap:3 GSM/8000",
+					"a=rtpmap:101 telephone-event/8000",
+					"a=fmtp:101 0-15",
+					"a=ptime:20"};
+				string messaggio = mess[0]+"\n"+ mess[1]+"\n"+mess[2]+"\n"+mess[3]+"\n"+mess[4]+"\n"+mess[5]+"\n"+mess[6]+"\n"+mess[7]+"\n"+mess[8]+"\n"+mess[9]+"\n"+mess[10]+"\n"+mess[11]+"\n"+mess[12]+"\n"+mess[13]
+				+"\n"+mess[14]+"\n"+mess[15]+"\n"+mess[16]+"\n"+mess[17]+"\n"+mess[18]+"\n"+mess[19]+"\n"+mess[20]+"\n"+mess[21]+"\n"+mess[22]+"\n"+mess[23]+"\n"+mess[24]+"\n"+mess[25]+"\n"+mess[26]+"\n"+mess[27]+"\n"
+				+mess[28]+"\n"+mess[29];SysTime mytime;
         		GETTIME(mytime);
         		MESSAGE bm(messaggio, mytime);
 

@@ -51,9 +51,9 @@
 // *****************************************************************************************
 // *****************************************************************************************
 BASEMESSAGE::BASEMESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock,
-                    struct sockaddr_in _echoClntAddr){
+                    sockaddr_inX _echoClntAddr):
+                    incMessBuff(_incMessBuff){
 
-	incMessBuff=_incMessBuff;
 	genEntity = _genEntity;
 	inc_ts = _inc_ts;
 	sock = _sock;
@@ -63,7 +63,8 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, i
 
 	return;
 }
-BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts){
+BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
+						incMessBuff(_incMessBuff){
 	//TODO only for test
 	incMessBuff=_incMessBuff;
 
@@ -146,7 +147,12 @@ string &BASEMESSAGE::getLine(int pos){
 
     return(flex_line[pos]);
 }
-
+string &BASEMESSAGE::getIncBuffer(void){
+	return incMessBuff;
+}
+int BASEMESSAGE::getGenEntity(void){
+	return genEntity;
+}
 
 
 // *****************************************************************************************

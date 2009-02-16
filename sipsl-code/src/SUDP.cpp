@@ -19,6 +19,13 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
+
+#include <vector>
+#include <string>
+#include <map>
+#include <assert.h>
+#include <sys/types.h>
+#include <stack>
 #include <pthread.h>
 #include <unistd.h>
 #include <iostream>
@@ -27,10 +34,24 @@
 #include <sys/socket.h> /* for socket() and bind() */
 #include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
 #include <stdlib.h>     /* for atoi() and exit() */
-#include <string.h>     /* for memset() */
 
 #ifndef UTIL_H
 #include "UTIL.h"
+#endif
+#ifndef SPIN_H
+#include "SPIN.h"
+#endif
+#ifndef ENGINE_H
+#include "ENGINE.h"
+#endif
+#ifndef SUDP_H
+#include "SUDP.h"
+#endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
 #endif
 
 // *****************************************************************************************
@@ -75,7 +96,7 @@ SUDP * SUDP::getInstance(void){
 	if (instance == NULL){
 		instance = new SUDP;
 	}
-	return & instance;
+	return instance;
 }
 
 void SUDP::init(int _port, ENGINE *_ra, string _domain){
@@ -84,7 +105,7 @@ void SUDP::init(int _port, ENGINE *_ra, string _domain){
 
     domain = _domain;
 
-    _ENGINE = ra;
+    _ENGINE = _ra;
 
     echoServPort = _port;
 
@@ -146,18 +167,19 @@ void SUDP::listen() {
             DEBERROR("rcvfrom() failed")
             return;
         }
+		SysTime mytime;
+		GETTIME(mytime);
+		MESSAGE im(echoBuffer, mytime);
+		//im.etGenEntity = SODE_APOINT;
 
-		MESSAGE im(echoBuffer,sock, echoClntAddr);
-		im.source = SODE_APOINT;
+		//GETTIME(im.in_ts)
 
-		GETTIME(im.in_ts)
+		DEBOUT("Incoming",im.getIncBuffer())
 
-		DEBOUT("Incoming",im.incomingMessage)
-
-		DECTIME
-		STARTTIME
+		//DECTIME
+		//STARTTIME
 		_ENGINE->p_w(im);
-		ENDTIME
+		//ENDTIME
 
 	}
 }

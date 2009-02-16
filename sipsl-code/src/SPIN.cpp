@@ -29,9 +29,31 @@
 // *****************************************************************************************
 
 
+#include <vector>
+#include <string>
+#include <pthread.h>
+#include <unistd.h>
+#include <iostream>
+#include <stdio.h>
+#include <map>
+
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <stack>
+
+
 #ifndef SPIN_H
 #include "SPIN.h"
 #endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
+#ifndef ENGINE_H
+#include "ENGINE.h"
+#endif
+
 
 ROTQ::ROTQ(void) {
 
@@ -55,7 +77,7 @@ void ROTQ::put(MESSAGE m) {
         DEBOUT("ERROR not write buffer","")
         return;
     }
-    Q[top] = m;
+    Q[top] = &m;
 
     top ++ ;
     top = top % ARR;
@@ -70,16 +92,16 @@ void ROTQ::put(MESSAGE m) {
     }
 }
 MESSAGE ROTQ::get(void) {
-    MESSAGE m;
-    if (state != RR) {
-        m.id = -55555;
+    MESSAGE *m;
+    if (state != SPIN_RR) {
+        m->id = -55555;
         DEBOUT("ERROR not read buffer","")
-        return m;
+        return *m;
     }
     if (bot == top ) {
         DEBOUT(" top = bot ", "")
-        m.id = -99999;
-        return m;
+        m->id = -99999;
+        return *m;
     }
     else {
 
@@ -87,7 +109,7 @@ MESSAGE ROTQ::get(void) {
         bot ++;
         bot = bot % ARR;
     }
-    return m;
+    return *m;
 }
 bool ROTQ::isEmpty(void) {
     return bot == top;
@@ -143,7 +165,7 @@ void SPINB::put(MESSAGE m) {
 }
 MESSAGE SPINB::get(void) {
     // MUTEX
-    MESSAGE m;
+    MESSAGE *m;
 
     int nextbuff = (readbuff + 1);
     nextbuff = nextbuff % 3;
@@ -154,9 +176,9 @@ MESSAGE SPINB::get(void) {
             Q[readbuff].setState(SPIN_FF);
             readbuff = nextbuff;
     }
-    m = Q[readbuff].get();
+    m = &Q[readbuff].get();
     pthread_mutex_unlock(&readmu);
-    if (m.id != -99999) {
+    if (m->id != -99999) {
         pthread_mutex_lock(&mudim);
         DIM--;
         pthread_mutex_unlock(&mudim);
@@ -164,7 +186,7 @@ MESSAGE SPINB::get(void) {
     }
 
 
-    return m;
+    return *m;
 }
 
 void SPINB::move(void) {

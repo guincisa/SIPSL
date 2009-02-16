@@ -25,6 +25,19 @@
 *****************************************************/
 #define ENGINE_H
 
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+
+class ThreadWrapper {
+    public:
+        pthread_t thread;
+        pthread_mutex_t mutex;
+        ThreadWrapper();
+};
+
+
+
 using namespace std;
 
 class ENGINE;
@@ -39,17 +52,25 @@ class ENGINE {
 	private:
 
 		ENGINE * instance;
-		ENGINE(void);
 
-    	SPINB sb;
+
+
 		ThreadWrapper * parsethread[5];
-		//pure virtual only after end of tests
-		// virtual void parse(MESSAGE) = 0;
-		virtual void parse(MESSAGE);
 
     public:
+
+#ifdef TESTING
+		virtual void parse(MESSAGE message);
+#else
+		virtual void parse(MESSAGE) = 0;
+#endif
+
+
     	void p_w(MESSAGE message);
 
+    	SPINB sb;
+
+		ENGINE(void);
 };
 
 

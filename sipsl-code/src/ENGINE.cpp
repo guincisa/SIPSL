@@ -20,11 +20,38 @@
 //**********************************************************************************
 //**********************************************************************************
 
+#include <vector>
+#include <string>
+#include <pthread.h>
+#include <unistd.h>
+#include <iostream>
+#include <stdio.h>
+#include <map>
+
+#include <assert.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <stack>
+
+
+#ifndef SPIN_H
+#include "SPIN.h"
+#endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
 #ifndef ENGINE_H
 #include "ENGINE.h"
 #endif
 
+
 extern "C" void* threadparser (void*);
+
+ThreadWrapper::ThreadWrapper(void) {
+    pthread_mutex_init(&mutex, NULL);
+    return;
+};
 
 //**********************************************************************************
 //**********************************************************************************
@@ -92,20 +119,21 @@ void * threadparser (void * _pt){
     int id = pt->id;
     ENGINE * ps = pt->ps;
     int res;
-    MESSAGE m;
+    MESSAGE *m=NULL;
     while(true) {
         pthread_mutex_lock(&(ps->sb.condvarmutex));
         while(ps->sb.isEmpty() ) {
             DEBOUT("ENGINE thread isempty","")
             pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
         }
-        m = ps->sb.get();
-        if (m.id == -99999)  {
+        //TODO NEW CODE
+        m = & ps->sb.get();
+        if (m->id == -99999)  {
             DEBOUT("ENGINE thread 999999","")
             ps->sb.move();
         }
         else {
-            pt->ps->parse(m);
+            pt->ps->parse(*m);
         }
         pthread_mutex_unlock(&(ps->sb.condvarmutex));
     }

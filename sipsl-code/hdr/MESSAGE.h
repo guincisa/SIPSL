@@ -60,6 +60,8 @@ using namespace std;
 //// BASEMESSAGE
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+typedef struct sockaddr_in sockaddr_inX;
 class BASEMESSAGE {
 
     public:
@@ -71,18 +73,24 @@ class BASEMESSAGE {
         string &getLine(int);
         int getTotLines(void);
 
+        int id; //Used in spin buffer
+
+        string &getIncBuffer(void);
+
+        int getGenEntity(void);
+
     protected:
         int genEntity;
         vector<string> flex_line;
         SysTime inc_ts;
 
     private:
-        string incMessBuff;
+        string & incMessBuff;
 
         // reply network info
 
         int sock;
-        struct sockaddr_in echoClntAddr;
+        sockaddr_inX echoClntAddr;
 
     private:
 
