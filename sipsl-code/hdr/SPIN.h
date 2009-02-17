@@ -44,7 +44,7 @@ class SPINB;
 ///////////////////////////////////////////////////////////////////////////////
 class ROTQ {
     private:
-        MESSAGE *Q[ARR];
+        MESSAGE* Q[ARR];
         int top,bot; // da scrivere, da leggere
         int state;
         SPINB *sb;
@@ -54,8 +54,8 @@ class ROTQ {
         void setSpinb(SPINB *);
         void setState(int);
         int getState(void);
-        void put(MESSAGE);
-        MESSAGE get(void);
+        void put(MESSAGE*);
+        MESSAGE* get(void);
         bool isEmpty(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,8 +79,8 @@ class SPINB {
     pthread_cond_t condvar;
 
     SPINB(void);
-    void put(MESSAGE);
-    MESSAGE get(void);
+    void put(MESSAGE*);
+    MESSAGE* get(void);
     void move(void);
     bool isEmpty(void);
 };

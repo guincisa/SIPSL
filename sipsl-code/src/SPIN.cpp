@@ -2,7 +2,7 @@
 //**********************************************************************************
 //**********************************************************************************
 // SIPCSL Sip Core And Service Layer
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -71,13 +71,13 @@ int ROTQ::getState() {
 void ROTQ::setState(int s) {
     state = s;
 }
-void ROTQ::put(MESSAGE m) {
+void ROTQ::put(MESSAGE* m) {
 
     if (state != SPIN_WW) {
         DEBOUT("ERROR not write buffer","")
         return;
     }
-    Q[top] = &m;
+    Q[top] = m;
 
     top ++ ;
     top = top % ARR;
@@ -91,25 +91,23 @@ void ROTQ::put(MESSAGE m) {
         bot = bot % ARR;
     }
 }
-MESSAGE ROTQ::get(void) {
-    MESSAGE *m;
+MESSAGE* ROTQ::get(void) {
+
     if (state != SPIN_RR) {
-        m->id = -55555;
         DEBOUT("ERROR not read buffer","")
-        return *m;
+        return NULL;
     }
     if (bot == top ) {
-        DEBOUT(" top = bot ", "")
-        m->id = -99999;
-        return *m;
+        DEBOUT(" top = bot ", "");
+        return NULL;
     }
     else {
 
-        m = Q[bot];
+    	MESSAGE* m = Q[bot];
         bot ++;
         bot = bot % ARR;
+        return m;
     }
-    return *m;
 }
 bool ROTQ::isEmpty(void) {
     return bot == top;
@@ -141,7 +139,7 @@ SPINB::SPINB(void) {
 bool SPINB::isEmpty(void) {
     return (Q[0].isEmpty() && Q[1].isEmpty() && Q[2].isEmpty());
 }
-void SPINB::put(MESSAGE m) {
+void SPINB::put(MESSAGE* m) {
     // mutex if multi thread
     //
     //cout << "         PUT writebuff " << writebuff << " mess " << m.id << endl;
@@ -163,9 +161,8 @@ void SPINB::put(MESSAGE m) {
     DIM++;
     pthread_mutex_unlock(&mudim);
 }
-MESSAGE SPINB::get(void) {
+MESSAGE* SPINB::get(void) {
     // MUTEX
-    MESSAGE *m;
 
     int nextbuff = (readbuff + 1);
     nextbuff = nextbuff % 3;
@@ -176,9 +173,9 @@ MESSAGE SPINB::get(void) {
             Q[readbuff].setState(SPIN_FF);
             readbuff = nextbuff;
     }
-    m = &Q[readbuff].get();
+    MESSAGE* m = Q[readbuff].get();
     pthread_mutex_unlock(&readmu);
-    if (m->id != -99999) {
+    if (m != NULL) {
         pthread_mutex_lock(&mudim);
         DIM--;
         pthread_mutex_unlock(&mudim);
@@ -186,7 +183,7 @@ MESSAGE SPINB::get(void) {
     }
 
 
-    return *m;
+    return m;
 }
 
 void SPINB::move(void) {

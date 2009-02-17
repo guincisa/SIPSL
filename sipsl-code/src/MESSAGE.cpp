@@ -177,6 +177,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	reqRep = 0;
 }
 //ONLY FOR TEST
+#ifdef TESTING
 MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
 	BASEMESSAGE(_incMessBuff, inc_ts),
 	headSipRequest("",0),
@@ -188,8 +189,11 @@ MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
 	headCallId("",0),
 	headCSeq("",0){
 
+	//assert(0);
+
 	reqRep = 0;
 }
+#endif
 int MESSAGE::getReqRepType(void){
 
 	if (reqRep != 0)

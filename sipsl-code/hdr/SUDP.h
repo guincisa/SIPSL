@@ -37,36 +37,37 @@
 
 
 
-//**********************************************************************************
-//**********************************************************************************
-class ParseEx {
-    public:
-    string error;
-    ParseEx(string);
-};
+////**********************************************************************************
+////**********************************************************************************
+//class ParseEx {
+//    public:
+//    string error;
+//    ParseEx(string);
+//};
 
-//**********************************************************************************
-//**********************************************************************************
+////**********************************************************************************
+////**********************************************************************************
 class SUDP;
-
+//
 //**********************************************************************************
 //**********************************************************************************
 typedef struct tuple {
-    SUDP *st;
+    SUDP * st;
 } SUDPtuple;
 //**********************************************************************************
 //**********************************************************************************
+//SUDP
+//Runs on two threads one for
+//listening messages one for
+//commands
+//**********************************************************************************
+//**********************************************************************************
 class SUDP {
-    //TODO must be singleton
-    //
-    //Must run on two threads one for
-    //listening messages one for
-    //commands
+
     public:
-        //SUDP stack
 
         // Init stack
-        void init(int _PORT, ENGINE *_ENGINE,string);
+        void init(int PORT, ENGINE *ENGINE, string domain);
 
         // Start call processing
         void start(void);
@@ -74,35 +75,29 @@ class SUDP {
         // Suspend call processing, finish active calls
         //void suspend(void);
 
-        // Suspend call processing
+        // Suspend call processing including active calls and purge
         //void abort(void);
 
         // listen is threaded
         void listen(void);
-
         string getDomain(void);
+        //SUDP * getInstance(void);
+    	//SUDP(void);
 
-        SUDP * getInstance(void);
+        MESS_TABLE globalMessTable;
 
-
-    	SUDP(void);
 
     private:
 
-
-    	SUDP * instance;
-
-        ENGINE *_ENGINE;
-
+    	//SUDP * instance;
+        ENGINE * engine;
         ThreadWrapper *listenerThread;
-
         string domain;
-
         int sock;
-        struct sockaddr_in echoServAddr;
+        sockaddr_inX echoServAddr;
         unsigned short echoServPort;
         unsigned int cliAddrLen;
-        struct sockaddr_in echoClntAddr;
+        sockaddr_inX echoClntAddr;
         char echoBuffer[ECHOMAX];
         int recvMsgSize;
 };

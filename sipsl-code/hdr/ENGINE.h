@@ -2,7 +2,7 @@
 //**********************************************************************************
 //**********************************************************************************
 // SIPSL Sip Service Layer
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -28,45 +28,46 @@
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
-
+//**********************************************************************************
+using namespace std;
+//**********************************************************************************
 class ThreadWrapper {
     public:
         pthread_t thread;
         pthread_mutex_t mutex;
         ThreadWrapper();
 };
-
-
-
-using namespace std;
-
+//**********************************************************************************
 class ENGINE;
-
+//**********************************************************************************
 typedef struct _ENGtuple {
     ENGINE * ps;
     int id;
 } ENGtuple;
-
+//**********************************************************************************
+//**********************************************************************************
+//ENGINE
+//
+//**********************************************************************************
+//**********************************************************************************
 class ENGINE {
 
 	private:
 
 		ENGINE * instance;
 
-
-
 		ThreadWrapper * parsethread[5];
 
     public:
 
 #ifdef TESTING
-		virtual void parse(MESSAGE message);
+		virtual void parse(MESSAGE* message);
 #else
-		virtual void parse(MESSAGE) = 0;
+		virtual void parse(MESSAGE* message) = 0;
 #endif
 
 
-    	void p_w(MESSAGE message);
+    	void p_w(MESSAGE* message);
 
     	SPINB sb;
 

@@ -94,21 +94,26 @@ ENGINE::ENGINE(void) {
 }
 //**********************************************************************************
 //**********************************************************************************
-void ENGINE::parse(MESSAGE m) {
+void ENGINE::parse(MESSAGE* m) {
     DEBERROR("ENGINE::parse illegal invocation")
+#ifndef TESTING
     assert(0);
-    //cout << "RATYPE::parseMessage " << message[i].incomingMessage << endl;
-    // invoke AC?
+#endif
 }
 //**********************************************************************************
 //**********************************************************************************
-void ENGINE::p_w(MESSAGE m) {
+void ENGINE::p_w(MESSAGE* _m) {
 
     pthread_mutex_lock(&(sb.condvarmutex));
-    sb.put(m);
+
+    sb.put(_m);
+
     pthread_cond_signal(&(sb.condvar));
+
     pthread_mutex_unlock(&(sb.condvarmutex));
+
     return;
+
 }
 
 //**********************************************************************************
@@ -119,7 +124,6 @@ void * threadparser (void * _pt){
     int id = pt->id;
     ENGINE * ps = pt->ps;
     int res;
-    MESSAGE *m=NULL;
     while(true) {
         pthread_mutex_lock(&(ps->sb.condvarmutex));
         while(ps->sb.isEmpty() ) {
@@ -127,13 +131,13 @@ void * threadparser (void * _pt){
             pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
         }
         //TODO NEW CODE
-        m = & ps->sb.get();
-        if (m->id == -99999)  {
-            DEBOUT("ENGINE thread 999999","")
+        MESSAGE* m = ps->sb.get();
+        if (m == NULL)  {
+            DEBOUT("ENGINE thread NULL","")
             ps->sb.move();
         }
         else {
-            pt->ps->parse(*m);
+            pt->ps->parse(m);
         }
         pthread_mutex_unlock(&(ps->sb.condvarmutex));
     }

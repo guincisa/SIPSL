@@ -51,5 +51,7 @@ typedef struct {
 
 #define DEBOUT(m1,m2)  cout << "DEBOUT " << __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]"<< endl;
 #define DEBERROR(m1)  cout << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]"<< endl;
+#define DEBY  cout << "DEBY " << __FILE__ <<" " <<__LINE__<< endl;
+
 
 

@@ -54,11 +54,13 @@
 #include "MESSAGE.h"
 #endif
 
-// *****************************************************************************************
-// ************************************
-ParseEx::ParseEx(string s) {
-    error = s;
-}
+pthread_mutex_t messTableMtx;
+
+//// *****************************************************************************************
+//// ************************************
+//ParseEx::ParseEx(string s) {
+//    error = s;
+//}
 // *****************************************************************************************
 
 
@@ -86,26 +88,26 @@ DEBOUT("SUDPSTACK started","")
 // SUDP
 // Initialize Stack
 // *****************************************************************************************
-// *****************************************************************************************
-SUDP::SUDP(void) {
-	instance == NULL;
-}
+//// *****************************************************************************************
+//SUDP::SUDP(void) {
+////	instance == NULL;
+//}
 
-SUDP * SUDP::getInstance(void){
+//SUDP * SUDP::getInstance(void){
+//
+//	if (instance == NULL){
+//		instance = new SUDP;
+//	}
+//	return instance;
+//}
 
-	if (instance == NULL){
-		instance = new SUDP;
-	}
-	return instance;
-}
-
-void SUDP::init(int _port, ENGINE *_ra, string _domain){
+void SUDP::init(int _port, ENGINE *_engine, string _domain){
 
     DEBOUT("SUDP init",_domain)
 
     domain = _domain;
 
-    _ENGINE = _ra;
+    engine = _engine;
 
     echoServPort = _port;
 
@@ -120,6 +122,9 @@ void SUDP::init(int _port, ENGINE *_ra, string _domain){
     echoServAddr.sin_family = AF_INET;                /* Internet address family */
     echoServAddr.sin_addr.s_addr = htonl(INADDR_ANY); /* Any incoming interface */
     echoServAddr.sin_port = htons(echoServPort);      /* Local port */
+
+    //Init other things
+    pthread_mutex_init(&messTableMtx,NULL);
 
     /* Bind to the local address */
     if (bind(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
@@ -144,7 +149,7 @@ void SUDP::start(void) {
     listenerThread = new ThreadWrapper;
     SUDPtuple *t1;
     t1 = new SUDPtuple;
-    t1->st = this;;
+    t1->st = this;
     // TODO ???
     int res;
     res = pthread_create(&(listenerThread->thread), NULL, SUDPSTACK, (void *) t1 );
@@ -154,36 +159,74 @@ void SUDP::start(void) {
 // *****************************************************************************************
 // Listen to network
 // *****************************************************************************************
-// *****************************************************************************************
 void SUDP::listen() {
-    for (;;) /* Run forever */ {
+
+	char bu[512];
+
+    for (;;){
         /* Set the size of the in-out parameter */
         cliAddrLen = sizeof(echoClntAddr);
 
         /* Block until receive message from a client */
         memset(&echoBuffer, 0x0, ECHOMAX);   /* Zero out structure */
+
         if ((recvMsgSize = recvfrom(sock, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
-            DEBERROR("rcvfrom() failed")
+            DEBERROR("SUDP::listen() rcvfrom() failed")
             return;
         }
-		SysTime mytime;
-		GETTIME(mytime);
-		MESSAGE im(echoBuffer, mytime);
-		//im.etGenEntity = SODE_APOINT;
 
-		//GETTIME(im.in_ts)
+        //Message handling
+		SysTime inTime;
+		GETTIME(inTime);
+		MESSAGE* message;
+		message = new MESSAGE(echoBuffer, SODE_APOINT, inTime, sock, echoClntAddr);
+DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer())
 
-		DEBOUT("Incoming",im.getIncBuffer())
+		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
+		string key(bu);
+DEBOUT("",bu)
+		pthread_mutex_lock(&messTableMtx);
+		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
+		pthread_mutex_unlock(&messTableMtx);
+
+
 
 		//DECTIME
 		//STARTTIME
-		_ENGINE->p_w(im);
+		engine->p_w(message);
 		//ENDTIME
 
 	}
 }
-
+//void SUDP::listen() {
+//    for (;;) /* Run forever */ {
+//        /* Set the size of the in-out parameter */
+//        cliAddrLen = sizeof(echoClntAddr);
+//
+//        /* Block until receive message from a client */
+//        memset(&echoBuffer, 0x0, ECHOMAX);   /* Zero out structure */
+//        if ((recvMsgSize = recvfrom(sock, echoBuffer, ECHOMAX, 0,
+//            (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
+//            DEBERROR("rcvfrom() failed")
+//            return;
+//        }
+//		SysTime mytime;
+//		GETTIME(mytime);
+//		MESSAGE im(echoBuffer, mytime);
+//		//im.etGenEntity = SODE_APOINT;
+//
+//		//GETTIME(im.in_ts)
+//
+//		DEBOUT("Incoming",im.getIncBuffer())
+//
+//		//DECTIME
+//		//STARTTIME
+//		engine->p_w(im);
+//		//ENDTIME
+//
+//	}
+//}
 // *****************************************************************************************
 // getDomain
 // *****************************************************************************************
