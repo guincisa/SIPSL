@@ -49,6 +49,7 @@ using namespace std;
 
 #define MAXLINES 50
 
+//Type of request or reply
 #define REQSUPP 1
 #define REQUNSUPP 3
 #define REPSUPP 2

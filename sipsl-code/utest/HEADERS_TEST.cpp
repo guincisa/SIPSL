@@ -1151,6 +1151,31 @@ int main(void) {
         		cout << "Request " << bm->getHeadSipRequest().getC_AttSipUri().getContent() << endl;
         		cout << "Request " << bm->getHeadSipRequest().getS_AttSipVersion().getVersion() << endl;
         	}
+        NEWT{
+			string mess[7] ={
+					"SIP/2.0 100 Trying",
+					"To: \"gi4@lucent.com\"<sip:gi4@lucent.com>",
+					"From: \"DISNAME\"<sip:USNAME@lucent.com;tag=123473974390070",
+					"Call-ID: 834ohfjkohfp8finizjjivwfjhiovsnvsòsspiohufw8h@pippo.com",
+					"CSeq: 1 INVITE",
+					"Via: SIP/2.0/UDP 192.168.0.3:6003;rport;branch=z9hG4bKykvnbfuj",
+					"Content-Length: 0"};
+				string messaggio = mess[0]+"\n"+ mess[1]+"\n"+mess[2]+"\n"+mess[3]+"\n"+mess[4]+"\n"+mess[5]+"\n"+mess[6]+"\n"+mess[7];
+				SysTime mytime;
+        		GETTIME(mytime);
+        		MESSAGE* bm;
+        		bm = new MESSAGE(messaggio, mytime);
+
+        		cout << "Mess [" << messaggio <<"]" << endl;
+        		cout << "Tot lines " << bm->getTotLines() << endl;
+        		int i ;
+        		for(i = 0; i <bm->getTotLines(); i++){
+        			cout << "Get line [" << bm->getLine(i) <<"]" <<endl;
+        		}
+        		cout << "Request " << bm->getHeadSipRequest().getS_AttMethod().getMethodName() << endl;
+        		cout << "Request " << bm->getHeadSipRequest().getC_AttSipUri().getContent() << endl;
+        		cout << "Request " << bm->getHeadSipRequest().getS_AttSipVersion().getVersion() << endl;
+        	}
 
     	}
     return 0;

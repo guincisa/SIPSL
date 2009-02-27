@@ -26,28 +26,37 @@
   messages must inherit from MESSAGE
   SIPENGINE class must inherit from ENGINE
 ************************************************************/
+#define SIPENGINE_H
+
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+#ifndef SUDP_H
+#include "SUDP.h"
+#endif
 
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
 //TODO singleton
 class SIPENGINE : public ENGINE {
+
     public:
 
         // link on this the SL_CC engine
-        void associateSL_CC(ENGINE *);
-        void parse(MESSAGE);
+        void linkSL_CC(ENGINE *);
+        void parse(MESSAGE *);
 
-        void associateSIPSTACK(SUDP *);
+        void linkSUDP(SUDP *);
 
         // start AC listener
-        void start(void);
+        //void start(void);
 
         ENGINE * getSL_CC(void);
 
     private:
-        ENGINE *_SL_CC;
-        SUDP * sipStack;
+        ENGINE *sl_cc;
+        SUDP * sudp;
 };
 //**********************************************************************************
 //**********************************************************************************

@@ -22,6 +22,9 @@
 #ifndef ENGINE_H
 #include "ENGINE.h"
 #endif
+#ifndef SIPENGINE_H
+#include "SIPENGINE.h"
+#endif
 #ifndef SUDP_H
 #include "SUDP.h"
 #endif
@@ -41,7 +44,7 @@ int main(void) {
 
 	SUDP mystack;
 
-	ENGINE gg;
+	SIPENGINE gg;
 
 	mystack.init(5061, &gg, "gugli.com");
 
