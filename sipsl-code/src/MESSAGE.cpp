@@ -195,10 +195,8 @@ MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
 }
 #endif
 int MESSAGE::getReqRepType(void){
-
 	if (reqRep != 0)
 		return reqRep;
-
 	if(flex_line[0].substr(0,3).compare("SIP")){
 		headSipReply.setContent(flex_line[0],genEntity);
 		reqRep = REPSUPP;

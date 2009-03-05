@@ -33,6 +33,9 @@
 #include <arpa/inet.h>
 #include <stack>
 
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
@@ -60,8 +63,16 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	//B2BUA, NGApplication, SBC
 
+	//Requet or Reply
 	//check requests or reply
-	int type = mess->getReqRepType();
+	DEBOUT("SIPENGINE::parse",_mess->getIncBuffer())
+
+	int tl = _mess->getTotLines();
+	DEBOUT("SIPENGINE::parse tot lines",tl)
+
+	int type = _mess->getReqRepType();
+	DEBOUT("SIPENGINE::parse tot type",type)
+
 	if ( type == REQSUPP) {
 
 		int method = _mess->getHeadSipRequest().getS_AttMethod().getMethodID();
@@ -74,6 +85,7 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 			pthread_mutex_unlock(&messTableMtx);
 			delete _mess;
 			*/
+			DEBOUT("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
 			return;
 		}
 
