@@ -44,6 +44,9 @@
 #ifndef ENGINE_H
 #include "ENGINE.h"
 #endif
+#ifndef SIPENGINE_H
+#include "SIPENGINE.h"
+#endif
 #ifndef SUDP_H
 #include "SUDP.h"
 #endif
@@ -53,8 +56,6 @@
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
-
-pthread_mutex_t messTableMtx;
 
 //// *****************************************************************************************
 //// ************************************
@@ -132,7 +133,9 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain){
         return;
     }
 
-DEBOUT("SUDP init done","")
+    _engine->linkSUDP(this);
+
+    DEBOUT("SUDP init done","")
 
     return;
 }
@@ -181,11 +184,12 @@ void SUDP::listen() {
 		GETTIME(inTime);
 		MESSAGE* message;
 		message = new MESSAGE(echoBuffer, SODE_APOINT, inTime, sock, echoClntAddr);
-DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer())
+		DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer())
 
 		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 		string key(bu);
-DEBOUT("",bu)
+		message->setKey(key);
+		DEBOUT("",bu)
 		pthread_mutex_lock(&messTableMtx);
 		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
 		pthread_mutex_unlock(&messTableMtx);

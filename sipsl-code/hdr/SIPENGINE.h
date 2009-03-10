@@ -31,9 +31,6 @@
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
-#ifndef SUDP_H
-#include "SUDP.h"
-#endif
 
 //**********************************************************************************
 //**********************************************************************************
@@ -47,7 +44,6 @@ class SIPENGINE : public ENGINE {
         void linkSL_CC(ENGINE *);
         void parse(MESSAGE *);
 
-        void linkSUDP(SUDP *);
 
         // start AC listener
         //void start(void);
@@ -56,7 +52,7 @@ class SIPENGINE : public ENGINE {
 
     private:
         ENGINE *sl_cc;
-        SUDP * sudp;
+
 };
 //**********************************************************************************
 //**********************************************************************************

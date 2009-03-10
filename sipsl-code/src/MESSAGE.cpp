@@ -153,6 +153,12 @@ string &BASEMESSAGE::getIncBuffer(void){
 int BASEMESSAGE::getGenEntity(void){
 	return genEntity;
 }
+string &BASEMESSAGE::getKey(void){
+	return key;
+}
+void BASEMESSAGE::setKey(string _key){
+	key = _key;
+}
 
 
 // *****************************************************************************************

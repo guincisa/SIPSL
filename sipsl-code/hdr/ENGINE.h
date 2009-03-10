@@ -31,15 +31,13 @@
 #ifndef SPIN_H
 #include "SPIN.h"
 #endif
+#ifndef SUDP_H
+#include "SUDP.h"
+#endif
 //**********************************************************************************
 using namespace std;
 //**********************************************************************************
-class ThreadWrapper {
-    public:
-        pthread_t thread;
-        pthread_mutex_t mutex;
-        ThreadWrapper();
-};
+
 //**********************************************************************************
 class ENGINE;
 //**********************************************************************************
@@ -61,6 +59,10 @@ class ENGINE {
 
 		ThreadWrapper * parsethread[5];
 
+	protected:
+
+        SUDP * sudp;
+
     public:
 
 #ifdef TESTING
@@ -69,6 +71,7 @@ class ENGINE {
 		virtual void parse(MESSAGE* message) = 0;
 #endif
 
+        void linkSUDP(SUDP *);
 
     	void p_w(MESSAGE* message);
 

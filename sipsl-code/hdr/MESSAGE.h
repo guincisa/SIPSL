@@ -80,6 +80,9 @@ class BASEMESSAGE {
 
         int getGenEntity(void);
 
+        string &getKey(void);
+        void setKey(string key);
+
     protected:
         int genEntity;
         vector<string> flex_line;
@@ -94,6 +97,8 @@ class BASEMESSAGE {
         sockaddr_inX echoClntAddr;
 
     private:
+    	//used to store in message map
+    	string key;
 
         void fillLineArray(void);
         int totLines;

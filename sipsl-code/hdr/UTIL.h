@@ -53,5 +53,10 @@ typedef struct {
 #define DEBERROR(m1)  cout << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]"<< endl;
 #define DEBY  cout << "DEBY " << __FILE__ <<" " <<__LINE__<< endl;
 
-
+class ThreadWrapper {
+    public:
+        pthread_t thread;
+        pthread_mutex_t mutex;
+        ThreadWrapper();
+};
 

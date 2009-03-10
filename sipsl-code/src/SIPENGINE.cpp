@@ -59,6 +59,9 @@ void SIPENGINE::linkSL_CC(ENGINE* _sl_cc) {
 }
 //**********************************************************************************
 //**********************************************************************************
+
+//**********************************************************************************
+//**********************************************************************************
 void SIPENGINE::parse(MESSAGE* _mess) {
 
 	//B2BUA, NGApplication, SBC
@@ -71,21 +74,20 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 	DEBOUT("SIPENGINE::parse tot lines",tl)
 
 	int type = _mess->getReqRepType();
-	DEBOUT("SIPENGINE::parse tot type",type)
+	DEBOUT("SIPENGINE::parse type",type)
 
 	if ( type == REQSUPP) {
 
 		int method = _mess->getHeadSipRequest().getS_AttMethod().getMethodID();
 
 		if (method != INVITE_REQUEST && method != BYE_REQUEST && method != ACK_REQUEST) {
-			//discard message
-			/*
-			pthread_mutex_lock(&messTableMtx);
-			globalMessTable.insert(pair<string, MESSAGE*>(key, message));
-			pthread_mutex_unlock(&messTableMtx);
-			delete _mess;
-			*/
+
 			DEBOUT("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
+			pthread_mutex_lock(&sudp->messTableMtx);
+			sudp->globalMessTable.erase(_mess->getKey());
+			pthread_mutex_unlock(&sudp->messTableMtx);
+			delete _mess;
+			DEBOUT("SIPENGINE::parse message discarded ","");
 			return;
 		}
 
@@ -96,10 +98,6 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 	else {
 		//syntax error
 	}
-	int method = _mess->getHeadSipRequest().getS_AttMethod().getMethodID();
-	//check reply
-
-
 }
 ////TODO controllare b2bua
 //
