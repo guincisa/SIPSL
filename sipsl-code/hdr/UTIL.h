@@ -39,7 +39,7 @@ typedef struct {
 	struct timezone tz;
 } SysTime;
 
-#define TESTING
+//#define TESTING
 
 #define ECHOMAX 2048
 

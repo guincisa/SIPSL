@@ -55,7 +55,7 @@ class ENGINE {
 
 	private:
 
-		ENGINE * instance;
+		//
 
 		ThreadWrapper * parsethread[5];
 

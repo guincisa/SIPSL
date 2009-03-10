@@ -25,6 +25,9 @@
 #ifndef SIPENGINE_H
 #include "SIPENGINE.h"
 #endif
+#ifndef SL_CC_H
+#include "SL_CC.h"
+#endif
 #ifndef SUDP_H
 #include "SUDP.h"
 #endif
@@ -45,6 +48,8 @@ int main(void) {
 	SUDP mystack;
 
 	SIPENGINE gg;
+	SL_CC sl_cc;
+	gg.setSL_CC(&sl_cc);
 
 	mystack.init(5061, &gg, "gugli.com");
 

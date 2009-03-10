@@ -40,13 +40,10 @@ class SIPENGINE : public ENGINE {
 
     public:
 
-        // link on this the SL_CC engine
-        void linkSL_CC(ENGINE *);
         void parse(MESSAGE *);
 
-
-        // start AC listener
-        //void start(void);
+        // link on this the SL_CC engine
+        void setSL_CC(ENGINE *);
 
         ENGINE * getSL_CC(void);
 

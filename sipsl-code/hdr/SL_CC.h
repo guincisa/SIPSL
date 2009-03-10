@@ -1,8 +1,8 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer 
-// Copyright (C) 2008 Guglielmo Incisa di Camerana
+// SIPSL Sip Service Layer
+// Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -19,31 +19,28 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
+#define SL_CC_H
 
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
 //**********************************************************************************
 // * SL_CC.h
 // * Call Control
 //**********************************************************************************
 //**********************************************************************************
-// SL_CC 
+// SL_CC
 //**********************************************************************************
 class SL_CC : public ENGINE {
 
     public:
-        void parse(MESSAGE);
-        void sendReply(MESSAGE);
-        void associateSIPSTACK(SUDP *);
-
-        // OCT 13 2008 not needed
-        //SL_CC();
+        void parse(MESSAGE*);
+        //void sendReply(MESSAGE);
 
     private:
-        // not directly used
-        // OCT 13 2008 not needed
-        //SIPENGINE *_SIPENG;
 
-        COMAP *callMap; // array
+    	//COMAP *callMap; // array
         //CO * co; // ??? non corretto
-        SUDP * sipStack;
+        //SUDP * sipStack;
 };
 
