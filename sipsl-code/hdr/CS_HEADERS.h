@@ -717,6 +717,7 @@ class C_HeadCallId : public S_HeadGeneric {
     public:
         Tuple &getCallId(void);
         Tuple copyCallId(void);
+        string getNormCallId(void);
         C_HeadCallId(string content, int getEntity);
 };
 ///////////////////////////////////////////////////////////////////////////////

@@ -77,6 +77,10 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 
 	DEBOUT("SL_CC::parse", _mess->getIncBuffer())
+	_mess->getHeadCallId().getNormCallId();
+
+
+
 
 //    if ( m._ReqLine.getMethodId() == INTERNALS_METHOD) {
 //        DEBOUT("INTERNALS_METHOD","SL_CC::parse")

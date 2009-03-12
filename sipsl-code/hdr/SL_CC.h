@@ -39,6 +39,8 @@ class SL_CC : public ENGINE {
 
     private:
 
+    	COMAP * comap;
+
     	//COMAP *callMap; // array
         //CO * co; // ??? non corretto
         //SUDP * sipStack;

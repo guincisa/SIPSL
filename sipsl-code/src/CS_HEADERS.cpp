@@ -1178,6 +1178,13 @@ Tuple C_HeadCallId::copyCallId(void){
 	}
 	return callId;
 }
+string C_HeadCallId::getNormCallId(void){
+	if (!parsed){
+		doParse();
+	}
+	return content;
+	//return (callId.Lvalue + "@" + callId.Rvalue);
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // HeadCSeq
