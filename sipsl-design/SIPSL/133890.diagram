@@ -143,10 +143,10 @@ durationcanvas 132563 classinstance_ref 129235 // _callmap:COMAP
   xyzwh 595 113 2010 11 50
 end
 durationcanvas 133459 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 760 152 2010 11 57
+  xyzwh 760 151 2010 11 58
 end
 durationcanvas 135665 classinstance_ref 129235 // _callmap:COMAP
-  xyzwh 595 180 2010 11 35
+  xyzwh 595 192 2010 11 35
 end
 durationcanvas 137761 classinstance_ref 134257 // B:PHONE
   xyzwh 1642 1330 2010 11 50
@@ -183,9 +183,6 @@ durationcanvas 140449 classinstance_ref 151554 // Thread:TP
 end
 durationcanvas 140705 classinstance_ref 143043 // sipping:SIPFCTRY
   xyzwh 1493 1533 2010 11 44
-end
-durationcanvas 140739 classinstance_ref 128979 // smsv_x:SL_SM_SV
-  xyzwh 902 155 2010 11 35
 end
 durationcanvas 141251 classinstance_ref 128851 // co_x:SL_CO
   xyzwh 760 212 1995 11 177
@@ -240,9 +237,6 @@ durationcanvas 153474 classinstance_ref 132179 // Thread:TP
 end
 durationcanvas 154626 classinstance_ref 129107 // smcl_y:SL_SM_CL
   xyzwh 1106 419 2010 11 35
-end
-durationcanvas 154882 classinstance_ref 129491 // alo_x:ALO
-  xyzwh 1304 182 2010 11 32
 end
 durationcanvas 155394 classinstance_ref 129235 // _callmap:COMAP
   xyzwh 595 434 2010 11 35
@@ -376,6 +370,12 @@ end
 durationcanvas 170498 classinstance_ref 134257 // B:PHONE
   xyzwh 1642 2020 2010 11 28
 end
+durationcanvas 170882 classinstance_ref 128979 // smsv_x:SL_SM_SV
+  xyzwh 902 166 2010 11 26
+end
+durationcanvas 171138 classinstance_ref 129491 // alo_x:ALO
+  xyzwh 1304 177 2010 11 29
+end
 msg 128770 return
   from durationcanvas_ref 141251
   to durationcanvas_ref 132307
@@ -486,15 +486,15 @@ msg 132819 return
 msg 133587 synchronous
   from durationcanvas_ref 132307
   to durationcanvas_ref 133459
-  yz 159 3020 explicitmsg "<<new,callid_x>>"
+  yz 151 3020 explicitmsg "<<new,callid_x>>"
   show_full_operations_definition default drawing_language default
-  label_xy 638 147
+  label_xy 638 139
 msg 135793 synchronous
   from durationcanvas_ref 132307
   to durationcanvas_ref 135665
-  yz 191 3025 explicitmsg "store(co_x,smsv_x)"
+  yz 195 3025 explicitmsg "store(co_x,smsv_x)"
   show_full_operations_definition default drawing_language default
-  label_xy 559 174
+  label_xy 553 182
 msg 138017 synchronous
   from durationcanvas_ref 137761
   to durationcanvas_ref 137889
@@ -570,12 +570,6 @@ msg 140833 synchronous
   yz 1539 2020 explicitmsg "generate_b2b_200OK(200 OKy, INIVTEx))"
   show_full_operations_definition default drawing_language default
   label_xy 1391 1516
-msg 140867 synchronous
-  from durationcanvas_ref 133459
-  to durationcanvas_ref 140739
-  yz 166 3025 explicitmsg "<<new>>"
-  show_full_operations_definition default drawing_language default
-  label_xy 828 154
 msg 140961 return
   from durationcanvas_ref 140705
   to durationcanvas_ref 140449
@@ -587,7 +581,7 @@ msg 141379 synchronous
   to durationcanvas_ref 141251
   yz 220 2015 explicitmsg "call(INVITEx,s=a,d=smsv_x)"
   show_full_operations_definition default drawing_language default
-  label_xy 631 206
+  label_xy 617 207
 msg 141857 synchronous
   from durationcanvas_ref 140449
   to durationcanvas_ref 141729
@@ -718,12 +712,6 @@ msg 154754 synchronous
   yz 424 2020 explicitmsg "<<new, callid_y>>"
   show_full_operations_definition default drawing_language default
   label_xy 807 412
-msg 155010 synchronous
-  from durationcanvas_ref 133459
-  to durationcanvas_ref 154882
-  yz 190 3030 explicitmsg "<<new>>"
-  show_full_operations_definition default drawing_language default
-  label_xy 1061 178
 msg 155522 synchronous
   from durationcanvas_ref 153474
   to durationcanvas_ref 155394
@@ -1055,6 +1043,18 @@ msg 170754 return
   to durationcanvas_ref 165634
   yz 2018 2025 unspecifiedmsg
   show_full_operations_definition default drawing_language default
+msg 171010 synchronous
+  from durationcanvas_ref 132307
+  to durationcanvas_ref 170882
+  yz 166 3035 explicitmsg "new"
+  show_full_operations_definition default drawing_language default
+  label_xy 824 153
+msg 171266 synchronous
+  from durationcanvas_ref 132307
+  to durationcanvas_ref 171138
+  yz 177 3040 explicitmsg "new"
+  show_full_operations_definition default drawing_language default
+  label_xy 1135 167
 line 128161 -_-_
   from ref 128033 z 1999 to ref 143043
 line 131233 -_-_

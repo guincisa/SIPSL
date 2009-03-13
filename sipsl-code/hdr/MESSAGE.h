@@ -80,11 +80,16 @@ class BASEMESSAGE {
 
         int getGenEntity(void);
 
+        void setDestEntity(int);
+        int getDestEntity(void);
+
+
         string &getKey(void);
         void setKey(string key);
 
     protected:
         int genEntity;
+        int destEntity;
         vector<string> flex_line;
         SysTime inc_ts;
 
@@ -217,4 +222,26 @@ class MESSAGE : public BASEMESSAGE {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 typedef multimap<string, MESSAGE *> MESS_TABLE;
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//// MESSAGE PLACEHOLDER or EMPTYMESSAGE
+//// The empty message is a command sent by the states machines
+//// the SL_CO will generate the full message using the generator
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+class EMPTYMESSAGE {
+
+	private:
+		int method;
+		int destination;
+		int source;
+
+	public:
+		EMPTYMESSAGE(int method, int destination, int source);
+		int getMethod(void);
+		int getDestination(void);
+		int getSource(void);
+};
+
 

@@ -42,16 +42,32 @@ class CALL_OSET {
 		ALO* alo;
 		SL_SM_SV* sl_sm_sv;
 		multimap<string, SL_SM_CL*> mm_sl_sm_cl;
+		ENGINE* engine;
+		string callId_X;
 
 	public:
-		void setSL_CO(SL_CO*);
-		void setALO(ALO*);
-		void setSL_SM_SV(SL_SM_SV*);
+		CALL_OSET(ENGINE*);
+		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
 		SL_SM_SV* getSL_SM_SV(void);
 		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
 		SL_SM_CL* getSL_SM_SL(string callId_Y);
 		ALO* getALO(void);
+};
+//**********************************************************************************
+//**********************************************************************************
+// Call object
+//**********************************************************************************
+//**********************************************************************************
+class SL_CO {
+	public:
+		int placeholder;
+
+		SL_CO(CALL_OSET*);
+
+		CALL_OSET* call_oset;
+
+		void call(MESSAGE*);
 };
 //**********************************************************************************
 //**********************************************************************************
@@ -61,6 +77,8 @@ class CALL_OSET {
 class SL_SM {
 	public:
 		int placeholder;
+
+		ACTION event(MESSAGE*);
 
 //    protected:
 //

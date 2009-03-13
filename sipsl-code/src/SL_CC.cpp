@@ -65,6 +65,13 @@
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
+#ifndef COMAP_H
+#include "COMAP.h"
+#endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
+
 //**********************************************************************************
 //**********************************************************************************
 // 13 OCT 2008 not needed
@@ -77,7 +84,35 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 
 	DEBOUT("SL_CC::parse", _mess->getIncBuffer())
-	_mess->getHeadCallId().getNormCallId();
+
+	CALL_OSET* call_oset = 0x0;
+
+	string callidx = _mess->getHeadCallId().getNormCallId();
+
+	call_oset = getCALL_OSET_SV(callidx);
+	if (call_oset = 0x0) {
+		//new call
+		DEBOUT("SL_CC::parse", "CALL_OSET creation x side")
+
+		call_oset = new CALL_OSET(this);
+		SL_CO* sl_co = new SL_CO(call_oset);
+		SL_SM_SV* sl_sm_sv = new SL_SM_SV();
+		//NEED USER DEFINED CLASS
+		ALO* alo = new ALO();
+
+		call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
+		DEBOUT("SL_CC::parse", "CALL_OSET created x side")
+
+		comap->setCALL_OSET(callidx, call_oset);
+
+		_mess->setDestEntity(SODE_SMSVPOINT);
+		sl_co->call(_mess);
+		//END.
+
+	} else {
+		//CALL Exists
+	}
+
 
 
 

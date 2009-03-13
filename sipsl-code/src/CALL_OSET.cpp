@@ -1,7 +1,7 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Service Layer
+// SIPSL Sip Core And Service Layer
 // Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -18,34 +18,40 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //**********************************************************************************
 //**********************************************************************************
-//**********************************************************************************
-#define SL_CC_H
-
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
+#ifndef ENGINE_H
+#include "ENGINE.h"
+#endif
+#ifndef SIPENGINE_H
+#include "SIPENGINE.h"
+#endif
+#ifndef SL_CC_H
+#include "SL_CC.h"
+#endif
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
 #ifndef COMAP_H
 #include "COMAP.h"
 #endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
+#ifndef ACTION_H
+#include "ACTION.h"
+#endif
 //**********************************************************************************
-// * SL_CC.h
-// * Call Control
-//**********************************************************************************
-//**********************************************************************************
-// SL_CC
-//**********************************************************************************
-class SL_CC : public ENGINE {
+void SL_CO::call(MESSAGE* _message){
 
-    public:
-        void parse(MESSAGE*);
-        //void sendReply(MESSAGE);
+	DEBOUT("SL_CO::call", _message->getIncBuffer())
 
-    private:
+	SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
 
-    	COMAP* comap;
+	action = sl_sm_sv->event(_message);
 
-    	//COMAP *callMap; // array
-        //CO * co; // ??? non corretto
-        //SUDP * sipStack;
-};
-
+}

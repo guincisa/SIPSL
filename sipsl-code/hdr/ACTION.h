@@ -19,33 +19,34 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-#define SL_CC_H
+
+#define ACTION_H
 
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
-#ifndef COMAP_H
-#include "COMAP.h"
-#endif
-//**********************************************************************************
-// * SL_CC.h
-// * Call Control
-//**********************************************************************************
-//**********************************************************************************
-// SL_CC
-//**********************************************************************************
-class SL_CC : public ENGINE {
 
-    public:
-        void parse(MESSAGE*);
-        //void sendReply(MESSAGE);
 
-    private:
-
-    	COMAP* comap;
-
-    	//COMAP *callMap; // array
-        //CO * co; // ??? non corretto
-        //SUDP * sipStack;
+class SingleAction {
+	private:
+		MESSAGE* message;
+		EMPTYMESSAGE* emessage;
+	public:
+		SingleAction(MESSAGE*);
+		SingleAction(EMPTYMESSAGE*);
+		MESSAGE* getMessage(void);
+		EMPTYMESSAGE* getEmptyMessage(void);
 };
 
+class ACTION {
+
+	private:
+
+		vector<SingleAction>;
+
+	public:
+
+		void addSingleAction(SingleAction);
+		vector<SingleAction> getActionList(void);
+
+};
