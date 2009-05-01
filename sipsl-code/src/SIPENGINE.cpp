@@ -65,7 +65,7 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	//B2BUA, NGApplication, SBC
 
-	//Requet or Reply
+	//Request or Reply
 	//check requests or reply
 	DEBOUT("SIPENGINE::parse",_mess->getIncBuffer())
 

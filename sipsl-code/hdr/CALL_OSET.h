@@ -22,6 +22,12 @@
 
 #define CALL_OSET_H
 
+#ifndef ACTION_H
+#include "ACTION.h"
+#endif
+#ifndef ALO_H
+#include "ALO.h"
+#endif
 /**********************************************************************************
  * CALL_OSET is :
  * 1:1 SL_CO
@@ -33,7 +39,7 @@
 class SL_SM_CL;
 class SL_SM_SV;
 class SL_CO;
-class ALO;
+
 
 class CALL_OSET {
 
@@ -68,6 +74,7 @@ class SL_CO {
 		CALL_OSET* call_oset;
 
 		void call(MESSAGE*);
+
 };
 //**********************************************************************************
 //**********************************************************************************

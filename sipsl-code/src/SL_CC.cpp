@@ -74,10 +74,10 @@
 
 //**********************************************************************************
 //**********************************************************************************
-// 13 OCT 2008 not needed
-//SL_CC::SL_CC(ENGINE * ra) {
-//    _SIPENG = (SIPENGINE*) ra;
-//}
+SL_CC::SL_CC(void) {
+
+	comap = new COMAP();
+}
 //**********************************************************************************
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {
@@ -89,7 +89,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	string callidx = _mess->getHeadCallId().getNormCallId();
 
-	call_oset = getCALL_OSET_SV(callidx);
+	call_oset = comap->getCALL_OSET_SV(callidx);
+
 	if (call_oset = 0x0) {
 		//new call
 		DEBOUT("SL_CC::parse", "CALL_OSET creation x side")

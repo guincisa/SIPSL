@@ -22,6 +22,12 @@
 
 #define MESSAGE_H
 
+#include <stack>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
+
+
 #ifndef UTIL_H
 #include "UTIL.h"
 #endif
@@ -63,6 +69,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef struct sockaddr_in sockaddr_inX;
+
 class BASEMESSAGE {
 
     public:

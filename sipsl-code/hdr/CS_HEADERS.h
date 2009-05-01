@@ -22,6 +22,8 @@
 
 #define CS_HEADERS_H
 
+#include <map>
+#include <vector>
 
 #ifndef UTIL_H
 #include "UTIL.h"
@@ -57,7 +59,9 @@ typedef struct {
     string Lvalue;
     string Rvalue;
 } Tuple;
+
 typedef map<string,string> TupleMap;
+
 inline vector<string> brkSpaces(string s) {
 
     //separate string into words

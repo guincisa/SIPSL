@@ -34,6 +34,9 @@
 #ifndef ENGINE_H
 #include "ENGINE.h"
 #endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
 
 
 ////**********************************************************************************

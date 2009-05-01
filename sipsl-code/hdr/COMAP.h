@@ -22,12 +22,17 @@
 
 #define COMAP_H
 
-//multimap to store callId_X to call object
-typedef multimap<string, CALL_OSET *> COMAP_MM;
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
+
+//map to store callId_X to call object
+typedef map<string, CALL_OSET *> COMAP_MM;
 //multimap to associate callId_Y to callId_X
 typedef multimap<string, string> CALL_ID_Y2X;
 
 
+//TODO MAY 1 2009 to implement
 class COMAP {
 
 	private:

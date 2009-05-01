@@ -42,7 +42,7 @@ class ACTION {
 
 	private:
 
-		vector<SingleAction>;
+		vector<SingleAction> act_item;
 
 	public:
 
