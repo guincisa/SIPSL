@@ -1,7 +1,7 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPSL Sip Core And Service Layer
+// SIPSL Sip Service Layer
 // Copyright (C) 2009 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,8 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //**********************************************************************************
 //**********************************************************************************
+//**********************************************************************************
+
 #include <vector>
 #include <string>
 #include <pthread.h>
@@ -31,6 +33,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <stack>
+
 
 #ifndef UTIL_H
 #include "UTIL.h"
@@ -56,58 +59,68 @@
 #ifndef CALL_OSET_H
 #include "CALL_OSET.h"
 #endif
-#ifndef ACTION_H
-#include "ACTION.h"
-#endif
-#ifndef ALO_H
-#include "ALO.h"
-#endif
 
 //**********************************************************************************
 //**********************************************************************************
-CALL_OSET::CALL_OSET(ENGINE* _engine){
+COMAP::COMAP(void){
 
-	engine = _engine;
+}
+COMAP::~COMAP(void){
+}
+//**********************************************************************************
+//**********************************************************************************
+CALL_OSET* COMAP::getCALL_OSET_SV(string _callId_X){
+
+	DEBOUT("COMAP::getCALL_OSET_SV retrieving ", _callId_X)
+
+	CALL_OSET* tmp = 0x0;
+	map<string, CALL_OSET*>::iterator p;
+	p = comap_mm.find(_callId_X);
+	if (p != comap_mm.end()){
+			tmp = (CALL_OSET*)p->second;
+			DEBOUT("COMAP::getCALL_OSET found ", tmp)
+	}else {
+		DEBOUT("COMAP::getCALL_OSET not found, is a new call", "")
+	}
+	//else return 0x0
+	return tmp;
+}
+//**********************************************************************************
+//**********************************************************************************
+CALL_OSET* COMAP::getCALL_OSET_CL(string _callId_Y){
+
+	DEBOUT("COMAP::getCALL_OSET_CL not implemented ", _callId_Y)
 
 }
 //**********************************************************************************
 //**********************************************************************************
-void CALL_OSET::setSL_X(string _callId_X, SL_CO* _sl_co, SL_SM_SV* _sl_sm_sv, ALO* _alo){
+void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset){
 
-	callId_X = _callId_X;
-	sl_co = _sl_co;
-	sl_sm_sv = _sl_sm_sv;
-	alo = _alo;
+	DEBOUT("COMAP::setCALL_OSET inserting ", _callId_X)
+
+	comap_mm.insert(pair<string, CALL_OSET* >(_callId_X, _call_oset));
 
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
+void COMAP::setY2XCallId(string _callId_Y, string _callId_X){
 
-	return sl_sm_sv;
-}
-//		SL_CO* getSL_CO(void);
-//
-//		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
-//		SL_SM_CL* getSL_SM_SL(string callId_Y);
-//		ALO* getALO(void);
-//**********************************************************************************
-//**********************************************************************************
-SL_CO::SL_CO(CALL_OSET* _call_oset){
-	call_oset = _call_oset;
+	DEBOUT("COMAP::setY2XCallId inserting ", _callId_Y + " " + _callId_X)
+
+	call_id_y2x.insert(pair<string, string>(_callId_Y, _callId_X));
+
 }
 //**********************************************************************************
 //**********************************************************************************
-void SL_CO::call(MESSAGE* _message){
+void COMAP::deleteCALL_OSET(string _callId_X){
 
-	DEBOUT("SL_CO::call", _message->getIncBuffer())
+	DEBOUT("COMAP::deleteCALL_OSET remove ", _callId_X)
 
-	SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
-
-	ACTION action = sl_sm_sv->event(_message);
+	CALL_OSET* tmp = 0x0;
+	map<string, CALL_OSET*>::iterator p;
+	p = comap_mm.find(_callId_X);
+	if (p != comap_mm.end()){
+			comap_mm.erase(p);
+	}
 }
-//**********************************************************************************
-//**********************************************************************************
-ACTION SL_SM::event(MESSAGE* _message){
-	DEBOUT("SL_SM::event", _message->getIncBuffer())
-}
+

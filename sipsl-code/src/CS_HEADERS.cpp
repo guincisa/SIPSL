@@ -24,6 +24,8 @@
 #include <map>
 #include <vector>
 #include <assert.h>
+#include <cstdlib>
+
 
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
@@ -261,7 +263,9 @@ void S_AttReply::setContent(string _code, string _reply) {
         return;
     }
     else {
-        code = atoi(_code.c_str());
+        code = strtol(_code.c_str(),0x0, 0);
+        string tmp = "" + code;
+        DEBOUT("strtol ", _code + " " + tmp)
     }
     parsed = true;
     correct = false;

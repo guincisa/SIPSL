@@ -153,6 +153,9 @@ string &BASEMESSAGE::getIncBuffer(void){
 int BASEMESSAGE::getGenEntity(void){
 	return genEntity;
 }
+void BASEMESSAGE::setDestEntity(int _destEntity){
+	destEntity = _destEntity;
+}
 string &BASEMESSAGE::getKey(void){
 	return key;
 }
@@ -336,18 +339,20 @@ C_HeadFrom &MESSAGE::getHeadFrom(void){
 C_HeadCallId &MESSAGE::getHeadCallId(void){
 
 	if(headCallId_p){
+		DEBOUT("CALL ID already parsed", headCallId.getContent())
 		return headCallId;
 	}
 
 	int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,8).compare("Call-ID:")){
-			headCallId.setContent(flex_line[i],genEntity);
+		if(flex_line[i].substr(0,8).compare("Call-ID:") == 0){
+			headCallId.setContent(flex_line[i].substr(9),genEntity);
 		}
 	}
 	headCallId_p = true;
-		return headCallId;
+	DEBOUT("CALL ID found", headCallId.getContent())
+	return headCallId;
 }
 C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 

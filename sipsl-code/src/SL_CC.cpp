@@ -91,9 +91,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	call_oset = comap->getCALL_OSET_SV(callidx);
 
-	if (call_oset = 0x0) {
+	if (call_oset == 0x0) {
 		//new call
-		DEBOUT("SL_CC::parse", "CALL_OSET creation x side")
+		DEBOUT("SL_CC::parse new call", "CALL_OSET creation x side")
 
 		call_oset = new CALL_OSET(this);
 		SL_CO* sl_co = new SL_CO(call_oset);

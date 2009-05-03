@@ -31,6 +31,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <string.h>
 #include <sys/socket.h> /* for socket() and bind() */
 #include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
 #include <stdlib.h>     /* for atoi() and exit() */
@@ -185,11 +186,11 @@ void SUDP::listen() {
 		MESSAGE* message;
 		message = new MESSAGE(echoBuffer, SODE_APOINT, inTime, sock, echoClntAddr);
 		DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer())
+		DEBOUT("\n****************************************************","")
 
 		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 		string key(bu);
 		message->setKey(key);
-		DEBOUT("",bu)
 		pthread_mutex_lock(&messTableMtx);
 		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
 		pthread_mutex_unlock(&messTableMtx);

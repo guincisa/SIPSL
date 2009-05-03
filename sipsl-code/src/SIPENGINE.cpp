@@ -73,7 +73,7 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 	DEBOUT("SIPENGINE::parse tot lines",tl)
 
 	int type = _mess->getReqRepType();
-	DEBOUT("SIPENGINE::parse type",type)
+	DEBOUT("SIPENGINE::parse request type",type)
 
 	if ( type == REQSUPP) {
 
