@@ -235,23 +235,26 @@ int MESSAGE::getReqRepType(void){
 C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
 
 	if(reqRep == 0){
-		int i = getReqRepType();
+		reqRep = getReqRepType();
 	}
 
 	if (reqRep == REQSUPP || reqRep == REQUNSUPP){
 		return headSipRequest;
 	}
-
+    assert("MESSAGE::getHeadSipRequest illegal instruction");
+    return headSipRequest;
 }
 C_HeadSipReply &MESSAGE::getHeadSipReply(void){
 
 	if(reqRep == 0){
-		int i = getReqRepType();
+		reqRep = getReqRepType();
 	}
 
 	if (reqRep == REPSUPP || reqRep == REPUNSUPP){
 		return headSipReply;
 	}
+    assert("MESSAGE::getHeadSipReply illegal instruction");
+    return headSipReply;
 
 }
 stack<C_HeadVia> &MESSAGE::getS_headVia(void){

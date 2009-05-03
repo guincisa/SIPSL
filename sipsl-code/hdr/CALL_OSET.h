@@ -47,6 +47,7 @@ class CALL_OSET {
 		SL_CO* sl_co;
 		ALO* alo;
 		SL_SM_SV* sl_sm_sv;
+		//map callId_y and related states machines
 		multimap<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
 		string callId_X;
