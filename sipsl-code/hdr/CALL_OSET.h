@@ -86,11 +86,14 @@ class SL_SM {
 	public:
 		int placeholder;
 
-		ACTION event(MESSAGE*);
+#ifdef TESTING
+		virtual ACTION* event(MESSAGE*);
+#else
+		virtual ACTION* event(MESSAGE*) = 0;
+#endif
+    protected:
 
-//    protected:
-//
-//        int State;
+        int State;
 //    public:
 //        SL_SM();
 //        int getState (void);
@@ -120,8 +123,12 @@ class SL_SM_CL : public SL_SM {
 class SL_SM_SV : public SL_SM {
 	public:
 		int placeholder;
+
+		ACTION* event(MESSAGE*);
+		SL_SM_SV(void);
+
 //    public:
-//    SL_SM_SV();
+//
 //	// array of pointers to messages
 //    MESSAGE ** event(MESSAGE&);
 //    int dummy;

@@ -74,7 +74,9 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
 
 	return;
 }
-
+//BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage){
+//
+//}
 void BASEMESSAGE::fillLineArray(void){
 
     if (arrayFilled)
@@ -184,6 +186,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headCSeq("",_genEntity){
 
 	reqRep = 0;
+	isInternal = false;
 }
 //ONLY FOR TEST
 #ifdef TESTING
@@ -373,6 +376,25 @@ C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 	headCSeq_p = true;
 		return headCSeq;
 }
+/******************************************************************************
+ * creation methods for internal messages
+ */
+MESSAGE::MESSAGE(MESSAGE* _message):
+	BASEMESSAGE("", 0, 0x0, 0, 0x0),
+	headSipRequest("",0),
+	headSipReply("",0),
+	headMaxFwd("",0),
+	headContact("",0),
+	headTo("",0),
+	headFrom("",0),
+	headCallId("",0),
+	headCSeq("",0){
+
+	reqRep = 0;
+	isInternal = true;
+}
+
+
 /*
 C_HeadContentType &MESSAGE::getHeadContentType(void){
 

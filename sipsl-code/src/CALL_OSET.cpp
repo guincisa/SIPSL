@@ -104,10 +104,59 @@ void SL_CO::call(MESSAGE* _message){
 
 	SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
 
-	ACTION action = sl_sm_sv->event(_message);
+	ACTION* action = sl_sm_sv->event(_message);
 }
 //**********************************************************************************
 //**********************************************************************************
-ACTION SL_SM::event(MESSAGE* _message){
-	DEBOUT("SL_SM::event", _message->getIncBuffer())
+//ACTION SL_SM::event(MESSAGE* _message){
+//	DEBOUT("SL_SM::event", _message->getIncBuffer())
+//}
+
+//**********************************************************************************
+//**********************************************************************************
+SL_SM_SV::SL_SM_SV(void){
+
+	DEBOUT("SL_SM_SV::state","0")
+
+	State = 0;
+
+}
+//**********************************************************************************
+//**********************************************************************************
+ACTION* SL_SM_SV::event(MESSAGE* _message){
+
+	DEBOUT("SL_SM_SV::event", _message->getHeadCallId().getContent())
+
+	if (_message->getReqRepType() == REQSUPP) {
+		DEBOUT("SL_SM_SV::event", _message->getHeadSipRequest().getContent())
+
+		if (State == 0){
+			if ((_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
+				&& _message->getDestEntity() == SODE_SMSVPOINT
+				&& _message->getGenEntity() ==  SODE_APOINT) {
+
+				DEBOUT("SL_SM_SV::event move to state 1", _message->getHeadSipRequest().getContent())
+
+				ACTION* action = new ACTION();
+
+				SingleAction sa_1 = SingleAction(_message);
+
+				MESSAGE* etry = new MESSAGE(_message);
+
+				//etry->
+
+
+				SingleAction sa_2 = SingleAction(etry);
+
+				State = 2;
+			}
+		}
+
+	}
+	if (_message->getReqRepType() == REPSUPP) {
+		DEBOUT("SL_SM_SV::event", _message->getHeadSipReply().getContent())
+	}
+
+	State = 0;
+
 }

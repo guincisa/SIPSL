@@ -29,8 +29,8 @@
 
 class SingleAction {
 	private:
-		MESSAGE* message;
-		EMPTYMESSAGE* emessage;
+		MESSAGE *message;
+		EMPTYMESSAGE *emessage;
 	public:
 		SingleAction(MESSAGE*);
 		SingleAction(EMPTYMESSAGE*);

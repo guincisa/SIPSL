@@ -160,11 +160,24 @@ class MESSAGE : public BASEMESSAGE {
     	//C_HeadSubject		headSubject;
     	//bool 				headSubject_p;
 
+    	// Used to generate a message from an incoming one
+    	// tipically a reply
+    	MESSAGE *source;
+
+    	// if false then the message comes from the
+    	// network and cannot be changed
+    	// if true then it has been generated internally and
+    	// can be modified
+    	bool isInternal;
+
     public:
 
         MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
                     struct sockaddr_in echoClntAddr);
         MESSAGE(string incMessBuff, SysTime inc_ts);
+
+        //
+        MESSAGE(MESSAGE*);
 
     	int getReqRepType(void);
 
