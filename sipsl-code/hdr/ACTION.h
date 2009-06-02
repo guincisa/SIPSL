@@ -30,6 +30,7 @@
 class SingleAction {
 	private:
 		MESSAGE *message;
+		//non ricordo perche emptymessage...
 		EMPTYMESSAGE *emessage;
 	public:
 		SingleAction(MESSAGE*);
@@ -42,11 +43,12 @@ class ACTION {
 
 	private:
 
-		vector<SingleAction> act_item;
+		stack<SingleAction> act_item;
 
 	public:
 
 		void addSingleAction(SingleAction);
-		vector<SingleAction> getActionList(void);
+		stack<SingleAction> getActionList(void);
+		ACTION(void);
 
 };

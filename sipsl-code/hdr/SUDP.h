@@ -87,9 +87,9 @@ class SUDP {
         //SUDP * getInstance(void);
     	//SUDP(void);
 
-        MESS_TABLE globalMessTable;
-
-        pthread_mutex_t messTableMtx;
+//        MESS_TABLE globalMessTable;
+//
+//        pthread_mutex_t messTableMtx;
 
 
 

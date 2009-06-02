@@ -82,9 +82,9 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 		if (method != INVITE_REQUEST && method != BYE_REQUEST && method != ACK_REQUEST) {
 
 			DEBOUT("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
-			pthread_mutex_lock(&sudp->messTableMtx);
-			sudp->globalMessTable.erase(_mess->getKey());
-			pthread_mutex_unlock(&sudp->messTableMtx);
+			pthread_mutex_lock(&messTableMtx);
+			globalMessTable.erase(_mess->getKey());
+			pthread_mutex_unlock(&messTableMtx);
 			delete _mess;
 			DEBOUT("SIPENGINE::parse message discarded ","");
 			return;

@@ -94,6 +94,10 @@ class BASEMESSAGE {
         string &getKey(void);
         void setKey(string key);
 
+        //TODO need this??
+        struct sockaddr_in getSocket(void);
+        int getSock(void);
+
     protected:
         int genEntity;
         int destEntity;
@@ -176,8 +180,11 @@ class MESSAGE : public BASEMESSAGE {
                     struct sockaddr_in echoClntAddr);
         MESSAGE(string incMessBuff, SysTime inc_ts);
 
+        // this is temporary and needed to create internal messages
+        MESSAGE(void);
+
         //
-        MESSAGE(MESSAGE*);
+        //MESSAGE(MESSAGE*);
 
     	int getReqRepType(void);
 
@@ -241,7 +248,8 @@ class MESSAGE : public BASEMESSAGE {
 //// ALLOCATED MESSAGES TABLE
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-typedef multimap<string, MESSAGE *> MESS_TABLE;
+static multimap<string, MESSAGE *> globalMessTable;
+static pthread_mutex_t messTableMtx;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

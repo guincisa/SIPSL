@@ -53,10 +53,23 @@ typedef struct {
 #define DEBERROR(m1)  cout << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]"<< endl;
 #define DEBY  cout << "DEBY " << __FILE__ <<" " <<__LINE__<< endl;
 
+
+
+
 class ThreadWrapper {
     public:
         pthread_t thread;
         pthread_mutex_t mutex;
         ThreadWrapper();
 };
+
+//TODO
+//#define STOREMESSAGE ()
+//sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
+//string key(bu);
+//message->setKey(key);
+//pthread_mutex_lock(&messTableMtx);
+//globalMessTable.insert(pair<string, MESSAGE*>(key, message));
+//pthread_mutex_unlock(&messTableMtx);
+
 

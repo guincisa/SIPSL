@@ -141,14 +141,30 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 				SingleAction sa_1 = SingleAction(_message);
 
-				MESSAGE* etry = new MESSAGE(_message);
+				//////////////////////
+				SysTime inTime;
+				GETTIME(inTime);
+				string tmp = "";
+				MESSAGE* etry = new MESSAGE(tmp, SODE_SMSVPOINT, inTime, _message->getSock(), _message->getSocket());
+				//TODO put in macro...
+				char bu[512];
+				sprintf(bu, "%x#%lld",etry,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
+				string key(bu);
+				etry->setKey(key);
+				pthread_mutex_lock(&messTableMtx);
+				globalMessTable.insert(pair<string, MESSAGE*>(key, etry));
+				pthread_mutex_unlock(&messTableMtx);
+				///////////////////
 
-				//etry->
-
+				etry->setDestEntity(SODE_APOINT);
 
 				SingleAction sa_2 = SingleAction(etry);
 
-				State = 2;
+				action->addSingleAction(sa_1);
+				action->addSingleAction(sa_2);
+
+				State = 1;
+				return action;
 			}
 		}
 

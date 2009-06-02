@@ -1,4 +1,4 @@
-format 61
+format 66
 
 pseudostatecanvas 128033 pseudostate_ref 128033 // entry_point
    xyz 71 122 3005 label_xy 74 141
@@ -11,7 +11,7 @@ statecanvas 128417 state_ref 128161 // 1
 end
 note 129569 "action:
 [INVITEx, s=sv_x, d=alo]
-[empty100TRYx, s=sv_x, d=B] "
+[empty100TRYx, s=sv_x, d=A] "
   xyzwh 177 154 2000 174 64
 note 130465 "action:
 [INVITEx, s=sv_x, d=sm_y]

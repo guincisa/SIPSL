@@ -155,6 +155,9 @@ string &BASEMESSAGE::getIncBuffer(void){
 int BASEMESSAGE::getGenEntity(void){
 	return genEntity;
 }
+int BASEMESSAGE::getDestEntity(void){
+	return destEntity;
+}
 void BASEMESSAGE::setDestEntity(int _destEntity){
 	destEntity = _destEntity;
 }
@@ -163,6 +166,12 @@ string &BASEMESSAGE::getKey(void){
 }
 void BASEMESSAGE::setKey(string _key){
 	key = _key;
+}
+struct sockaddr_in BASEMESSAGE::getSocket(void){
+	return echoClntAddr;
+}
+int BASEMESSAGE::getSock(void){
+	return sock;
 }
 
 
@@ -201,7 +210,7 @@ MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
 	headCallId("",0),
 	headCSeq("",0){
 
-	//assert(0);
+	assert(0);
 
 	reqRep = 0;
 }
@@ -375,23 +384,6 @@ C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 	}
 	headCSeq_p = true;
 		return headCSeq;
-}
-/******************************************************************************
- * creation methods for internal messages
- */
-MESSAGE::MESSAGE(MESSAGE* _message):
-	BASEMESSAGE("", 0, 0x0, 0, 0x0),
-	headSipRequest("",0),
-	headSipReply("",0),
-	headMaxFwd("",0),
-	headContact("",0),
-	headTo("",0),
-	headFrom("",0),
-	headCallId("",0),
-	headCSeq("",0){
-
-	reqRep = 0;
-	isInternal = true;
 }
 
 
