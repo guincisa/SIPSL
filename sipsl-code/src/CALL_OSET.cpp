@@ -150,6 +150,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				char bu[512];
 				sprintf(bu, "%x#%lld",etry,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 				string key(bu);
+				DEBOUT("SL_SM_SV::event key for 100TRY", key)
 				etry->setKey(key);
 				pthread_mutex_lock(&messTableMtx);
 				globalMessTable.insert(pair<string, MESSAGE*>(key, etry));
@@ -165,7 +166,11 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 				State = 1;
 				return action;
+			}else {
+				DEBOUT("SL_SM_SV::event State 0 unexpected message ignored", _message->getHeadCallId().getContent())
 			}
+		}else if (State == 1){
+
 		}
 
 	}
