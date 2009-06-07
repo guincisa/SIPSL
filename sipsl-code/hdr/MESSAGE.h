@@ -78,6 +78,8 @@ class BASEMESSAGE {
                     struct sockaddr_in echoClntAddr);
         BASEMESSAGE(string incMessBuff, SysTime inc_ts);
 
+        BASEMESSAGE(BASEMESSAGE*);
+
         string &getLine(int);
         int getTotLines(void);
 
@@ -94,7 +96,6 @@ class BASEMESSAGE {
         string &getKey(void);
         void setKey(string key);
 
-        //TODO need this??
         struct sockaddr_in getSocket(void);
         int getSock(void);
 
@@ -184,7 +185,7 @@ class MESSAGE : public BASEMESSAGE {
         MESSAGE(void);
 
         //
-        //MESSAGE(MESSAGE*);
+        MESSAGE(MESSAGE*, int genEntity);
 
     	int getReqRepType(void);
 

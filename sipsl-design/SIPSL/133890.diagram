@@ -744,7 +744,7 @@ msg 157314 return
 msg 157954 synchronous
   from durationcanvas_ref 141251
   to durationcanvas_ref 157826
-  yz 335 3005 explicitmsg "generate_message_100TRY(empty100TRYx)"
+  yz 335 3005 explicitmsg "generate_message_100TRY(INVITEx, empty100TRYx)"
   show_full_operations_definition default drawing_language default
   label_xy 1061 323
 msg 158210 synchronous

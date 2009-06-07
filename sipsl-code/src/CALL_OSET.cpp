@@ -86,6 +86,12 @@ SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
 
 	return sl_sm_sv;
 }
+//**********************************************************************************
+//**********************************************************************************
+SL_CO* CALL_OSET::getSL_CO(void){
+	return sl_co;
+}
+
 //		SL_CO* getSL_CO(void);
 //
 //		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
@@ -102,9 +108,16 @@ void SL_CO::call(MESSAGE* _message){
 
 	DEBOUT("SL_CO::call", _message->getIncBuffer())
 
-	SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
+	if (_message->getDestEntity() == SODE_SMSVPOINT) {
 
-	ACTION* action = sl_sm_sv->event(_message);
+		SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
+
+		ACTION* action = sl_sm_sv->event(_message);
+	}
+	if (_message->getDestEntity() == SODE_SMCLPOINT){
+
+	}
+	//do something with action
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -141,19 +154,10 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 				SingleAction sa_1 = SingleAction(_message);
 
-				//////////////////////
-				SysTime inTime;
-				GETTIME(inTime);
-				string tmp = "";
-				MESSAGE* etry = new MESSAGE(tmp, SODE_SMSVPOINT, inTime, _message->getSock(), _message->getSocket());
-				//TODO put in macro...
-				char bu[512];
-				sprintf(bu, "%x#%lld",etry,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
-				string key(bu);
-				DEBOUT("SL_SM_SV::event key for 100TRY", key)
-				etry->setKey(key);
+				MESSAGE* etry = new MESSAGE(_message, SODE_SMSVPOINT);
+
 				pthread_mutex_lock(&messTableMtx);
-				globalMessTable.insert(pair<string, MESSAGE*>(key, etry));
+				globalMessTable.insert(pair<string, MESSAGE*>(etry->getKey(), etry));
 				pthread_mutex_unlock(&messTableMtx);
 				///////////////////
 

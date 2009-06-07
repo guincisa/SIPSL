@@ -113,7 +113,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 	} else {
 		//CALL Exists
 		_mess->setDestEntity(SODE_SMSVPOINT);
-		//call_oset->getSL_CO()->call(_mess);
+		call_oset->getSL_CO()->call(_mess);
 	}
 
 

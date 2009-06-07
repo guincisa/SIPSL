@@ -74,9 +74,18 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
 
 	return;
 }
-//BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage){
-//
-//}
+BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage){
+	SysTime inTime;
+	GETTIME(inTime);
+	char bu[512];
+	sprintf(bu, "%x#%lld",this,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
+	string key(bu);
+
+	echoClntAddr = _basemessage->getSocket();
+    sock = _basemessage->getSock();
+
+	return;
+}
 void BASEMESSAGE::fillLineArray(void){
 
     if (arrayFilled)
@@ -196,6 +205,19 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	reqRep = 0;
 	isInternal = false;
+}
+MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):
+	BASEMESSAGE(_message),
+	headSipRequest("",_genEntity),
+	headSipReply("",_genEntity),
+	headMaxFwd("",_genEntity),
+	headContact("",_genEntity),
+	headTo("",_genEntity),
+	headFrom("",_genEntity),
+	headCallId("",_genEntity),
+	headCSeq("",_genEntity){
+
+	return;
 }
 //ONLY FOR TEST
 #ifdef TESTING
