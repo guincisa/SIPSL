@@ -88,6 +88,7 @@ class BASEMESSAGE {
         string &getIncBuffer(void);
 
         int getGenEntity(void);
+        void setGenEntity(int);
 
         void setDestEntity(int);
         int getDestEntity(void);

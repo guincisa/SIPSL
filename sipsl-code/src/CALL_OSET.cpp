@@ -152,8 +152,12 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 				ACTION* action = new ACTION();
 
+				//_message changes its dest and gen
+				_message->setDestEntity(SODE_ALOPOINT);
+				_message->setGenEntity(SODE_SMSVPOINT);
 				SingleAction sa_1 = SingleAction(_message);
 
+				//etry is filled later by SL_CO (see design)
 				MESSAGE* etry = new MESSAGE(_message, SODE_SMSVPOINT);
 
 				pthread_mutex_lock(&messTableMtx);

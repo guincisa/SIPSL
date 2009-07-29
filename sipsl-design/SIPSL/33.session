@@ -1,6 +1,11 @@
-window_sizes 1024 719 264 754 607 38
+window_sizes 1269 721 264 999 576 66
+windows_style
+diagrams
+  active  sequencediagram_ref 133890 // F5 dialog
+    999 576 100 2 931 115
+end
 show_stereotypes
-selected state_ref 128033 // SL_SM_SV
+selected sequencediagram_ref 133890 // F5 dialog
 open
   state_ref 128033 // SL_SM_SV
 end

@@ -99,7 +99,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		SL_CO* sl_co = new SL_CO(call_oset);
 		SL_SM_SV* sl_sm_sv = new SL_SM_SV();
 		//NEED USER DEFINED CLASS
-		ALO* alo = new ALO();
+		ALO* alo = new ALO(this);
 
 		call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
 		DEBOUT("SL_CC::parse", "CALL_OSET created x side")

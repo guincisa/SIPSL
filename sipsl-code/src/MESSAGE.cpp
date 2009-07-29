@@ -30,6 +30,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <stdio.h>
 
 #ifndef UTIL_H
 #include "UTIL.h"
@@ -83,6 +84,8 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage){
 
 	echoClntAddr = _basemessage->getSocket();
     sock = _basemessage->getSock();
+
+	DEBOUT("BASEMESSAGE::BASEMESSAGE key", key)
 
 	return;
 }
@@ -164,6 +167,9 @@ string &BASEMESSAGE::getIncBuffer(void){
 int BASEMESSAGE::getGenEntity(void){
 	return genEntity;
 }
+void BASEMESSAGE::setGenEntity(int _genEntity){
+	genEntity = _genEntity;
+}
 int BASEMESSAGE::getDestEntity(void){
 	return destEntity;
 }
@@ -216,6 +222,8 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):
 	headFrom("",_genEntity),
 	headCallId("",_genEntity),
 	headCSeq("",_genEntity){
+
+	DEBOUT("MESSAGE::MESSAGE", "")
 
 	return;
 }
