@@ -82,8 +82,7 @@ SL_CC::SL_CC(void) {
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {
 
-
-	DEBOUT("SL_CC::parse", _mess->getIncBuffer())
+	DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
 
 	CALL_OSET* call_oset = 0x0;
 
@@ -112,6 +111,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	} else {
 		//CALL Exists
+		DEBOUT("SL_CC::parse existing call", "")
 		_mess->setDestEntity(SODE_SMSVPOINT);
 		call_oset->getSL_CO()->call(_mess);
 	}

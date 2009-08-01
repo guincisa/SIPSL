@@ -1,8 +1,8 @@
-window_sizes 1269 721 264 999 576 66
+window_sizes 1269 721 264 999 585 66
 windows_style
 diagrams
   active  sequencediagram_ref 133890 // F5 dialog
-    999 576 100 2 931 115
+    999 585 100 2 0 443
 end
 show_stereotypes
 selected sequencediagram_ref 133890 // F5 dialog

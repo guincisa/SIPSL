@@ -38,7 +38,7 @@ class SL_CC : public ENGINE {
 
     public:
         void parse(MESSAGE*);
-        SL_CC(void);
+        SL_CC();
 
         //void sendReply(MESSAGE);
 

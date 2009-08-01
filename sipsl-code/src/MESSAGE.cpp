@@ -85,6 +85,9 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage){
 	echoClntAddr = _basemessage->getSocket();
     sock = _basemessage->getSock();
 
+    DEBOUT("BASEMESSAGE::BASEMESSAGE","copy")
+    incMessBuff = _basemessage->getIncBuffer();
+
 	DEBOUT("BASEMESSAGE::BASEMESSAGE key", key)
 
 	return;
@@ -246,8 +249,10 @@ MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
 }
 #endif
 int MESSAGE::getReqRepType(void){
-	if (reqRep != 0)
+
+	if (reqRep != 0) {
 		return reqRep;
+	}
 	if(flex_line[0].substr(0,3).compare("SIP")){
 		headSipReply.setContent(flex_line[0],genEntity);
 		reqRep = REPSUPP;
@@ -275,7 +280,6 @@ int MESSAGE::getReqRepType(void){
 	return reqRep;
 }
 C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
-
 	if(reqRep == 0){
 		reqRep = getReqRepType();
 	}

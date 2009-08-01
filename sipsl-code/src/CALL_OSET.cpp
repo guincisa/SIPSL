@@ -88,6 +88,12 @@ SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
 }
 //**********************************************************************************
 //**********************************************************************************
+ALO* CALL_OSET::getALO(void){
+
+	return alo;
+}
+//**********************************************************************************
+//**********************************************************************************
 SL_CO* CALL_OSET::getSL_CO(void){
 	return sl_co;
 }
@@ -106,13 +112,46 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 //**********************************************************************************
 void SL_CO::call(MESSAGE* _message){
 
-	DEBOUT("SL_CO::call", _message->getIncBuffer())
+	DEBOUT("SL_CO::call", _message->getHeadSipRequest().getContent())
+    DEBOUT("SL_CO::call", _message->getHeadCallId().getContent())
+
 
 	if (_message->getDestEntity() == SODE_SMSVPOINT) {
 
 		SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
 
 		ACTION* action = sl_sm_sv->event(_message);
+
+		if (action != 0x0){
+
+			// now act
+			stack<SingleAction> actionList;
+			actionList = action->getActionList();
+			while (!actionList.empty()){
+				DEBOUT("SL_CO::reading action stack", "")
+				if (actionList.top().getMessage()->getDestEntity() == SODE_ALOPOINT){
+					// send message to ALO
+
+					DEBOUT("SL_CO::call action is ALO", actionList.top().getMessage()->getIncBuffer())
+					call_oset->getALO()->p_w(actionList.top().getMessage());
+				}
+				if (actionList.top().getMessage()->getDestEntity() == SODE_APOINT){
+					// send to A party
+					// extract address from headers (?) of sender and reply back
+					//sendto(sock, ecco, ECHOMAX, 0, (struct sockaddr *) &(echoClntAddr), sizeof(echoClntAddr));
+					char ecco[500];
+					sprintf(ecco, "ETRY %d", 33);
+					sendto(actionList.top().getMessage()->getSock(),
+							ecco, 500, 0, (struct sockaddr *) &(actionList.top().getMessage()->getSocket()),
+							sizeof(actionList.top().getMessage()->getSocket()));
+				}
+				actionList.pop();
+
+			}
+		}
+		else {
+			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
+		}
 	}
 	if (_message->getDestEntity() == SODE_SMCLPOINT){
 
@@ -144,6 +183,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 		DEBOUT("SL_SM_SV::event", _message->getHeadSipRequest().getContent())
 
 		if (State == 0){
+			DEBOUT("SL_SM_SV::event" , "state 0")
 			if ((_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
 				&& _message->getDestEntity() == SODE_SMSVPOINT
 				&& _message->getGenEntity() ==  SODE_APOINT) {
@@ -172,13 +212,16 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				action->addSingleAction(sa_1);
 				action->addSingleAction(sa_2);
 
+				DEBOUT("SL_SM_SV::actions set", _message->getHeadSipRequest().getContent())
+
 				State = 1;
 				return action;
 			}else {
 				DEBOUT("SL_SM_SV::event State 0 unexpected message ignored", _message->getHeadCallId().getContent())
 			}
 		}else if (State == 1){
-
+			DEBOUT("SL_SM_SV::event State 1 probable retransmission","")
+			return 0x0;
 		}
 
 	}

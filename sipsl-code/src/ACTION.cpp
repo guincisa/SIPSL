@@ -48,3 +48,9 @@ stack<SingleAction> ACTION::getActionList(void){
 SingleAction::SingleAction(MESSAGE* _message){
 	message = _message;
 }
+// *****************************************************************************************
+// *****************************************************************************************
+MESSAGE* SingleAction::getMessage(void){
+	return message;
+}
+

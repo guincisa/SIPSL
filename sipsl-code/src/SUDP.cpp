@@ -186,7 +186,6 @@ void SUDP::listen() {
 		MESSAGE* message;
 		message = new MESSAGE(echoBuffer, SODE_APOINT, inTime, sock, echoClntAddr);
 		DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer())
-		DEBOUT("\n****************************************************","")
 
 		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 		string key(bu);
