@@ -20,29 +20,18 @@
 //**********************************************************************************
 //**********************************************************************************
 
+//Vendor ALO: the final application
+//overrides ALO call backs
 
-#define ALO_H
-#ifndef ENGINE_H
-#include "ENGINE.h"
+#define VALO_H
+
+#ifndef ALO_H
+#include "ALO.h"
 #endif
 
-
-class ALO : public ENGINE {
-	public:
-
-		//CALL_OSET needed for back reference to umbrella object
-		ALO(ENGINE*);
-		int dummy;
-
-		/* parse will get the message and depending on the request will invoke the
-		 * related call back
-		 * for example is INVITE, it will invoke onINVITE()
-		 * all call backs can be overridden if the application needs to implement something
-		 */
-        void parse(MESSAGE*);
-
-        void onINVITE(MESSAGE*);
+class VALO : public ALO {
 	private:
-        ENGINE* sl_cc;
-
+	int dummy;
+	public:
+	void onINVITE(MESSAGE*);
 };

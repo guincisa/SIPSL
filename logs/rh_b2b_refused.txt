@@ -1,0 +1,824 @@
+2009-08-10 15:14:27.717  Finest  [trace.sipra.sip.transport.manager]   <sipra/pool/0> incomingSipRequest:
+INVITE sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport;branch=z9hG4bK1821888477
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:guic2@172.21.160.184:5062>
+Content-Type: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Subject: Phone call
+Expires: 120
+Content-Length: 318
+
+v=0
+o=guic2 123456 654321 IN IP4 172.21.160.184
+s=A conversation
+c=IN IP4 172.21.160.184
+t=0 0
+m=audio 7078 RTP/AVP 111 110 0 3 8 101
+a=rtpmap:111 speex/16000/1
+a=rtpmap:110 speex/8000/1
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:3 GSM/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+
+2009-08-10 15:14:27.771  Finest  [trace.sipra.sip.transaction.server.invite]   <sipra/pool/0> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] received initial request from 127.0.0.1:5062/udp, pass up to TU:
+INVITE sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:guic2@172.21.160.184:5062>
+Content-Type: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Subject: Phone call
+Expires: 120
+Content-Length: 318
+
+v=0
+o=guic2 123456 654321 IN IP4 172.21.160.184
+s=A conversation
+c=IN IP4 172.21.160.184
+t=0 0
+m=audio 7078 RTP/AVP 111 110 0 3 8 101
+a=rtpmap:111 speex/16000/1
+a=rtpmap:110 speex/8000/1
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:3 GSM/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+
+2009-08-10 15:14:27.774  Finest  [trace.sipra.sip.transaction.server.invite]   <sipra/pool/0> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] setCurrentState: old=[undef], new=[Proceeding Transaction]
+2009-08-10 15:14:27.775  Finest  [trace.sipra.sip.transport.udp]   <sipra/pool/0> sendResponse: sending response to endpoint: 127.0.0.1:5062/udp:
+SIP/2.0 100 Trying
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+
+
+2009-08-10 15:14:27.781  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> incoming INVITE request, DialogID[795506601,,1690508977], no dialog match:
+INVITE sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:guic2@172.21.160.184:5062>
+Content-Type: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Subject: Phone call
+Expires: 120
+Content-Length: 318
+
+v=0
+o=guic2 123456 654321 IN IP4 172.21.160.184
+s=A conversation
+c=IN IP4 172.21.160.184
+t=0 0
+m=audio 7078 RTP/AVP 111 110 0 3 8 101
+a=rtpmap:111 speex/16000/1
+a=rtpmap:110 speex/8000/1
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:3 GSM/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+
+2009-08-10 15:14:27.785  Finer   [trace.sipra.resources.sipra.eventfilter]   <sipra/pool/0> isFiltered(EventTypeID[name=javax.sip.message.Request.INVITE,vendor=net.java.slee,version=1.2])? false
+2009-08-10 15:14:27.800  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> startActivity: ah=SIPTransactionAH[server,RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]], sbbCreated=false, flags=2
+2009-08-10 15:14:27.801  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> getAddress: SipAddress=<sip:guic@127.0.0.1:5060>
+2009-08-10 15:14:27.803  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> fireEvent: ah=SIPTransactionAH[server,RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]], eventType=EventTypeID[name=javax.sip.message.Request.INVITE,vendor=net.java.slee,version=1.2], event=javax.sip.RequestEvent[source=com.opencloud.slee.resources.sip.ra.DialogController@113dd59], address=SIP: sip:guic@127.0.0.1:5060, flags=96
+2009-08-10 15:14:27.866  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-2> [B2BUA/B2BUA]  received initial INVITE:
+INVITE sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:guic2@172.21.160.184:5062>
+Content-Type: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Subject: Phone call
+Expires: 120
+Content-Length: 318
+
+v=0
+o=guic2 123456 654321 IN IP4 172.21.160.184
+s=A conversation
+c=IN IP4 172.21.160.184
+t=0 0
+m=audio 7078 RTP/AVP 111 110 0 3 8 101
+a=rtpmap:111 speex/16000/1
+a=rtpmap:110 speex/8000/1
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:3 GSM/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+
+2009-08-10 15:14:27.866  Finer   [trace.B2BUA_2_1.B2BUA]   <jr-2> [B2BUA/B2BUA]  initializing UAS dialog
+2009-08-10 15:14:27.940  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-2> [SIPDialogAH[101,0,74579900]] [UAS_TRYING] created local dialog state: DialogState[ah=SIPDialogAH[101,0,74579900],dialogID=HalfDialogID[795506601,,1690508977],server,state=UAS_TRYING,invite]
+2009-08-10 15:14:27.940  Finest  [trace.sipra.resources.sipra.dialog.storage]   <jr-2> new half-dialog: state=DialogState[ah=SIPDialogAH[101,0,74579900],dialogID=HalfDialogID[795506601,,1690508977],server,state=UAS_TRYING,invite]
+2009-08-10 15:14:27.941  Finest  [trace.sipra.resources.sipra]   <jr-2> startActivity: ah=SIPDialogAH[101,0,74579900], sbbCreated=true, flags=2
+2009-08-10 15:14:27.941  Finer   [trace.B2BUA_2_1.B2BUA]   <jr-2> [B2BUA/B2BUA]  initializing UAC dialog
+2009-08-10 15:14:27.942  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-2> [SIPDialogAH[101,1,74579900]] [UAC_INIT] created initial client dialog state: DialogState[ah=SIPDialogAH[101,1,74579900],dialogID=HalfDialogID[795506601,VVGEng,],client,state=UAC_INIT]
+2009-08-10 15:14:27.942  Finest  [trace.sipra.resources.sipra.dialog.storage]   <jr-2> new half-dialog: state=DialogState[ah=SIPDialogAH[101,1,74579900],dialogID=HalfDialogID[795506601,VVGEng,],client,state=UAC_INIT]
+2009-08-10 15:14:27.942  Finest  [trace.sipra.resources.sipra]   <jr-2> startActivity: ah=SIPDialogAH[101,1,74579900], sbbCreated=true, flags=2
+2009-08-10 15:14:27.944  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-2> [SIPDialogAH[101,1,74579900]] [UAC_INIT] set initial local sequence number: 158098
+2009-08-10 15:14:27.949  Finer   [trace.B2BUA_2_1.B2BUA]   <jr-2> [B2BUA/B2BUA]  forwardRequest sip:guic@127.0.0.1:5061
+2009-08-10 15:14:27.950  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-2> [B2BUA/B2BUA]  forwarding request on dialog DialogActivity[handle=SIPDialogAH[101,1,74579900]]:
+INVITE sip:guic@127.0.0.1:5061 SIP/2.0
+Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:127.0.0.1:5060;transport=tcp>
+Content-Type: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Subject: Phone call
+Expires: 120
+Content-Length: 318
+
+v=0
+o=guic2 123456 654321 IN IP4 172.21.160.184
+s=A conversation
+c=IN IP4 172.21.160.184
+t=0 0
+m=audio 7078 RTP/AVP 111 110 0 3 8 101
+a=rtpmap:111 speex/16000/1
+a=rtpmap:110 speex/8000/1
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:3 GSM/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+
+2009-08-10 15:14:27.951  Finer   [trace.sipra.sip.transport.router]   <jr-2> getNextHop: using Request-URI: sip:guic@127.0.0.1:5061
+2009-08-10 15:14:27.954  Finer   [trace.sipra.sip.transport.router]   <jr-2> getNextHop: sip:guic@127.0.0.1:5061
+2009-08-10 15:14:27.955  Finer   [trace.sipra.sip.transport.router]   <jr-2> numeric address, no DNS lookup required
+2009-08-10 15:14:27.955  Finer   [trace.sipra.sip.transport.router]   <jr-2> next hop for <sip:guic@127.0.0.1:5061>: 127.0.0.1:5061/udp
+2009-08-10 15:14:27.955  Finest  [trace.sipra.sip.stack]   <jr-2> isLocalEndpoint: 127.0.0.1:5061/udp is not local
+2009-08-10 15:14:27.956  Finest  [trace.sipra.sip.stack]   <jr-2> Via transport tcp does not match resolved transport udp, modifying Via transport
+2009-08-10 15:14:27.962  Finer   [trace.sipra.sip.transport.udp]   <jr-2> getSipTransport: local=127.0.0.1:5060/udp, remote=127.0.0.1:5061/udp, selected=127.0.0.1:5060/udp
+2009-08-10 15:14:27.966  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-2> [SIPDialogAH[101,1,74579900]] [UAC_INIT] outgoing INVITE request
+2009-08-10 15:14:27.966  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-2> [SIPDialogAH[101,1,74579900]] [UAC_INIT] sending request:
+INVITE sip:guic@127.0.0.1:5061 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:127.0.0.1:5060;transport=tcp>
+Content-Type: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Subject: Phone call
+Expires: 120
+Content-Length: 318
+
+v=0
+o=guic2 123456 654321 IN IP4 172.21.160.184
+s=A conversation
+c=IN IP4 172.21.160.184
+t=0 0
+m=audio 7078 RTP/AVP 111 110 0 3 8 101
+a=rtpmap:111 speex/16000/1
+a=rtpmap:110 speex/8000/1
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:3 GSM/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+
+2009-08-10 15:14:27.967  Finest  [trace.sipra.resources.sipra]   <jr-2> Sending request on transaction ClientTransactionActivity[InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]]]:
+INVITE sip:guic@127.0.0.1:5061 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:127.0.0.1:5060;transport=tcp>
+Content-Type: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Subject: Phone call
+Expires: 120
+Content-Length: 318
+
+v=0
+o=guic2 123456 654321 IN IP4 172.21.160.184
+s=A conversation
+c=IN IP4 172.21.160.184
+t=0 0
+m=audio 7078 RTP/AVP 111 110 0 3 8 101
+a=rtpmap:111 speex/16000/1
+a=rtpmap:110 speex/8000/1
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:3 GSM/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+
+2009-08-10 15:14:27.968  Finest  [trace.sipra.sip.transaction.client.invite]   <jr-2> InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]] setCurrentState: old=[undef], new=[Calling Transaction]
+2009-08-10 15:14:27.968  Finest  [trace.sipra.sip.transport.udp]   <jr-2> sendRequest: sending request:
+INVITE sip:guic@127.0.0.1:5061 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:127.0.0.1:5060;transport=tcp>
+Content-Type: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Subject: Phone call
+Expires: 120
+Content-Length: 318
+
+v=0
+o=guic2 123456 654321 IN IP4 172.21.160.184
+s=A conversation
+c=IN IP4 172.21.160.184
+t=0 0
+m=audio 7078 RTP/AVP 111 110 0 3 8 101
+a=rtpmap:111 speex/16000/1
+a=rtpmap:110 speex/8000/1
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:3 GSM/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-11
+
+2009-08-10 15:14:27.970  Fine    [trace.sipra.sip.transport.udp.ioloop]   <sipra/UDP/IO> com.opencloud.ob.ocsip.bG@16535bf: onReadable()
+2009-08-10 15:14:27.971  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> received 288 byte dgram from: /127.0.0.1:5061
+2009-08-10 15:14:27.971  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> handleNewData: source=/127.0.0.1:5061, data=java.nio.DirectByteBuffer[pos=0 lim=288 cap=8192]
+2009-08-10 15:14:27.979  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-2> [SIPDialogAH[101,1,74579900]] [UAC_INIT] UAC_INIT -> UAC_TRYING
+2009-08-10 15:14:28.038  Finest  [trace.sipra.sip.transport.manager]   <sipra/pool/1> incomingSipResponse:
+SIP/2.0 100 Trying
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.039  Finest  [trace.sipra.sip.transaction.manager]   <sipra/pool/1> incomingSipResponse: txn id RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE] matched txn=InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]]
+2009-08-10 15:14:28.040  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> received 358 byte dgram from: /127.0.0.1:5061
+2009-08-10 15:14:28.040  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> handleNewData: source=/127.0.0.1:5061, data=java.nio.DirectByteBuffer[pos=0 lim=358 cap=8192]
+2009-08-10 15:14:28.040  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> received 344 byte dgram from: /127.0.0.1:5061
+2009-08-10 15:14:28.041  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> handleNewData: source=/127.0.0.1:5061, data=java.nio.DirectByteBuffer[pos=0 lim=344 cap=8192]
+2009-08-10 15:14:28.043  Finer   [trace.sipra.resources.sipra]   <jr-2> eventProcessingSuccessful, handle=SIPTransactionAH[server,RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]], eventType=EventTypeID[name=javax.sip.message.Request.INVITE,vendor=net.java.slee,version=1.2], event=javax.sip.RequestEvent[source=com.opencloud.slee.resources.sip.ra.DialogController@113dd59], flags=256
+2009-08-10 15:14:28.039  Finest  [trace.sipra.sip.transaction.client.invite]   <sipra/pool/1> InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]] setCurrentState: old=[Calling Transaction], new=[Proceeding Transaction]
+2009-08-10 15:14:28.044  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> incoming 100 response:
+SIP/2.0 100 Trying
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.044  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> Transaction InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]], state=Proceeding Transaction
+2009-08-10 15:14:28.047  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/1> [SIPDialogAH[101,1,74579900]] [UAC_TRYING] incoming 1xx-notag/INVITE response:
+SIP/2.0 100 Trying
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.048  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/1> [SIPDialogAH[101,1,74579900]] [UAC_TRYING] UAC_TRYING -> UAC_PROCEEDING
+2009-08-10 15:14:28.048  Finest  [trace.sipra.resources.sipra.eventcodec]   <sipra/pool/1> getFireableEventType(14)=EventTypeID[name=javax.sip.message.Response.TRYING,vendor=net.java.slee,version=1.2]
+2009-08-10 15:14:28.049  Finer   [trace.sipra.resources.sipra.eventfilter]   <sipra/pool/1> isFiltered(EventTypeID[name=javax.sip.message.Response.TRYING,vendor=net.java.slee,version=1.2])? true
+2009-08-10 15:14:28.049  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> fireInDialogResponseEvent: 100 responses are filtered, dropping response
+2009-08-10 15:14:28.049  Finest  [trace.sipra.sip.transport.manager]   <sipra/pool/1> incomingSipResponse:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:guic@172.21.160.184:5061>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.050  Finest  [trace.sipra.sip.transaction.manager]   <sipra/pool/1> incomingSipResponse: txn id RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE] matched txn=InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]]
+2009-08-10 15:14:28.050  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> incoming 101 response:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:guic@172.21.160.184:5061>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.050  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> Transaction InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]], state=Proceeding Transaction
+2009-08-10 15:14:28.050  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/1> [SIPDialogAH[101,1,74579900]] [UAC_PROCEEDING] incoming 1xx-tag/INVITE response:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:guic@172.21.160.184:5061>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.050  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/1> [SIPDialogAH[101,1,74579900]] [UAC_PROCEEDING] UAC_PROCEEDING -> UAC_EARLY
+2009-08-10 15:14:28.050  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/1> [SIPDialogAH[101,1,74579900]] [UAC_EARLY] created EARLY dialog: DialogState[ah=SIPDialogAH[101,1,74579900],dialogID=HalfDialogID[795506601,VVGEng,],client,state=UAC_EARLY,invite]
+2009-08-10 15:14:28.050  Finest  [trace.sipra.resources.sipra.dialog.storage]   <sipra/pool/1> created early dialog: state=DialogState[ah=SIPDialogAH[101,1,74579900],dialogID=HalfDialogID[795506601,VVGEng,],client,state=UAC_EARLY,invite]
+2009-08-10 15:14:28.052  Finest  [trace.sipra.resources.sipra.dialog.storage]   <sipra/pool/1> new whole dialog: oldID=HalfDialogID[795506601,VVGEng,], newID=DialogID[795506601,VVGEng,534879121], state=DialogState[ah=SIPDialogAH[101,1,74579900],dialogID=DialogID[795506601,VVGEng,534879121],client,state=UAC_EARLY,invite]
+2009-08-10 15:14:28.052  Finest  [trace.sipra.resources.sipra.eventcodec]   <sipra/pool/1> getFireableEventType(15)=EventTypeID[name=javax.sip.message.Response.PROVISIONAL,vendor=net.java.slee,version=1.2]
+2009-08-10 15:14:28.052  Finer   [trace.sipra.resources.sipra.eventfilter]   <sipra/pool/1> isFiltered(EventTypeID[name=javax.sip.message.Response.PROVISIONAL,vendor=net.java.slee,version=1.2])? false
+2009-08-10 15:14:28.055  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> fireEvent: ah=SIPDialogAH[101,1,74579900], eventType=EventTypeID[name=javax.sip.message.Response.PROVISIONAL,vendor=net.java.slee,version=1.2], event=com.opencloud.slee.resources.sip.ra.DialogResponseEvent[source=com.opencloud.slee.resources.sip.ra.DialogController@113dd59], address=null, flags=0
+2009-08-10 15:14:28.061  Finest  [trace.sipra.sip.transport.manager]   <sipra/pool/1> incomingSipResponse:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:guic@172.21.160.184:5061>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.061  Finest  [trace.sipra.sip.transaction.manager]   <sipra/pool/1> incomingSipResponse: txn id RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE] matched txn=InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]]
+2009-08-10 15:14:28.061  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> incoming 180 response:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:guic@172.21.160.184:5061>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.061  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> Transaction InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]], state=Proceeding Transaction
+2009-08-10 15:14:28.061  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/1> [SIPDialogAH[101,1,74579900]] [UAC_EARLY] incoming 1xx-tag/INVITE response:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:guic@172.21.160.184:5061>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.061  Finest  [trace.sipra.resources.sipra.eventcodec]   <sipra/pool/1> getFireableEventType(15)=EventTypeID[name=javax.sip.message.Response.PROVISIONAL,vendor=net.java.slee,version=1.2]
+2009-08-10 15:14:28.062  Finer   [trace.sipra.resources.sipra.eventfilter]   <sipra/pool/1> isFiltered(EventTypeID[name=javax.sip.message.Response.PROVISIONAL,vendor=net.java.slee,version=1.2])? false
+2009-08-10 15:14:28.062  Finest  [trace.sipra.resources.sipra]   <sipra/pool/1> fireEvent: ah=SIPDialogAH[101,1,74579900], eventType=EventTypeID[name=javax.sip.message.Response.PROVISIONAL,vendor=net.java.slee,version=1.2], event=com.opencloud.slee.resources.sip.ra.DialogResponseEvent[source=com.opencloud.slee.resources.sip.ra.DialogController@113dd59], address=null, flags=0
+2009-08-10 15:14:28.103  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-3> [B2BUA/B2BUA]  received response on dialog DialogActivity[handle=SIPDialogAH[101,1,74579900]]:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:guic@172.21.160.184:5061>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.107  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-3> [B2BUA/B2BUA]  forwarding response on dialog DialogActivity[handle=SIPDialogAH[101,0,74579900]]:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.107  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-3> [SIPDialogAH[101,0,74579900]] [UAS_TRYING] outgoing 1xx-tag/INVITE response:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:127.0.0.1:5060;transport=UDP>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.108  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-3> [SIPDialogAH[101,0,74579900]] [UAS_TRYING] UAS_TRYING -> UAS_EARLY
+2009-08-10 15:14:28.108  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-3> [SIPDialogAH[101,0,74579900]] [UAS_EARLY] created EARLY dialog: DialogState[ah=SIPDialogAH[101,0,74579900],dialogID=HalfDialogID[795506601,,1690508977],server,state=UAS_EARLY,invite]
+2009-08-10 15:14:28.108  Finest  [trace.sipra.resources.sipra.dialog.storage]   <jr-3> created early dialog: state=DialogState[ah=SIPDialogAH[101,0,74579900],dialogID=HalfDialogID[795506601,,1690508977],server,state=UAS_EARLY,invite]
+2009-08-10 15:14:28.108  Finest  [trace.sipra.resources.sipra.dialog.storage]   <jr-3> new whole dialog: oldID=HalfDialogID[795506601,,1690508977], newID=DialogID[795506601,534879121,1690508977], state=DialogState[ah=SIPDialogAH[101,0,74579900],dialogID=DialogID[795506601,534879121,1690508977],server,state=UAS_EARLY,invite]
+2009-08-10 15:14:28.108  Finest  [trace.sipra.resources.sipra]   <jr-3> Sending response on transaction ServerTransactionActivity[InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]]]:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:127.0.0.1:5060;transport=UDP>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.108  Finest  [trace.sipra.sip.transaction.server.invite]   <jr-3> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] sending response to 127.0.0.1:5062/udp:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:127.0.0.1:5060;transport=UDP>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.116  Finest  [trace.sipra.sip.transport.udp]   <jr-3> sendResponse: sending response to endpoint: 127.0.0.1:5062/udp:
+SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:127.0.0.1:5060;transport=UDP>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.118  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-4> [B2BUA/B2BUA]  received response on dialog DialogActivity[handle=SIPDialogAH[101,1,74579900]]:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+Contact: <sip:guic@172.21.160.184:5061>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.143  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-4> [B2BUA/B2BUA]  forwarding response on dialog DialogActivity[handle=SIPDialogAH[101,0,74579900]]:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.143  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-4> [SIPDialogAH[101,0,74579900]] [UAS_EARLY] outgoing 1xx-tag/INVITE response:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:127.0.0.1:5060;transport=UDP>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.144  Finest  [trace.sipra.resources.sipra]   <jr-4> Sending response on transaction ServerTransactionActivity[InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]]]:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:127.0.0.1:5060;transport=UDP>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.144  Finest  [trace.sipra.sip.transaction.server.invite]   <jr-4> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] sending response to 127.0.0.1:5062/udp:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:127.0.0.1:5060;transport=UDP>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.144  Finest  [trace.sipra.sip.transport.udp]   <jr-4> sendResponse: sending response to endpoint: 127.0.0.1:5062/udp:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 20 INVITE
+Contact: <sip:127.0.0.1:5060;transport=UDP>
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:28.479  Finest  [trace.sipra.sip.transaction.client.invite]   <sipra/scheduler/0> InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]] Timer A fired
+2009-08-10 15:14:29.534  Fine    [trace.sipra.sip.transport.udp.ioloop]   <sipra/UDP/IO> com.opencloud.ob.ocsip.bG@16535bf: onReadable()
+2009-08-10 15:14:29.535  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> received 314 byte dgram from: /127.0.0.1:5062
+2009-08-10 15:14:29.535  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> handleNewData: source=/127.0.0.1:5062, data=java.nio.DirectByteBuffer[pos=0 lim=314 cap=8192]
+2009-08-10 15:14:29.537  Finest  [trace.sipra.sip.transport.manager]   <sipra/pool/2> incomingSipRequest:
+CANCEL sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport;branch=z9hG4bK1821888477
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 CANCEL
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.621  Finest  [trace.sipra.sip.transaction.server.noninvite]   <sipra/pool/2> NonInviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,CANCEL]] received initial request from 127.0.0.1:5062/udp, pass up to TU:
+CANCEL sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 CANCEL
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.630  Finest  [trace.sipra.sip.transaction.server.noninvite]   <sipra/pool/2> NonInviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,CANCEL]] setCurrentState: old=[undef], new=[Trying Transaction]
+2009-08-10 15:14:29.632  Finest  [trace.sipra.resources.sipra]   <sipra/pool/2> incoming CANCEL request:
+CANCEL sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 CANCEL
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.633  Finer   [trace.sipra.resources.sipra]   <sipra/pool/2> CANCEL matched INVITE transaction SIPTransactionAH[server,RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] on dialog SIPDialogAH[101,0,74579900]
+2009-08-10 15:14:29.633  Finest  [trace.sipra.resources.sipra]   <sipra/pool/2> fireEvent: ah=SIPTransactionAH[server,RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]], eventType=EventTypeID[name=javax.sip.message.Request.CANCEL,vendor=net.java.slee,version=1.2], event=com.opencloud.slee.resources.sip.ra.DialogCancelEvent[source=com.opencloud.slee.resources.sip.ra.DialogController@113dd59], address=null, flags=96
+2009-08-10 15:14:29.636  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-5> [B2BUA/B2BUA]  received CANCEL request:
+CANCEL sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 CANCEL
+Max-Forwards: 70
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.637  Finest  [trace.sipra.resources.sipra]   <jr-5> acceptCancel(UAS): CANCEL matched INVITE, send 200 OK and 487 Request Terminated
+2009-08-10 15:14:29.637  Finest  [trace.sipra.resources.sipra]   <jr-5> sendErrorResponse: 200 OK
+2009-08-10 15:14:29.637  Finest  [trace.sipra.sip.transaction.server.noninvite]   <jr-5> NonInviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,CANCEL]] sending response to 127.0.0.1:5062/udp:
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 CANCEL
+
+
+2009-08-10 15:14:29.638  Finest  [trace.sipra.sip.transaction.server.noninvite]   <jr-5> NonInviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,CANCEL]] setCurrentState: old=[Trying Transaction], new=[Completed Transaction]
+2009-08-10 15:14:29.638  Finest  [trace.sipra.sip.transport.udp]   <jr-5> sendResponse: sending response to endpoint: 127.0.0.1:5062/udp:
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 CANCEL
+
+
+2009-08-10 15:14:29.639  Finest  [trace.sipra.resources.sipra]   <jr-5> sendErrorResponse: 487 Request Terminated
+2009-08-10 15:14:29.639  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-5> [SIPDialogAH[101,0,74579900]] [UAS_EARLY] outgoing 3xx-6xx/INVITE response:
+SIP/2.0 487 Request Terminated
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+
+
+2009-08-10 15:14:29.639  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-5> [SIPDialogAH[101,0,74579900]] [UAS_EARLY] UAS_EARLY -> TERMINATED
+2009-08-10 15:14:29.639  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-5> [SIPDialogAH[101,0,74579900]] [TERMINATED] dialog setup failed
+2009-08-10 15:14:29.640  Finest  [trace.sipra.resources.sipra]   <jr-5> endActivity: SIPDialogAH[101,0,74579900]
+2009-08-10 15:14:29.642  Finest  [trace.sipra.resources.sipra]   <jr-5> Sending response on transaction ServerTransactionActivity[InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]]]:
+SIP/2.0 487 Request Terminated
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+
+
+2009-08-10 15:14:29.642  Finest  [trace.sipra.sip.transaction.server.invite]   <jr-5> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] sending response to 127.0.0.1:5062/udp:
+SIP/2.0 487 Request Terminated
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+
+
+2009-08-10 15:14:29.642  Finest  [trace.sipra.sip.transaction.server.invite]   <jr-5> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] setCurrentState: old=[Proceeding Transaction], new=[Completed Transaction]
+2009-08-10 15:14:29.643  Finest  [trace.sipra.sip.transport.udp]   <jr-5> sendResponse: sending response to endpoint: 127.0.0.1:5062/udp:
+SIP/2.0 487 Request Terminated
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport=5062;branch=z9hG4bK1821888477;received=127.0.0.1
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 INVITE
+
+
+2009-08-10 15:14:29.643  Fine    [trace.sipra.sip.transport.udp.ioloop]   <sipra/UDP/IO> com.opencloud.ob.ocsip.bG@16535bf: onReadable()
+2009-08-10 15:14:29.644  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> received 246 byte dgram from: /127.0.0.1:5062
+2009-08-10 15:14:29.644  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> handleNewData: source=/127.0.0.1:5062, data=java.nio.DirectByteBuffer[pos=0 lim=246 cap=8192]
+2009-08-10 15:14:29.644  Finest  [trace.sipra.resources.sipra]   <jr-5> endActivity: SIPTransactionAH[server,RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]]
+2009-08-10 15:14:29.644  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-5> [B2BUA/B2BUA]  sending CANCEL on dialog DialogActivity[handle=SIPDialogAH[101,1,74579900]]
+2009-08-10 15:14:29.644  Finest  [trace.sipra.resources.sipra.dialog.state]   <jr-5> [SIPDialogAH[101,1,74579900]] [UAC_EARLY] sending CANCEL for INVITE client transaction ClientTransactionActivity[InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]]]:
+CANCEL sip:guic@127.0.0.1:5061 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 CANCEL
+Max-Forwards: 70
+
+
+2009-08-10 15:14:29.645  Finer   [trace.sipra.sip.transport.router]   <jr-5> getNextHop: using Request-URI: sip:guic@127.0.0.1:5061
+2009-08-10 15:14:29.665  Finer   [trace.sipra.sip.transport.router]   <jr-5> getNextHop: sip:guic@127.0.0.1:5061
+2009-08-10 15:14:29.665  Finer   [trace.sipra.sip.transport.router]   <jr-5> numeric address, no DNS lookup required
+2009-08-10 15:14:29.665  Finer   [trace.sipra.sip.transport.router]   <jr-5> next hop for <sip:guic@127.0.0.1:5061>: 127.0.0.1:5061/udp
+2009-08-10 15:14:29.666  Finest  [trace.sipra.sip.stack]   <jr-5> isLocalEndpoint: 127.0.0.1:5061/udp is not local
+2009-08-10 15:14:29.666  Finer   [trace.sipra.sip.transport.udp]   <jr-5> getSipTransport (cached): local=127.0.0.1:5060/udp, remote=127.0.0.1:5061/udp, selected=127.0.0.1:5060/udp
+2009-08-10 15:14:29.667  Finest  [trace.sipra.resources.sipra]   <jr-5> startActivity: ah=SIPTransactionAH[client,RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]], sbbCreated=true, flags=2
+2009-08-10 15:14:29.673  Finest  [trace.sipra.sip.transport.manager]   <sipra/pool/3> incomingSipRequest:
+ACK sip:guic@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.21.160.184:5062;rport;branch=z9hG4bK1821888477
+From: <sip:guic2@172.21.160.184:5062>;tag=1690508977
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 20 ACK
+Content-Length: 0
+
+
+2009-08-10 15:14:29.674  Finest  [trace.sipra.sip.transaction.manager]   <sipra/pool/3> mapped request to existing server transaction InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]]
+2009-08-10 15:14:29.674  Finest  [trace.sipra.sip.transaction.server.invite]   <sipra/pool/3> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] received ACK for 3xx-6xx, NOT passing up to TU
+2009-08-10 15:14:29.674  Finest  [trace.sipra.sip.transaction.server.invite]   <sipra/pool/3> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] setCurrentState: old=[Completed Transaction], new=[Confirmed Transaction]
+2009-08-10 15:14:29.675  Finest  [trace.sipra.resources.sipra]   <jr-5> Sending request on transaction ClientTransactionActivity[NonInviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]]]:
+CANCEL sip:guic@127.0.0.1:5061 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 CANCEL
+Max-Forwards: 70
+
+
+2009-08-10 15:14:29.675  Finest  [trace.sipra.sip.transaction.client.noninvite]   <jr-5> NonInviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]] setCurrentState: old=[undef], new=[Trying Transaction]
+2009-08-10 15:14:29.675  Finest  [trace.sipra.sip.transport.udp]   <jr-5> sendRequest: sending request:
+CANCEL sip:guic@127.0.0.1:5061 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>
+Call-ID: 795506601
+CSeq: 158098 CANCEL
+Max-Forwards: 70
+
+
+2009-08-10 15:14:29.678  Fine    [trace.sipra.sip.transport.udp.ioloop]   <sipra/UDP/IO> com.opencloud.ob.ocsip.bG@16535bf: onReadable()
+2009-08-10 15:14:29.679  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> received 313 byte dgram from: /127.0.0.1:5061
+2009-08-10 15:14:29.679  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> handleNewData: source=/127.0.0.1:5061, data=java.nio.DirectByteBuffer[pos=0 lim=313 cap=8192]
+2009-08-10 15:14:29.680  Finest  [trace.sipra.sip.transport.manager]   <sipra/pool/0> incomingSipResponse:
+SIP/2.0 487 Request Cancelled
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.680  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> received 298 byte dgram from: /127.0.0.1:5061
+2009-08-10 15:14:29.680  Finest  [trace.sipra.sip.transport.udp]   <sipra/UDP/IO> handleNewData: source=/127.0.0.1:5061, data=java.nio.DirectByteBuffer[pos=0 lim=298 cap=8192]
+2009-08-10 15:14:29.680  Finest  [trace.sipra.sip.transaction.manager]   <sipra/pool/0> incomingSipResponse: txn id RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE] matched txn=InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]]
+2009-08-10 15:14:29.684  Finest  [trace.sipra.sip.transaction.client.invite]   <sipra/pool/0> InviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,INVITE]] setCurrentState: old=[Proceeding Transaction], new=[Completed Transaction]
+2009-08-10 15:14:29.685  Finest  [trace.sipra.sip.transport.udp]   <sipra/pool/0> sendRequest: sending request:
+ACK sip:guic@127.0.0.1:5061 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 ACK
+Max-Forwards: 70
+
+
+2009-08-10 15:14:29.685  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> incoming 487 response:
+SIP/2.0 487 Request Cancelled
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.726  Fine    [trace.sipra.resources.sipra]   <jr-6> activityEnded: SIPDialogAH[101,0,74579900]
+2009-08-10 15:14:29.727  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/0> [SIPDialogAH[101,1,74579900]] [UAC_EARLY] incoming 3xx-6xx/INVITE response:
+SIP/2.0 487 Request Cancelled
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.727  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/0> [SIPDialogAH[101,1,74579900]] [UAC_EARLY] UAC_EARLY -> TERMINATED
+2009-08-10 15:14:29.727  Finest  [trace.sipra.resources.sipra.dialog.state]   <sipra/pool/0> [SIPDialogAH[101,1,74579900]] [TERMINATED] dialog setup failed
+2009-08-10 15:14:29.727  Finest  [trace.sipra.resources.sipra.eventcodec]   <sipra/pool/0> getFireableEventType(18)=EventTypeID[name=javax.sip.message.Response.CLIENT_ERROR,vendor=net.java.slee,version=1.2]
+2009-08-10 15:14:29.727  Finer   [trace.sipra.resources.sipra.eventfilter]   <sipra/pool/0> isFiltered(EventTypeID[name=javax.sip.message.Response.CLIENT_ERROR,vendor=net.java.slee,version=1.2])? false
+2009-08-10 15:14:29.727  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> fireEvent: ah=SIPDialogAH[101,1,74579900], eventType=EventTypeID[name=javax.sip.message.Response.CLIENT_ERROR,vendor=net.java.slee,version=1.2], event=com.opencloud.slee.resources.sip.ra.DialogResponseEvent[source=com.opencloud.slee.resources.sip.ra.DialogController@113dd59], address=null, flags=0
+2009-08-10 15:14:29.739  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> endActivity: SIPDialogAH[101,1,74579900]
+2009-08-10 15:14:29.739  Finest  [trace.sipra.sip.transport.manager]   <sipra/pool/0> incomingSipResponse:
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 CANCEL
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.740  Finest  [trace.sipra.sip.transaction.manager]   <sipra/pool/0> incomingSipResponse: txn id RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL] matched txn=NonInviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]]
+2009-08-10 15:14:29.740  Finest  [trace.sipra.sip.transaction.client.noninvite]   <sipra/pool/0> NonInviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]] setCurrentState: old=[Trying Transaction], new=[Completed Transaction]
+2009-08-10 15:14:29.741  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> incoming 200 response:
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 CANCEL
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.741  Finest  [trace.sipra.resources.sipra.eventcodec]   <sipra/pool/0> getFireableEventType(16)=EventTypeID[name=javax.sip.message.Response.SUCCESS,vendor=net.java.slee,version=1.2]
+2009-08-10 15:14:29.741  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> Transaction NonInviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]], state=Completed Transaction
+2009-08-10 15:14:29.741  Finer   [trace.sipra.resources.sipra.eventfilter]   <sipra/pool/0> isFiltered(EventTypeID[name=javax.sip.message.Response.SUCCESS,vendor=net.java.slee,version=1.2])? false
+2009-08-10 15:14:29.741  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> fireEvent: ah=SIPTransactionAH[client,RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]], eventType=EventTypeID[name=javax.sip.message.Response.SUCCESS,vendor=net.java.slee,version=1.2], event=javax.sip.ResponseEvent[source=com.opencloud.slee.resources.sip.ra.DialogController@113dd59], address=null, flags=0
+2009-08-10 15:14:29.742  Finer   [trace.sipra.resources.sipra]   <jr-5> eventProcessingSuccessful, handle=SIPTransactionAH[server,RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]], eventType=EventTypeID[name=javax.sip.message.Request.CANCEL,vendor=net.java.slee,version=1.2], event=com.opencloud.slee.resources.sip.ra.DialogCancelEvent[source=com.opencloud.slee.resources.sip.ra.DialogController@113dd59], flags=256
+2009-08-10 15:14:29.743  Finest  [trace.B2BUA_2_1.B2BUA]   <jr-7> [B2BUA/B2BUA]  received response on dialog DialogActivity[handle=SIPDialogAH[101,1,74579900]]:
+SIP/2.0 487 Request Cancelled
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKs3mDxRRnKMjNS94zeLB7MA;rport=5060
+From: <sip:guic2@172.21.160.184:5062>;tag=VVGEng
+To: <sip:guic@127.0.0.1:5060>;tag=534879121
+Call-ID: 795506601
+CSeq: 158098 INVITE
+User-Agent: Linphone/2.1.1 (eXosip2/3.1.0)
+Content-Length: 0
+
+
+2009-08-10 15:14:29.744  Finer   [trace.B2BUA_2_1.B2BUA]   <jr-7> [B2BUA/B2BUA]  no need to forward response from cancelled INVITE
+2009-08-10 15:14:29.745  Fine    [trace.sipra.resources.sipra]   <jr-8> activityEnded: SIPTransactionAH[server,RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]]
+2009-08-10 15:14:29.745  Finest  [trace.sipra.resources.sipra]   <sipra/pool/0> endActivity: SIPTransactionAH[client,RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]]
+2009-08-10 15:14:29.787  Fine    [trace.sipra.resources.sipra]   <jr-11> activityEnded: SIPTransactionAH[client,RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]]
+2009-08-10 15:14:29.788  Fine    [trace.sipra.resources.sipra]   <jr-10> activityEnded: SIPDialogAH[101,1,74579900]
+2009-08-10 15:14:30.142  Finest  [trace.sipra.sip.transaction.server.invite]   <sipra/scheduler/0> InviteServerTransaction[id=RFC3261TransactionID[z9hG4bK1821888477,172.21.160.184:5062,INVITE]] Timer G fired
+2009-08-10 15:14:30.176  Finest  [trace.sipra.sip.transaction.client.noninvite]   <sipra/scheduler/0> NonInviteClientTransaction[id=RFC3261TransactionID[z9hG4bKs3mDxRRnKMjNS94zeLB7MA,127.0.0.1:5060,CANCEL]] Timer E fired
+

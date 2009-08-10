@@ -21,28 +21,16 @@
 //**********************************************************************************
 
 
-#define ALO_H
-#ifndef ENGINE_H
-#include "ENGINE.h"
+#include <stdio.h>
+
+
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+#ifndef VALO_H
+#include "VALO.h"
 #endif
 
+void VALO::onINVITE(MESSAGE* _message){
 
-class ALO : public ENGINE {
-	public:
-
-		//CALL_OSET needed for back reference to umbrella object
-		ALO(ENGINE*);
-		int dummy;
-
-		/* parse will get the message and depending on the request will invoke the
-		 * related call back
-		 * for example is INVITE, it will invoke onINVITE()
-		 * all call backs can be overridden if the application needs to implement something
-		 */
-        void parse(MESSAGE*);
-
-        void onINVITE(MESSAGE*);
-	private:
-        ENGINE* sl_cc;
-
-};
+}
