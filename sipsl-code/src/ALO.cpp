@@ -38,32 +38,16 @@ ALO::ALO(ENGINE* _sl_cc):ENGINE(){
 }
 void ALO::parse(MESSAGE* _message) {
 
-	DEBOUT("ALO",_message->getHeadCallId().getContent())
-
+	DEBOUT("ALO","Dispatcher")
 	// check message type and invoke call back...
 
-//	// do business logic...
-//	// create b2b invite related message & so on...
-//	//TODO clean this
-//	char bu[512];
-//	SysTime inTime;
-//	GETTIME(inTime);
-//	MESSAGE* message;
-//	message = new MESSAGE(_message->getIncBuffer().c_str(), SODE_SMSVPOINT, inTime, _message->getSock(), _message->getSocket());
-//	sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
-//	string key(bu);
-//	message->setKey(key);
-//	pthread_mutex_lock(&messTableMtx);
-//	globalMessTable.insert(pair<string, MESSAGE*>(key, message));
-//	pthread_mutex_unlock(&messTableMtx);
-//
-//	DEBOUT("ALO","1")
-//	// TODO
-//	int tl = message->getTotLines();
-//	DEBOUT("ALO::parse tot lines",tl)
-//	sl_cc->p_w(message);
-//	DEBOUT("ALO","2")
+	if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+		DEBOUT("ALO Dispatches ",_message->getIncBuffer())
+		onInvite(_message);
+	}
+
+
 }
-void onINVITE(MESSAGE* m){
+void ALO::onInvite(MESSAGE* m){
 	DEBOUT("ALO unoverridded onINVITE called ", m->getIncBuffer())
 }

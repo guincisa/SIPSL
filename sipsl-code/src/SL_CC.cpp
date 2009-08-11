@@ -86,7 +86,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	CALL_OSET* call_oset = 0x0;
 
-	string callidx = _mess->getHeadCallId().getNormCallId();
+	string callidx = _mess->getHeadCallId().getNormCallId() +
+			_mess->getS_headVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 
 	call_oset = comap->getCALL_OSET_SV(callidx);
 

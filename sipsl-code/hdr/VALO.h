@@ -33,5 +33,5 @@ class VALO : public ALO {
 	private:
 	int dummy;
 	public:
-	void onINVITE(MESSAGE*);
+	void onINVITEx(MESSAGE*);
 };

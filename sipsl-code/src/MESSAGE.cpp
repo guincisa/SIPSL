@@ -303,7 +303,7 @@ C_HeadSipReply &MESSAGE::getHeadSipReply(void){
     return headSipReply;
 
 }
-stack<C_HeadVia> &MESSAGE::getS_headVia(void){
+stack<C_HeadVia*> &MESSAGE::getS_headVia(void){
 
 	if(s_headVia_p){
 		return s_headVia;
@@ -313,8 +313,8 @@ stack<C_HeadVia> &MESSAGE::getS_headVia(void){
 	int j = 1;
 
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,4).compare("Via:")){
-			C_HeadVia s(flex_line[i],genEntity,j++);
+		if(flex_line[i].substr(0,4).compare("Via:") == 0){
+			C_HeadVia* s = new C_HeadVia(flex_line[i],genEntity,j++);
 			s_headVia.push(s);
 		}
 	}

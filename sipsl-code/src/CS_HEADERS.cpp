@@ -783,11 +783,11 @@ void C_AttContactElem::doParse(void){
     if (q >=0){
     	string line1 = replaceHttpChars(content.substr(q+1, -1));
 
-		line = trimSpaces(content.substr(0,q+1) + line1);
+		line = trimUseless(content.substr(0,q+1) + line1);
 
     }
     else {
-    	line = trimSpaces(content);
+    	line = trimUseless(content);
     }
 
     Tuple s1 = brkin2(line, "<");

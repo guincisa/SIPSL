@@ -31,6 +31,28 @@
 #include "VALO.h"
 #endif
 
-void VALO::onINVITE(MESSAGE* _message){
+void VALO::onINVITEx(MESSAGE* _message){
+
+	//	// do business logic...
+	//	// create b2b invite related message & so on...
+	//	//TODO clean this
+		char bu[512];
+		SysTime inTime;
+		GETTIME(inTime);
+		MESSAGE* message;
+		message = new MESSAGE(_message->getIncBuffer().c_str(), SODE_SMSVPOINT, inTime, _message->getSock(), _message->getSocket());
+		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
+		string key(bu);
+		message->setKey(key);
+		pthread_mutex_lock(&messTableMtx);
+		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
+		pthread_mutex_unlock(&messTableMtx);
+
+		DEBOUT("VALO","1")
+		// TODO
+		int tl = message->getTotLines();
+		DEBOUT("VALO::parse tot lines",tl)
+		sl_cc->p_w(message);
+		DEBOUT("VALO","2")
 
 }
