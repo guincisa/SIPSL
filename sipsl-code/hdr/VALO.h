@@ -29,9 +29,11 @@
 #include "ALO.h"
 #endif
 
+
 class VALO : public ALO {
 	private:
 	int dummy;
 	public:
-	void onINVITEx(MESSAGE*);
+	VALO(ENGINE*);
+	void onInvite(MESSAGE*);
 };

@@ -132,7 +132,7 @@ void SL_CO::call(MESSAGE* _message){
 				if (actionList.top().getMessage()->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
 
-					DEBOUT("SL_CO::call action is ALO", actionList.top().getMessage()->getIncBuffer())
+					DEBOUT("SL_CO::call action is ALO", actionList.top().getMessage()->getHeadSipRequest().getContent())
 					call_oset->getALO()->p_w(actionList.top().getMessage());
 				}
 				if (actionList.top().getMessage()->getDestEntity() == SODE_APOINT){

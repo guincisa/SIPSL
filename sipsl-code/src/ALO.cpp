@@ -42,7 +42,7 @@ void ALO::parse(MESSAGE* _message) {
 	// check message type and invoke call back...
 
 	if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
-		DEBOUT("ALO Dispatches ",_message->getIncBuffer())
+		DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 		onInvite(_message);
 	}
 

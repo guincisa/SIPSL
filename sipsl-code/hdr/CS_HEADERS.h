@@ -77,6 +77,15 @@ inline vector<string> brkSpaces(string s) {
     output.push_back(s);
     return output;
 }
+inline string trimCR(string s){
+	int ii = s.find("\r",0);
+    if(ii > 0){
+        return(s.substr(0,ii));
+    }
+    else {
+    	return(s);
+    }
+}
 inline string trimUseless(string s) {
 
     string output = "";
@@ -92,14 +101,8 @@ inline string trimUseless(string s) {
         a = s.find(" ", 0);
     }
     output = output+s;
-    int ii = output.find("\r",0);
-    if(ii > 0){
-        final=  output.substr(0,ii);
-    }
-    else {
-    	final = output;
-    }
-    return final;
+
+    return trimCR(output);
 }
 inline Tuple brkin2(string couple, string separator) {
 

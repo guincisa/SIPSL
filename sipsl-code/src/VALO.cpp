@@ -31,7 +31,9 @@
 #include "VALO.h"
 #endif
 
-void VALO::onINVITEx(MESSAGE* _message){
+VALO::VALO(ENGINE* _e):ALO(_e){}
+
+void VALO::onInvite(MESSAGE* _message){
 
 	//	// do business logic...
 	//	// create b2b invite related message & so on...

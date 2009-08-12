@@ -25,8 +25,8 @@
 #ifndef ACTION_H
 #include "ACTION.h"
 #endif
-#ifndef ALO_H
-#include "ALO.h"
+#ifndef VALO_H
+#include "VALO.h"
 #endif
 /**********************************************************************************
  * CALL_OSET is :

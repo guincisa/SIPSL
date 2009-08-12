@@ -100,11 +100,11 @@ void BASEMESSAGE::fillLineArray(void){
 
     Tuple s = brkin2(incMessBuff,"\n");
     string t = s.Rvalue;
-    flex_line.push_back(s.Lvalue);
+    flex_line.push_back(trimCR(s.Lvalue));
     while (t.compare("")!=0){
     	s = brkin2(t,"\n");
     	t = s.Rvalue;
-        flex_line.push_back(s.Lvalue);
+        flex_line.push_back(trimCR(s.Lvalue));
     }
 
     arrayFilled = true;
