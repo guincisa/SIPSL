@@ -1231,3 +1231,37 @@ S_AttMethod C_HeadCSeq::copyMethod(void){
 		doParse();
 	return method;
 }
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Route
+//     Route: <sip:127.0.0.1:5060;lr>
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+C_HeadRoute::C_HeadRoute(string _content, int _genEntity):
+	S_HeadGeneric(_content, _genEntity),
+	routeHost(""){
+}
+void C_HeadRoute::doParse(void){
+
+	if(parsed)
+		return;
+	int i = content.find("<");
+	int ii = content.find(">");
+	//TODO if not < and > ??
+	//if (i > 0 && ii > 0){
+		string tmp = content.substr(i+5,ii-i-5);
+	Tuple s = brkin2(tmp, ";");
+	routeHost.setContent(s.Lvalue);
+	lr = s.Rvalue;
+
+	parsed = true;
+
+	return;
+
+}
+S_AttHostPort &C_HeadRoute::getRoute(void){
+	if(!parsed)
+		doParse();
+	return routeHost;
+}
+

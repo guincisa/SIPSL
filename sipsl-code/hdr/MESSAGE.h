@@ -109,6 +109,8 @@ class BASEMESSAGE {
 
         vector<string> getLines(void);
 
+        void removeHeader(int pos);
+
     private:
         string  incMessBuff;
 
@@ -158,6 +160,9 @@ class MESSAGE : public BASEMESSAGE {
     	bool 				headCallId_p;
     	C_HeadCSeq			headCSeq;
     	bool 				headCSeq_p;
+    	C_HeadRoute			headRoute;
+    	bool 				headRoute_p;
+    	int 				headRoute_pos;
     	//C_HeadContentType	headContentType;
     	//bool 				headContentType_p;
     	//S_HeadContentLength headContentLenght;
@@ -207,8 +212,10 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadContentType	&getHeadContentType(void);
     	S_HeadContentLength &getHeadContentLenght(void);
     	C_SDPInfo			&getHeadSDPInfo(void);
-    	C_HeadAllow			&getHheadAllow(void);
+    	C_HeadAllow			&getHeadAllow(void);
     	C_HeadSubject		&getHeadSubject(void);
+    	C_HeadRoute			&getHeadRoute(void);
+    	void removeHeadRoute(void);
 
 
     	/*

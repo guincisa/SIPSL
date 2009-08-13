@@ -42,13 +42,24 @@ void VALO::onInvite(MESSAGE* _message){
 		SysTime inTime;
 		GETTIME(inTime);
 		MESSAGE* message;
-		message = new MESSAGE(_message->getIncBuffer().c_str(), SODE_SMSVPOINT, inTime, _message->getSock(), _message->getSocket());
+		message = new MESSAGE(_message, SODE_ALOPOINT);
 		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 		string key(bu);
 		message->setKey(key);
+		DEBOUT("NEW MESSAGE",message->getIncBuffer());
+		DEBOUT("NEW MESSAGE",message->getTotLines());
 		pthread_mutex_lock(&messTableMtx);
 		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
 		pthread_mutex_unlock(&messTableMtx);
+
+		// REQUEST
+		// maybe changed or unchanged
+		// ---- unchanged
+		// Route
+		// remove it
+		DEBOUT("message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
+		DEBOUT("message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
+
 
 		DEBOUT("VALO","1")
 		// TODO

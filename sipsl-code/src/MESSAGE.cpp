@@ -88,10 +88,8 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage){
 	echoClntAddr = _basemessage->getSocket();
     sock = _basemessage->getSock();
 
-    flex_line = _basemessage->flex_line;
+    //flex_line = _basemessage->flex_line;
     incMessBuff = _basemessage->getIncBuffer();
-
-	DEBOUT("BASEMESSAGE::BASEMESSAGE key", key)
 
 	return;
 }
@@ -169,7 +167,9 @@ struct sockaddr_in BASEMESSAGE::getSocket(void){
 int BASEMESSAGE::getSock(void){
 	return sock;
 }
-
+void BASEMESSAGE::removeHeader(int _pos){
+	flex_line[_pos] = "xxDxx";
+}
 
 // *****************************************************************************************
 // *****************************************************************************************
@@ -188,7 +188,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headTo("",_genEntity),
 	headFrom("",_genEntity),
 	headCallId("",_genEntity),
-	headCSeq("",_genEntity){
+	headCSeq("",_genEntity),
+	headRoute("",_genEntity){
 
 	reqRep = 0;
 	isInternal = false;
@@ -203,10 +204,9 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):
 	headTo("",_genEntity),
 	headFrom("",_genEntity),
 	headCallId("",_genEntity),
-	headCSeq("",_genEntity){
-
-	DEBOUT("MESSAGE::MESSAGE", "")
-
+	headCSeq("",_genEntity),
+	headRoute("",_genEntity){
+	DEBOUT("MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):","")
 	return;
 }
 //ONLY FOR TEST
@@ -220,7 +220,8 @@ MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
 	headTo("",0),
 	headFrom("",0),
 	headCallId("",0),
-	headCSeq("",0){
+	headCSeq("",0),
+	headRoute("",0){
 
 	assert(0);
 
@@ -232,27 +233,27 @@ int MESSAGE::getReqRepType(void){
 	if (reqRep != 0) {
 		return reqRep;
 	}
-	if(flex_line[0].substr(0,3).compare("SIP")){
+	if(flex_line[0].substr(0,3).compare("SIP")==0){
 		headSipReply.setContent(flex_line[0],genEntity);
 		reqRep = REPSUPP;
 	}
-	if(flex_line[0].substr(0,7).compare("INVITE")){
+	if(flex_line[0].substr(0,6).compare("INVITE")==0){
 		headSipRequest.setContent(flex_line[0],genEntity);
 		reqRep = REQSUPP;
 	}
-	else if(flex_line[0].substr(0,3).compare("ACK")){
+	else if(flex_line[0].substr(0,3).compare("ACK")==0){
 		headSipRequest.setContent(flex_line[0],genEntity);
 		reqRep = REQSUPP;
 	}
-	else if(flex_line[0].substr(0,3).compare("BYE")){
+	else if(flex_line[0].substr(0,3).compare("BYE")==0){
 		headSipRequest.setContent(flex_line[0],genEntity);
 		reqRep = REQSUPP;
 	}
-	else if(flex_line[0].substr(0,6).compare("CANCEL")){
+	else if(flex_line[0].substr(0,6).compare("CANCEL")==0){
 		headSipRequest.setContent(flex_line[0],genEntity);
 		reqRep = REQSUPP;
 	}
-	else if(flex_line[0].substr(0,8).compare("REGISTER")){
+	else if(flex_line[0].substr(0,8).compare("REGISTER")==0){
 		headSipRequest.setContent(flex_line[0],genEntity);
 		reqRep = REQUNSUPP;
 	}
@@ -309,7 +310,7 @@ S_HeadMaxFwd &MESSAGE::getHeadMaxFwd(void){
 	int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,13).compare("Max-Forwards:")){
+		if(flex_line[i].substr(0,13).compare("Max-Forwards:")==0){
 			headMaxFwd.setContent(flex_line[i],genEntity);
 		}
 	}
@@ -325,7 +326,7 @@ C_HeadContact &MESSAGE::getHeadContact(void){
 	int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,8).compare("Contact:")){
+		if(flex_line[i].substr(0,8).compare("Contact:")==0){
 			headContact.setContent(flex_line[i],genEntity);
 		}
 	}
@@ -341,7 +342,7 @@ C_HeadTo &MESSAGE::getHeadTo(void){
 	int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,3).compare("To:")){
+		if(flex_line[i].substr(0,3).compare("To:")==0){
 			headTo.setContent(flex_line[i],genEntity);
 		}
 	}
@@ -357,7 +358,7 @@ C_HeadFrom &MESSAGE::getHeadFrom(void){
 	int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,5).compare("From:")){
+		if(flex_line[i].substr(0,5).compare("From:")==0){
 			headFrom.setContent(flex_line[i],genEntity);
 		}
 	}
@@ -391,12 +392,32 @@ C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 	int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,5).compare("CSeq:")){
+		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
 			headCSeq.setContent(flex_line[i],genEntity);
 		}
 	}
 	headCSeq_p = true;
 		return headCSeq;
+}
+C_HeadRoute &MESSAGE::getHeadRoute(void){
+
+	if(headRoute_p){
+		return headRoute;
+	}
+
+	int i;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,6).compare("Route:")==0){
+			headRoute.setContent(flex_line[i],genEntity);
+			headRoute_pos = i;
+		}
+	}
+	headRoute_p = true;
+		return headRoute;
+}
+void MESSAGE::removeHeadRoute(void){
+	removeHeader(headRoute_pos);
+	return;
 }
 
 
