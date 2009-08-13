@@ -83,6 +83,7 @@ class BASEMESSAGE {
         string &getLine(int);
         int getTotLines(void);
 
+
         int id; //Used in spin buffer
 
         string &getIncBuffer(void);
@@ -105,6 +106,8 @@ class BASEMESSAGE {
         int destEntity;
         vector<string> flex_line;
         SysTime inc_ts;
+
+        vector<string> getLines(void);
 
     private:
         string  incMessBuff;

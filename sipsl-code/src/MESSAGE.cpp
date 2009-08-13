@@ -76,22 +76,29 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
 	return;
 }
 BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage){
+	/*
 	SysTime inTime;
 	GETTIME(inTime);
 	char bu[512];
 	sprintf(bu, "%x#%lld",this,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 	string key(bu);
+	*/
+    DEBOUT("BASEMESSAGE::BASEMESSAGE","copy")
 
 	echoClntAddr = _basemessage->getSocket();
     sock = _basemessage->getSock();
 
-    DEBOUT("BASEMESSAGE::BASEMESSAGE","copy")
+    flex_line = _basemessage->flex_line;
     incMessBuff = _basemessage->getIncBuffer();
 
 	DEBOUT("BASEMESSAGE::BASEMESSAGE key", key)
 
 	return;
 }
+vector<string> BASEMESSAGE::getLines(void){
+	return flex_line;
+}
+
 void BASEMESSAGE::fillLineArray(void){
 
     if (arrayFilled)
@@ -110,35 +117,6 @@ void BASEMESSAGE::fillLineArray(void){
     arrayFilled = true;
 
     return;
-
-    /*
-    int iii=1,jjj=0,kkk=0,ij=0;
-
-    bool stilllines = true;
-
-    while (stilllines) {
-        //search: METHOD, CallId, To, From, Cseq, expires
-        kkk = incMessBuff.find("\n", jjj );
-        if ( kkk < 0) {
-            stilllines = false;
-        }
-        else {
-            linePosition.push_back(kkk + 1);
-            jjj = kkk+1;
-            iii ++;
-        }
-    }
-    for (ij = 1; ij < iii;ij++) {
-        flex_line.push_back(incMessBuff.substr(linePosition[ij-1],linePosition[ij] - linePosition[ij-1] -2));
-        DEBOUT("Line","line " +  ij-1 + flex_line[ij-1]);
-    }
-
-    totLines = iii -1;
-
-    arrayFilled = true;
-
-    return;
-    */
 }
 // *****************************************************************************************
 // *****************************************************************************************
@@ -215,6 +193,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	reqRep = 0;
 	isInternal = false;
 }
+
 MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):
 	BASEMESSAGE(_message),
 	headSipRequest("",_genEntity),
