@@ -47,7 +47,7 @@ void VALO::onInvite(MESSAGE* _message){
 		string key(bu);
 		message->setKey(key);
 		DEBOUT("NEW MESSAGE",message->getIncBuffer());
-		DEBOUT("NEW MESSAGE",message->getTotLines());
+		DEBOUT("NEW MESSAGE"," " + message->getTotLines());
 		pthread_mutex_lock(&messTableMtx);
 		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
 		pthread_mutex_unlock(&messTableMtx);
@@ -65,7 +65,7 @@ void VALO::onInvite(MESSAGE* _message){
 		// TODO
 		int tl = message->getTotLines();
 		DEBOUT("VALO::parse tot lines",tl)
-		sl_cc->p_w(message);
+		//sl_cc->p_w(message);
 		DEBOUT("VALO","2")
 
 }

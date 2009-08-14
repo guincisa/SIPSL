@@ -151,6 +151,15 @@ void SL_CO::call(MESSAGE* _message){
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
+			//if (purgeMessage){
+				string key = _message->getKey();
+				pthread_mutex_lock(&messTableMtx);
+				DEBOUT("SL_SM_SV::delete message",key)
+				globalMessTable.erase(key);
+				delete _message;
+				pthread_mutex_unlock(&messTableMtx);
+			//}
+			return;
 		}
 	}
 	if (_message->getDestEntity() == SODE_SMCLPOINT){
@@ -176,6 +185,8 @@ SL_SM_SV::SL_SM_SV(void){
 //**********************************************************************************
 //**********************************************************************************
 ACTION* SL_SM_SV::event(MESSAGE* _message){
+
+	bool purgeMessage = false;
 
 	DEBOUT("SL_SM_SV::event", _message->getHeadCallId().getContent())
 
@@ -221,8 +232,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 			}
 		}else if (State == 1){
 			DEBOUT("SL_SM_SV::event State 1 probable retransmission","")
-			return 0x0;
 		}
+		return 0x0;
 
 	}
 	if (_message->getReqRepType() == REPSUPP) {

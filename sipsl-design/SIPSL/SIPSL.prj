@@ -1,7 +1,7 @@
-format 66
+format 67
 "SIPSL"
-  revision 41
-  modified_by 2 "gugli"
+  revision 42
+  modified_by 2 "guic"
 
 
   
@@ -492,6 +492,13 @@ s
 
       state 128545 "4"
       end
+    end
+
+    sequencediagram 140546 "F6 VALO"
+      show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+      comment "Oct 17- 2008
+"
+      overlapping_bars size A2
     end
   end
 end

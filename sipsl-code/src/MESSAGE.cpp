@@ -62,6 +62,14 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, i
 
 	arrayFilled = false;
 
+	//others
+    id = 0; //Used in spin buffer
+    destEntity = 0;
+	key="";
+
+    totLines=0;
+    arrayFilled=false;
+
 	return;
 }
 BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
@@ -91,6 +99,8 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage){
     //flex_line = _basemessage->flex_line;
     incMessBuff = _basemessage->getIncBuffer();
 
+    arrayFilled = false;
+
 	return;
 }
 vector<string> BASEMESSAGE::getLines(void){
@@ -101,7 +111,6 @@ void BASEMESSAGE::fillLineArray(void){
 
     if (arrayFilled)
         return;
-
 
     Tuple s = brkin2(incMessBuff,"\n");
     string t = s.Rvalue;
@@ -120,8 +129,9 @@ void BASEMESSAGE::fillLineArray(void){
 // *****************************************************************************************
 int BASEMESSAGE::getTotLines() {
 
-    if (!arrayFilled)
+    if (!arrayFilled){
     	fillLineArray();
+    }
 
     return(flex_line.size());
 }
@@ -193,6 +203,21 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	reqRep = 0;
 	isInternal = false;
+
+	s_headVia_p = false;
+	headMaxFwd_p = false;
+	headContact_p = false;
+	headTo_p = false;
+	headFrom_p = false;
+	headCallId_p = false;
+	headCSeq_p = false;
+	headRoute_p = false;
+	headRoute_pos = -1;
+
+	source=0x0;
+
+	isInternal = false;
+
 }
 
 MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):
