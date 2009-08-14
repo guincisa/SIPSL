@@ -88,7 +88,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 	CALL_OSET* call_oset = 0x0;
 
 	string callidx = _mess->getHeadCallId().getNormCallId() +
-			_mess->getS_headVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+			_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 	DEBOUT("CALLOSET ID",callidx)
 
 	call_oset = comap->getCALL_OSET_SV(callidx);
@@ -102,6 +102,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		SL_SM_SV* sl_sm_sv = new SL_SM_SV();
 		//NEED USER DEFINED CLASS
 		VALO* alo = new VALO(this);
+		alo->linkSUDP(getSUDP());
 
 		call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
 		DEBOUT("SL_CC::parse", "CALL_OSET created x side")

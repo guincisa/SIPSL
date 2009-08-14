@@ -84,6 +84,7 @@ class SUDP {
         // listen is threaded
         void listen(void);
         string getDomain(void);
+        int getPort(void);
         //SUDP * getInstance(void);
     	//SUDP(void);
 

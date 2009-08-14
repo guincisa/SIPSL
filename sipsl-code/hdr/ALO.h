@@ -42,7 +42,7 @@ class ALO : public ENGINE {
         void parse(MESSAGE*);
 
         virtual void onInvite(MESSAGE*);
-	//private:
+	protected:
         //TODO must be private
         ENGINE* sl_cc;
 

@@ -202,7 +202,7 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadSipReply   	&getHeadSipReply(void);
     	C_HeadSipRequest 	&getHeadSipRequest(void);
 
-    	stack<C_HeadVia*>	&getS_headVia(void);
+    	stack<C_HeadVia*>	&getSTKHeadVia(void);
     	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
     	C_HeadContact	 	&getHeadContact(void);
     	C_HeadTo	     	&getHeadTo(void);
@@ -215,9 +215,18 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadAllow			&getHeadAllow(void);
     	C_HeadSubject		&getHeadSubject(void);
     	C_HeadRoute			&getHeadRoute(void);
+
+
     	void removeHeadRoute(void);
 
+    	void setHeadSipRequest(string content, int genEntity);
 
+    	void setHeadCSeq(string content, int genEntity);
+
+		//purge all vias
+    	void purgeSTKHeadVia(void);
+    	//insert via
+    	void pushHeadVia(string content, int genEntity, int pos);
     	/*
     // INTERNAL params
         int headerType[MAXLINES];

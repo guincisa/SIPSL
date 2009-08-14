@@ -57,11 +57,9 @@ class ENGINE {
 
 		//
 
-		ThreadWrapper * parsethread[5];
+		ThreadWrapper* parsethread[5];
 
-	protected:
-
-        SUDP * sudp;
+        SUDP* sudp;
 
     public:
 
@@ -71,7 +69,8 @@ class ENGINE {
 		virtual void parse(MESSAGE* message) = 0;
 #endif
 
-        void linkSUDP(SUDP *);
+        void linkSUDP(SUDP*);
+        SUDP* getSUDP(void);
 
     	void p_w(MESSAGE* message);
 

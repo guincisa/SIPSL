@@ -308,7 +308,7 @@ C_HeadSipReply &MESSAGE::getHeadSipReply(void){
     return headSipReply;
 
 }
-stack<C_HeadVia*> &MESSAGE::getS_headVia(void){
+stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 
 	if(s_headVia_p){
 		return s_headVia;
@@ -326,7 +326,30 @@ stack<C_HeadVia*> &MESSAGE::getS_headVia(void){
 	s_headVia_p = true;
 		return s_headVia;
 }
-S_HeadMaxFwd &MESSAGE::getHeadMaxFwd(void){
+//purge all vias
+void MESSAGE::purgeSTKHeadVia(void){
+
+	if(!s_headVia_p){
+		// not initialized
+		return;
+	}
+
+	while(!s_headVia.empty()){
+		delete s_headVia.top();
+		s_headVia.pop();
+	}
+	stack<C_HeadVia*> tmp;
+	s_headVia = tmp;
+}
+//insert via
+void MESSAGE::pushHeadVia(string _content, int _genEntity, int _pos){
+
+	//TODO C_HEadVia copy
+	C_HeadVia* s = new C_HeadVia(_content,_genEntity, _pos);
+	s_headVia.push(s);
+}
+
+S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
 
 	if(headMaxFwd_p){
 		return headMaxFwd;
@@ -444,6 +467,13 @@ void MESSAGE::removeHeadRoute(void){
 	removeHeader(headRoute_pos);
 	return;
 }
+void MESSAGE::setHeadSipRequest(string _content, int _genEntity){
+	headSipRequest.setContent(_content, _genEntity);
+}
+void MESSAGE::setHeadCSeq(string _content, int _genEntity){
+	headCSeq.setContent(_content, _genEntity);
+}
+
 
 
 /*

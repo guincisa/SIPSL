@@ -57,8 +57,32 @@ void VALO::onInvite(MESSAGE* _message){
 		// ---- unchanged
 		// Route
 		// remove it
-		DEBOUT("message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
-		DEBOUT("message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
+		message->removeHeadRoute();
+
+		//change request
+		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
+		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
+		message->setHeadSipRequest("sipslguic@127.0.0.1:5061", SODE_ALOPOINT);
+
+		//Cseq new to 1
+		message->setHeadCSeq("1 INVITE", SODE_ALOPOINT);
+
+
+		//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
+		DEBOUT("1","1")
+
+		char viatmp[512];
+		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
+		message->purgeSTKHeadVia();
+		message->pushHeadVia(viatmp, SODE_ALOPOINT, 0);
+
+		//From changes
+		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
+		// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
+
+
 
 
 		DEBOUT("VALO","1")

@@ -239,3 +239,7 @@ void SUDP::listen() {
 string SUDP::getDomain(void) {
     return domain;
 }
+int SUDP::getPort(void){
+	return echoServPort;
+}
+

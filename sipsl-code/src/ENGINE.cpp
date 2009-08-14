@@ -94,6 +94,8 @@ ENGINE::ENGINE(void) {
     res = pthread_create(&(parsethread[2]->thread), NULL, threadparser, (void *) t3);
     res = pthread_create(&(parsethread[3]->thread), NULL, threadparser, (void *) t4);
     res = pthread_create(&(parsethread[4]->thread), NULL, threadparser, (void *) t5);
+
+    sudp = 0x0;
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -107,6 +109,9 @@ void ENGINE::parse(MESSAGE* m) {
 //**********************************************************************************
 void ENGINE::linkSUDP(SUDP *_sudp){
 	sudp = _sudp;
+}
+SUDP* ENGINE::getSUDP(void){
+	return sudp;
 }
 //**********************************************************************************
 //**********************************************************************************

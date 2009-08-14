@@ -49,9 +49,11 @@ int main(void) {
 
 	SIPENGINE gg;
 	SL_CC sl_cc;
+	sl_cc.linkSUDP(&mystack);
 	gg.setSL_CC(&sl_cc);
+	gg.linkSUDP(&mystack);
 
-	mystack.init(5060, &gg, "gugli.com");
+	mystack.init(5060, &gg, "sipsl.gugli.com");
 
 
     mystack.start();
