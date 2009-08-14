@@ -81,9 +81,10 @@ void VALO::onInvite(MESSAGE* _message){
 		//From changes
 		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
 		// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-
-
-
+		DEBOUT("FROM",message->getHeadFrom().getContent())
+		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
+		DEBOUT("FROM",message->getHeadFrom().getNameUri())
+		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
 
 		DEBOUT("VALO","1")
 		// TODO

@@ -778,7 +778,7 @@ void C_AttContactElem::doParse(void){
         return;
 
     string line;
-
+    DEBOUT("content",content)
     int q = hasQuote(content);
     if (q >=0){
     	string line1 = replaceHttpChars(content.substr(q+1, -1));
@@ -789,12 +789,16 @@ void C_AttContactElem::doParse(void){
     else {
     	line = trimUseless(content);
     }
+    DEBOUT("line after",line)
 
     Tuple s1 = brkin2(line, "<");
     nameUri = s1.Lvalue; // "Mr. Watson"
     string tmp = "<" + s1.Rvalue;
+    DEBOUT("rvalue", tmp)
 
     Tuple s2 = brkin2(tmp, ";");
+    DEBOUT("rvalue2", s2.Lvalue)
+    DEBOUT("rvalue3", s2.Rvalue)
     sipUri.setContent(s2.Lvalue);
     uriParms.setContent(s2.Rvalue);
 
@@ -1127,27 +1131,93 @@ C_AttContactElem C_HeadTo::copyTo(void){
 //  From: Bob <sip:bob@biloxi.example.com>;tag=8321234356
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadFrom::C_HeadFrom(string _content, int _genEntity) :
-    S_HeadGeneric(_content, _genEntity),
-    from(_content){
+C_HeadFrom::C_HeadFrom(string _content) :
+    S_AttGeneric(_content),
+    sipUri(""),
+    uriParms(""){
 }
+//C_HeadFrom::C_HeadFrom(const C_AttContactElem& x):
+//    S_AttGeneric(x.content),
+//    sipUri(""),
+//    uriParms(""){
+//    DEBOUT("C_AttContactElem copy constructor", x.content)
+//
+//    //content = x.copyContent();
+//    parsed = false;
+//}
 void C_HeadFrom::doParse(void){
 
-	if (parsed)
-		return;
+    if(parsed)
+        return;
 
-	parsed = true;
+	Tuple s = brkin2(content, " ");
 
+    string newCo = s.Rvalue;
+    string line;
+    int q = hasQuote(newCo);
+    if (q >=0){
+    	string line1 = replaceHttpChars(newCo.substr(q+1, -1));
+
+		line = trimUseless(newCo.substr(0,q+1) + line1);
+
+    }
+    else {
+    	line = trimUseless(newCo);
+    }
+
+    Tuple s1 = brkin2(line, "<");
+    nameUri = s1.Lvalue; // "Mr. Watson"
+    string tmp = "<" + s1.Rvalue;
+
+    Tuple s2 = brkin2(tmp, ";");
+    sipUri.setContent(s2.Lvalue);
+    uriParms.setContent(s2.Rvalue);
+
+    parsed = true;
+    return;
 }
-C_AttContactElem &C_HeadFrom::getFrom(void){
-	if (!parsed)
-		doParse();
-	return from;
+string &C_HeadFrom::getNameUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return nameUri;
 }
-C_AttContactElem C_HeadFrom::copyFrom(void){
-	if (!parsed)
-		doParse();
-	return from;
+string C_HeadFrom::copyNameUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return nameUri;
+}
+
+C_AttSipUri &C_HeadFrom::getC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return sipUri;
+}
+C_AttSipUri C_HeadFrom::copyC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return sipUri;
+}
+C_AttUriParms &C_HeadFrom::getC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+
+    return uriParms;
+}
+C_AttUriParms C_HeadFrom::copyC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+
+    return uriParms;
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

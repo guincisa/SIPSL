@@ -703,17 +703,36 @@ class C_HeadTo : public S_HeadGeneric {
 // TODO set as C_AttSipUri
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadFrom : public S_HeadGeneric {
+class C_HeadFrom : public S_AttGeneric {
 //NEW REVISION
 
+//    private:
+//        void doParse(void);
+//        C_AttContactElem from;
+//
+//    public:
+//    	C_AttContactElem &getFrom(void);
+//    	C_AttContactElem copyFrom(void);
+//        C_HeadFrom(string content, int genEntity);
     private:
         void doParse(void);
-        C_AttContactElem from;
+
+        string nameUri;
+        C_AttSipUri sipUri;
+        C_AttUriParms uriParms;
 
     public:
-    	C_AttContactElem &getFrom(void);
-    	C_AttContactElem copyFrom(void);
-        C_HeadFrom(string content, int genEntity);
+        string &getNameUri(void);
+        string copyNameUri(void);
+
+        C_AttSipUri &getC_AttSipUri(void);
+        C_AttSipUri copyC_AttSipUri(void);
+
+        C_AttUriParms &getC_AttUriParms(void);
+        C_AttUriParms copyC_AttUriParms(void);
+
+        C_HeadFrom(string content);
+        //C_HeadFrom(const C_AttContactElem& x);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

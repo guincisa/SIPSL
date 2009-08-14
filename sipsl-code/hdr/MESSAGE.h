@@ -141,6 +141,7 @@ class MESSAGE : public BASEMESSAGE {
     	//Headers
     	C_HeadSipRequest 	headSipRequest;
     	C_HeadSipReply   	headSipReply;
+
     	//S_HeadGeneric	headSipReqRep;
     	// REQSUPP request supported, REPSUPP reply supported
     	// REQUNSUPP request unsupported, REPUNSUPP reply unsupported ??? defined latefr
@@ -227,6 +228,9 @@ class MESSAGE : public BASEMESSAGE {
     	void purgeSTKHeadVia(void);
     	//insert via
     	void pushHeadVia(string content, int genEntity, int pos);
+
+    	void setHeadFrom(string content, int genEntity);
+
     	/*
     // INTERNAL params
         int headerType[MAXLINES];

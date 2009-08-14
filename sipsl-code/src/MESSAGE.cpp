@@ -196,7 +196,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headMaxFwd("",_genEntity),
 	headContact("",_genEntity),
 	headTo("",_genEntity),
-	headFrom("",_genEntity),
+	headFrom(""),
 	headCallId("",_genEntity),
 	headCSeq("",_genEntity),
 	headRoute("",_genEntity){
@@ -227,7 +227,7 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):
 	headMaxFwd("",_genEntity),
 	headContact("",_genEntity),
 	headTo("",_genEntity),
-	headFrom("",_genEntity),
+	headFrom(""),
 	headCallId("",_genEntity),
 	headCSeq("",_genEntity),
 	headRoute("",_genEntity){
@@ -407,7 +407,7 @@ C_HeadFrom &MESSAGE::getHeadFrom(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("From:")==0){
-			headFrom.setContent(flex_line[i],genEntity);
+			headFrom.setContent(flex_line[i]);
 		}
 	}
 	headFrom_p = true;
@@ -464,6 +464,7 @@ C_HeadRoute &MESSAGE::getHeadRoute(void){
 		return headRoute;
 }
 void MESSAGE::removeHeadRoute(void){
+	headRoute_p = false;
 	removeHeader(headRoute_pos);
 	return;
 }
@@ -471,9 +472,13 @@ void MESSAGE::setHeadSipRequest(string _content, int _genEntity){
 	headSipRequest.setContent(_content, _genEntity);
 }
 void MESSAGE::setHeadCSeq(string _content, int _genEntity){
+	headCSeq_p = false;
 	headCSeq.setContent(_content, _genEntity);
 }
-
+void MESSAGE::setHeadFrom(string _content, int _genEntity){
+	headFrom_p = false;
+	headFrom.setContent(_content);
+}
 
 
 /*
