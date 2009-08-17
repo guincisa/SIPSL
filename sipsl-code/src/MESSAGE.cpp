@@ -347,6 +347,9 @@ void MESSAGE::pushHeadVia(string _content, int _genEntity, int _pos){
 	//TODO C_HEadVia copy
 	C_HeadVia* s = new C_HeadVia(_content,_genEntity, _pos);
 	s_headVia.push(s);
+
+	DEBOUT("via need code","")
+	assert(0);
 }
 
 S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
@@ -478,9 +481,22 @@ void MESSAGE::setHeadCSeq(string _content, int _genEntity){
 void MESSAGE::setHeadFrom(string _content, int _genEntity){
 	headFrom_p = false;
 	headFrom.setContent(_content);
+
+	int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,5).compare("From:")==0){
+			//headFrom.setContent(flex_line[i]);
+			flex_line[i] = "From: " + _content;
+			found = true;
+		}
+	}
+	if (!found) {
+		DEBOUT("assert ", "From header is missing")
+		assert(0);
+	}
+
 }
-
-
 /*
 C_HeadContentType &MESSAGE::getHeadContentType(void){
 

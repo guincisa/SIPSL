@@ -108,12 +108,15 @@ bool S_AttGeneric::isCorrect(void) {
     return correct;
 }
 void S_AttGeneric::setContent(string _content){
-    if (isSet)
-        return;
-    else {
-        isSet = true;
-        content = _content;
-    }
+//    if (isSet)
+//        return;
+//    else {
+//        isSet = true;
+//        content = _content;
+//    }
+	content = _content;
+	parsed = false;
+
 }
 // *********************************************************************************
 // *********************************************************************************

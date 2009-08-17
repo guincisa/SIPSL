@@ -75,8 +75,10 @@ void VALO::onInvite(MESSAGE* _message){
 
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
+		string viatmpS(viatmp);
 		message->purgeSTKHeadVia();
-		message->pushHeadVia(viatmp, SODE_ALOPOINT, 0);
+		message->pushHeadVia(viatmpS, SODE_ALOPOINT, 0);
+		DEBOUT("via",message->getSTKHeadVia().top()->getContent() )
 
 		//From changes
 		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
@@ -85,6 +87,20 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
 		DEBOUT("FROM",message->getHeadFrom().getNameUri())
 		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+		// change tag
+		char fromtmp[512];
+		sprintf(fromtmp, "%s;tag=merde",message->getHeadFrom().getC_AttSipUri().getContent().c_str());
+		string fromtmpS(viatmp);
+		message->setHeadFrom("<sip:cacchio>;tag=ceppen", SODE_ALOPOINT);
+		DEBOUT("FROM",message->getHeadFrom().getContent())
+		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
+		DEBOUT("FROM",message->getHeadFrom().getNameUri())
+		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+
+
+
+		//Contact: <sip:guic2@172.21.160.184:5062>
+		//Contact: <sip:127.0.0.1:5060;transport=tcp>
 
 		DEBOUT("VALO","1")
 		// TODO
