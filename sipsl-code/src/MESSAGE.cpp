@@ -212,7 +212,6 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headCallId_p = false;
 	headCSeq_p = false;
 	headRoute_p = false;
-	headRoute_pos = -1;
 
 	source=0x0;
 
@@ -253,6 +252,31 @@ MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
 	reqRep = 0;
 }
 #endif
+/*
+ * get SDP position
+ * XXX: blabla
+ * <empty>
+ * x=yxz
+ *
+ * position in the array of the <empty> line
+ */
+vector<string>::iterator MESSAGE::getSDPposition(void){
+
+	vector<string>::iterator theIterator;
+
+    for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
+    	if ((*theIterator).size() == 0) {
+    		return theIterator--;
+    	}
+    }
+    return theIterator;
+}
+void MESSAGE::dumpVector(void){
+	vector<string>::iterator theIterator;
+    for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
+    	DEBOUT("Message vector", *theIterator)
+    }
+}
 int MESSAGE::getReqRepType(void){
 
 	if (reqRep != 0) {
@@ -284,6 +308,9 @@ int MESSAGE::getReqRepType(void){
 	}
 	return reqRep;
 }
+/*
+ * Request
+ */
 C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
 	if(reqRep == 0){
 		reqRep = getReqRepType();
@@ -295,6 +322,11 @@ C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
     assert("MESSAGE::getHeadSipRequest illegal instruction");
     return headSipRequest;
 }
+void MESSAGE::setHeadSipRequest(string _content, int _genEntity){
+	flex_line[0] = _content;
+	headSipRequest.setContent(_content, _genEntity);
+}
+
 C_HeadSipReply &MESSAGE::getHeadSipReply(void){
 
 	if(reqRep == 0){
@@ -308,14 +340,17 @@ C_HeadSipReply &MESSAGE::getHeadSipReply(void){
     return headSipReply;
 
 }
+/*
+ * Via
+ */
 stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 
 	if(s_headVia_p){
 		return s_headVia;
 	}
 
-	int i;
-	int j = 1;
+	unsigned int i;
+	unsigned int j = 1;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,4).compare("Via:") == 0){
@@ -324,34 +359,62 @@ stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 		}
 	}
 	s_headVia_p = true;
-		return s_headVia;
+	return s_headVia;
 }
-//purge all vias
 void MESSAGE::purgeSTKHeadVia(void){
+
+	unsigned int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,4).compare("Via:") == 0){
+			removeHeader(i);
+		}
+	}
 
 	if(!s_headVia_p){
 		// not initialized
 		return;
 	}
-
-	while(!s_headVia.empty()){
-		delete s_headVia.top();
-		s_headVia.pop();
+	//else clear the vector
+	else {
+		while(!s_headVia.empty()){
+			delete s_headVia.top();
+			s_headVia.pop();
+		}
+		stack<C_HeadVia*> tmp;
+		s_headVia = tmp;
+		s_headVia_p = false;
 	}
-	stack<C_HeadVia*> tmp;
-	s_headVia = tmp;
 }
-//insert via
 void MESSAGE::pushHeadVia(string _content, int _genEntity, int _pos){
 
-	//TODO C_HEadVia copy
 	C_HeadVia* s = new C_HeadVia(_content,_genEntity, _pos);
 	s_headVia.push(s);
-
-	DEBOUT("via need code","")
-	assert(0);
+	DEBOUT("MESSAGE::pushHeadVia", "pushed")
+	// first search Via and insert before
+	// if no via, then search SDP
+	unsigned int i;
+	bool found = false;
+	vector<string>::iterator theIterator;
+    for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
+    	if ((*theIterator).substr(0,4).compare("Via:") == 0 ) {
+			found = true;
+			continue;
+    	}
+    }
+	if (found){
+		DEBOUT("MESSAGE::pushHeadVia", "found")
+		flex_line.insert(theIterator ,1 , "Via: " + _content);
+	}
+	else {
+		DEBOUT("MESSAGE::pushHeadVia", "not found")
+		theIterator = getSDPposition();
+		flex_line.insert(theIterator ,1 , "Via: " + _content);
+	}
 }
-
+/*
+ * MaxFwd
+ */
 S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
 
 	if(headMaxFwd_p){
@@ -363,6 +426,7 @@ S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,13).compare("Max-Forwards:")==0){
 			headMaxFwd.setContent(flex_line[i],genEntity);
+			continue;
 		}
 	}
 	headMaxFwd_p = true;
@@ -379,6 +443,7 @@ C_HeadContact &MESSAGE::getHeadContact(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Contact:")==0){
 			headContact.setContent(flex_line[i],genEntity);
+			continue;
 		}
 	}
 	headContact_p = true;
@@ -395,27 +460,54 @@ C_HeadTo &MESSAGE::getHeadTo(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,3).compare("To:")==0){
 			headTo.setContent(flex_line[i],genEntity);
+			continue;
 		}
 	}
 	headTo_p = true;
-		return headTo;
+	return headTo;
 }
+/*
+ * From
+ */
 C_HeadFrom &MESSAGE::getHeadFrom(void){
 
 	if(headFrom_p){
 		return headFrom;
 	}
 
-	int i;
+	unsigned int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("From:")==0){
 			headFrom.setContent(flex_line[i]);
+			continue;
 		}
 	}
 	headFrom_p = true;
-		return headFrom;
+	return headFrom;
 }
+void MESSAGE::replaceHeadFrom(string _content, int _genEntity){
+
+	headFrom_p = false;
+	headFrom.setContent(_content);
+
+	// replace in flex_line
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,5).compare("From:")==0){
+			flex_line[i] = "From: " + _content;
+			found = true;
+			continue;
+		}
+	}
+	if (!found) {
+		DEBASSERT("MESSAGE::replaceHeadFrom from header is missing")
+	}
+}
+/*
+ * Call Id
+ */
 C_HeadCallId &MESSAGE::getHeadCallId(void){
 
 	if(headCallId_p){
@@ -423,80 +515,110 @@ C_HeadCallId &MESSAGE::getHeadCallId(void){
 		return headCallId;
 	}
 
-	int i;
+	unsigned int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Call-ID:") == 0){
 			headCallId.setContent(flex_line[i].substr(9),genEntity);
+			continue;
 		}
 	}
 	headCallId_p = true;
-	DEBOUT("CALL ID found", headCallId.getContent())
 	return headCallId;
 }
+/*
+ * CSeq
+ */
 C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 
 	if(headCSeq_p){
 		return headCSeq;
 	}
 
-	int i;
+	unsigned int i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
 			headCSeq.setContent(flex_line[i],genEntity);
+			continue;
 		}
 	}
 	headCSeq_p = true;
-		return headCSeq;
+	return headCSeq;
 }
+void MESSAGE::replaceHeadCSeq(string _content, int _genEntity){
+
+	headCSeq_p = false;
+	headCSeq.setContent(_content, _genEntity);
+
+	// replace in flex_line
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
+			flex_line[i] = "CSeq: " + _content;
+			found = true;
+			continue;
+		}
+	}
+	if (!found) {
+		DEBASSERT("MESSAGE::replaceHeadCSeq from header is missing")
+	}
+}
+
+/*
+ * Route
+ */
 C_HeadRoute &MESSAGE::getHeadRoute(void){
 
 	if(headRoute_p){
 		return headRoute;
 	}
 
-	int i;
+	unsigned int i;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,6).compare("Route:")==0){
 			headRoute.setContent(flex_line[i],genEntity);
-			headRoute_pos = i;
+			continue;
 		}
 	}
 	headRoute_p = true;
-		return headRoute;
+	return headRoute;
 }
 void MESSAGE::removeHeadRoute(void){
 	headRoute_p = false;
-	removeHeader(headRoute_pos);
-	return;
-}
-void MESSAGE::setHeadSipRequest(string _content, int _genEntity){
-	headSipRequest.setContent(_content, _genEntity);
-}
-void MESSAGE::setHeadCSeq(string _content, int _genEntity){
-	headCSeq_p = false;
-	headCSeq.setContent(_content, _genEntity);
-}
-void MESSAGE::setHeadFrom(string _content, int _genEntity){
-	headFrom_p = false;
-	headFrom.setContent(_content);
-
-	int i;
-	bool found = false;
+	unsigned int i;
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,5).compare("From:")==0){
-			//headFrom.setContent(flex_line[i]);
-			flex_line[i] = "From: " + _content;
-			found = true;
+		if(flex_line[i].substr(0,6).compare("Route:")==0){
+			removeHeader(i);
+			continue;
 		}
 	}
-	if (!found) {
-		DEBOUT("assert ", "From header is missing")
-		assert(0);
-	}
-
+	return;
 }
+/*
+ * Message generated internally
+ *
+ * change the flex_line with the string of the new header
+ *
+ * change header: (from)
+ * 		easy, just replace it
+ *
+ * remove header: (route, via)
+ * 		set it to xxDxx
+ *
+ * add header (via)
+ * 		insert(int i, string)
+ * 		inserts before i
+ *
+ */
+
+
+
+
+
+
+
 /*
 C_HeadContentType &MESSAGE::getHeadContentType(void){
 

@@ -79,7 +79,7 @@ inline vector<string> brkSpaces(string s) {
 }
 inline string trimCR(string s){
 	int ii = s.find("\r",0);
-    if(ii > 0){
+    if(ii >= 0){
         return(s.substr(0,ii));
     }
     else {

@@ -163,7 +163,6 @@ class MESSAGE : public BASEMESSAGE {
     	bool 				headCSeq_p;
     	C_HeadRoute			headRoute;
     	bool 				headRoute_p;
-    	int 				headRoute_pos;
     	//C_HeadContentType	headContentType;
     	//bool 				headContentType_p;
     	//S_HeadContentLength headContentLenght;
@@ -197,6 +196,9 @@ class MESSAGE : public BASEMESSAGE {
         //
         MESSAGE(MESSAGE*, int genEntity);
 
+        //translates the flex_line into a string to be sent to network
+        void compileMessage(void);
+
     	int getReqRepType(void);
 
     	//S_HeadGeneric 	&getHeadSipReqRep(void);
@@ -222,15 +224,22 @@ class MESSAGE : public BASEMESSAGE {
 
     	void setHeadSipRequest(string content, int genEntity);
 
-    	void setHeadCSeq(string content, int genEntity);
+    	void replaceHeadCSeq(string content, int genEntity);
 
 		//purge all vias
     	void purgeSTKHeadVia(void);
     	//insert via
     	void pushHeadVia(string content, int genEntity, int pos);
 
-    	void setHeadFrom(string content, int genEntity);
+    	void replaceHeadFrom(string content, int genEntity);
 
+    	// position of first line of SDP
+    	// it is needed when I need to add headers
+    	// which have to be inserted before
+    	// it is found by searching "=" in second position
+    	// it is calculated every time it is invoked...
+    	vector<string>::iterator getSDPposition(void);
+    	void dumpVector(void);
     	/*
     // INTERNAL params
         int headerType[MAXLINES];
