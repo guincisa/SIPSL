@@ -92,24 +92,26 @@ void VALO::onInvite(MESSAGE* _message){
 		message->dumpVector();
 
 
-//
-//		//From changes
-//		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
-//		// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-//		DEBOUT("FROM",message->getHeadFrom().getContent())
-//		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-//		DEBOUT("FROM",message->getHeadFrom().getNameUri())
-//		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
-//		// change tag
-//		char fromtmp[512];
-//		sprintf(fromtmp, "%s;tag=merde",message->getHeadFrom().getC_AttSipUri().getContent().c_str());
-//		string fromtmpS(viatmp);
-//		message->replaceHeadFrom("<sip:cacchio>;tag=ceppen", SODE_ALOPOINT);
-//		DEBOUT("FROM",message->getHeadFrom().getContent())
-//		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-//		DEBOUT("FROM",message->getHeadFrom().getNameUri())
-//		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
 
+
+		//From changes
+		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
+		// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
+		DEBOUT("FROM",message->getHeadFrom().getContent())
+		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
+		DEBOUT("FROM",message->getHeadFrom().getNameUri())
+		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+		// change tag
+		char fromtmp[512];
+		sprintf(fromtmp, "%s;tag=%s",message->getHeadFrom().getC_AttSipUri().getContent().c_str(),message->getKey().c_str());
+		string fromtmpS(fromtmp);
+		DEBOUT("******** FROM new" , fromtmpS)
+		message->replaceHeadFrom(fromtmpS, SODE_ALOPOINT);
+		DEBOUT("FROM",message->getHeadFrom().getContent())
+		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
+		DEBOUT("FROM",message->getHeadFrom().getNameUri())
+		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+		message->dumpVector();
 
 
 		//Contact: <sip:guic2@172.21.160.184:5062>

@@ -399,7 +399,7 @@ void MESSAGE::pushHeadVia(string _content, int _genEntity, int _pos){
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
     	if ((*theIterator).substr(0,4).compare("Via:") == 0 ) {
 			found = true;
-			continue;
+			break;
     	}
     }
 	if (found){
@@ -426,7 +426,7 @@ S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,13).compare("Max-Forwards:")==0){
 			headMaxFwd.setContent(flex_line[i],genEntity);
-			continue;
+			break;
 		}
 	}
 	headMaxFwd_p = true;
@@ -443,7 +443,7 @@ C_HeadContact &MESSAGE::getHeadContact(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Contact:")==0){
 			headContact.setContent(flex_line[i],genEntity);
-			continue;
+			break;
 		}
 	}
 	headContact_p = true;
@@ -460,7 +460,7 @@ C_HeadTo &MESSAGE::getHeadTo(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,3).compare("To:")==0){
 			headTo.setContent(flex_line[i],genEntity);
-			continue;
+			break;
 		}
 	}
 	headTo_p = true;
@@ -480,7 +480,7 @@ C_HeadFrom &MESSAGE::getHeadFrom(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("From:")==0){
 			headFrom.setContent(flex_line[i]);
-			continue;
+			break;
 		}
 	}
 	headFrom_p = true;
@@ -498,11 +498,11 @@ void MESSAGE::replaceHeadFrom(string _content, int _genEntity){
 		if(flex_line[i].substr(0,5).compare("From:")==0){
 			flex_line[i] = "From: " + _content;
 			found = true;
-			continue;
+			break;
 		}
 	}
 	if (!found) {
-		DEBASSERT("MESSAGE::replaceHeadFrom from header is missing")
+		DEBOUT("MESSAGE::replaceHeadFrom from header is missing","")
 	}
 }
 /*
@@ -520,7 +520,7 @@ C_HeadCallId &MESSAGE::getHeadCallId(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Call-ID:") == 0){
 			headCallId.setContent(flex_line[i].substr(9),genEntity);
-			continue;
+			break;
 		}
 	}
 	headCallId_p = true;
@@ -540,7 +540,7 @@ C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
 			headCSeq.setContent(flex_line[i],genEntity);
-			continue;
+			break;
 		}
 	}
 	headCSeq_p = true;
@@ -558,7 +558,7 @@ void MESSAGE::replaceHeadCSeq(string _content, int _genEntity){
 		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
 			flex_line[i] = "CSeq: " + _content;
 			found = true;
-			continue;
+			break;
 		}
 	}
 	if (!found) {
@@ -579,7 +579,7 @@ C_HeadRoute &MESSAGE::getHeadRoute(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,6).compare("Route:")==0){
 			headRoute.setContent(flex_line[i],genEntity);
-			continue;
+			break;
 		}
 	}
 	headRoute_p = true;
@@ -591,7 +591,7 @@ void MESSAGE::removeHeadRoute(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,6).compare("Route:")==0){
 			removeHeader(i);
-			continue;
+			break;
 		}
 	}
 	return;
