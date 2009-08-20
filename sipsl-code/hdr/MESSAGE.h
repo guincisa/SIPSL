@@ -111,7 +111,7 @@ class BASEMESSAGE {
 
         void removeHeader(int pos);
 
-    private:
+    protected:
         string  incMessBuff;
 
         // reply network info
@@ -176,7 +176,7 @@ class MESSAGE : public BASEMESSAGE {
 
     	// Used to generate a message from an incoming one
     	// tipically a reply
-    	MESSAGE *source;
+    	MESSAGE* source;
 
     	// if false then the message comes from the
     	// network and cannot be changed
@@ -188,13 +188,16 @@ class MESSAGE : public BASEMESSAGE {
 
         MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
                     struct sockaddr_in echoClntAddr);
-        MESSAGE(string incMessBuff, SysTime inc_ts);
+        //MESSAGE(string incMessBuff, SysTime inc_ts);
 
         // this is temporary and needed to create internal messages
-        MESSAGE(void);
+        //MESSAGE(void);
 
         //
         MESSAGE(MESSAGE*, int genEntity);
+
+    	// also use for getting the callIDx to retrieve CALL_OSET SV side
+    	MESSAGE* getSourceMessage(void);
 
         //translates the flex_line into a string to be sent to network
         void compileMessage(void);
@@ -232,6 +235,8 @@ class MESSAGE : public BASEMESSAGE {
     	void pushHeadVia(string content);
 
     	void replaceHeadFrom(string content);
+
+    	void replaceHeadContact(string content);
 
     	// position of first line of SDP
     	// it is needed when I need to add headers

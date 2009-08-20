@@ -2,7 +2,7 @@ window_sizes 1280 729 216 1058 594 56
 windows_style
 diagrams
   active  sequencediagram_ref 140546 // F6 VALO
-    1058 594 90 2 60 370
+    1058 594 90 2 60 45
 end
 show_stereotypes
 selected sequencediagram_ref 140546 // F6 VALO

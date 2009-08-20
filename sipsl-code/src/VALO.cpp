@@ -43,6 +43,7 @@ void VALO::onInvite(MESSAGE* _message){
 		GETTIME(inTime);
 		MESSAGE* message;
 		message = new MESSAGE(_message, SODE_ALOPOINT);
+		//set by SL_CC message->setDestEntity(SODE_SMCLPOINT);
 		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 		string key(bu);
 		message->setKey(key);
@@ -62,21 +63,15 @@ void VALO::onInvite(MESSAGE* _message){
 		message->removeHeadRoute();
 
 		DEBOUT("VALO","remove route")
-		message->dumpVector();
 
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
 		message->setHeadSipRequest("INVITE sip:sipslguic@127.0.0.1:5061 SIP/2.0");
-		DEBOUT("VALO","Request")
-		message->dumpVector();
 
 		//Cseq new to 1
 		message->replaceHeadCSeq("999 INVITE");
 		DEBOUT("VALO","Cseq")
-		message->dumpVector();
-
-
 
 		//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 
@@ -84,15 +79,7 @@ void VALO::onInvite(MESSAGE* _message){
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
 		string viatmpS(viatmp);
 		message->purgeSTKHeadVia();
-		DEBOUT("VALO","purge via ")
-		message->dumpVector();
 		message->pushHeadVia(viatmpS);
-		//DEBOUT("via",message->getSTKHeadVia().top()->getContent() )
-		DEBOUT("VALO","new via")
-		message->dumpVector();
-
-
-
 
 		//From changes
 		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
@@ -111,17 +98,17 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
 		DEBOUT("FROM",message->getHeadFrom().getNameUri())
 		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+
+
+		DEBOUT("CONTACT", message->getHeadContact().getContent())
+		message->replaceHeadContact("<sip:sipsl.gugli.com:5060>");
+		DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
+
+		// Compile the message
+		message->compileMessage();
 		message->dumpVector();
+		DEBOUT("New outoging b2b message", message->getIncBuffer())
 
-
-		//Contact: <sip:guic2@172.21.160.184:5062>
-		//Contact: <sip:127.0.0.1:5060;transport=tcp>
-
-		DEBOUT("VALO","1")
-		// TODO
-		int tl = message->getTotLines();
-		DEBOUT("VALO::parse tot lines",tl)
-		//sl_cc->p_w(message);
-		DEBOUT("VALO","2")
+		sl_cc->p_w(message);
 
 }

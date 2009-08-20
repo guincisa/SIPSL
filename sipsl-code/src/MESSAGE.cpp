@@ -233,6 +233,7 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):
 	headCSeq(""),
 	headRoute(""){
 	DEBOUT("MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):","")
+	source = _message;
 	return;
 }
 //ONLY FOR TEST
@@ -310,6 +311,25 @@ int MESSAGE::getReqRepType(void){
 	}
 	return reqRep;
 }
+void MESSAGE::compileMessage(void){
+
+	// first look for xxDxx and remove it
+	vector<string>::iterator theIterator;
+    for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
+    	if ((*theIterator).substr(0,5).compare("xxDxx") == 0 ) {
+    		flex_line.erase(theIterator);
+    	}
+    }
+    incMessBuff = "";
+    for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
+    	incMessBuff = incMessBuff + (*theIterator) + "\n";
+    }
+
+}
+MESSAGE* MESSAGE::getSourceMessage(void){
+	return source;
+}
+
 /*
  * Request
  */
@@ -433,23 +453,6 @@ S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
 	}
 	headMaxFwd_p = true;
 		return headMaxFwd;
-}
-C_HeadContact &MESSAGE::getHeadContact(void){
-
-	if(headContact_p){
-		return headContact;
-	}
-
-	int i;
-
-	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,8).compare("Contact:")==0){
-			headContact.setContent(flex_line[i]);
-			break;
-		}
-	}
-	headContact_p = true;
-		return headContact;
 }
 C_HeadTo &MESSAGE::getHeadTo(void){
 
@@ -598,6 +601,47 @@ void MESSAGE::removeHeadRoute(void){
 	}
 	return;
 }
+/*
+ * Contact
+ */
+C_HeadContact &MESSAGE::getHeadContact(void){
+
+	if(headContact_p){
+		return headContact;
+	}
+
+	int i;
+
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,8).compare("Contact:")==0){
+			headContact.setContent(flex_line[i]);
+			break;
+		}
+	}
+	headContact_p = true;
+		return headContact;
+}
+
+void MESSAGE::replaceHeadContact(string _content){
+
+	headContact_p = false;
+	headContact.setContent(_content);
+
+	// replace in flex_line
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,8).compare("Contact:")==0){
+			flex_line[i] = "Contact: " + _content;
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		DEBOUT("MESSAGE::replaceHeadContact from header is missing","")
+	}
+}
+
 /*
  * Message generated internally
  *

@@ -163,6 +163,14 @@ void SL_CO::call(MESSAGE* _message){
 		}
 	}
 	if (_message->getDestEntity() == SODE_SMCLPOINT){
+		DEBOUT("********************************************************************","")
+		DEBOUT("*******************to client state machine**************************","")
+
+
+//		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL();
+//
+//		ACTION* action = sl_sm_sv->event(_message);
+
 
 	}
 	//do something with action

@@ -82,42 +82,61 @@ SL_CC::SL_CC(void) {
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {
 
-	DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
-	DEBOUT("SL_CC::parse", _mess)
+	//rifare tutta perche qui se entro col messaggio destinato alla SV ok
+	//ma se entro con un messaggio destinato alla CL devo prendere ls SV
+	//e creare la CL
 
-	CALL_OSET* call_oset = 0x0;
+	// if the message comes from A then it is a new message that will trigger a new CALL OBJECT
+	if (_mess->getGenEntity() == SODE_APOINT){
 
-	string callidx = _mess->getHeadCallId().getNormCallId() +
-			_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
-	DEBOUT("CALLOSET ID",callidx)
+		DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
+		DEBOUT("SL_CC::parse", _mess)
 
-	call_oset = comap->getCALL_OSET_SV(callidx);
+		CALL_OSET* call_oset = 0x0;
 
-	if (call_oset == 0x0) {
-		//new call
-		DEBOUT("SL_CC::parse new call", "CALL_OSET creation x side")
+		string callidx = _mess->getHeadCallId().getNormCallId() +
+				_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+		DEBOUT("CALLOSET ID",callidx)
 
-		call_oset = new CALL_OSET(this);
-		SL_CO* sl_co = new SL_CO(call_oset);
-		SL_SM_SV* sl_sm_sv = new SL_SM_SV();
-		//NEED USER DEFINED CLASS
-		VALO* alo = new VALO(this);
-		alo->linkSUDP(getSUDP());
+		call_oset = comap->getCALL_OSET_SV(callidx);
 
-		call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
-		DEBOUT("SL_CC::parse", "CALL_OSET created x side")
+		if (call_oset == 0x0) {
+			//new call
+			DEBOUT("SL_CC::parse new call", "CALL_OSET creation x side")
 
-		comap->setCALL_OSET(callidx, call_oset);
+			call_oset = new CALL_OSET(this);
+			SL_CO* sl_co = new SL_CO(call_oset);
+			SL_SM_SV* sl_sm_sv = new SL_SM_SV();
+			//NEED USER DEFINED CLASS
+			VALO* alo = new VALO(this);
+			alo->linkSUDP(getSUDP());
 
-		_mess->setDestEntity(SODE_SMSVPOINT);
-		sl_co->call(_mess);
-		//END.
+			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
+			DEBOUT("SL_CC::parse", "CALL_OSET created x side")
 
-	} else {
-		//CALL Exists
-		DEBOUT("SL_CC::parse existing call", "")
-		_mess->setDestEntity(SODE_SMSVPOINT);
-		call_oset->getSL_CO()->call(_mess);
+			comap->setCALL_OSET(callidx, call_oset);
+
+			_mess->setDestEntity(SODE_SMSVPOINT);
+			sl_co->call(_mess);
+			//END.
+
+		} else {
+			//CALL Exists
+			DEBOUT("SL_CC::parse existing call", "")
+			_mess->setDestEntity(SODE_SMSVPOINT);
+			call_oset->getSL_CO()->call(_mess);
+		}
+	}
+	else if (_mess->getGenEntity() == SODE_ALOPOINT){
+		_mess->setDestEntity(SODE_SMCLPOINT);
+
+		string callidx = _mess->getSourceMessage()->getHeadCallId().getNormCallId() +
+				_mess->getSourceMessage()->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+
+		DEBOUT("Message from ALO generating SV machine callidx", callidx)
+
+		//search state machine client or create it
+
 	}
 
 
