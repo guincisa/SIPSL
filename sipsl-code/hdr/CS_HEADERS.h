@@ -201,7 +201,7 @@ class S_HeadGeneric { //i
 
         // Id of the generating endpoint
         // same as SODE_*
-        int genEntity;
+        //int genEntity;
 
         string content;
         virtual void doParse(void) = 0;
@@ -213,10 +213,12 @@ class S_HeadGeneric { //i
         string &getContent(void);
         string copyContent(void);
 
-        void setContent(string buff, int genEntity);
+        void setContent(string buff);
+
 
         // created using buffer and endpoint id which generates header
-        S_HeadGeneric(string buff, int genEntity);
+        S_HeadGeneric(string buff);
+
 
         int getGenEntity(void);
 
@@ -586,7 +588,7 @@ class C_HeadSipRequest : public S_HeadGeneric { //i //t
         S_AttSipVersion &getS_AttSipVersion(void);
         S_AttSipVersion copyS_AttSipVersion(void);
 
-        C_HeadSipRequest(string content, int genEntity);
+        C_HeadSipRequest(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -613,6 +615,8 @@ class C_HeadSipReply : public S_HeadGeneric { //i //t
         S_AttSipVersion copySipVersion(void);
 
         C_HeadSipReply(string content, int genEntity);
+        C_HeadSipReply(string content);
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -627,15 +631,12 @@ class C_HeadVia : public S_HeadGeneric { //i //t
         void doParse(void);
 
         C_AttVia via;
-        int position;
 
     public:
         C_AttVia &getC_AttVia(void);
         C_AttVia copyC_AttVia(void);
 
-        int getPosition(void);
-        void setPosition(int position);
-        C_HeadVia(string content, int genEntity, int position);
+        C_HeadVia(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -652,7 +653,7 @@ class S_HeadMaxFwd : public S_HeadGeneric {
      public:
         int getMaxFwd(void);
         void setMaxFwd(int mxfwd);
-        S_HeadMaxFwd(string content, int genEntity);
+        S_HeadMaxFwd(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -676,7 +677,7 @@ class C_HeadContact : public S_HeadGeneric {
         C_AttContactList &getContactList(void);
         C_AttContactList copyContactList(void);
         bool isStar(void);
-        C_HeadContact(string content, int genEntity);
+        C_HeadContact(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -695,7 +696,7 @@ class C_HeadTo : public S_HeadGeneric {
     public:
     	C_AttContactElem &getTo(void);
     	C_AttContactElem copyTo(void);
-        C_HeadTo(string content, int genEntity);
+        C_HeadTo(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -752,7 +753,7 @@ class C_HeadCallId : public S_HeadGeneric {
         Tuple& getCallId(void);
         Tuple copyCallId(void);
         string getNormCallId(void);
-        C_HeadCallId(string content, int getEntity);
+        C_HeadCallId(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -772,7 +773,7 @@ class C_HeadCSeq : public S_HeadGeneric {
         int getSequence(void);
         S_AttMethod &getMethod(void);
         S_AttMethod copyMethod(void);
-        C_HeadCSeq(string content, int genEntity);
+        C_HeadCSeq(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -789,7 +790,7 @@ class C_HeadContentType : public S_HeadGeneric { //TODO
     public:
         Tuple &getContentType(void);
         Tuple copyContentType(void);
-        C_HeadContentType(string content, int genEntity);
+        C_HeadContentType(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -805,7 +806,7 @@ class S_HeadContentLength : public S_HeadGeneric { //TODO
 
     public:
         int getContentLength(void);
-        S_HeadContentLength(string content, int genEntity);
+        S_HeadContentLength(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -822,7 +823,7 @@ class C_SDPInfo : public S_HeadGeneric { //TODO
     public:
         TupleVector &getSDP(void);
         TupleVector copySDP(void);
-        C_SDPInfo(string content, int genEntity);
+        C_SDPInfo(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -840,7 +841,7 @@ class C_HeadAllow : public S_HeadGeneric {
 		vector<S_AttMethod> copyAllowedMethods(void);
 		bool isAllowed(string method);
 		bool isAllowed(S_AttMethod method);
-		C_HeadAllow(string content, int genEntity);
+		C_HeadAllow(string content);
 
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -856,7 +857,7 @@ class C_HeadSubject : public S_HeadGeneric {
 
 	public:
 		string &getSubject(void);
-		C_HeadSubject(string content, int genEntity);
+		C_HeadSubject(string content);
 
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -874,7 +875,7 @@ class C_HeadRoute : public S_HeadGeneric {
 
 	public:
 		S_AttHostPort &getRoute(void);
-		C_HeadRoute(string content, int genEntity);
+		C_HeadRoute(string content);
 
 };
 /*

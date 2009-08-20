@@ -78,7 +78,7 @@ class BASEMESSAGE {
                     struct sockaddr_in echoClntAddr);
         BASEMESSAGE(string incMessBuff, SysTime inc_ts);
 
-        BASEMESSAGE(BASEMESSAGE*);
+        BASEMESSAGE(BASEMESSAGE*, int genEntity);
 
         string &getLine(int);
         int getTotLines(void);
@@ -222,16 +222,16 @@ class MESSAGE : public BASEMESSAGE {
 
     	void removeHeadRoute(void);
 
-    	void setHeadSipRequest(string content, int genEntity);
+    	void setHeadSipRequest(string content);
 
-    	void replaceHeadCSeq(string content, int genEntity);
+    	void replaceHeadCSeq(string content);
 
 		//purge all vias
     	void purgeSTKHeadVia(void);
     	//insert via
-    	void pushHeadVia(string content, int genEntity, int pos);
+    	void pushHeadVia(string content);
 
-    	void replaceHeadFrom(string content, int genEntity);
+    	void replaceHeadFrom(string content);
 
     	// position of first line of SDP
     	// it is needed when I need to add headers

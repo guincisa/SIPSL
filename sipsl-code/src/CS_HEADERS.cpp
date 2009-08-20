@@ -40,24 +40,24 @@
 // S_HeadGeneric
 // *********************************************************************************
 // *********************************************************************************
-S_HeadGeneric::S_HeadGeneric(string buffer, int _genEntity) {
+S_HeadGeneric::S_HeadGeneric(string buffer) {
 
     content = buffer;
-    genEntity = _genEntity;
 
     parsed = false;
     correct = true;
 
 }
-void S_HeadGeneric::setContent(string _content, int _genEntity) {
 
-    genEntity = _genEntity;
+void S_HeadGeneric::setContent(string _content) {
+
     content = _content;
     parsed = false;
     correct = true;
     return;
 
 }
+
 string &S_HeadGeneric::getContent(void) {
     return content;
 }
@@ -69,9 +69,6 @@ bool S_HeadGeneric::isParsed(void) {
 }
 bool S_HeadGeneric::isCorrect(void) {
     return correct;
-}
-int S_HeadGeneric::getGenEntity(void) {
-    return genEntity;
 }
 // *********************************************************************************
 // *********************************************************************************
@@ -899,8 +896,8 @@ vector<C_AttContactElem> C_AttContactList::copyContactList(void){
 // HeadSipRequest "Method RequestURI SipVersion<CRLF>"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadSipRequest::C_HeadSipRequest(string _content, int _genEntity)
-    : S_HeadGeneric(_content, _genEntity),
+C_HeadSipRequest::C_HeadSipRequest(string _content)
+    : S_HeadGeneric(_content),
         method(""),
         reqUri(""),
         sipvs(""){
@@ -951,11 +948,12 @@ S_AttSipVersion &C_HeadSipRequest::getS_AttSipVersion(void){
 // Status-Line	= SIP-Version Status-Code Reason-Phrase
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadSipReply::C_HeadSipReply(string _content, int _genEntity)
-    : S_HeadGeneric(_content, _genEntity),
+C_HeadSipReply::C_HeadSipReply(string _content)
+    : S_HeadGeneric(_content),
         reply(""),
         sipvs(""){
 }
+
 void C_HeadSipReply::doParse(void){
 
     if(parsed){
@@ -1001,11 +999,10 @@ S_AttSipVersion &C_HeadSipReply::getSipVersion(void) {
 // Via: xxxxx
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadVia::C_HeadVia(string _content, int _genEntity, int _position) :
-    S_HeadGeneric(_content, _genEntity),
+C_HeadVia::C_HeadVia(string _content) :
+    S_HeadGeneric(_content),
     via("") {
 
-    position = _position;
 }
 void C_HeadVia::doParse(void) {
 
@@ -1016,12 +1013,6 @@ void C_HeadVia::doParse(void) {
     via.setContent(s1.Rvalue);
 
     parsed = true;
-}
-int C_HeadVia::getPosition(void){
-    return position;
-}
-void C_HeadVia::setPosition(int _position){
-    position = _position;
 }
 C_AttVia &C_HeadVia::getC_AttVia(void) {
 
@@ -1036,8 +1027,8 @@ C_AttVia &C_HeadVia::getC_AttVia(void) {
 // Max-Forwards: 70
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-S_HeadMaxFwd::S_HeadMaxFwd(string _content, int _genEntity) :
-    S_HeadGeneric(_content, _genEntity){
+S_HeadMaxFwd::S_HeadMaxFwd(string _content) :
+    S_HeadGeneric(_content){
 
     mxfwd = 0;
 }
@@ -1069,8 +1060,8 @@ void S_HeadMaxFwd::setMaxFwd(int _mxfwd){
 //        ;q=0.1
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadContact::C_HeadContact(string _content, int _genEntity) :
-    S_HeadGeneric(_content, _genEntity),
+C_HeadContact::C_HeadContact(string _content) :
+    S_HeadGeneric(_content),
     contactList(_content){
 
 	star = false;
@@ -1106,8 +1097,8 @@ bool C_HeadContact::isStar(void){
 //  To: Bob <sip:bob@biloxi.example.com>;tag=8321234356
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadTo::C_HeadTo(string _content, int _genEntity) :
-    S_HeadGeneric(_content, _genEntity),
+C_HeadTo::C_HeadTo(string _content) :
+    S_HeadGeneric(_content),
     to(_content){
 }
 void C_HeadTo::doParse(void){
@@ -1229,8 +1220,8 @@ C_AttUriParms C_HeadFrom::copyC_AttUriParms(void){
 // id1@id2
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadCallId::C_HeadCallId(string _content, int _genEntity):
-	S_HeadGeneric(_content, _genEntity){
+C_HeadCallId::C_HeadCallId(string _content):
+	S_HeadGeneric(_content){
 }
 void C_HeadCallId::doParse(void){
 
@@ -1268,8 +1259,8 @@ string C_HeadCallId::getNormCallId(void){
 // CSeq: 1 INVITE
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadCSeq::C_HeadCSeq(string _content, int _genEntity):
-	S_HeadGeneric(_content, _genEntity),
+C_HeadCSeq::C_HeadCSeq(string _content):
+	S_HeadGeneric(_content),
 	method(""){
 }
 void C_HeadCSeq::doParse(void){
@@ -1310,8 +1301,8 @@ S_AttMethod C_HeadCSeq::copyMethod(void){
 //     Route: <sip:127.0.0.1:5060;lr>
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-C_HeadRoute::C_HeadRoute(string _content, int _genEntity):
-	S_HeadGeneric(_content, _genEntity),
+C_HeadRoute::C_HeadRoute(string _content):
+	S_HeadGeneric(_content),
 	routeHost(""){
 }
 void C_HeadRoute::doParse(void){
