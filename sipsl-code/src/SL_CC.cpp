@@ -128,12 +128,45 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 	}
 	else if (_mess->getGenEntity() == SODE_ALOPOINT){
+
 		_mess->setDestEntity(SODE_SMCLPOINT);
 
 		string callidx = _mess->getSourceMessage()->getHeadCallId().getNormCallId() +
 				_mess->getSourceMessage()->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+		string callidy = _mess->getHeadCallId().getNormCallId() +
+				_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+
 
 		DEBOUT("Message from ALO generating SV machine callidx", callidx)
+		DEBOUT("Message from ALO generating SV machine callidy", callidy)
+
+		CALL_OSET* call_oset = 0x0;
+
+		call_oset = comap->getCALL_OSET_SV(callidx);
+
+		if (call_oset == 0x0) {
+			DEBASSERT("Orphan Invite")
+		}
+		else {
+			call_oset->getSL_CO()->call(_mess);
+
+			SL_SM_CL* sm_cl = call_oset->getSL_SM_CL(callidy);
+			if (sm_cl == 0x0){
+
+				sm_cl = new SL_SM_CL();
+				call_oset->addSL_SM_CL(callidy, sm_cl);
+
+				call_oset->getSL_CO()->call(_mess);
+				//TODO continuare qui
+
+			}
+
+
+		}
+
+
+
+
 
 		//search state machine client or create it
 

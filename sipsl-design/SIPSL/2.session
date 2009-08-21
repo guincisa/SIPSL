@@ -1,11 +1,13 @@
-window_sizes 1280 729 216 1058 594 56
+window_sizes 1280 729 249 1025 594 56
 windows_style
 diagrams
-  active  sequencediagram_ref 140546 // F6 VALO
-    1058 594 90 2 60 45
+  sequencediagram_ref 140546 // F6 VALO
+    1058 594 90 2 0 365
+  active  statediagram_ref 129185 // X
+    1025 594 100 2 120 0
 end
 show_stereotypes
-selected sequencediagram_ref 140546 // F6 VALO
+selected state_ref 128033 // SL_SM_SV
 open
   usecaseview_ref 128134 // VANILLA_CALL
 end

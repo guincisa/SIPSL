@@ -88,6 +88,25 @@ SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
 }
 //**********************************************************************************
 //**********************************************************************************
+SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
+
+	map<string, SL_SM_CL*>::iterator iter = mm_sl_sm_cl.find(_callidy);
+    if( iter != mm_sl_sm_cl.end() ) {
+		return iter->second;
+    }
+    else {
+    	return 0x0;
+    }
+}
+//**********************************************************************************
+//**********************************************************************************
+void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
+
+	mm_sl_sm_cl.insert(make_pair(_callId_Y,  _sl_cl));
+	return;
+}
+//**********************************************************************************
+//**********************************************************************************
 ALO* CALL_OSET::getALO(void){
 
 	return alo;
@@ -249,5 +268,27 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 	}
 
 	State = 0;
+
+}
+//**********************************************************************************
+//**********************************************************************************
+SL_SM_CL::SL_SM_CL(void){
+
+	DEBOUT("SL_SM_CL::state","0")
+
+	State = 0;
+
+}
+//**********************************************************************************
+//**********************************************************************************
+ACTION* SL_SM_CL::event(MESSAGE* _message){
+
+	bool purgeMessage = false;
+
+	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
+
+	if (_message->getReqRepType() == REQSUPP) {
+		DEBOUT("SL_SM_SV::event", _message->getHeadSipRequest().getContent())
+	}
 
 }

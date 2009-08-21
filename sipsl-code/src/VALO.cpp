@@ -43,7 +43,6 @@ void VALO::onInvite(MESSAGE* _message){
 		GETTIME(inTime);
 		MESSAGE* message;
 		message = new MESSAGE(_message, SODE_ALOPOINT);
-		//set by SL_CC message->setDestEntity(SODE_SMCLPOINT);
 		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 		string key(bu);
 		message->setKey(key);
@@ -108,6 +107,8 @@ void VALO::onInvite(MESSAGE* _message){
 		message->compileMessage();
 		message->dumpVector();
 		DEBOUT("New outoging b2b message", message->getIncBuffer())
+
+		message->setDestEntity(SODE_SMCLPOINT);
 
 		sl_cc->p_w(message);
 

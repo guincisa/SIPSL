@@ -48,7 +48,7 @@ class CALL_OSET {
 		ALO* alo;
 		SL_SM_SV* sl_sm_sv;
 		//map callId_y and related states machines
-		multimap<string, SL_SM_CL*> mm_sl_sm_cl;
+		map<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
 		string callId_X;
 
@@ -58,7 +58,8 @@ class CALL_OSET {
 		SL_CO* getSL_CO(void);
 		SL_SM_SV* getSL_SM_SV(void);
 		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
-		SL_SM_CL* getSL_SM_SL(string callId_Y);
+
+		SL_SM_CL* getSL_SM_CL(string callId_Y);
 		ALO* getALO(void);
 };
 //**********************************************************************************
@@ -108,6 +109,9 @@ class SL_SM {
 class SL_SM_CL : public SL_SM {
 	public:
 		int placeholder;
+
+		ACTION* event(MESSAGE*);
+		SL_SM_CL(void);
 
 //    public:
 //    SL_SM_CL();
