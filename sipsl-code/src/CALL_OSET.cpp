@@ -185,6 +185,12 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("********************************************************************","")
 		DEBOUT("*******************to client state machine**************************","")
 
+		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL();
+
+		ACTION* action = sl_sm_cl->event(_message);
+
+		if (action != 0x0){
+
 
 //		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL();
 //
@@ -288,7 +294,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
 
 	if (_message->getReqRepType() == REQSUPP) {
-		DEBOUT("SL_SM_SV::event", _message->getHeadSipRequest().getContent())
+		DEBOUT("SL_SM_CL::event", _message->getHeadSipRequest().getContent())
 	}
 
 }
