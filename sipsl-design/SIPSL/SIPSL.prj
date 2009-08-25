@@ -1,6 +1,6 @@
 format 67
 "SIPSL"
-  revision 42
+  revision 43
   modified_by 2 "guic"
 
 
@@ -499,6 +499,78 @@ s
       comment "Oct 17- 2008
 "
       overlapping_bars size A2
+    end
+
+    state 128002 "SM_SL_CL"
+      stereotype "machine"
+      statediagram 147074 "Y"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+
+      pseudostate 128002 entry_point "init"
+	transition 128002 "event<INVITEy, s=alo, d=smcly>"
+	  on state_ref 128130 // 1
+	  external 
+	end
+      end
+
+      state 128130 "1"
+	transition 128258 "event<TRYy, s=b, d=smcly>"
+	  on state_ref 128258 // 1b
+	  external 
+	end
+
+	transition 128386 "event<timer y>"
+	  on state_ref 128130 // 1
+	end
+      end
+
+      stateaction 128002
+	stereotype "dssaddf"
+      end
+
+      state 128258 "1b"
+	transition 128514 "event<timer ring>"
+	  on state_ref 128386 // 1c
+	  external 
+	end
+
+	transition 128642 "event<RINGy, s=b, d=smcly>"
+	  on state_ref 128514 // 2
+	  external 
+	end
+      end
+
+      state 128386 "1c"
+      end
+
+      state 128514 "2"
+	transition 128770 "event<timer ring>"
+	  on state_ref 128386 // 1c
+	  external 
+	end
+
+	transition 128898 "event<RINGy, s=b, d=smcly>"
+	  on state_ref 128514 // 2
+	end
+
+	transition 129026 "event<OKy, s=b, d=smcly>"
+	  on state_ref 128642 // 3
+	  external 
+	end
+      end
+
+      state 128642 "3"
+	transition 129154 "event<ACKy, s=alo, d=smcly>"
+	  on state_ref 128770 // 4
+	  external 
+	end
+      end
+
+      state 128770 "4"
+      end
     end
   end
 end
