@@ -1,7 +1,7 @@
 format 67
 "SIPSL"
-  revision 43
-  modified_by 2 "guic"
+  revision 45
+  modified_by 55 "guic"
 
 
   
@@ -31,7 +31,7 @@ format 67
   show_infonote yes drawing_language uml show_stereotype_properties no
   
   class_color yellow duration_color transparent continuation_color gray note_color blue fragment_color transparent subject_color transparent usecase_color yellow package_color transparent component_color green artifact_color green deploymentnode_color gray state_color yellow stateaction_color transparent activity_color transparent activityregion_color transparent activitypartition_color transparent activityaction_color transparent parameterpin_color white 
-  font_size 6
+  font_size 7
   diagram_format A2
 
   mark_for_import
@@ -496,7 +496,7 @@ s
 
     sequencediagram 140546 "F6 VALO"
       show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
-      comment "Oct 17- 2008
+      comment "Aug 26- 2009
 "
       overlapping_bars size A2
     end
@@ -518,7 +518,7 @@ s
 
       state 128130 "1"
 	transition 128258 "event<TRYy, s=b, d=smcly>"
-	  on state_ref 128258 // 1b
+	  on state_ref 128258 // 2
 	  external 
 	end
 
@@ -531,45 +531,45 @@ s
 	stereotype "dssaddf"
       end
 
-      state 128258 "1b"
+      state 128258 "2"
 	transition 128514 "event<timer ring>"
-	  on state_ref 128386 // 1c
+	  on state_ref 128386 // 3
 	  external 
 	end
 
 	transition 128642 "event<RINGy, s=b, d=smcly>"
-	  on state_ref 128514 // 2
+	  on state_ref 128514 // 4
 	  external 
 	end
       end
 
-      state 128386 "1c"
+      state 128386 "3"
       end
 
-      state 128514 "2"
+      state 128514 "4"
 	transition 128770 "event<timer ring>"
-	  on state_ref 128386 // 1c
+	  on state_ref 128386 // 3
 	  external 
 	end
 
 	transition 128898 "event<RINGy, s=b, d=smcly>"
-	  on state_ref 128514 // 2
+	  on state_ref 128514 // 4
 	end
 
 	transition 129026 "event<OKy, s=b, d=smcly>"
-	  on state_ref 128642 // 3
+	  on state_ref 128642 // 5
 	  external 
 	end
       end
 
-      state 128642 "3"
+      state 128642 "5"
 	transition 129154 "event<ACKy, s=alo, d=smcly>"
-	  on state_ref 128770 // 4
+	  on state_ref 128770 // 6
 	  external 
 	end
       end
 
-      state 128770 "4"
+      state 128770 "6"
       end
     end
   end
