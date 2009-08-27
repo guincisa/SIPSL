@@ -116,14 +116,14 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			comap->setCALL_OSET(callidx, call_oset);
 
-			_mess->setDestEntity(SODE_SMSVPOINT);
+			//_mess->setDestEntity(SODE_SMSVPOINT);
 			sl_co->call(_mess);
 			//END.
 
 		} else {
 			//CALL Exists
 			DEBOUT("SL_CC::parse existing call", "")
-			_mess->setDestEntity(SODE_SMSVPOINT);
+			//_mess->setDestEntity(SODE_SMSVPOINT);
 			call_oset->getSL_CO()->call(_mess);
 		}
 	}
@@ -131,14 +131,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		_mess->setDestEntity(SODE_SMCLPOINT);
 
+		//get original idx
 		string callidx = _mess->getSourceMessage()->getHeadCallId().getNormCallId() +
 				_mess->getSourceMessage()->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
-		string callidy = _mess->getHeadCallId().getNormCallId() +
-				_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
-
 
 		DEBOUT("Message from ALO generating SV machine callidx", callidx)
-		DEBOUT("Message from ALO generating SV machine callidy", callidy)
 
 		CALL_OSET* call_oset = 0x0;
 
@@ -148,20 +145,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 			DEBASSERT("Orphan Invite")
 		}
 		else {
-			call_oset->getSL_CO()->call(_mess);
-
-			SL_SM_CL* sm_cl = call_oset->getSL_SM_CL(callidy);
-			if (sm_cl == 0x0){
-
-				sm_cl = new SL_SM_CL();
-				call_oset->addSL_SM_CL(callidy, sm_cl);
-
 				call_oset->getSL_CO()->call(_mess);
-				//TODO continuare qui
-
 			}
-
-
 		}
 
 

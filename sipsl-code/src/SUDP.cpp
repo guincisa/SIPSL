@@ -195,7 +195,7 @@ void SUDP::listen() {
 		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
 		pthread_mutex_unlock(&messTableMtx);
 
-
+		message->setDestEntity(SODE_SMSVPOINT);
 
 		//DECTIME
 		//STARTTIME

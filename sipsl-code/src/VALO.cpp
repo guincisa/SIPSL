@@ -106,7 +106,7 @@ void VALO::onInvite(MESSAGE* _message){
 		// Compile the message
 		message->compileMessage();
 		message->dumpVector();
-		DEBOUT("New outoging b2b message", message->getIncBuffer())
+		DEBOUT("New outgoing b2b message", message->getIncBuffer())
 
 		message->setDestEntity(SODE_SMCLPOINT);
 

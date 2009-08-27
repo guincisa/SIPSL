@@ -181,22 +181,28 @@ void SL_CO::call(MESSAGE* _message){
 			return;
 		}
 	}
-	if (_message->getDestEntity() == SODE_SMCLPOINT){
+	else if (_message->getDestEntity() == SODE_SMCLPOINT){
 		DEBOUT("********************************************************************","")
 		DEBOUT("*******************to client state machine**************************","")
 
-		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL();
 
+		//get new idy
+		string callidy = _message->getHeadCallId().getNormCallId() +
+				_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+
+		DEBOUT("Message to CL machine callidy", callidy)
+
+		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
+
+		if (sl_sm_cl == 0x0){
+			sl_sm_cl = new SL_SM_CL();
+			call_oset->addSL_SM_CL(callidy, sl_sm_cl);
+		}
 		ACTION* action = sl_sm_cl->event(_message);
 
 		if (action != 0x0){
 
-
-//		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL();
-//
-//		ACTION* action = sl_sm_sv->event(_message);
-
-
+		}
 	}
 	//do something with action
 }
@@ -290,6 +296,8 @@ SL_SM_CL::SL_SM_CL(void){
 ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 	bool purgeMessage = false;
+
+	//
 
 	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
 
