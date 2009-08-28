@@ -297,12 +297,16 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 	bool purgeMessage = false;
 
-	//
+	//TODO HERE!!!
 
 	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
 
 	if (_message->getReqRepType() == REQSUPP) {
 		DEBOUT("SL_SM_CL::event", _message->getHeadSipRequest().getContent())
+		if (State == 0){
+			DEBOUT("SL_SM_SV::event" , "state 0")
+		}
+
 	}
 
 }

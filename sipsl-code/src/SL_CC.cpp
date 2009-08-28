@@ -149,18 +149,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 			}
 		}
 
-
-
-
-
-		//search state machine client or create it
-
-	}
-
-
-
-
-
 //    if ( m._ReqLine.getMethodId() == INTERNALS_METHOD) {
 //        DEBOUT("INTERNALS_METHOD","SL_CC::parse")
 //        return;
