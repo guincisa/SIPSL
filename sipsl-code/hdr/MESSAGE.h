@@ -78,7 +78,7 @@ class BASEMESSAGE {
                     struct sockaddr_in echoClntAddr);
         BASEMESSAGE(string incMessBuff, SysTime inc_ts);
 
-        BASEMESSAGE(BASEMESSAGE*, int genEntity);
+        BASEMESSAGE(BASEMESSAGE*, int genEntity, SysTime creaTime);
 
         string &getLine(int);
         int getTotLines(void);
@@ -194,7 +194,7 @@ class MESSAGE : public BASEMESSAGE {
         //MESSAGE(void);
 
         //
-        MESSAGE(MESSAGE*, int genEntity);
+        MESSAGE(MESSAGE*, int genEntity, SysTime creaTime);
 
     	// also use for getting the callIDx to retrieve CALL_OSET SV side
     	MESSAGE* getSourceMessage(void);

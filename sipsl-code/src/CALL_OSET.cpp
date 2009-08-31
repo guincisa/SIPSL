@@ -248,7 +248,14 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				SingleAction sa_1 = SingleAction(_message);
 
 				//etry is filled later by SL_CO (see design)
-				MESSAGE* etry = new MESSAGE(_message, SODE_SMSVPOINT);
+				char bu[512];
+				SysTime inTime;
+				GETTIME(inTime);
+				MESSAGE* etry = new MESSAGE(_message, SODE_SMSVPOINT, inTime);
+				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
+				sprintf(bu, "%x#%llu",etry,num);
+				string key(bu);
+				etry->setKey(key);
 
 				pthread_mutex_lock(&messTableMtx);
 				globalMessTable.insert(pair<string, MESSAGE*>(etry->getKey(), etry));

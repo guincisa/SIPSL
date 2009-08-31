@@ -83,7 +83,7 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
 
 	return;
 }
-BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity){
+BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _creaTime){
 	/*
 	SysTime inTime;
 	GETTIME(inTime);
@@ -95,6 +95,8 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity){
 
 	echoClntAddr = _basemessage->getSocket();
     sock = _basemessage->getSock();
+
+    inc_ts = _creaTime;
 
     //flex_line = _basemessage->flex_line;
     incMessBuff = _basemessage->getIncBuffer();
@@ -221,8 +223,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 }
 
-MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):
-	BASEMESSAGE(_message, _genEntity),
+MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
+	BASEMESSAGE(_message, _genEntity, _creaTime),
 	headSipRequest(""),
 	headSipReply(""),
 	headMaxFwd(""),

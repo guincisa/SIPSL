@@ -38,12 +38,15 @@ void VALO::onInvite(MESSAGE* _message){
 	//	// do business logic...
 	//	// create b2b invite related message & so on...
 	//	//TODO clean this
+
+
 		char bu[512];
 		SysTime inTime;
 		GETTIME(inTime);
 		MESSAGE* message;
-		message = new MESSAGE(_message, SODE_ALOPOINT);
-		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
+		message = new MESSAGE(_message, SODE_ALOPOINT, inTime);
+		long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
+		sprintf(bu, "%x#%llu",message,num);
 		string key(bu);
 		message->setKey(key);
 		DEBOUT("NEW MESSAGE",message->getIncBuffer());

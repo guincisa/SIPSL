@@ -185,12 +185,11 @@ void SUDP::listen() {
 		GETTIME(inTime);
 		MESSAGE* message;
 		message = new MESSAGE(echoBuffer, SODE_APOINT, inTime, sock, echoClntAddr);
-
-		sprintf(bu, "%x#%lld",message,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
+		long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
+		sprintf(bu, "%x#%llu",message,num);
 		string key(bu);
 		message->setKey(key);
 		DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer() + "\n key " + key)
-
 		pthread_mutex_lock(&messTableMtx);
 		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
 		pthread_mutex_unlock(&messTableMtx);

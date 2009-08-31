@@ -64,10 +64,16 @@ class ALMGR {
 		// a1 -> 20
 		// a2 -> 20
 		// a3 -> 40
-		multimap<long long int, ALARM*> mapalarm;
+
+		priority_queue<long long int, vector<long long int>, greater<long long int> > alarm_pq;
+
+		multimap<long long int, ALARM*> time_alarm_mumap;
 		long int sleep_time;
 		SL_CC* sl_cc;
 		void alarmer(void);
+
+		// This is used when I was to clear the alarm related to message
+		// to cancel an alarm I use the MESSAGE*
 		map<MESSAGE*, ALARM*> mess_alm_map;
 
 	public:
