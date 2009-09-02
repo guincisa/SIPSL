@@ -20,21 +20,45 @@
 //**********************************************************************************
 //**********************************************************************************
 
+#include <pthread.h>
+
+#ifndef ENGINE_H
+#include "ENGINE.h"
+#endif
 #ifndef ALARM_H
 #include "ALARM.h"
 #endif
 
+//**********************************************************************************
+typedef struct tuple2 {
+	ALMGR* st;
+} ALMGRtuple;
+//**********************************************************************************
+extern "C" void* ALARMSTACK (void*);
+
+void * ALARMSTACK(void *_tgtObject) {
+
+    DEBOUT("ALARMSTACK start","")
+
+    ALMGRtuple *tgtObject = (ALMGRtuple *)_tgtObject;
+
+    tgtObject->st->alarmer();
+
+    DEBOUT("ALARMSTACK started","")
+
+    return (NULL);
+}
+//**********************************************************************************
 ALARM::ALARM(MESSAGE *_message, SysTime _fireTime){
 
 	message = _message;
 	fireTime = _fireTime;
 	active = true;
-	long long int _fireTime_c = ((long long int) fireTime.tv.tv_sec)*1000000+(long long int)fireTime.tv.tv_usec;
+	fireTime_c = ((long long int) fireTime.tv.tv_sec)*1000000+(long long int)fireTime.tv.tv_usec;
 
 }
 long long int ALARM::getTriggerTime(void){
-
-	return _fireTime;
+	return fireTime_c;
 }
 void ALARM::cancel(void){
 	active = false;
@@ -47,25 +71,36 @@ MESSAGE* ALARM::getMessage(void){
 }
 
 //**********************************************************************************
-void ALMGR::initAlarm(SL_CC* _sl_cc, long int _nano_delta){
+void ALMGR::initAlarm(SL_CC* _sl_cc, timespec _sleep_time){
 
-	sleep_time = _nano_delta;
+	sleep_time = _sleep_time;
 	sl_cc = _sl_cc;
 
-    //res = pthread_create(&alarmer, NULL, NULL, NULL );
+    listenerThread = new ThreadWrapper;
+    ALMGRtuple *t1;
+    t1 = new ALMGRtuple;
+    t1->st = this;
+    int res;
+    res = pthread_create(&(listenerThread->thread), NULL, ALARMSTACK, (void *) t1 );
+    return;
+
 
 }
 void ALMGR::alarmer(void){
 
 	for(;;){
-		// sleep
+
+		nanosleep(&sleep_time,NULL);
 
 		//extract from priority queue
 		SysTime mytime;
 		GETTIME(mytime);
 		long long int curr = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;
 		long long int tcu = 0;
+		tcu = alarm_pq.top();
 		while (!alarm_pq.empty() && curr >= tcu){
+
+			alarm_pq.pop();
 			tcu = alarm_pq.top();
 
 			// now get a list of alarms from the multi map
@@ -75,15 +110,21 @@ void ALMGR::alarmer(void){
 				// if not active free ALARM pointer
 				// remove from the multimap all the loaded alarms
 
-			alarm_pq.pop();
 		}
 	}
 }
 void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 
 	//check if message already exists and cancel related alarm
-	//??? non ricordo....
 	//do note remove it from multimap and from mess_alm map
+
+	map<MESSAGE*, ALARM*>::iterator p;
+	p = mess_alm_map.find(_message);
+	if (p != mess_alm_map.end()){
+		ALARM* tmp = (ALARM*)p->second;
+		tmp->cancel();
+	}
+
 	ALARM* alm = new ALARM(_message, _fireTime);
 	// insert into priority q
 	alarm_pq.push(alm->getTriggerTime());
@@ -91,14 +132,11 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	//insert into map time - alarm
 	time_alarm_mumap.insert(pair<long long int, ALARM*>(alm->getTriggerTime(), alm));
 
-	(???)
-	mess_alm_map.insert(pair<ALARM*, MESSAGE*>(alm, _message));
+	//insert or replace into map message - alarm
+	//used to cancel an alarm by using the message pointer
+	mess_alm_map.insert(pair<MESSAGE*, ALARM*>(_message, alm));
 
-
-	//mess_alm_map.insert(make_pair(_message, alm));
-	// calculate real fire time
-	// insert into multimap
-
+	return;
 
 }
 void ALMGR::cancelAlarm(MESSAGE* _message){

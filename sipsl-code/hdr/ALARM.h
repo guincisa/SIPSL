@@ -39,6 +39,7 @@ class ALARM {
 
 	private:
 		SysTime fireTime;
+		long long int fireTime_c;
 
 		//fireTime.tv.tv_sec*1000000 + fireTime+endtime.tv.tv_usec
 
@@ -68,17 +69,21 @@ class ALMGR {
 		priority_queue<long long int, vector<long long int>, greater<long long int> > alarm_pq;
 
 		multimap<long long int, ALARM*> time_alarm_mumap;
-		long int sleep_time;
+		timespec sleep_time;
 		SL_CC* sl_cc;
-		void alarmer(void);
 
 		// This is used when I was to clear the alarm related to message
 		// to cancel an alarm I use the MESSAGE*
 		map<MESSAGE*, ALARM*> mess_alm_map;
 
+        ThreadWrapper *listenerThread;
+
+
 	public:
+		void alarmer(void);
+
 		//Alarm manager in a separate thread
-		void initAlarm(SL_CC* sl_cc, long int nano_delta);
+		void initAlarm(SL_CC* sl_cc, timespec sleep_time);
 		void insertAlarm(MESSAGE* message, SysTime fireTime);
 		void cancelAlarm(MESSAGE* message);
 
