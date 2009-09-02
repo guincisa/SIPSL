@@ -49,28 +49,6 @@ void * ALARMSTACK(void *_tgtObject) {
     return (NULL);
 }
 //**********************************************************************************
-ALARM::ALARM(MESSAGE *_message, SysTime _fireTime){
-
-	message = _message;
-	fireTime = _fireTime;
-	active = true;
-	fireTime_c = ((long long int) fireTime.tv.tv_sec)*1000000+(long long int)fireTime.tv.tv_usec;
-
-}
-long long int ALARM::getTriggerTime(void){
-	return fireTime_c;
-}
-void ALARM::cancel(void){
-	active = false;
-}
-MESSAGE* ALARM::getMessage(void){
-	if (!active)
-		return 0x0;
-	else
-		return message;
-}
-
-//**********************************************************************************
 void ALMGR::initAlarm(SL_CC* _sl_cc, timespec _sleep_time){
 
 	sleep_time = _sleep_time;
@@ -101,15 +79,21 @@ void ALMGR::alarmer(void){
 		while (!alarm_pq.empty() && curr >= tcu){
 
 			alarm_pq.pop();
-			tcu = alarm_pq.top();
 
 			// now get a list of alarms from the multi map
-				// for every alarm check if is it active
-				// check if message != 0x0
-				// if active invoke sl_cc->p_w(message)
-				// if not active free ALARM pointer
-				// remove from the multimap all the loaded alarms
+			multimap<long long int, ALARM*>::iterator iter = time_alarm_mumap.find(tcu);
 
+		    while( iter != time_alarm_mumap.end() ) {
+		    	ALARM* tmal = iter->second;
+		    	if (tmal->isActive()){
+		    		sl_cc->p_w(tmal->getMessage());
+		    	}
+		    	//else
+		    	time_alarm_mumap.erase(iter);
+		    	mess_alm_map.erase(tmal->getMessage());
+		    	delete tmal;
+		    }
+			tcu = alarm_pq.top();
 		}
 	}
 }
@@ -153,4 +137,29 @@ void ALMGR::cancelAlarm(MESSAGE* _message){
 		tmp->cancel();
 	}
 }
+//**********************************************************************************
+ALARM::ALARM(MESSAGE *_message, SysTime _fireTime){
+
+	message = _message;
+	fireTime = _fireTime;
+	active = true;
+	fireTime_c = ((long long int) fireTime.tv.tv_sec)*1000000+(long long int)fireTime.tv.tv_usec;
+
+}
+long long int ALARM::getTriggerTime(void){
+	return fireTime_c;
+}
+void ALARM::cancel(void){
+	active = false;
+}
+MESSAGE* ALARM::getMessage(void){
+	if (!active)
+		return 0x0;
+	else
+		return message;
+}
+bool ALARM::isActive(void){
+	return active;
+}
+
 

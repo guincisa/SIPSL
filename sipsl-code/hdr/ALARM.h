@@ -53,6 +53,7 @@ class ALARM {
 		long long int getTriggerTime(void);
 		void cancel(void);
 		MESSAGE* getMessage(void);
+		bool isActive(void);
 };
 
 class ALMGR {
