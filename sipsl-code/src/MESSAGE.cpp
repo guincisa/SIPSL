@@ -347,10 +347,15 @@ C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
     return headSipRequest;
 }
 void MESSAGE::setHeadSipRequest(string _content){
+	reqRep = 0;
 	flex_line[0] = _content;
 	headSipRequest.setContent(_content);
 }
-
+void MESSAGE::setHeadSipReply(string _content){
+	reqRep = 0;
+	flex_line[0] = _content;
+	headSipReply.setContent(_content);
+}
 C_HeadSipReply &MESSAGE::getHeadSipReply(void){
 
 	if(reqRep == 0){
@@ -362,7 +367,6 @@ C_HeadSipReply &MESSAGE::getHeadSipReply(void){
 	}
     assert("MESSAGE::getHeadSipReply illegal instruction");
     return headSipReply;
-
 }
 /*
  * Via
@@ -436,6 +440,21 @@ void MESSAGE::pushHeadVia(string _content){
 		flex_line.insert(theIterator ,1 , "Via: " + _content);
 	}
 }
+void MESSAGE::purgeSDP(void){
+
+	vector<string>::iterator theIterator;
+	vector<string>::iterator theIteratorEnd;
+
+	theIterator = getSDPposition();
+	theIteratorEnd = flex_line.end();
+	if (theIterator == flex_line.end()){
+		//nothing to erase
+		return;
+	}
+
+	flex_line.erase(theIterator, theIteratorEnd);
+}
+
 /*
  * MaxFwd
  */

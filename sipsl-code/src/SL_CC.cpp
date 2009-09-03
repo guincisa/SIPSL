@@ -186,7 +186,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 //    // look for call ID
 //    // access to call map not in mutex but probably it should...
 //    DEBOUT("LOOK call id", m._CallID.getCallId())
-//    // TODO non bello
 //    SL_CO *_cotmp = callMap->find(m._CallID.getCallId());
 //    if ( _cotmp == NULL) {
 //        DEBOUT("call id not found in call map","")
@@ -234,7 +233,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 //    me.sendReply("");
 //
 //    // check if CO has to be deleted by checking in state = 3 E_END
-//    /* TODO WRONG!!!!
 //    if (co->getSM()->getState() == S_END) {
 //        //cout << "delete" << endl;
 //        delete co;

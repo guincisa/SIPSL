@@ -226,8 +226,12 @@ class MESSAGE : public BASEMESSAGE {
     	void removeHeadRoute(void);
 
     	void setHeadSipRequest(string content);
+    	void setHeadSipReply(string content);
 
     	void replaceHeadCSeq(string content);
+
+    	//remove SDP, is for reply
+    	void purgeSDP(void);
 
 		//purge all vias
     	void purgeSTKHeadVia(void);

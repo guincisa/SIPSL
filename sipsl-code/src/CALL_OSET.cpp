@@ -158,8 +158,10 @@ void SL_CO::call(MESSAGE* _message){
 					// send to A party
 					// extract address from headers (?) of sender and reply back
 					//sendto(sock, ecco, ECHOMAX, 0, (struct sockaddr *) &(echoClntAddr), sizeof(echoClntAddr));
+					//TODO qui
 					char ecco[500];
 					sprintf(ecco, "ETRY %d", 33);
+					DEBOUT("ETRY ", actionList.top().getMessage()->getIncBuffer())
 					sendto(actionList.top().getMessage()->getSock(),
 							ecco, 500, 0, (struct sockaddr *) &(actionList.top().getMessage()->getSocket()),
 							sizeof(actionList.top().getMessage()->getSocket()));
@@ -201,7 +203,7 @@ void SL_CO::call(MESSAGE* _message){
 		ACTION* action = sl_sm_cl->event(_message);
 
 		if (action != 0x0){
-
+				//TODO qui
 		}
 	}
 	//do something with action
@@ -252,6 +254,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				SysTime inTime;
 				GETTIME(inTime);
 				MESSAGE* etry = new MESSAGE(_message, SODE_SMSVPOINT, inTime);
+				DEBOUT("NEW MESSAGE"," " + etry->getTotLines());
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
 				sprintf(bu, "%x#%llu",etry,num);
 				string key(bu);
@@ -260,9 +263,16 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				pthread_mutex_lock(&messTableMtx);
 				globalMessTable.insert(pair<string, MESSAGE*>(etry->getKey(), etry));
 				pthread_mutex_unlock(&messTableMtx);
-				///////////////////
-
+				//TODO qui fare etry...
+				DEBOUT("ETRY","SIP/2.0 100 Trying")
+				etry->setHeadSipReply("SIP/2.0 100 Trying");
+				DEBOUT("ETRY","Purge sdp")
+				etry->purgeSDP();
+				DEBOUT("ETRY","setDestEntity")
 				etry->setDestEntity(SODE_APOINT);
+
+				etry->compileMessage();
+				etry->dumpVector();
 
 				SingleAction sa_2 = SingleAction(etry);
 
@@ -304,7 +314,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 	bool purgeMessage = false;
 
-	//TODO HERE!!!
+	//TODO qui
 
 	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
 
