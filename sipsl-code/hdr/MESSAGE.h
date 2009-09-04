@@ -163,16 +163,6 @@ class MESSAGE : public BASEMESSAGE {
     	bool 				headCSeq_p;
     	C_HeadRoute			headRoute;
     	bool 				headRoute_p;
-    	//C_HeadContentType	headContentType;
-    	//bool 				headContentType_p;
-    	//S_HeadContentLength headContentLenght;
-    	//bool 				headContentLenght_p;
-    	//C_SDPInfo			headSDPInfo;
-    	//bool 				headSDPInfo_p;
-    	//C_HeadAllow			headAllow;
-    	//bool 				headAllow_p;
-    	//C_HeadSubject		headSubject;
-    	//bool 				headSubject_p;
 
     	// Used to generate a message from an incoming one
     	// tipically a reply
@@ -225,6 +215,8 @@ class MESSAGE : public BASEMESSAGE {
 
     	void removeHeadRoute(void);
 
+    	void dropHeader(string header);
+
     	void setHeadSipRequest(string content);
     	void setHeadSipReply(string content);
 
@@ -241,6 +233,9 @@ class MESSAGE : public BASEMESSAGE {
     	void replaceHeadFrom(string content);
 
     	void replaceHeadContact(string content);
+
+    	void removeMaxForwards(void);
+    	void increaseMaxForwards(void);
 
     	// position of first line of SDP
     	// it is needed when I need to add headers

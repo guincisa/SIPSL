@@ -662,6 +662,45 @@ void MESSAGE::replaceHeadContact(string _content){
 		DEBOUT("MESSAGE::replaceHeadContact from header is missing","")
 	}
 }
+void MESSAGE::removeMaxForwards(void){
+
+	headMaxFwd_p = false;
+	headMaxFwd.setContent("");
+
+	// replace in flex_line
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,8).compare("Max-Forwards:")==0){
+			removeHeader(i);
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		DEBOUT("MESSAGE::removeMaxForwards, MaxForwards is missing","")
+	}
+
+}
+void MESSAGE::increaseMaxForwards(void){
+	return ;
+}
+
+void MESSAGE::dropHeader(string _header){
+
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,_header.size()).compare(_header)==0){
+			removeHeader(i);
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		DEBOUT("MESSAGE::removeHeader not found",_header)
+	}
+}
 
 /*
  * Message generated internally

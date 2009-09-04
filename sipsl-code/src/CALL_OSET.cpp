@@ -268,6 +268,15 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				etry->setHeadSipReply("SIP/2.0 100 Trying");
 				DEBOUT("ETRY","Purge sdp")
 				etry->purgeSDP();
+				DEBOUT("ETRY","delete User-Agent:")
+				etry->dropHeader("User-Agent:");
+				DEBOUT("ETRY","delete Max-Forwards:")
+				etry->removeMaxForwards();
+				DEBOUT("ETRY","delete Content-Type:")
+				etry->dropHeader("Content-Type:");
+				DEBOUT("ETRY","delete Content-Length:")
+				etry->dropHeader("Content-Length:");
+
 				DEBOUT("ETRY","setDestEntity")
 				etry->setDestEntity(SODE_APOINT);
 
