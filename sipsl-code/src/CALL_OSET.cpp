@@ -293,9 +293,12 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
 				DEBOUT("via", viatmp->getC_AttVia().getContent())
 				DEBOUT("via", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-				viatmp->getC_AttVia().getViaParms().replaceRvalue("rport", "" + sl_cc->getSUDP()->getPort());
-				viatmp->getC_AttVia().getViaParms().compileTupleVector();
+				viatmp->getC_AttVia().getViaParms().replaceRvalue("rport", "124");
+				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
 				DEBOUT("via", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+				DEBOUT("via", viatmp->buildContent())
+				etry->getSTKHeadVia().pop();
+				etry->pushHeadVia(viatmp->getContent());
 
 
 

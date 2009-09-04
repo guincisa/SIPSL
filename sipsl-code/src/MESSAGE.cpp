@@ -320,6 +320,7 @@ void MESSAGE::compileMessage(void){
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
     	if ((*theIterator).substr(0,5).compare("xxDxx") == 0 ) {
     		flex_line.erase(theIterator);
+    		theIterator--;
     	}
     }
     incMessBuff = "";

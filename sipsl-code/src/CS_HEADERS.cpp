@@ -210,6 +210,7 @@ void TupleVector::compileTupleVector(void){
     	else
     		content = content + theIterator->first + "=" + theIterator->second;
     }
+    parsed = false;
     DEBOUT("tv content", content)
 
 }
@@ -1059,6 +1060,12 @@ C_AttVia &C_HeadVia::getC_AttVia(void) {
         doParse();
 
     return via;
+}
+void C_HeadVia::buildContent(void){
+
+	via.viaParms.compileTupleVector();
+    content = "Via: " + "SIP/" + via.version + "/" + via.transport + " " + via.hostPort.getContent() + ";" + via.viaParms.getContent;
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

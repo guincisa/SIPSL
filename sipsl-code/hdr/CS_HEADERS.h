@@ -218,6 +218,7 @@ class S_HeadGeneric { //i
         string copyContent(void);
 
         void setContent(string buff);
+        virtual void buildContent(void);
 
 
         // created using buffer and endpoint id which generates header
@@ -641,6 +642,8 @@ class C_HeadVia : public S_HeadGeneric { //i //t
     public:
         C_AttVia &getC_AttVia(void);
         C_AttVia copyC_AttVia(void);
+
+        void buildContent(void);
 
         C_HeadVia(string content);
 };
