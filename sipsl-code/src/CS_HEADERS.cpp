@@ -169,10 +169,49 @@ string TupleVector::findRvalue(string _Lvalue){
     }
     map<string,string>::iterator ii = tuples.find(_Lvalue);
     if (ii == tuples.end()) {
-        return"";
+        return "";
     }
     string s = ii->second;
     return(s);
+}
+void TupleVector::replaceRvalue(string _Lvalue, string _Rvalue){
+
+    if (!parsed) {
+        doParse();
+    }
+
+    map<string,string>::iterator ii = tuples.find(_Lvalue);
+    if (ii == tuples.end()) {
+        return;
+    }
+    tuples.erase(ii);
+    tuples.insert(make_pair(_Lvalue, _Rvalue));
+    ii = tuples.find(_Lvalue);
+    return;
+}
+void TupleVector::compileTupleVector(void){
+
+    if (!parsed) {
+		return;
+	}
+    DEBOUT("tv content before", content)
+
+    map<string,string>::iterator theIterator;
+
+    if (hasheader){
+    	content = header;
+    }
+    else {
+    	content = "";
+    }
+    for( theIterator = tuples.begin(); theIterator != tuples.end(); theIterator++ ) {
+    	if (!content.empty())
+    		content = content + separator+ theIterator->first + "=" + theIterator->second;
+    	else
+    		content = content + theIterator->first + "=" + theIterator->second;
+    }
+    DEBOUT("tv content", content)
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

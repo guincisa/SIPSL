@@ -61,6 +61,7 @@ class CALL_OSET {
 
 		SL_SM_CL* getSL_SM_CL(string callId_Y);
 		ALO* getALO(void);
+		ENGINE* getENGINE(void);
 };
 //**********************************************************************************
 //**********************************************************************************
@@ -85,7 +86,8 @@ class SL_CO {
 //**********************************************************************************
 class SL_SM {
 	public:
-		int placeholder;
+		SL_SM(ENGINE* sl_cc);
+		ENGINE* getSL_CC(void);
 
 #ifdef TESTING
 		virtual ACTION* event(MESSAGE*);
@@ -93,6 +95,8 @@ class SL_SM {
 		virtual ACTION* event(MESSAGE*) = 0;
 #endif
     protected:
+
+		ENGINE* sl_cc;
 
         int State;
 //    public:
@@ -107,11 +111,12 @@ class SL_SM {
 //**********************************************************************************
 //**********************************************************************************
 class SL_SM_CL : public SL_SM {
+
 	public:
 		int placeholder;
 
 		ACTION* event(MESSAGE*);
-		SL_SM_CL(void);
+		SL_SM_CL(ENGINE*);
 
 //    public:
 //    SL_SM_CL();
@@ -129,7 +134,7 @@ class SL_SM_SV : public SL_SM {
 		int placeholder;
 
 		ACTION* event(MESSAGE*);
-		SL_SM_SV(void);
+		SL_SM_SV(ENGINE*);
 
 //    public:
 //

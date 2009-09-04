@@ -177,9 +177,13 @@ inline Tuple getLRvalue(string couple) {
 
     int a = couple.find("=", 0);
     Tuple tt;
-    tt.Lvalue = couple.substr(0, a);
-    tt.Rvalue = couple.substr(a+1, -1);
-
+    if ( a != string::npos) {
+		tt.Lvalue = couple.substr(0, a);
+		tt.Rvalue = couple.substr(a+1, -1);
+    }else {
+		tt.Lvalue = couple;
+		tt.Rvalue = "";
+    }
     return tt;
 }
 
@@ -277,6 +281,8 @@ class TupleVector : public S_AttGeneric{ //i //t
         TupleVector(const TupleVector& _t);
         //header can be ? or whatever the string begins with
         string findRvalue(string Lvalue);
+        void replaceRvalue(string Lvalue, string Rvalue);
+        void compileTupleVector(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

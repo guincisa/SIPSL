@@ -72,6 +72,12 @@ CALL_OSET::CALL_OSET(ENGINE* _engine){
 }
 //**********************************************************************************
 //**********************************************************************************
+ENGINE* CALL_OSET::getENGINE(void){
+	return engine;
+}
+//**********************************************************************************
+//**********************************************************************************
+
 void CALL_OSET::setSL_X(string _callId_X, SL_CO* _sl_co, SL_SM_SV* _sl_sm_sv, ALO* _alo){
 
 	callId_X = _callId_X;
@@ -197,7 +203,7 @@ void SL_CO::call(MESSAGE* _message){
 		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
 		if (sl_sm_cl == 0x0){
-			sl_sm_cl = new SL_SM_CL();
+			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE());
 			call_oset->addSL_SM_CL(callidy, sl_sm_cl);
 		}
 		ACTION* action = sl_sm_cl->event(_message);
@@ -216,7 +222,14 @@ void SL_CO::call(MESSAGE* _message){
 
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_SV::SL_SM_SV(void){
+SL_SM::SL_SM(ENGINE* _engine){
+	sl_cc = _engine;
+}
+ENGINE* SL_SM::getSL_CC(void){
+	return sl_cc;
+}
+SL_SM_SV::SL_SM_SV(ENGINE* _engine):
+	SL_SM(_engine){
 
 	DEBOUT("SL_SM_SV::state","0")
 
@@ -276,6 +289,15 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				etry->dropHeader("Content-Type:");
 				DEBOUT("ETRY","delete Content-Length:")
 				etry->dropHeader("Content-Length:");
+				//via add rport
+				C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
+				DEBOUT("via", viatmp->getC_AttVia().getContent())
+				DEBOUT("via", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+				viatmp->getC_AttVia().getViaParms().replaceRvalue("rport", "" + sl_cc->getSUDP()->getPort());
+				viatmp->getC_AttVia().getViaParms().compileTupleVector();
+				DEBOUT("via", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+
+
 
 				DEBOUT("ETRY","setDestEntity")
 				etry->setDestEntity(SODE_APOINT);
@@ -310,7 +332,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_CL::SL_SM_CL(void){
+SL_SM_CL::SL_SM_CL(ENGINE* _engine):
+	SL_SM(_engine){
 
 	DEBOUT("SL_SM_CL::state","0")
 
