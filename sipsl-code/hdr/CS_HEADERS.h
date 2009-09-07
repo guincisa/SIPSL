@@ -199,16 +199,14 @@ inline Tuple getLRvalue(string couple) {
 ///////////////////////////////////////////////////////////////////////////////
 class S_HeadGeneric { //i
 
-    protected:
+	protected:
         bool parsed;
         bool correct;
-
-        // Id of the generating endpoint
-        // same as SODE_*
-        //int genEntity;
-
         string content;
         virtual void doParse(void) = 0;
+
+        //false if content has been invalidated because of attribute changed
+        bool contentReady;
 
     public:
         bool isCorrect(void);
@@ -218,14 +216,14 @@ class S_HeadGeneric { //i
         string copyContent(void);
 
         void setContent(string buff);
-        virtual void buildContent(void);
 
-
-        // created using buffer and endpoint id which generates header
         S_HeadGeneric(string buff);
 
+        //forbidden
+        S_HeadGeneric(void);
+        S_HeadGeneric(const S_HeadGeneric& x);
 
-        int getGenEntity(void);
+        //int getGenEntity(void);
 
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -233,28 +231,31 @@ class S_HeadGeneric { //i
 //S_AttGeneric
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_AttGeneric { //i
-//NEW REVISION
+class S_AttGeneric {
 
-    protected:
-        string content;
+	protected:
         bool correct;
         bool parsed;
         bool isSet;
-
+        //false if content has been invalidated because of attribute changed
+        string content;
         virtual void doParse(void) = 0;
 
-    public:
-        //TODO non applicabile perche content non è sempre sipinibile
-        S_AttGeneric(string content);
-        S_AttGeneric(void);
+        bool contentReady;
 
+    public:
+
+        S_AttGeneric(string content);
+
+        //forbidden
+        S_AttGeneric(void);
         S_AttGeneric(const S_AttGeneric& x);
 
         string &getContent(void);
         string copyContent(void);
 
         void setContent(string);
+        virtual void buildContent(void) = 0;
 
         bool isCorrect(void);
         bool isParsed(void);
@@ -265,25 +266,33 @@ class S_AttGeneric { //i
 // TODO ??? C or S???
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class TupleVector : public S_AttGeneric{ //i //t
-//NEW REVISON
-    private:
-        vector<string> lval_rval;
-        TupleMap tuples;
-        void doParse(void);
+class TupleVector : public S_AttGeneric{
+
+	private:
+		vector<string> lval_rval;
+		TupleMap tuples;
+		bool hasheader;
+
         string separator;
         string header;
-        bool hasheader;
+        void doParse(void);
+        void buildContent(void);
 
     public:
         TupleVector(string tuples, string separator, string header);
         TupleVector(string tuples, string separator);
-        TupleVector();
-        TupleVector(const TupleVector& _t);
+
+        void setTupleVector(string tuples, string separator, string header);
+        void setTupleVector(string tuples, string separator);
+
+        void replaceRvalue(string Lvalue, string Rvalue);
+
         //header can be ? or whatever the string begins with
         string findRvalue(string Lvalue);
-        void replaceRvalue(string Lvalue, string Rvalue);
-        void compileTupleVector(void);
+
+        //forbidden
+        TupleVector();
+        TupleVector(const TupleVector& _t);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -291,18 +300,26 @@ class TupleVector : public S_AttGeneric{ //i //t
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class S_AttMethod : public S_AttGeneric{
-//NEW REVISION
 
     private:
-        void doParse(void);
         int methodID;
         string methodName;
+        void doParse(void);
+        void buildContent(void);
 
     public:
         int getMethodID(void);
-        string &getMethodName(void); //i t
-        string copyMethodName(void); //i t
+        string &getMethodName(void);
+        string copyMethodName(void);
         S_AttMethod(string);
+
+        void setMethodID(int);
+        void setMethodName(string);
+
+
+        //setContent(string) is inherited
+        S_AttMethod(void);
+        S_AttMethod(const S_AttMethod& x);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -311,11 +328,13 @@ class S_AttMethod : public S_AttGeneric{
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class S_AttUserInfo : public S_AttGeneric{
-//NEW REVISION
+
     private:
-        void doParse(void);
         string userName;
         string password;
+        void doParse(void);
+        void buildContent(void);
+
 
     public:
         string &getUserName(void);//i t
@@ -338,6 +357,8 @@ class S_AttHostPort : public S_AttGeneric{
         void doParse(void);
         string hostName;
         int port;
+        void buildContent(void);
+
 
     public:
         string &getHostName(void);//i t
@@ -356,6 +377,8 @@ class C_AttUriParms : public S_AttGeneric{ //i //t
 //
     private:
         void doParse(void);
+        void buildContent(void);
+
 
         TupleVector tuples;
 
@@ -376,6 +399,8 @@ class C_AttUriHeaders : public S_AttGeneric{ //i //t
 
     private:
         void doParse(void);
+        void buildContent(void);
+
 
         TupleVector tuples;
 
@@ -395,6 +420,8 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
 
     private:
         void doParse(void);
+        void buildContent(void);
+
 
         bool isSecure; //sip or sips
         S_AttUserInfo userInfo; // alice:secretword@
@@ -446,6 +473,8 @@ class S_AttSipVersion : public S_AttGeneric{ //i //t
         void doParse(void);
         string version;
         string protocol;
+        void buildContent(void);
+
     public:
         string &getProtocol(void);
         string copyProtocol(void);
@@ -474,6 +503,8 @@ class C_AttVia : public S_AttGeneric { //i //t
         string transport;
         S_AttHostPort hostPort;
         TupleVector viaParms;
+        void buildContent(void);
+
 
     public:
         S_AttSipVersion &getS_AttSipVersion(void);
@@ -504,6 +535,8 @@ class S_AttReply : public S_AttGeneric{ //i //t
         int replyID;
         string reply;
         bool compare_it(string reply);
+        void buildContent(void);
+
 
     public:
         int getCode(void);
@@ -533,6 +566,8 @@ class C_AttContactElem : public S_AttGeneric {
         string nameUri;
         C_AttSipUri sipUri;
         C_AttUriParms uriParms;
+        void buildContent(void);
+
 
     public:
         string &getNameUri(void);
@@ -559,6 +594,8 @@ class C_AttContactList : public S_AttGeneric {
 
     private:
         void doParse(void);
+        void buildContent(void);
+
 
         vector<C_AttContactElem> contactList;
 
@@ -578,6 +615,8 @@ class C_HeadSipRequest : public S_HeadGeneric { //i //t
 
     private:
         void doParse(void);
+        void buildContent(void);
+
 
         S_AttMethod method;
 
@@ -609,6 +648,8 @@ class C_HeadSipReply : public S_HeadGeneric { //i //t
 //NEW REVISION
     private:
         void doParse(void);
+        void buildContent(void);
+
 
         S_AttSipVersion sipvs;
         S_AttReply reply;
@@ -636,14 +677,15 @@ class C_HeadVia : public S_HeadGeneric { //i //t
 
     private:
         void doParse(void);
+        void buildContent(void);
 
+
+    protected:
         C_AttVia via;
 
     public:
         C_AttVia &getC_AttVia(void);
         C_AttVia copyC_AttVia(void);
-
-        void buildContent(void);
 
         C_HeadVia(string content);
 };
@@ -657,6 +699,8 @@ class S_HeadMaxFwd : public S_HeadGeneric {
 
     private:
         void doParse(void);
+        void buildContent(void);
+
         int mxfwd;
 
      public:
@@ -681,6 +725,7 @@ class C_HeadContact : public S_HeadGeneric {
         void doParse(void);
         C_AttContactList contactList;
         bool star; // "Contact: *" in register
+        void buildContent(void);
 
     public:
         C_AttContactList &getContactList(void);
@@ -701,6 +746,8 @@ class C_HeadTo : public S_HeadGeneric {
     private:
         void doParse(void);
         C_AttContactElem to;
+        void buildContent(void);
+
 
     public:
     	C_AttContactElem &getTo(void);
@@ -719,6 +766,7 @@ class C_HeadFrom : public S_AttGeneric {
 //    private:
 //        void doParse(void);
 //        C_AttContactElem from;
+
 //
 //    public:
 //    	C_AttContactElem &getFrom(void);
@@ -726,6 +774,7 @@ class C_HeadFrom : public S_AttGeneric {
 //        C_HeadFrom(string content, int genEntity);
     private:
         void doParse(void);
+        void buildContent(void);
 
         string nameUri;
         C_AttSipUri sipUri;
@@ -756,6 +805,8 @@ class C_HeadCallId : public S_HeadGeneric {
 
     private:
         void doParse(void);
+        void buildContent(void);
+
         Tuple callId;
 
     public:
@@ -775,6 +826,8 @@ class C_HeadCSeq : public S_HeadGeneric {
 
     private:
         void doParse(void);
+        void buildContent(void);
+
         int sequence;
         S_AttMethod method;
 
@@ -794,6 +847,8 @@ class C_HeadContentType : public S_HeadGeneric { //TODO
 
     private:
         void doParse(void);
+        void buildContent(void);
+
         Tuple contType;
 
     public:
@@ -811,6 +866,8 @@ class S_HeadContentLength : public S_HeadGeneric { //TODO
 
     private:
         void doParse(void);
+        void buildContent(void);
+
         int contLength;
 
     public:
@@ -827,6 +884,8 @@ class C_SDPInfo : public S_HeadGeneric { //TODO
 
     private:
         void doParse(void);
+        void buildContent(void);
+
         TupleVector sdp;
 
     public:
@@ -843,6 +902,8 @@ class C_HeadAllow : public S_HeadGeneric {
 
 	private:
 		void doParse(void);
+	    void buildContent(void);
+
 		vector<S_AttMethod> allowedMethods;
 
 	public:
@@ -862,6 +923,8 @@ class C_HeadSubject : public S_HeadGeneric {
 
 	private:
 		void doParse(void);
+	    void buildContent(void);
+
 		string subject;
 
 	public:
@@ -879,6 +942,8 @@ class C_HeadRoute : public S_HeadGeneric {
 
 	private:
 		void doParse(void);
+	    void buildContent(void);
+
 		S_AttHostPort routeHost;
 		string lr;
 

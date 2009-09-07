@@ -43,26 +43,36 @@
 S_HeadGeneric::S_HeadGeneric(string buffer) {
 
     content = buffer;
-
+    contentReady = true;
     parsed = false;
     correct = true;
 
 }
-
+S_HeadGeneric::S_HeadGeneric(void) {
+	   DEBOUT("S_HeadGeneric empty constructor", "")
+	   assert(0);
+}
+S_HeadGeneric::S_HeadGeneric(const S_HeadGeneric& x) {
+	   DEBOUT("S_HeadGeneric empty constructor", "")
+	   assert(0);
+}
 void S_HeadGeneric::setContent(string _content) {
 
     content = _content;
     parsed = false;
     correct = true;
+    contentReady = true;
     return;
 
 }
 
 string &S_HeadGeneric::getContent(void) {
-    return content;
+	//if (contentReady)
+		return content;
 }
 string S_HeadGeneric::copyContent(void) {
-    return content;
+	//if (contentReady)
+		return content;
 }
 bool S_HeadGeneric::isParsed(void) {
     return parsed;
@@ -84,19 +94,30 @@ S_AttGeneric::S_AttGeneric(string _content) {
    parsed = false;
    correct = true;
    isSet = false;
+   contentReady = true;
 }
 S_AttGeneric::S_AttGeneric(void) {
-   parsed = false;
-   correct = true;
-   isSet = false;
    DEBOUT("S_AttGeneric empty constructor", "")
    assert(0);
 }
 string &S_AttGeneric::getContent(void) {
-   return content;
+	if (contentReady){
+		return content;
+	}
+	else {
+		buildContent();
+		return content;
+	}
+
 }
 string S_AttGeneric::copyContent(void) {
-   return content;
+	if (contentReady){
+		return content;
+	}
+	else {
+		buildContent();
+		return content;
+	}
 }
 bool S_AttGeneric::isParsed(void) {
     return parsed;
@@ -105,15 +126,9 @@ bool S_AttGeneric::isCorrect(void) {
     return correct;
 }
 void S_AttGeneric::setContent(string _content){
-//    if (isSet)
-//        return;
-//    else {
-//        isSet = true;
-//        content = _content;
-//    }
+	contentReady = true;
 	content = _content;
 	parsed = false;
-
 }
 // *********************************************************************************
 // *********************************************************************************
@@ -139,6 +154,22 @@ TupleVector::TupleVector(string tuples, string _separator, string _header) : S_A
    separator = _separator;
    header = _header;
    hasheader = true;
+}
+void TupleVector::setTupleVector(string _tuples, string _separator, string _header){
+	setContent(_tuples);
+	parsed=false;
+	content = _tuples;
+	header = _header;
+	hasheader = false;
+	separator = _separator;
+}
+void TupleVector::setTupleVector(string _tuples, string _separator){
+	setContent(_tuples);
+	parsed=false;
+	content = _tuples;
+	header = "";
+	hasheader = false;
+	separator = _separator;
 }
 void TupleVector::doParse(void) {
 
@@ -187,11 +218,14 @@ void TupleVector::replaceRvalue(string _Lvalue, string _Rvalue){
     tuples.erase(ii);
     tuples.insert(make_pair(_Lvalue, _Rvalue));
     ii = tuples.find(_Lvalue);
+
+    contentReady = false;
+
     return;
 }
-void TupleVector::compileTupleVector(void){
+void TupleVector::buildContent(void){
 
-    if (!parsed) {
+    if (contentReady) {
 		return;
 	}
     DEBOUT("tv content before", content)
@@ -210,7 +244,8 @@ void TupleVector::compileTupleVector(void){
     	else
     		content = content + theIterator->first + "=" + theIterator->second;
     }
-    parsed = false;
+    contentReady = true;
+    parsed = true;
     DEBOUT("tv content", content)
 
 }
@@ -224,6 +259,14 @@ S_AttMethod::S_AttMethod(string _content)
 
     methodID = 0;
     methodName = "";
+}
+S_AttMethod::S_AttMethod(void){
+DEBOUT("S_AttMethod::S_AttMethod(void)","")
+    assert(0);
+}
+S_AttMethod::S_AttMethod(const S_AttMethod& x){
+	DEBOUT("S_AttMethod::S_AttMethod(void)","")
+	    assert(0);
 }
 void S_AttMethod::doParse(void){
 
@@ -283,6 +326,58 @@ string S_AttMethod::copyMethodName(void) {
     }
     return methodName;
 }
+void S_AttMethod::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	content = methodName;
+    }
+}
+void S_AttMethod::setMethodID(int _i) {
+
+	if ( _i == INVITE_REQUEST){
+        methodName = "INVITE";
+        methodID = INVITE_REQUEST;
+        contentReady = false;
+	}
+	if ( _i == ACK_REQUEST){
+        methodName = "ACK";
+        methodID = ACK_REQUEST;
+        contentReady = false;
+	}
+	if ( _i == BYE_REQUEST){
+        methodName = "BYE";
+        methodID = BYE_REQUEST;
+        contentReady = false;
+	}
+	if ( _i == CANCEL_REQUEST){
+        methodName = "CANCEL";
+        methodID = CANCEL_REQUEST;
+        contentReady = false;
+	}
+}
+void S_AttMethod::setMethodName(string _method) {
+
+    if (_method.compare("INVITE") == 0){
+        methodID = INVITE_REQUEST;
+        contentReady = false;
+    }
+    if (_method.compare("ACK") == 0){
+        methodID = ACK_REQUEST;
+        contentReady = false;
+    }
+    if (_method.compare("BYE") == 0){
+        methodID = BYE_REQUEST;
+        contentReady = false;
+    }
+    if (_method.compare("CANCEL") == 0){
+        methodID = CANCEL_REQUEST;
+        contentReady = false;
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // S_AttReply
@@ -1063,8 +1158,8 @@ C_AttVia &C_HeadVia::getC_AttVia(void) {
 }
 void C_HeadVia::buildContent(void){
 
-	via.viaParms.compileTupleVector();
-    content = "Via: " + "SIP/" + via.version + "/" + via.transport + " " + via.hostPort.getContent() + ";" + via.viaParms.getContent;
+//	via.viaParms.compileTupleVector();
+//    content = "Via: " + "SIP/" + via.version + "/" + via.transport + " " + via.hostPort.getContent() + ";" + via.viaParms.getContent;
 
 }
 ///////////////////////////////////////////////////////////////////////////////
