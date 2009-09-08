@@ -25,6 +25,7 @@
 #include <vector>
 #include <assert.h>
 #include <cstdlib>
+#include <sstream>
 
 
 #ifndef CS_HEADERS_H
@@ -333,9 +334,14 @@ void S_AttMethod::buildContent(void){
 	}
     else {
     	content = methodName;
+    	contentReady = true;
     }
 }
 void S_AttMethod::setMethodID(int _i) {
+
+    if (!parsed) {
+        doParse();
+    }
 
 	if ( _i == INVITE_REQUEST){
         methodName = "INVITE";
@@ -359,6 +365,10 @@ void S_AttMethod::setMethodID(int _i) {
 	}
 }
 void S_AttMethod::setMethodName(string _method) {
+
+    if (!parsed) {
+        doParse();
+    }
 
     if (_method.compare("INVITE") == 0){
         methodID = INVITE_REQUEST;
@@ -519,18 +529,15 @@ S_AttSipVersion::S_AttSipVersion(string _protocol, string _version)
 
     content = protocol + "/" + version;
 }
-void S_AttSipVersion::setbContent(string _protocol, string _version) {
-
-    parsed = true;
-    correct = true;
-    isSet = true;
-
-    version = _version;
-    protocol = _protocol;
-
-    content = protocol + "/" + version;
+void S_AttSipVersion::buildContent(void){
+    if (contentReady) {
+		return;
+	}
+    else {
+    	content = protocol + "/" + version;
+    	contentReady = true;
+    }
 }
-
 void S_AttSipVersion::doParse(void){
 
     if(parsed)
@@ -557,6 +564,22 @@ string &S_AttSipVersion::getVersion(void){
     }
     return version;
 }
+void S_AttSipVersion::setProtocol(string _protocol) {
+    if(!parsed){
+        doParse();
+    }
+    contentReady = false;
+    protocol = _protocol;
+    return;
+}
+void S_AttSipVersion::setVersion(string _version){
+    if(!parsed){
+        doParse();
+    }
+    contentReady = false;
+    version = _version;
+    return;
+}
 string S_AttSipVersion::copyProtocol(void) {
     if(!parsed){
         doParse();
@@ -580,6 +603,16 @@ S_AttUserInfo::S_AttUserInfo(string _content)
 }
 S_AttUserInfo::S_AttUserInfo(const S_AttUserInfo& x){
 assert(0);
+}
+void S_AttUserInfo::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	content = userName+":"+password;
+    	contentReady = true;
+    }
 }
 void S_AttUserInfo::doParse(void){
 
@@ -616,6 +649,24 @@ string S_AttUserInfo::copyPassword(void){
         doParse();
     return password;
 }
+void S_AttUserInfo::setUserName(string _userName){
+
+    if (!parsed) {
+        doParse();
+    }
+
+	userName = _userName;
+    contentReady = false;
+}
+void S_AttUserInfo::setPassword(string _password){
+
+    if (!parsed) {
+        doParse();
+    }
+
+	password = _password;
+    contentReady = false;
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // S_AttHostPort stub
@@ -644,6 +695,30 @@ void S_AttHostPort::doParse(void){
     correct = true;
     parsed = true;
     return;
+}
+void S_AttHostPort::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	ostringstream s1;
+    	s1 << hostName << ":" << port;
+    	content = s1.str();
+    	contentReady = true;
+    }
+}
+void S_AttHostPort::setPort(int _port){
+    if (!parsed)
+        doParse();
+    contentReady = false;
+	port = _port;
+}
+void S_AttHostPort::setHostName(string _hostName){
+    if (!parsed)
+        doParse();
+    contentReady = false;
+    hostName = _hostName;
 }
 string &S_AttHostPort::getHostName(void){
     if (!parsed)
@@ -674,7 +749,21 @@ void C_AttUriParms::doParse(void){
     parsed = true;
     return;
 }
+void C_AttUriParms::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	tuples.getContent();
+    	contentReady = true;
+    }
+}
 TupleVector &C_AttUriParms::getTuples(void){
+    return tuples;
+}
+TupleVector &C_AttUriParms::getChangeTuples(void){
+	contentReady = false;
     return tuples;
 }
 TupleVector C_AttUriParms::copyTuples(void){
@@ -696,6 +785,20 @@ C_AttUriHeaders::C_AttUriHeaders(string _content)
 }
 void C_AttUriHeaders::doParse(void){
     return;
+}
+void C_AttUriHeaders::buildContent(void){
+
+//    if (contentReady) {
+//		return;
+//	}
+//    else {
+    	tuples.getContent();
+    	contentReady = true;
+//    }
+}
+TupleVector &C_AttUriHeaders::getChangeTuples(void){
+	contentReady = false;
+    return tuples;
 }
 TupleVector &C_AttUriHeaders::getTuples(void){
     return tuples;
@@ -724,12 +827,6 @@ C_AttSipUri::C_AttSipUri(const C_AttSipUri& x):
     uriHeads(""){
     DEBOUT("C_AttSipUri copy constructor", "")
 assert(0);
-}
-void C_AttSipUri::setContent(string _content) {
-    content = _content;
-    isSet = true;
-    parsed = false;
-    correct = true;
 }
 void C_AttSipUri::doParse(void){
 
@@ -766,6 +863,20 @@ void C_AttSipUri::doParse(void){
 
     return;
 }
+void C_AttSipUri::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	//sip:alice:secretword@atlanta.com;transport=tcp
+        //isSecure; //sip or sips
+    	ostringstream s1;
+    	s1 << "sip:" << userInfo.getContent() << "@" << hostPort.getContent() << ";" << uriHeads.getContent();
+    	content = s1.str();
+    	contentReady = true;
+    }
+}
 bool C_AttSipUri::getIsSec(void){
     if (!parsed)
         doParse();
@@ -777,9 +888,21 @@ S_AttUserInfo &C_AttSipUri::getS_AttUserInfo(void){
         doParse();
     return userInfo;
 }
+S_AttUserInfo &C_AttSipUri::getChangeS_AttUserInfo(void){
+    if (!parsed)
+        doParse();
+    contentReady = false;
+    return userInfo;
+}
 S_AttHostPort &C_AttSipUri::getS_AttHostPort(void){
     if (!parsed)
         doParse();
+    return hostPort;
+}
+S_AttHostPort &C_AttSipUri::getChangeS_AttHostPort(void){
+    if (!parsed)
+        doParse();
+    contentReady = false;
     return hostPort;
 }
 C_AttUriParms &C_AttSipUri::getC_AttUriParms(void){
@@ -787,9 +910,21 @@ C_AttUriParms &C_AttSipUri::getC_AttUriParms(void){
         doParse();
     return uriParms;
 }
+C_AttUriParms &C_AttSipUri::getChangeC_AttUriParms(void){
+    if (!parsed)
+        doParse();
+    contentReady = false;
+    return uriParms;
+}
 C_AttUriHeaders &C_AttSipUri::getC_AttUriHeads(void){
     if (!parsed)
         doParse();
+    return uriHeads;
+}
+C_AttUriHeaders &C_AttSipUri::getChangeC_AttUriHeads(void){
+    if (!parsed)
+        doParse();
+    contentReady = false;
     return uriHeads;
 }
 S_AttUserInfo C_AttSipUri::copyS_AttUserInfo(void){
@@ -835,7 +970,10 @@ void C_AttVia::doParse(void){
     Tuple s2 = brkin2(s1.Lvalue, "/");
     Tuple s3 = brkin2(s2.Rvalue, "/");
     transport = s3.Rvalue;
-    version.setbContent(s2.Lvalue, s3.Lvalue);
+    version.setVersion(s3.Lvalue);
+    version.setProtocol(s2.Lvalue);
+    //fix the contentReady
+    version.getContent();
 
     Tuple s4 = brkin2(s1.Rvalue, ";");
     hostPort.setContent(s4.Lvalue);
@@ -846,9 +984,33 @@ void C_AttVia::doParse(void){
 
     return;
 }
+void C_AttVia::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	//   Via: SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74b76;received=192.0.2.101
+//        S_AttSipVersion version;
+//        string transport;
+//        S_AttHostPort hostPort;
+//        TupleVector viaParms;
+
+    	ostringstream s1;
+    	s1 << version.getContent() << "/" << transport << " " << hostPort.getContent() << ";" << viaParms.getContent();
+    	content = s1.str();
+    	contentReady = true;
+    }
+}
 S_AttSipVersion &C_AttVia::getS_AttSipVersion(void) {
     if (!parsed)
         doParse();
+    return version;
+}
+S_AttSipVersion &C_AttVia::getChangeS_AttSipVersion(void) {
+    if (!parsed)
+        doParse();
+    contentReady = false;
     return version;
 }
 string &C_AttVia::getTransport(void) {
@@ -856,14 +1018,32 @@ string &C_AttVia::getTransport(void) {
         doParse();
     return transport;
 }
+void C_AttVia::setTransport(string _transport) {
+    if (!parsed)
+        doParse();
+    contentReady = false;
+    transport = _transport;
+}
 S_AttHostPort &C_AttVia::getS_HostHostPort(void) {
     if (!parsed)
         doParse();
     return hostPort;
 }
+S_AttHostPort &C_AttVia::getChangeS_HostHostPort(void) {
+    if (!parsed)
+        doParse();
+    contentReady = false;
+    return hostPort;
+}
 TupleVector &C_AttVia::getViaParms(void) {
     if (!parsed)
         doParse();
+    return viaParms;
+}
+TupleVector &C_AttVia::getChangeViaParms(void) {
+    if (!parsed)
+        doParse();
+    contentReady = false;
     return viaParms;
 }
 S_AttSipVersion C_AttVia::copyS_AttSipVersion(void) {

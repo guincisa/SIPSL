@@ -208,6 +208,8 @@ class S_HeadGeneric { //i
         //false if content has been invalidated because of attribute changed
         bool contentReady;
 
+        virtual void buildContent(void) = 0;
+
     public:
         bool isCorrect(void);
         bool isParsed(void);
@@ -256,6 +258,11 @@ class S_AttGeneric {
 
         void setContent(string);
         virtual void buildContent(void) = 0;
+
+        //SetAttribute() before setting an attribute the doParse has to be called
+        //since one could initialize, then set only one attribute and get content
+        //if set attribute does not call the parse, the getcontent will contain
+        //invalid data
 
         bool isCorrect(void);
         bool isParsed(void);
@@ -341,7 +348,13 @@ class S_AttUserInfo : public S_AttGeneric{
         string copyUserName(void);//i t
         string &getPassword(void);//i t
         string copyPassword(void);//i t
+
+        void setUserName(string userName);
+        void setPassword(string password);
+
         S_AttUserInfo(string content);
+
+        //forbidden
         S_AttUserInfo(const S_AttUserInfo& x);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -351,7 +364,6 @@ class S_AttUserInfo : public S_AttGeneric{
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class S_AttHostPort : public S_AttGeneric{
-//NEW REVISION
 
     private:
         void doParse(void);
@@ -364,6 +376,8 @@ class S_AttHostPort : public S_AttGeneric{
         string &getHostName(void);//i t
         string copyHostName(void);//i t
         int getPort(void);
+        void setPort(int port);
+        void setHostName(string hostName);
         S_AttHostPort(string content);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -379,11 +393,11 @@ class C_AttUriParms : public S_AttGeneric{ //i //t
         void doParse(void);
         void buildContent(void);
 
-
         TupleVector tuples;
 
     public:
         TupleVector &getTuples(void); // i t
+        TupleVector &getChangeTuples(void); // i t
         TupleVector copyTuples(void); // i t
         C_AttUriParms(string content);
         C_AttUriParms(const C_AttUriParms& _p);
@@ -406,6 +420,7 @@ class C_AttUriHeaders : public S_AttGeneric{ //i //t
 
     public:
         TupleVector &getTuples(void); // i t
+        TupleVector &getChangeTuples(void); // i t
         TupleVector copyTuples(void); // i t
         C_AttUriHeaders(string content);
 };
@@ -432,21 +447,23 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
      public:
         bool getIsSec(void);
         S_AttUserInfo &getS_AttUserInfo(void);
+        S_AttUserInfo &getChangeS_AttUserInfo(void);
         S_AttUserInfo copyS_AttUserInfo(void); //i t
 
         S_AttHostPort &getS_AttHostPort(void);
+        S_AttHostPort &getChangeS_AttHostPort(void);
         S_AttHostPort copyS_AttHostPort(void); //i t
 
         C_AttUriParms &getC_AttUriParms(void);
+        C_AttUriParms &getChangeC_AttUriParms(void);
         C_AttUriParms copyC_AttUriParms(void); //i t
 
         C_AttUriHeaders &getC_AttUriHeads(void);
+        C_AttUriHeaders &getChangeC_AttUriHeads(void);
         C_AttUriHeaders copyC_AttUriHeads(void); //i t
 
         C_AttSipUri(string content);
         C_AttSipUri(const C_AttSipUri &x);
-        void setContent(string content);
-
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -480,13 +497,12 @@ class S_AttSipVersion : public S_AttGeneric{ //i //t
         string copyProtocol(void);
 
         string &getVersion();
+        void setVersion(string version);
+        void setProtocol(string protocol);
         string copyVersion();
 
         S_AttSipVersion(string content);
         S_AttSipVersion(string protocol, string version);
-
-        //to set it already parsed
-        void setbContent(string protocol, string version);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -509,14 +525,20 @@ class C_AttVia : public S_AttGeneric { //i //t
     public:
         S_AttSipVersion &getS_AttSipVersion(void);
         S_AttSipVersion copyS_AttSipVersion(void);
+        S_AttSipVersion &getChangeS_AttSipVersion(void);
+
 
         string &getTransport(void);
         string copyTransport(void);
+        void setTransport(string transport);
 
         S_AttHostPort &getS_HostHostPort(void);
         S_AttHostPort copyS_HostHostPort(void);
+        S_AttHostPort &getChangeS_HostHostPort(void);
+
 
         TupleVector &getViaParms(void);
+        TupleVector &getChangeViaParms(void);
         TupleVector copyViaParms(void);
 
         C_AttVia(string content);
