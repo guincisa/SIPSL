@@ -245,9 +245,13 @@ class S_AttGeneric {
 
         bool contentReady;
 
+
     public:
 
         S_AttGeneric(string content);
+
+        virtual void buildContent(void) = 0;
+
 
         //forbidden
         S_AttGeneric(void);
@@ -257,7 +261,6 @@ class S_AttGeneric {
         string copyContent(void);
 
         void setContent(string);
-        virtual void buildContent(void) = 0;
 
         //SetAttribute() before setting an attribute the doParse has to be called
         //since one could initialize, then set only one attribute and get content
@@ -562,15 +565,15 @@ class S_AttReply : public S_AttGeneric{ //i //t
 
     public:
         int getCode(void);
+        void setCode(int code);
         int getReplyID(void);
+        void setReplyID(int replyID);
 
         string &getReply(void);
+        void setReply(string reply);
         string copyReply(void);
 
-        void setContent(string _code, string reply);
-
         S_AttReply(string content);
-        S_AttReply(int replyID, int code);
         S_AttReply(string replyID, string code);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -593,12 +596,15 @@ class C_AttContactElem : public S_AttGeneric {
 
     public:
         string &getNameUri(void);
+        void setNameUri(string nameUri);
         string copyNameUri(void);
 
         C_AttSipUri &getC_AttSipUri(void);
+        C_AttSipUri &getChangeC_AttSipUri(void);
         C_AttSipUri copyC_AttSipUri(void);
 
         C_AttUriParms &getC_AttUriParms(void);
+        C_AttUriParms &getChangeC_AttUriParms(void);
         C_AttUriParms copyC_AttUriParms(void);
 
         C_AttContactElem(string content);
@@ -617,7 +623,6 @@ class C_AttContactList : public S_AttGeneric {
     private:
         void doParse(void);
         void buildContent(void);
-
 
         vector<C_AttContactElem> contactList;
 

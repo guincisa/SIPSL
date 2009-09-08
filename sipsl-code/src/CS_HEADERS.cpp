@@ -400,25 +400,10 @@ S_AttReply::S_AttReply(string _content)
     replyID = 0;
     reply = "";
 }
-void S_AttReply::setContent(string _code, string _reply) {
-
-    if (!compare_it(_reply)) {
-        parsed = true;
-        correct = false;
-        return;
-    }
-    else {
-        code = strtol(_code.c_str(),0x0, 0);
-        string tmp = "" + code;
-        DEBOUT("strtol ", _code + " " + tmp)
-    }
-    parsed = true;
-    correct = false;
-    return;
-}
 S_AttReply::S_AttReply(string _replyID, string _code)
     :S_AttGeneric(_code + " " +_replyID){
 
+	assert(0);
     if (!compare_it(_replyID)) {
         parsed = true;
         correct = false;
@@ -457,6 +442,16 @@ void S_AttReply::doParse(void) {
     correct = false;
     return;
 }
+void S_AttReply::buildContent(void) {
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	contentReady = true;
+    }
+
+}
 inline bool S_AttReply::compare_it(string _reply) {
 
     if (_reply.compare("OK") == 0){
@@ -488,6 +483,13 @@ int S_AttReply::getCode(void){
    }
    return code;
 }
+void S_AttReply::setCode(int _code){
+
+	if (!parsed)
+		doParse();
+	code = _code;
+    contentReady = false;
+}
 int S_AttReply::getReplyID(void){
 
    if(!parsed) {
@@ -495,12 +497,61 @@ int S_AttReply::getReplyID(void){
    }
    return replyID;
 }
+void S_AttReply::setReplyID(int _replyID){
+
+	if (!parsed)
+		doParse();
+
+    if (_replyID == OK_RESPONSE){
+        reply = "OK";
+        replyID = OK_RESPONSE;
+        contentReady = false;
+    }
+    if (_replyID == RINGING_RESPONSE){
+        reply = "RINGING";
+        replyID = RINGING_RESPONSE;
+        contentReady = false;
+    }
+    if (_replyID == TRY_RESPONSE){
+        reply = "TRY";
+        replyID = TRY_RESPONSE;
+        contentReady = false;
+    }
+}
 string &S_AttReply::getReply(void){
 
    if(!parsed) {
         doParse();
    }
    return reply;
+}
+void S_AttReply::setReply(string _reply){
+
+	   if(!parsed) {
+	        doParse();
+	   }
+
+    if (_reply.compare("OK") == 0){
+        reply = "OK";
+        replyID = OK_RESPONSE;
+        parsed = true;
+        correct = true;
+        contentReady = false;
+    }
+    if (_reply.compare("RINGING") == 0){
+        reply = "RINGING";
+        replyID = RINGING_RESPONSE;
+        parsed = true;
+        correct = true;
+        contentReady = false;
+    }
+    if (_reply.compare("TRY") == 0){
+        reply = "TRY";
+        replyID = TRY_RESPONSE;
+        parsed = true;
+        correct = true;
+        contentReady = false;
+    }
 }
 string S_AttReply::copyReply(void){
 
@@ -1086,6 +1137,7 @@ C_AttContactElem::C_AttContactElem(const C_AttContactElem& x):
 
     //content = x.copyContent();
     parsed = false;
+    assert(0);
 }
 void C_AttContactElem::doParse(void){
 
@@ -1120,12 +1172,35 @@ void C_AttContactElem::doParse(void){
     parsed = true;
     return;
 }
+//    "Mr. Watson" <sip:watson@worcester.bell-telephone.com>
+//       ;q=0.7; expires=3600
+void C_AttContactElem::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	ostringstream s1;
+    	s1 << "\"" << nameUri << "\" " << "<sip:" << sipUri.getContent() << ">;" << uriParms.getContent();
+    	content = s1.str();
+    	contentReady = true;
+    }
+}
 string &C_AttContactElem::getNameUri(void){
 
     if(!parsed)
         doParse();
 
     return nameUri;
+}
+void C_AttContactElem::setNameUri(string _name){
+
+    if(!parsed)
+        doParse();
+
+	nameUri = _name;
+	contentReady = false;
+
 }
 string C_AttContactElem::copyNameUri(void){
 
@@ -1142,6 +1217,14 @@ C_AttSipUri &C_AttContactElem::getC_AttSipUri(void){
 
     return sipUri;
 }
+C_AttSipUri &C_AttContactElem::getChangeC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+    contentReady = false;
+    return sipUri;
+}
+
 C_AttSipUri C_AttContactElem::copyC_AttSipUri(void){
 
     if(!parsed)
@@ -1156,6 +1239,14 @@ C_AttUriParms &C_AttContactElem::getC_AttUriParms(void){
 
     return uriParms;
 }
+C_AttUriParms &C_AttContactElem::getChangeC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+    contentReady = false;
+    return uriParms;
+}
+
 C_AttUriParms C_AttContactElem::copyC_AttUriParms(void){
 
     if(!parsed)
