@@ -573,6 +573,7 @@ class S_AttReply : public S_AttGeneric{ //i //t
         void setReply(string reply);
         string copyReply(void);
 
+        void setContent(string reply, string code);
         S_AttReply(string content);
         S_AttReply(string replyID, string code);
 };
@@ -628,6 +629,7 @@ class C_AttContactList : public S_AttGeneric {
 
     public:
         vector<C_AttContactElem> &getContactList(void);
+        vector<C_AttContactElem> &getChangeContactList(void);
         vector<C_AttContactElem> copyContactList(void);
         C_AttContactList(string content);
 };
@@ -644,21 +646,22 @@ class C_HeadSipRequest : public S_HeadGeneric { //i //t
         void doParse(void);
         void buildContent(void);
 
-
         S_AttMethod method;
-
         C_AttSipUri reqUri;
         S_AttSipVersion sipvs;
 
     public:
 
         S_AttMethod &getS_AttMethod(void);
+        S_AttMethod &getChangeS_AttMethod(void);
         S_AttMethod copyS_AttMethod(void);
 
         C_AttSipUri &getC_AttSipUri(void);
+        C_AttSipUri &getChangeC_AttSipUri(void);
         C_AttSipUri copyC_AttSipUri(void);
 
         S_AttSipVersion &getS_AttSipVersion(void);
+        S_AttSipVersion &getChangeS_AttSipVersion(void);
         S_AttSipVersion copyS_AttSipVersion(void);
 
         C_HeadSipRequest(string content);
@@ -684,9 +687,11 @@ class C_HeadSipReply : public S_HeadGeneric { //i //t
     public:
 
         S_AttReply &getReply(void);
+        S_AttReply &getChangeReply(void);
         S_AttReply copyReply(void);
 
         S_AttSipVersion &getSipVersion(void);
+        S_AttSipVersion &getChangeSipVersion(void);
         S_AttSipVersion copySipVersion(void);
 
         C_HeadSipReply(string content, int genEntity);
@@ -712,6 +717,7 @@ class C_HeadVia : public S_HeadGeneric { //i //t
 
     public:
         C_AttVia &getC_AttVia(void);
+        C_AttVia &getChangeC_AttVia(void);
         C_AttVia copyC_AttVia(void);
 
         C_HeadVia(string content);
@@ -756,6 +762,7 @@ class C_HeadContact : public S_HeadGeneric {
 
     public:
         C_AttContactList &getContactList(void);
+        C_AttContactList &getChangeContactList(void);
         C_AttContactList copyContactList(void);
         bool isStar(void);
         C_HeadContact(string content);
@@ -778,6 +785,7 @@ class C_HeadTo : public S_HeadGeneric {
 
     public:
     	C_AttContactElem &getTo(void);
+    	C_AttContactElem &getChangeTo(void);
     	C_AttContactElem copyTo(void);
         C_HeadTo(string content);
 };
@@ -809,12 +817,18 @@ class C_HeadFrom : public S_AttGeneric {
 
     public:
         string &getNameUri(void);
+        void setNameUri(string nameUri);
+
         string copyNameUri(void);
 
         C_AttSipUri &getC_AttSipUri(void);
+        C_AttSipUri &getChangeC_AttSipUri(void);
+
         C_AttSipUri copyC_AttSipUri(void);
 
         C_AttUriParms &getC_AttUriParms(void);
+        C_AttUriParms &getChangeC_AttUriParms(void);
+
         C_AttUriParms copyC_AttUriParms(void);
 
         C_HeadFrom(string content);
@@ -838,6 +852,8 @@ class C_HeadCallId : public S_HeadGeneric {
 
     public:
         Tuple& getCallId(void);
+        Tuple& getChangeCallId(void);
+
         Tuple copyCallId(void);
         string getNormCallId(void);
         C_HeadCallId(string content);
@@ -860,7 +876,9 @@ class C_HeadCSeq : public S_HeadGeneric {
 
     public:
         int getSequence(void);
+        void setSequence(int seq);
         S_AttMethod &getMethod(void);
+        S_AttMethod &getChangeMethod(void);
         S_AttMethod copyMethod(void);
         C_HeadCSeq(string content);
 };
@@ -879,7 +897,9 @@ class C_HeadContentType : public S_HeadGeneric { //TODO
         Tuple contType;
 
     public:
-        Tuple &getContentType(void);
+        Tuple& getContentType(void);
+        Tuple& getChangeContentType(void);
+
         Tuple copyContentType(void);
         C_HeadContentType(string content);
 };
@@ -976,6 +996,7 @@ class C_HeadRoute : public S_HeadGeneric {
 
 	public:
 		S_AttHostPort &getRoute(void);
+		S_AttHostPort &getChangeRoute(void);
 		C_HeadRoute(string content);
 
 };

@@ -50,12 +50,10 @@ S_HeadGeneric::S_HeadGeneric(string buffer) {
 
 }
 S_HeadGeneric::S_HeadGeneric(void) {
-	   DEBOUT("S_HeadGeneric empty constructor", "")
-	   assert(0);
+	   DEBASSERT("S_HeadGeneric empty constructor");
 }
 S_HeadGeneric::S_HeadGeneric(const S_HeadGeneric& x) {
-	   DEBOUT("S_HeadGeneric empty constructor", "")
-	   assert(0);
+	   DEBASSERT("S_HeadGeneric empty constructor");
 }
 void S_HeadGeneric::setContent(string _content) {
 
@@ -87,8 +85,7 @@ bool S_HeadGeneric::isCorrect(void) {
 // *********************************************************************************
 // *********************************************************************************
 S_AttGeneric::S_AttGeneric(const S_AttGeneric& x){
-    DEBOUT("S_AttGeneric copy constructor", "")
-    assert(0);
+    DEBASSERT("S_AttGeneric copy constructor");
 }
 S_AttGeneric::S_AttGeneric(string _content) {
    content = _content;
@@ -98,8 +95,7 @@ S_AttGeneric::S_AttGeneric(string _content) {
    contentReady = true;
 }
 S_AttGeneric::S_AttGeneric(void) {
-   DEBOUT("S_AttGeneric empty constructor", "")
-   assert(0);
+   DEBASSERT("S_AttGeneric empty constructor")
 }
 string &S_AttGeneric::getContent(void) {
 	if (contentReady){
@@ -137,12 +133,10 @@ void S_AttGeneric::setContent(string _content){
 // *********************************************************************************
 // *********************************************************************************
 TupleVector::TupleVector(void) {
-DEBOUT("TupleVector::TupleVector(void)","")
-    assert(0);
+	DEBASSERT("TupleVector::TupleVector(void)")
 }
 TupleVector::TupleVector(const TupleVector& _t) {
-DEBOUT("COPY of TupleVector","")
-    assert(0);
+	DEBASSERT("COPY of TupleVector")
 }
 TupleVector::TupleVector(string tuples, string _separator) : S_AttGeneric(tuples) {
 
@@ -262,12 +256,10 @@ S_AttMethod::S_AttMethod(string _content)
     methodName = "";
 }
 S_AttMethod::S_AttMethod(void){
-DEBOUT("S_AttMethod::S_AttMethod(void)","")
-    assert(0);
+	DEBASSERT("S_AttMethod::S_AttMethod(void)")
 }
 S_AttMethod::S_AttMethod(const S_AttMethod& x){
-	DEBOUT("S_AttMethod::S_AttMethod(void)","")
-	    assert(0);
+	DEBASSERT("S_AttMethod::S_AttMethod(void)")
 }
 void S_AttMethod::doParse(void){
 
@@ -403,7 +395,7 @@ S_AttReply::S_AttReply(string _content)
 S_AttReply::S_AttReply(string _replyID, string _code)
     :S_AttGeneric(_code + " " +_replyID){
 
-	assert(0);
+	(0);
     if (!compare_it(_replyID)) {
         parsed = true;
         correct = false;
@@ -451,6 +443,19 @@ void S_AttReply::buildContent(void) {
     	contentReady = true;
     }
 
+}
+void S_AttReply::setContent(string _replyID, string _code){
+
+    if (!compare_it(_replyID)) {
+        parsed = true;
+        correct = false;
+        return;
+    }
+    else {
+        code = atoi(_code.c_str());
+    }
+    contentReady = false;
+    return;
 }
 inline bool S_AttReply::compare_it(string _reply) {
 
@@ -653,7 +658,7 @@ S_AttUserInfo::S_AttUserInfo(string _content)
     return;
 }
 S_AttUserInfo::S_AttUserInfo(const S_AttUserInfo& x){
-assert(0);
+	DEBASSERT("S_AttUserInfo::S_AttUserInfo(const S_AttUserInfo& x)");
 }
 void S_AttUserInfo::buildContent(void){
 
@@ -821,8 +826,7 @@ TupleVector C_AttUriParms::copyTuples(void){
     return tuples;
 }
 C_AttUriParms::C_AttUriParms(const C_AttUriParms& _p) {
-DEBOUT("COPY of C_AttUriParms","")
-    assert(0);
+	DEBASSERT("COPY of C_AttUriParms")
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1282,11 +1286,29 @@ void C_AttContactList::doParse(void){
 
     return;
 }
+void C_AttContactList::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_AttContactList::buildContent(void)")
+    }
+}
 vector<C_AttContactElem> &C_AttContactList::getContactList(void){
 
     if (!parsed)
         doParse();
 
+    return contactList;
+}
+vector<C_AttContactElem> &C_AttContactList::getChangeContactList(void){
+
+    if (!parsed)
+        doParse();
+    contentReady = false;
     return contactList;
 }
 vector<C_AttContactElem> C_AttContactList::copyContactList(void){
@@ -1330,9 +1352,26 @@ void C_HeadSipRequest::doParse(void) {
     parsed = true;
 
 }
+void C_HeadSipRequest::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadSipRequest::buildContent(void)")
+    }
+}
 S_AttMethod &C_HeadSipRequest::getS_AttMethod(void){
     if(!parsed)
         doParse();
+    return method;
+}
+S_AttMethod &C_HeadSipRequest::getChangeS_AttMethod(void){
+    if(!parsed)
+        doParse();
+    contentReady = false;
     return method;
 }
 C_AttSipUri &C_HeadSipRequest::getC_AttSipUri(void){
@@ -1341,9 +1380,21 @@ C_AttSipUri &C_HeadSipRequest::getC_AttSipUri(void){
 
     return reqUri;
 }
+C_AttSipUri &C_HeadSipRequest::getChangeC_AttSipUri(void){
+    if(!parsed)
+        doParse();
+    contentReady = false;
+    return reqUri;
+}
 S_AttSipVersion &C_HeadSipRequest::getS_AttSipVersion(void){
     if(!parsed)
         doParse();
+    return sipvs;
+}
+S_AttSipVersion &C_HeadSipRequest::getChangeS_AttSipVersion(void){
+    if(!parsed)
+        doParse();
+    contentReady = false;
     return sipvs;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -1359,7 +1410,6 @@ C_HeadSipReply::C_HeadSipReply(string _content)
         reply(""),
         sipvs(""){
 }
-
 void C_HeadSipReply::doParse(void){
 
     if(parsed){
@@ -1385,6 +1435,17 @@ void C_HeadSipReply::doParse(void){
 
     return;
 }
+void C_HeadSipReply::buildContent(void){
+
+    if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadSipReply::buildContent(void)")
+    }
+}
 S_AttReply &C_HeadSipReply::getReply(void) {
 
     if(!parsed) {
@@ -1392,11 +1453,27 @@ S_AttReply &C_HeadSipReply::getReply(void) {
     }
     return reply;
 }
+S_AttReply &C_HeadSipReply::getChangeReply(void) {
+
+    if(!parsed) {
+        doParse();
+    }
+    contentReady = false;
+    return reply;
+}
 S_AttSipVersion &C_HeadSipReply::getSipVersion(void) {
 
     if(!parsed) {
         doParse();
     }
+    return sipvs;
+}
+S_AttSipVersion &C_HeadSipReply::getChangeSipVersion(void) {
+
+    if(!parsed) {
+        doParse();
+    }
+    contentReady = false;
     return sipvs;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -1427,10 +1504,26 @@ C_AttVia &C_HeadVia::getC_AttVia(void) {
 
     return via;
 }
+C_AttVia &C_HeadVia::getChangeC_AttVia(void) {
+
+    if (!parsed)
+        doParse();
+    contentReady = false;
+    return via;
+}
 void C_HeadVia::buildContent(void){
 
 //	via.viaParms.compileTupleVector();
 //    content = "Via: " + "SIP/" + via.version + "/" + via.transport + " " + via.hostPort.getContent() + ";" + via.viaParms.getContent;
+
+	if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadVia::buildContent(void)")
+    }
 
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -1454,6 +1547,17 @@ void S_HeadMaxFwd::doParse(void) {
 
     parsed = true;
 }
+void S_HeadMaxFwd::buildContent(void){
+
+	if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void S_HeadMaxFwd::buildContent(void)")
+    }
+}
 int S_HeadMaxFwd::getMaxFwd(void){
     if (!parsed)
         doParse();
@@ -1461,6 +1565,7 @@ int S_HeadMaxFwd::getMaxFwd(void){
 }
 void S_HeadMaxFwd::setMaxFwd(int _mxfwd){
     mxfwd = _mxfwd;
+    contentReady = false;
     return;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -1488,9 +1593,26 @@ void C_HeadContact::doParse(void){
 	parsed = true;
 
 }
+void C_HeadContact::buildContent(void){
+
+	if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadContact::buildContent(void)")
+    }
+}
 C_AttContactList &C_HeadContact::getContactList(void){
 	if (!parsed)
 		doParse();
+	return contactList;
+}
+C_AttContactList &C_HeadContact::getChangeContactList(void){
+	if (!parsed)
+		doParse();
+	contentReady = false;
 	return contactList;
 }
 C_AttContactList C_HeadContact::copyContactList(void){
@@ -1521,9 +1643,26 @@ void C_HeadTo::doParse(void){
 	parsed = true;
 
 }
+void C_HeadTo::buildContent(void){
+
+	if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadTo::buildContent(void)")
+    }
+}
 C_AttContactElem &C_HeadTo::getTo(void){
 	if (!parsed)
 		doParse();
+	return to;
+}
+C_AttContactElem &C_HeadTo::getChangeTo(void){
+	if (!parsed)
+		doParse();
+	contentReady = true;
 	return to;
 }
 C_AttContactElem C_HeadTo::copyTo(void){
@@ -1582,6 +1721,17 @@ void C_HeadFrom::doParse(void){
     parsed = true;
     return;
 }
+void C_HeadFrom::buildContent(void){
+
+	if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadFrom::buildContent(void)")
+    }
+}
 string &C_HeadFrom::getNameUri(void){
 
     if(!parsed)
@@ -1589,6 +1739,15 @@ string &C_HeadFrom::getNameUri(void){
 
     return nameUri;
 }
+void C_HeadFrom::setNameUri(string _nameUri){
+
+    if(!parsed)
+        doParse();
+    nameUri = _nameUri;
+    contentReady = false;
+    return;
+}
+
 string C_HeadFrom::copyNameUri(void){
 
     if(!parsed)
@@ -1604,6 +1763,13 @@ C_AttSipUri &C_HeadFrom::getC_AttSipUri(void){
 
     return sipUri;
 }
+C_AttSipUri &C_HeadFrom::getChangeC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+    contentReady = false;
+    return sipUri;
+}
 C_AttSipUri C_HeadFrom::copyC_AttSipUri(void){
 
     if(!parsed)
@@ -1616,6 +1782,13 @@ C_AttUriParms &C_HeadFrom::getC_AttUriParms(void){
     if(!parsed)
         doParse();
 
+    return uriParms;
+}
+C_AttUriParms &C_HeadFrom::getChangeC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+    contentReady = false;
     return uriParms;
 }
 C_AttUriParms C_HeadFrom::copyC_AttUriParms(void){
@@ -1646,10 +1819,28 @@ void C_HeadCallId::doParse(void){
 
 	return;
 }
-Tuple &C_HeadCallId::getCallId(void){
+void C_HeadCallId::buildContent(void){
+
+	if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadCallId::buildContent(void)")
+    }
+}
+Tuple& C_HeadCallId::getCallId(void){
 	if (!parsed){
 		doParse();
 	}
+	return callId;
+}
+Tuple& C_HeadCallId::getChangeCallId(void){
+	if (!parsed){
+		doParse();
+	}
+	contentReady = false;
 	return callId;
 }
 Tuple C_HeadCallId::copyCallId(void){
@@ -1689,16 +1880,42 @@ void C_HeadCSeq::doParse(void){
 	return;
 
 }
+void C_HeadCSeq::buildContent(void){
+
+	if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadCSeq::buildContent(void)")
+    }
+}
 int C_HeadCSeq::getSequence(void){
 
 	if(!parsed)
 		doParse();
 	return sequence;
 }
+void C_HeadCSeq::setSequence(int _seq){
+
+	if(!parsed)
+		doParse();
+	sequence = _seq;
+	contentReady = false;
+	return;
+}
 S_AttMethod &C_HeadCSeq::getMethod(void){
 
 	if(!parsed)
 		doParse();
+	return method;
+}
+S_AttMethod &C_HeadCSeq::getChangeMethod(void){
+
+	if(!parsed)
+		doParse();
+	contentReady = false;
 	return method;
 }
 S_AttMethod C_HeadCSeq::copyMethod(void){
@@ -1735,9 +1952,27 @@ void C_HeadRoute::doParse(void){
 	return;
 
 }
+void C_HeadRoute::buildContent(void){
+
+	if (contentReady) {
+		return;
+	}
+    else {
+    	//TODO
+    	contentReady = true;
+    	DEBASSERT("void C_HeadRoute::buildContent(void)")
+    }
+}
+
 S_AttHostPort &C_HeadRoute::getRoute(void){
 	if(!parsed)
 		doParse();
+	return routeHost;
+}
+S_AttHostPort &C_HeadRoute::getChangeRoute(void){
+	if(!parsed)
+		doParse();
+	contentReady = false;
 	return routeHost;
 }
 
