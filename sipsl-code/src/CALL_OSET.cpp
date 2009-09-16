@@ -161,19 +161,15 @@ void SL_CO::call(MESSAGE* _message){
 					call_oset->getALO()->p_w(actionList.top().getMessage());
 				}
 				if (actionList.top().getMessage()->getDestEntity() == SODE_APOINT){
-					// send to A party
-					// extract address from headers (?) of sender and reply back
-					//sendto(sock, ecco, ECHOMAX, 0, (struct sockaddr *) &(echoClntAddr), sizeof(echoClntAddr));
-					//TODO qui
-					char ecco[500];
-					sprintf(ecco, "ETRY %d", 33);
-					DEBOUT("ETRY ", actionList.top().getMessage()->getIncBuffer())
+					DEBOUT("ETRY ", actionList.top().getMessage()->getIncBuffer().c_str())
 					sendto(actionList.top().getMessage()->getSock(),
-							ecco, 500, 0, (struct sockaddr *) &(actionList.top().getMessage()->getSocket()),
+							actionList.top().getMessage()->getIncBuffer().c_str(),
+							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getSocket()),
 							sizeof(actionList.top().getMessage()->getSocket()));
+
+					//TODO purge try
 				}
 				actionList.pop();
-
 			}
 		}
 		else {
