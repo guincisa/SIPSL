@@ -327,6 +327,7 @@ void MESSAGE::compileMessage(void){
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
     	incMessBuff = incMessBuff + (*theIterator) + "\n";
     }
+    incMessBuff = incMessBuff + "\r";
 
 }
 MESSAGE* MESSAGE::getSourceMessage(void){
@@ -390,6 +391,29 @@ stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 	s_headVia_p = true;
 	return s_headVia;
 }
+void MESSAGE::popSTKHeadVia(void){
+
+	if(s_headVia_p){
+		getSTKHeadVia();
+	}
+
+	unsigned int i;
+	unsigned int j = 1;
+	bool topout = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,4).compare("Via:") == 0){
+			if (!topout){
+				flex_line[i] = "xxDxx";
+				topout = true;
+			} else {
+				C_HeadVia* s = new C_HeadVia(flex_line[i]);
+				s_headVia.push(s);
+			}
+		}
+	}
+	s_headVia_p = true;
+}
+
 void MESSAGE::purgeSTKHeadVia(void){
 
 	unsigned int i;
@@ -672,7 +696,7 @@ void MESSAGE::removeMaxForwards(void){
 	unsigned int i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,8).compare("Max-Forwards:")==0){
+		if(flex_line[i].substr(0,13).compare("Max-Forwards:")==0){
 			removeHeader(i);
 			found = true;
 			break;

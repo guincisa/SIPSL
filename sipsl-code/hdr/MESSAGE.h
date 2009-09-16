@@ -199,6 +199,8 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadSipRequest 	&getHeadSipRequest(void);
 
     	stack<C_HeadVia*>	&getSTKHeadVia(void);
+    	//TODO is this one ok?
+    	void				popSTKHeadVia(void);
     	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
     	C_HeadContact	 	&getHeadContact(void);
     	C_HeadTo	     	&getHeadTo(void);

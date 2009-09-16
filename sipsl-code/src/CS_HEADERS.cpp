@@ -66,12 +66,16 @@ void S_HeadGeneric::setContent(string _content) {
 }
 
 string &S_HeadGeneric::getContent(void) {
-	//if (contentReady)
+	if (contentReady)
 		return content;
+	else
+		buildContent();
 }
 string S_HeadGeneric::copyContent(void) {
-	//if (contentReady)
+	if (contentReady)
 		return content;
+	else
+		buildContent();
 }
 bool S_HeadGeneric::isParsed(void) {
     return parsed;
@@ -1522,7 +1526,8 @@ void C_HeadVia::buildContent(void){
     else {
     	//TODO
     	contentReady = true;
-    	DEBASSERT("void C_HeadVia::buildContent(void)")
+    	via.getContent();
+    	DEBOUT("void C_HeadVia::buildContent(void)", via.getContent())
     }
 
 }

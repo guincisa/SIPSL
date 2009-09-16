@@ -285,17 +285,20 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				etry->dropHeader("Content-Type:");
 				DEBOUT("ETRY","delete Content-Length:")
 				etry->dropHeader("Content-Length:");
+				DEBOUT("ETRY","delete Allow:")
+				etry->dropHeader("Allow:");
+
 				//via add rport
 				C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
-				DEBOUT("via", viatmp->getC_AttVia().getContent())
-				DEBOUT("via", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-				viatmp->getC_AttVia().getViaParms().replaceRvalue("rport", "124");
+				DEBOUT("via1", viatmp->getC_AttVia().getContent())
+				DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
 				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
-				DEBOUT("via", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+				DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
 
-				DEBOUT("via", viatmp->getContent())
-				etry->getSTKHeadVia().pop();
-				etry->pushHeadVia(viatmp->getContent());
+				DEBOUT("via4", viatmp->getC_AttVia().getContent())
+				etry->popSTKHeadVia();
+				etry->pushHeadVia(viatmp->getC_AttVia().getContent());
 
 
 
