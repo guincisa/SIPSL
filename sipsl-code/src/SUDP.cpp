@@ -176,7 +176,7 @@ void SUDP::listen() {
 
         if ((recvMsgSize = recvfrom(sock, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
-            DEBERROR("SUDP::listen() rcvfrom() failed")
+            DEBERROR("SUDP::listen() recvfrom() failed")
             return;
         }
 
