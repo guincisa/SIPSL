@@ -1336,25 +1336,34 @@ C_HeadSipRequest::C_HeadSipRequest(string _content)
 }
 void C_HeadSipRequest::doParse(void) {
 
+	DEBY
     if(parsed)
         return;
 
     vector<string> elements = brkSpaces(content);
-
+    DEBY
     //S_AttMethod
     vector<string>::iterator iter;
     iter = elements.begin();
     method.setContent(*iter);
-
+    DEBY
     iter ++;
-    reqUri.setContent(*iter);
-
-    iter++;
-    sipvs.setContent(*iter);
-
+    if (iter != elements.end()){
+    	reqUri.setContent(*iter);
+        iter++;
+    } else {
+    	reqUri.setContent("");
+    }
+    DEBY
+    if (iter != elements.end()){
+    	sipvs.setContent(*iter);
+    }else {
+    	sipvs.setContent("");
+    }
+    DEBY
     correct = true;
     parsed = true;
-
+DEBY
 }
 void C_HeadSipRequest::buildContent(void){
 

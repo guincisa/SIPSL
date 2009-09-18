@@ -77,8 +77,9 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	if ( type == REQSUPP) {
 
+		DEBY
 		int method = _mess->getHeadSipRequest().getS_AttMethod().getMethodID();
-
+		DEBY
 		if (method != INVITE_REQUEST && method != BYE_REQUEST && method != ACK_REQUEST) {
 
 			DEBOUT("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
