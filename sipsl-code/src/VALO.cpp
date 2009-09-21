@@ -50,21 +50,26 @@ void VALO::onInvite(MESSAGE* _message){
 		string key(bu);
 		message->setKey(key);
 		DEBOUT("NEW MESSAGE",message->getIncBuffer());
-		DEBOUT("NEW MESSAGE"," " + message->getTotLines());
+		DEBOUT("NEW MESSAGE lines",message->getTotLines());
 		pthread_mutex_lock(&messTableMtx);
 		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
 		pthread_mutex_unlock(&messTableMtx);
-
 		// REQUEST
 		// maybe changed or unchanged
 		// ---- unchanged
 		// Route
 		// remove it
-		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
-		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
-		message->removeHeadRoute();
+		try {
+			DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
+			DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
+			DEBOUT("VALO","remove route")
+			message->removeHeadRoute();
+		}
+		catch(HeaderException e){
+			DEBOUT("Exception ", e.getMessage())
+		}
 
-		DEBOUT("VALO","remove route")
+
 
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0

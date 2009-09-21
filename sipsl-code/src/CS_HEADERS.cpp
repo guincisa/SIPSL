@@ -130,6 +130,7 @@ void S_AttGeneric::setContent(string _content){
 	contentReady = true;
 	content = _content;
 	parsed = false;
+	correct = true;
 }
 // *********************************************************************************
 // *********************************************************************************
@@ -157,6 +158,7 @@ TupleVector::TupleVector(string tuples, string _separator, string _header) : S_A
 void TupleVector::setTupleVector(string _tuples, string _separator, string _header){
 	setContent(_tuples);
 	parsed=false;
+	correct = true;
 	content = _tuples;
 	header = _header;
 	hasheader = false;
@@ -165,6 +167,7 @@ void TupleVector::setTupleVector(string _tuples, string _separator, string _head
 void TupleVector::setTupleVector(string _tuples, string _separator){
 	setContent(_tuples);
 	parsed=false;
+	correct = true;
 	content = _tuples;
 	header = "";
 	hasheader = false;
@@ -174,53 +177,76 @@ void TupleVector::doParse(void) {
 
     if (parsed)
         return;
-    vector<string> lval_rval;
-    if (hasheader) {
-        lval_rval = parse(content, header, separator,true);
-    } else {
-        lval_rval = parse(content, "", separator,true);
-    }
+    try {
+		vector<string> lval_rval;
+		if (hasheader) {
+			lval_rval = parse(content, header, separator,true);
+		} else {
+			lval_rval = parse(content, "", separator,true);
+		}
 
-    //TODO into tuples...
-    vector<string>::iterator iter;
-    Tuple tt;
-    string ss;
-    for ( iter = lval_rval.begin(); iter != lval_rval.end(); iter ++) {
-        ss = *iter;
-        tt = getLRvalue(ss);
-        tuples.insert(make_pair(tt.Lvalue, tt.Rvalue));
+		//TODO into tuples...
+		vector<string>::iterator iter;
+		Tuple tt;
+		string ss;
+		for ( iter = lval_rval.begin(); iter != lval_rval.end(); iter ++) {
+			ss = *iter;
+			tt = getLRvalue(ss);
+			tuples.insert(make_pair(tt.Lvalue, tt.Rvalue));
+		}
+		parsed = true;
+    }catch(...){
+    	correct = false;
+    	throw HeaderException("TupleVector malformed");
     }
-    parsed = true;
 }
 string TupleVector::findRvalue(string _Lvalue){
 
+	if (!correct){
+		throw HeaderException("TupleVector malformed");
+	}
     if (!parsed) {
         doParse();
     }
-    map<string,string>::iterator ii = tuples.find(_Lvalue);
-    if (ii == tuples.end()) {
-        return "";
+    try {
+		map<string,string>::iterator ii = tuples.find(_Lvalue);
+		if (ii == tuples.end()) {
+			return "";
+		}
+		string s = ii->second;
+		return(s);
     }
-    string s = ii->second;
-    return(s);
+    catch(...){
+    	correct = false;
+    	throw HeaderException("TupleVector malformed");
+    }
 }
 void TupleVector::replaceRvalue(string _Lvalue, string _Rvalue){
 
+	if(!correct){
+		throw HeaderException("TupleVector Malformed");
+	}
     if (!parsed) {
         doParse();
     }
 
-    map<string,string>::iterator ii = tuples.find(_Lvalue);
-    if (ii == tuples.end()) {
-        return;
+    try {
+		map<string,string>::iterator ii = tuples.find(_Lvalue);
+		if (ii == tuples.end()) {
+			return;
+		}
+		tuples.erase(ii);
+		tuples.insert(make_pair(_Lvalue, _Rvalue));
+		ii = tuples.find(_Lvalue);
+
+		contentReady = false;
+
+		return;
     }
-    tuples.erase(ii);
-    tuples.insert(make_pair(_Lvalue, _Rvalue));
-    ii = tuples.find(_Lvalue);
-
-    contentReady = false;
-
-    return;
+    catch(...){
+    	correct = false;
+		throw HeaderException("TupleVector Malformed");
+    }
 }
 void TupleVector::buildContent(void){
 
@@ -229,24 +255,29 @@ void TupleVector::buildContent(void){
 	}
     DEBOUT("tv content before", content)
 
-    map<string,string>::iterator theIterator;
+    try {
+		map<string,string>::iterator theIterator;
 
-    if (hasheader){
-    	content = header;
+		if (hasheader){
+			content = header;
+		}
+		else {
+			content = "";
+		}
+		for( theIterator = tuples.begin(); theIterator != tuples.end(); theIterator++ ) {
+			if (!content.empty())
+				content = content + separator+ theIterator->first + "=" + theIterator->second;
+			else
+				content = content + theIterator->first + "=" + theIterator->second;
+		}
+		contentReady = true;
+		parsed = true;
+		DEBOUT("tv content", content)
     }
-    else {
-    	content = "";
+    catch(...){
+    	correct = false;
+    	throw HeaderException("TupleVector malformed");
     }
-    for( theIterator = tuples.begin(); theIterator != tuples.end(); theIterator++ ) {
-    	if (!content.empty())
-    		content = content + separator+ theIterator->first + "=" + theIterator->second;
-    	else
-    		content = content + theIterator->first + "=" + theIterator->second;
-    }
-    contentReady = true;
-    parsed = true;
-    DEBOUT("tv content", content)
-
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -738,23 +769,31 @@ S_AttHostPort::S_AttHostPort(string _content)
 }
 void S_AttHostPort::doParse(void){
 
+	if(!correct){
+		throw HeaderException("HostPort malformed");
+	}
     if (parsed) {
         return;
     }
+    try {
+		Tuple s1 = brkin2(content, ":");
 
-    Tuple s1 = brkin2(content, ":");
+		hostName = s1.Lvalue;
+		if (s1.Rvalue.compare("")!=0){
+			port = atoi(s1.Rvalue.c_str());
+		}
+		else {
+			port = 0;
+		}
 
-    hostName = s1.Lvalue;
-    if (s1.Rvalue.compare("")!=0){
-        port = atoi(s1.Rvalue.c_str());
+		correct = true;
+		parsed = true;
+		return;
     }
-    else {
-        port = 0;
+    catch(...){
+    	correct = false;
+    	throw HeaderException("HostPort malformed");
     }
-
-    correct = true;
-    parsed = true;
-    return;
 }
 void S_AttHostPort::buildContent(void){
 
@@ -769,28 +808,43 @@ void S_AttHostPort::buildContent(void){
     }
 }
 void S_AttHostPort::setPort(int _port){
+	if(!correct){
+		throw HeaderException("HostPort malformed");
+	}
     if (!parsed)
         doParse();
     contentReady = false;
 	port = _port;
 }
 void S_AttHostPort::setHostName(string _hostName){
+	if(!correct){
+		throw HeaderException("HostPort malformed");
+	}
     if (!parsed)
         doParse();
     contentReady = false;
     hostName = _hostName;
 }
 string &S_AttHostPort::getHostName(void){
+	if(!correct){
+		throw HeaderException("HostPort malformed");
+	}
     if (!parsed)
         doParse();
     return hostName;
 }
 string S_AttHostPort::copyHostName(void){
+	if(!correct){
+		throw HeaderException("HostPort malformed");
+	}
     if (!parsed)
         doParse();
     return hostName;
 }
 int S_AttHostPort::getPort(void){
+	if(!correct){
+		throw HeaderException("HostPort malformed");
+	}
     if (!parsed)
         doParse();
     return port;
@@ -1950,20 +2004,29 @@ C_HeadRoute::C_HeadRoute(string _content):
 }
 void C_HeadRoute::doParse(void){
 
+	if(!correct){
+		throw HeaderException("Route malformed");
+	}
 	if(parsed)
 		return;
-	int i = content.find("<");
-	int ii = content.find(">");
-	//TODO if not < and > ??
-	//if (i > 0 && ii > 0){
-		string tmp = content.substr(i+5,ii-i-5);
-	Tuple s = brkin2(tmp, ";");
-	routeHost.setContent(s.Lvalue);
-	lr = s.Rvalue;
+	try {
+		int i = content.find("<");
+		int ii = content.find(">");
+		//TODO if not < and > ??
+		//if (i > 0 && ii > 0){
+			string tmp = content.substr(i+5,ii-i-5);
+		Tuple s = brkin2(tmp, ";");
+		routeHost.setContent(s.Lvalue);
+		lr = s.Rvalue;
 
-	parsed = true;
+		parsed = true;
 
-	return;
+		return;
+	}
+	catch(...){
+		correct = false;
+		throw HeaderException("Route malformed");
+	}
 
 }
 void C_HeadRoute::buildContent(void){
@@ -1979,11 +2042,17 @@ void C_HeadRoute::buildContent(void){
 }
 
 S_AttHostPort &C_HeadRoute::getRoute(void){
+	if(!correct){
+		throw HeaderException("Route malformed");
+	}
 	if(!parsed)
 		doParse();
 	return routeHost;
 }
 S_AttHostPort &C_HeadRoute::getChangeRoute(void){
+	if(!correct){
+		throw HeaderException("Route malformed");
+	}
 	if(!parsed)
 		doParse();
 	contentReady = false;

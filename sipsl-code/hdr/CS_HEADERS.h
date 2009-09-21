@@ -187,7 +187,14 @@ inline Tuple getLRvalue(string couple) {
     return tt;
 }
 
+class HeaderException  {
 
+	private:
+		string message;
+	public:
+		HeaderException(string m) : message(m){};
+		string getMessage(void) {return message;};
+};
 //Att* are attibutes
 //Head* are headers
 ///////////////////////////////////////////////////////////////////////////////

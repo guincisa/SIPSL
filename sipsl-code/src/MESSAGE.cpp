@@ -216,6 +216,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headCallId_p = false;
 	headCSeq_p = false;
 	headRoute_p = false;
+	headRoute_e = false;
 
 	source=0x0;
 
@@ -620,21 +621,32 @@ void MESSAGE::replaceHeadCSeq(string _content){
 /*
  * Route
  */
-C_HeadRoute &MESSAGE::getHeadRoute(void){
+C_HeadRoute &MESSAGE::getHeadRoute(void) throw (HeaderException){
 
+	if(headRoute_e){
+		throw HeaderException("No Route header");
+	}
 	if(headRoute_p){
 		return headRoute;
 	}
 
 	unsigned int i;
+	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,6).compare("Route:")==0){
+			found = true;
 			headRoute.setContent(flex_line[i]);
 			break;
 		}
 	}
 	headRoute_p = true;
-	return headRoute;
+	if (found == true){
+		return headRoute;
+	}
+	else {
+		headRoute_e = true;
+		throw HeaderException("No Route header");
+	}
 }
 void MESSAGE::removeHeadRoute(void){
 	headRoute_p = false;

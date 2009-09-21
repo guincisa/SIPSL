@@ -162,7 +162,8 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadCSeq			headCSeq;
     	bool 				headCSeq_p;
     	C_HeadRoute			headRoute;
-    	bool 				headRoute_p;
+							//parsed, exists, correct
+    	bool 				headRoute_p, headRoute_e;
 
     	// Used to generate a message from an incoming one
     	// tipically a reply
@@ -212,7 +213,7 @@ class MESSAGE : public BASEMESSAGE {
     	C_SDPInfo			&getHeadSDPInfo(void);
     	C_HeadAllow			&getHeadAllow(void);
     	C_HeadSubject		&getHeadSubject(void);
-    	C_HeadRoute			&getHeadRoute(void);
+    	C_HeadRoute			&getHeadRoute(void) throw (HeaderException);
 
 
     	void removeHeadRoute(void);
