@@ -1,14 +1,8 @@
 window_sizes 1280 729 249 1025 579 68
 windows_style
-diagrams
-  statediagram_ref 147074 // Y
-    1025 594 100 2 120 41
-  active  sequencediagram_ref 140546 // F6 VALO
-    1025 579 80 2 180 154
-end
 show_stereotypes
-selected sequencediagram_ref 140546 // F6 VALO
+selected statediagram_ref 147074 // Y
 open
-  usecaseview_ref 128134 // VANILLA_CALL
+  state_ref 128002 // SM_SL_CL
 end
 end

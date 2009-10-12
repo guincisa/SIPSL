@@ -62,6 +62,9 @@
 #ifndef ALO_H
 #include "ALO.h"
 #endif
+#ifndef SIP_PROPERTIES_H
+#include "SIP_PROPERTIES.h"
+#endif
 
 //**********************************************************************************
 //**********************************************************************************
@@ -340,6 +343,8 @@ SL_SM_CL::SL_SM_CL(ENGINE* _engine):
 
 	DEBOUT("SL_SM_CL::state","0")
 
+	resend_invite = 0;
+
 	State = 0;
 
 }
@@ -350,13 +355,35 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 	bool purgeMessage = false;
 
 	//TODO qui
+	//
 
 	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
 
 	if (_message->getReqRepType() == REQSUPP) {
 		DEBOUT("SL_SM_CL::event", _message->getHeadSipRequest().getContent())
 		if (State == 0){
-			DEBOUT("SL_SM_SV::event" , "state 0")
+			DEBOUT("SL_SM_CL::event" , "state 0")
+			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+				&& _message->getDestEntity() == SODE_SMCLPOINT
+				&& _message->getGenEntity() ==  SODE_ALOPOINT
+				&& resend_invite < MAX_INVITE_RESEND) {
+
+				DEBOUT("SL_SM_CL::event move to state 1", _message->getHeadSipRequest().getContent())
+
+				ACTION* action = new ACTION();
+
+				//12 ottobre
+				//TODO qui
+//				//ACTIONS:
+//				// 1.forward invite
+//				// 2.store invite into timerobject for resend
+//				//_message changes its dest and gen
+//				_message->setDestEntity(SODE_BPOINT);
+//				_message->setGenEntity(SODE_SMCLPOINT);
+//				SingleAction sa_1 = SingleAction(_message);
+
+			}
+
 		}
 
 	}

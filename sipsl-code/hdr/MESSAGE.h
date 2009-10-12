@@ -119,6 +119,9 @@ class BASEMESSAGE {
         int sock;
         sockaddr_inX echoClntAddr;
 
+        //Timer support
+        SysTime fireTime;
+
     private:
     	//used to store in message map
     	string key;

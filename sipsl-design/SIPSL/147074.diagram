@@ -1,4 +1,4 @@
-format 67
+format 68
 
 pseudostatecanvas 128002 pseudostate_ref 128002 // entry_point
    xyz 353.8 189.9 3005 label_xy 355 207
@@ -54,6 +54,8 @@ end
 note 133890 "action
 [ACKy, s=smcly, d=b]"
   xyzwh 243.5 899.5 2000 164 52
+note 134146 "Need a counter for max resend"
+  xyzwh 703 146 2000 227 39
 transitioncanvas 128258 transition_ref 128002 // event<INVITEy, s=alo, d=smcly>
   
   from ref 128002 z 3006 label "event<INVITEy, s=alo, d=smcly>" xyz 446 212 3006 to ref 128130

@@ -115,6 +115,8 @@ class SL_SM_CL : public SL_SM {
 	public:
 		int placeholder;
 
+		int resend_invite;
+
 		ACTION* event(MESSAGE*);
 		SL_SM_CL(ENGINE*);
 
