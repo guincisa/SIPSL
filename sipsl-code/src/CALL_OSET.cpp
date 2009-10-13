@@ -192,7 +192,6 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("********************************************************************","")
 		DEBOUT("*******************to client state machine**************************","")
 
-
 		//get new idy
 		string callidy = _message->getHeadCallId().getNormCallId() +
 				_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
