@@ -108,6 +108,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 
 		DEBOUT("CONTACT", message->getHeadContact().getContent())
+
 		message->replaceHeadContact("<sip:sipsl.gugli.com:5060>");
 		DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
 

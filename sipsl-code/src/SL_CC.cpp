@@ -142,7 +142,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		call_oset = comap->getCALL_OSET_SV(callidx);
 
 		if (call_oset == 0x0) {
-			DEBOUT("Orphan Invite")
+			DEBOUT("SL_CC::parse","Orphan Invite")
 			//TODO kill the invite
 		}
 		else {

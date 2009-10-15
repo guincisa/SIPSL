@@ -294,6 +294,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
 				DEBOUT("via1", viatmp->getC_AttVia().getContent())
 				DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+				//TODO 124??
 				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
 				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
 				DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
