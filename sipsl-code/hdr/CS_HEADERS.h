@@ -781,20 +781,47 @@ class C_HeadContact : public S_HeadGeneric {
 //   To: Bob <sip:bob@biloxi.example.com>;tag=8321234356
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadTo : public S_HeadGeneric {
+class C_HeadTo : public S_AttGeneric {
 //NEW REVISION
 
-    private:
-        void doParse(void);
-        C_AttContactElem to;
-        void buildContent(void);
+//    private:
+//        void doParse(void);
+//        C_AttContactElem to;
+//        void buildContent(void);
+//
+//
+//    public:
+//    	C_AttContactElem &getTo(void);
+//    	C_AttContactElem &getChangeTo(void);
+//    	C_AttContactElem copyTo(void);
+//        C_HeadTo(string content);
+	private:
+		void doParse(void);
+		void buildContent(void);
 
+		string nameUri;
+		C_AttSipUri sipUri;
+		C_AttUriParms uriParms;
 
-    public:
-    	C_AttContactElem &getTo(void);
-    	C_AttContactElem &getChangeTo(void);
-    	C_AttContactElem copyTo(void);
-        C_HeadTo(string content);
+	public:
+		string &getNameUri(void);
+		void setNameUri(string nameUri);
+
+		string copyNameUri(void);
+
+		C_AttSipUri &getC_AttSipUri(void);
+		C_AttSipUri &getChangeC_AttSipUri(void);
+
+		C_AttSipUri copyC_AttSipUri(void);
+
+		C_AttUriParms &getC_AttUriParms(void);
+		C_AttUriParms &getChangeC_AttUriParms(void);
+
+		C_AttUriParms copyC_AttUriParms(void);
+
+		C_HeadTo(string content);
+		//C_HeadFrom(const C_AttContactElem& x);
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

@@ -98,7 +98,7 @@ class BASEMESSAGE {
         string &getKey(void);
         void setKey(string key);
 
-        struct sockaddr_in getSocket(void);
+        struct sockaddr_in getAddress(void);
         int getSock(void);
 
     protected:
@@ -250,6 +250,9 @@ class MESSAGE : public BASEMESSAGE {
     	// it is calculated every time it is invoked...
     	vector<string>::iterator getSDPposition(void);
     	void dumpVector(void);
+
+    	void setFireTime(SysTime fireTime);
+    	SysTime getFireTime(void);
     	/*
     // INTERNAL params
         int headerType[MAXLINES];

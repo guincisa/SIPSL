@@ -1,61 +1,61 @@
 format 68
 
 note 128033 "sip message generator"
-  xyzwh 1388.9 108.5 2000 146 35
+  xyzwh 1389.4 108 2000 146 35
 note 128055 "includes (idx)"
-  xyzwh 1407.8 367.6 2000 80 35
+  xyzwh 1408.3 367.6 2000 80 35
 classinstancecanvas 128083 classinstance_ref 128134 // A
-  xyz 20.3 3.9 2005 life_line_z 2000
+  xyz 20.3 3.5 2005 life_line_z 2000
 end
 classinstancecanvas 128467 classinstance_ref 128339 // _sudp
-  xyz 83.6 3.9 2005 life_line_z 2000
+  xyz 83.6 3.5 2005 life_line_z 2000
 end
 classinstancecanvas 128595 classinstance_ref 128467 // _rt
-  xyz 180.8 3.9 2005 life_line_z 2000
+  xyz 181.3 3.5 2005 life_line_z 2000
 end
 classinstancecanvas 128723 classinstance_ref 128595 // _cc
-  xyz 396.3 3.9 2005 life_line_z 2000
+  xyz 396.3 3.5 2005 life_line_z 2000
 end
 classinstancecanvas 128851 classinstance_ref 129030 // co_x
-  xyz 750.6 3.9 2005 life_line_z 1990
+  xyz 750.6 3.5 2005 life_line_z 1990
 end
 note 128929 "need TTL for invite_2"
-  xyzwh 1219 446.9 2025 124 50
+  xyzwh 1219 447.4 2025 124 50
 classinstancecanvas 128979 classinstance_ref 128646 // smsv_x
-  xyz 899.2 3.9 2010 life_line_z 2000
+  xyz 899.2 3.5 2010 life_line_z 2000
 end
 classinstancecanvas 129107 classinstance_ref 128774 // smcl_y
-  xyz 1103 5.8 2015 life_line_z 2000
+  xyz 1103 6.3 2015 life_line_z 2000
 end
 classinstancecanvas 129235 classinstance_ref 128723 // _callmap
-  xyz 590.7 3.9 2005 life_line_z 2000
+  xyz 590.7 3.5 2005 life_line_z 2000
 end
 classinstancecanvas 129363 classinstance_ref 129286 // (static) TIMER
-  xyz 1522.9 3.9 2010 life_line_z 2000
+  xyz 1522.9 3.5 2010 life_line_z 2000
 end
 classinstancecanvas 129491 classinstance_ref 128851 // alo_x
-  xyz 1293.3 3.9 2005 life_line_z 2000
+  xyz 1293.8 3.5 2005 life_line_z 2000
 end
 note 131105 "decision taken by alo since 
 alo has subscriibed to INVITE
 events
 "
-  xyzwh 935.3 70.3 2000 145 66
+  xyzwh 935.8 70.3 2000 145 66
 classinstancecanvas 131155 classinstance_ref 128979 // Thread
-  xyz 295.2 28.1 2010 life_line_z 2000
+  xyz 295.7 27.6 2010 life_line_z 2000
 end
 note 131617 "can be before alo invocation"
-  xyzwh 1168.6 370 2025 126 71
+  xyzwh 1169.1 370.5 2025 126 71
 classinstancecanvas 132179 classinstance_ref 128979 // Thread
-  xyz 503.3 55.8 2010 life_line_z 1990
+  xyz 503.8 56.3 2010 life_line_z 1990
 end
 note 132513 "reset TTL invite_2"
-  xyzwh 985.5 1004.9 2030 120 35
+  xyzwh 986 1004.4 2030 120 35
 classinstancecanvas 133443 classinstance_ref 128134 // A
-  xyz -105.5 43.6 2005 life_line_z 2000
+  xyz -104.5 44.1 2005 life_line_z 2000
 end
 classinstancecanvas 134257 classinstance_ref 128390 // B
-  xyz 1630.7 3.9 2000 life_line_z 2000
+  xyz 1631.2 3.5 2000 life_line_z 2000
 end
 note 137121 "multi socket???
 
@@ -63,17 +63,17 @@ two sockets:
 receive (A side)
 send (B side)
 "
-  xyzwh 84.6 172.3 2000 160 111
+  xyzwh 84.6 172.8 2000 160 111
 note 141985 "call_x = get_x(INVITEy)
 co_x = find(call_x)"
-  xyzwh 209 424.1 2025 164 51
+  xyzwh 209 424.6 2025 164 51
 note 142113 "callidyy, callidxx (needed later)"
-  xyzwh 806.8 369.2 3025 193 34
+  xyzwh 805.8 369.9 3025 234 41
 classinstance 143043 class_ref 128195 // SIPFCTRY
-  name "sipping"   xyz 1464 165.8 2010 life_line_z 2000
+  name "sipping"   xyz 1464 166.3 2010 life_line_z 2000
 note 145410 "multidevice could work
 "
-  xyzwh 343.7 234.9 3040 141 35
+  xyzwh 343.2 234.4 3040 141 35
 note 145697 "check who is registerd alo or smsv_x)
 assume smsv_x in this case"
   xyzwh 1165.7 1002.2 2000 226 53
@@ -84,27 +84,27 @@ note 146977 "ovviamente non qui ALO...
 perche' la state machine viene dopo alo
 
 "
-  xyzwh 1163.6 1372 2000 222 47
+  xyzwh 1163.6 1372.5 2000 222 47
 note 148257 "not needed ?
 "
-  xyzwh 273.8 1625.8 2000 109 35
+  xyzwh 273.3 1625.8 2000 109 35
 classinstancecanvas 151554 classinstance_ref 128979 // Thread
-  xyz 1358.9 63.6 2000 life_line_z 2000
+  xyz 1358.9 64.1 2000 life_line_z 2000
 end
 note 171394 "check reseend
 counter"
-  xyzwh 1184 628 2015 104 74
+  xyzwh 1183.5 628 2015 104 74
 durationcanvas 128545 classinstance_ref 134257 // B:PHONE
-  xyzwh 1657 975 2010 11 32
+  xyzwh 1658 975 2010 11 32
 end
 durationcanvas 128673 classinstance_ref 128467 // _sudp:SUDP
-  xyzwh 119 975.4 2010 11 56
+  xyzwh 119 975 2010 11 56
 end
 durationcanvas 129185 classinstance_ref 128595 // _rt:SIPENGINE
-  xyzwh 221 1002 2010 11 37
+  xyzwh 222 1002 2010 11 37
 end
 durationcanvas 129441 classinstance_ref 131155 // Thread:TP
-  xyzwh 324 1013.7 2010 11 37
+  xyzwh 324 1013.5 2010 11 37
 end
 durationcanvas 129619 classinstance_ref 128083 // A:PHONE
   xyzwh 47 58 2010 11 45
@@ -113,22 +113,22 @@ durationcanvas 129697 classinstance_ref 128723 // _cc:SL_CC
   xyzwh 427 1022 2010 11 37
 end
 durationcanvas 129747 classinstance_ref 128467 // _sudp:SUDP
-  xyzwh 119 58.4 2010 11 50
+  xyzwh 119 58 2010 11 50
 end
 durationcanvas 129953 classinstance_ref 132179 // Thread:TP
-  xyzwh 533 1030.9 2000 11 275
+  xyzwh 533 1030.5 2000 11 275
 end
 durationcanvas 130209 classinstance_ref 129235 // _callmap:COMAP
-  xyzwh 639 1036.1 2010 11 56
+  xyzwh 640 1035.5 2010 11 56
 end
 durationcanvas 130593 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 785 1096.9 2000 11 202
+  xyzwh 785 1096 2000 11 202
 end
 durationcanvas 130771 classinstance_ref 128595 // _rt:SIPENGINE
-  xyzwh 221 75.1 2010 11 37
+  xyzwh 222 75.5 2010 11 37
 end
 durationcanvas 130849 classinstance_ref 129107 // smcl_y:SL_SM_CL
-  xyzwh 1155 1105.4 2010 11 56
+  xyzwh 1155 1105 2010 11 56
 end
 durationcanvas 131283 classinstance_ref 131155 // Thread:TP
   xyzwh 324 83 2010 11 35
@@ -143,19 +143,19 @@ durationcanvas 132563 classinstance_ref 129235 // _callmap:COMAP
   xyzwh 640 114 2010 11 34
 end
 durationcanvas 133459 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 785 146.3 2010 11 27
+  xyzwh 785 146.5 2010 11 27
 end
 durationcanvas 135665 classinstance_ref 129235 // _callmap:COMAP
-  xyzwh 639 194.2 2010 11 26
+  xyzwh 639 194 2010 11 26
 end
 durationcanvas 137761 classinstance_ref 134257 // B:PHONE
-  xyzwh 1657 1329.1 2010 11 50
+  xyzwh 1658 1328.5 2010 11 50
 end
 durationcanvas 137889 classinstance_ref 128467 // _sudp:SUDP
-  xyzwh 119 1334.1 2010 11 60
+  xyzwh 119 1333.5 2010 11 60
 end
 durationcanvas 138145 classinstance_ref 128595 // _rt:SIPENGINE
-  xyzwh 221 1359.1 2010 11 50
+  xyzwh 222 1358.5 2010 11 50
 end
 durationcanvas 138401 classinstance_ref 131155 // Thread:TP
   xyzwh 324 1378 2010 11 45
@@ -164,46 +164,46 @@ durationcanvas 138657 classinstance_ref 128723 // _cc:SL_CC
   xyzwh 427 1400 2010 11 42
 end
 durationcanvas 138913 classinstance_ref 132179 // Thread:TP
-  xyzwh 532 1410.2 2000 11 154
+  xyzwh 532 1410 2000 11 154
 end
 durationcanvas 139169 classinstance_ref 129235 // _callmap:COMAP
   xyzwh 640 1415 2010 11 52
 end
 durationcanvas 139553 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 785 1470.2 2000 11 94
+  xyzwh 785 1470 2000 11 94
 end
 durationcanvas 139809 classinstance_ref 129107 // smcl_y:SL_SM_CL
-  xyzwh 1155 1465.4 2010 11 55
+  xyzwh 1155 1465 2010 11 55
 end
 durationcanvas 140193 classinstance_ref 129491 // alo_x:ALO
   xyzwh 1322 1525 2010 11 32
 end
 durationcanvas 140449 classinstance_ref 151554 // Thread:TP
-  xyzwh 1387 1531.2 2010 11 52
+  xyzwh 1387 1531 2010 11 52
 end
 durationcanvas 140705 classinstance_ref 143043 // sipping:SIPFCTRY
-  xyzwh 1515 1532.1 2010 11 44
+  xyzwh 1515 1531.5 2010 11 44
 end
 durationcanvas 141251 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 785 211.9 1995 11 172
+  xyzwh 785 211 1995 11 172
 end
 durationcanvas 141729 classinstance_ref 128723 // _cc:SL_CC
-  xyzwh 427 1561.2 2010 11 52
+  xyzwh 427 1561 2010 11 52
 end
 durationcanvas 142275 classinstance_ref 128979 // smsv_x:SL_SM_SV
   xyzwh 953 215 2010 11 52
 end
 durationcanvas 142369 classinstance_ref 129235 // _callmap:COMAP
-  xyzwh 640 399.4 2010 11 27
+  xyzwh 640 399 2010 11 27
 end
 durationcanvas 143777 classinstance_ref 128467 // _sudp:SUDP
-  xyzwh 119 504.1 2010 11 80
+  xyzwh 119 503.5 2010 11 80
 end
 durationcanvas 144289 classinstance_ref 134257 // B:PHONE
-  xyzwh 1657 564 2010 11 34
+  xyzwh 1658 564 2010 11 34
 end
 durationcanvas 146115 classinstance_ref 129491 // alo_x:ALO
-  xyzwh 1322 258.1 2010 11 32
+  xyzwh 1322 257.5 2010 11 32
 end
 durationcanvas 147745 classinstance_ref 132179 // Thread:TP
   xyzwh 533 1592 2000 11 158
@@ -212,154 +212,154 @@ durationcanvas 148001 classinstance_ref 129235 // _callmap:COMAP
   xyzwh 640 1599 2010 11 44
 end
 durationcanvas 148641 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 785 1640.1 2000 11 108
+  xyzwh 785 1639.5 2000 11 108
 end
 durationcanvas 148897 classinstance_ref 128979 // smsv_x:SL_SM_SV
-  xyzwh 954 1646.9 2010 11 42
+  xyzwh 953 1646 2010 11 42
 end
 durationcanvas 149409 classinstance_ref 128467 // _sudp:SUDP
   xyzwh 119 1692 2010 11 38
 end
 durationcanvas 149665 classinstance_ref 128083 // A:PHONE
-  xyzwh 48 1700.1 2010 11 28
+  xyzwh 47 1699.5 2010 11 28
 end
 durationcanvas 151682 classinstance_ref 151554 // Thread:TP
-  xyzwh 1387 266.2 2010 11 62
+  xyzwh 1387 266 2010 11 62
 end
 durationcanvas 151938 classinstance_ref 143043 // sipping:SIPFCTRY
-  xyzwh 1515 262.2 2010 11 50
+  xyzwh 1515 262 2010 11 50
 end
 durationcanvas 152962 classinstance_ref 128723 // _cc:SL_CC
-  xyzwh 427 299.9 2010 11 116
+  xyzwh 427 299 2010 11 116
 end
 durationcanvas 153474 classinstance_ref 132179 // Thread:TP
-  xyzwh 532 396.9 2000 11 203
+  xyzwh 533 396.5 2000 11 203
 end
 durationcanvas 154626 classinstance_ref 129107 // smcl_y:SL_SM_CL
-  xyzwh 1155 419.2 2010 11 35
+  xyzwh 1155 419 2010 11 35
 end
 durationcanvas 155394 classinstance_ref 129235 // _callmap:COMAP
-  xyzwh 639 434.7 2010 11 35
+  xyzwh 639 434.5 2010 11 35
 end
 durationcanvas 156418 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 786 467.1 2000 11 134
+  xyzwh 785 466.5 2000 11 134
 end
 durationcanvas 156674 classinstance_ref 129107 // smcl_y:SL_SM_CL
-  xyzwh 1155 473.7 2010 11 37
+  xyzwh 1155 473.5 2010 11 37
 end
 durationcanvas 157826 classinstance_ref 143043 // sipping:SIPFCTRY
-  xyzwh 1515 328.1 2010 11 32
+  xyzwh 1515 327.5 2010 11 32
 end
 durationcanvas 158082 classinstance_ref 143043 // sipping:SIPFCTRY
-  xyzwh 1515 1682.1 2010 11 43
+  xyzwh 1515 1682.5 2010 11 43
 end
 durationcanvas 158338 classinstance_ref 128467 // _sudp:SUDP
   xyzwh 119 350 2010 11 42
 end
 durationcanvas 158594 classinstance_ref 128083 // A:PHONE
-  xyzwh 48 368.1 2010 11 32
+  xyzwh 47 367.5 2010 11 32
 end
 durationcanvas 158850 classinstance_ref 129363 // (static) TIMER:TIMER
   xyzwh 1580 537 2010 11 28
 end
 durationcanvas 159106 classinstance_ref 129363 // (static) TIMER:TIMER
-  xyzwh 1581 611.4 2010 11 44
+  xyzwh 1581 611 2010 11 44
 end
 durationcanvas 159234 classinstance_ref 128723 // _cc:SL_CC
-  xyzwh 427 611.1 2010 11 46
+  xyzwh 427 610.5 2010 11 46
 end
 durationcanvas 159490 classinstance_ref 132179 // Thread:TP
-  xyzwh 533 636.2 2000 11 162
+  xyzwh 533 637 2000 11 876
 end
 durationcanvas 159746 classinstance_ref 129235 // _callmap:COMAP
-  xyzwh 639 643.4 2010 11 40
+  xyzwh 640 643 2010 11 40
 end
 durationcanvas 160002 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 785 691.1 2000 11 106
+  xyzwh 785 1409.5 2000 11 106
 end
 durationcanvas 160642 classinstance_ref 129107 // smcl_y:SL_SM_CL
-  xyzwh 1155 693.9 2010 11 48
+  xyzwh 1155 694 2010 11 766
 end
 durationcanvas 161026 classinstance_ref 129363 // (static) TIMER:TIMER
-  xyzwh 1580 736.4 2010 11 34
+  xyzwh 1580 736 2010 11 737
 end
 durationcanvas 161282 classinstance_ref 128467 // _sudp:SUDP
-  xyzwh 119 735.2 2010 11 44
+  xyzwh 119 735 2010 11 739
 end
 durationcanvas 161538 classinstance_ref 134257 // B:PHONE
-  xyzwh 1657 758.2 2010 11 38
+  xyzwh 1658 758 2010 11 38
 end
 durationcanvas 161794 classinstance_ref 134257 // B:PHONE
-  xyzwh 1657 794.1 2010 11 40
+  xyzwh 1658 793.5 2010 11 40
 end
 durationcanvas 161922 classinstance_ref 128467 // _sudp:SUDP
-  xyzwh 119 795.1 2010 11 38
+  xyzwh 119 794.5 2010 11 38
 end
 durationcanvas 162178 classinstance_ref 128595 // _rt:SIPENGINE
-  xyzwh 221 812 2010 11 38
+  xyzwh 222 812 2010 11 38
 end
 durationcanvas 162434 classinstance_ref 131155 // Thread:TP
-  xyzwh 324 826.1 2010 11 36
+  xyzwh 325 825.5 2010 11 36
 end
 durationcanvas 162690 classinstance_ref 128723 // _cc:SL_CC
-  xyzwh 427 841.2 2010 11 32
+  xyzwh 427 841 2010 11 32
 end
 durationcanvas 162946 classinstance_ref 132179 // Thread:TP
-  xyzwh 533 850.9 2000 11 114
+  xyzwh 533 850 2000 11 114
 end
 durationcanvas 163202 classinstance_ref 129235 // _callmap:COMAP
-  xyzwh 639 852.4 2010 11 42
+  xyzwh 639 852 2010 11 42
 end
 durationcanvas 163586 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 785 891.2 2000 11 72
+  xyzwh 785 891 2000 11 72
 end
 durationcanvas 163842 classinstance_ref 129107 // smcl_y:SL_SM_CL
-  xyzwh 1155 895.2 2010 11 44
+  xyzwh 1155 895 2010 11 44
 end
 durationcanvas 164226 classinstance_ref 129363 // (static) TIMER:TIMER
-  xyzwh 1580 933.9 2010 11 28
+  xyzwh 1580 933 2010 11 28
 end
 durationcanvas 164482 classinstance_ref 128083 // A:PHONE
-  xyzwh 47 1747.4 2010 11 31
+  xyzwh 47 1747 2010 11 31
 end
 durationcanvas 164610 classinstance_ref 128467 // _sudp:SUDP
   xyzwh 119 1751 2010 11 40
 end
 durationcanvas 164866 classinstance_ref 128595 // _rt:SIPENGINE
-  xyzwh 221 1769.2 2010 11 36
+  xyzwh 222 1769 2010 11 36
 end
 durationcanvas 165122 classinstance_ref 131155 // Thread:TP
-  xyzwh 324 1783.4 2010 11 40
+  xyzwh 324 1783 2010 11 40
 end
 durationcanvas 165378 classinstance_ref 128723 // _cc:SL_CC
   xyzwh 427 1802 2010 11 38
 end
 durationcanvas 165634 classinstance_ref 132179 // Thread:TP
-  xyzwh 533 1818.2 2000 11 218
+  xyzwh 533 1818 2000 11 218
 end
 durationcanvas 165890 classinstance_ref 129235 // _callmap:COMAP
-  xyzwh 639 1818.9 2010 11 38
+  xyzwh 640 1818 2010 11 38
 end
 durationcanvas 166530 classinstance_ref 128851 // co_x:SL_CO
-  xyzwh 785 1861.2 2000 11 171
+  xyzwh 785 1861 2000 11 171
 end
 durationcanvas 167170 classinstance_ref 128979 // smsv_x:SL_SM_SV
   xyzwh 953 1867 2010 11 48
 end
 durationcanvas 167938 classinstance_ref 128979 // smsv_x:SL_SM_SV
-  xyzwh 954 1158.2 2010 11 58
+  xyzwh 953 1158 2010 11 58
 end
 durationcanvas 168322 classinstance_ref 143043 // sipping:SIPFCTRY
-  xyzwh 1515 1205.4 2010 11 56
+  xyzwh 1515 1205 2010 11 56
 end
 durationcanvas 168834 classinstance_ref 128467 // _sudp:SUDP
   xyzwh 119 1263 2010 11 36
 end
 durationcanvas 169090 classinstance_ref 128083 // A:PHONE
-  xyzwh 48 1277.1 2010 11 34
+  xyzwh 47 1276.5 2010 11 34
 end
 durationcanvas 169346 classinstance_ref 129107 // smcl_y:SL_SM_CL
-  xyzwh 1155 1921.1 2010 11 46
+  xyzwh 1155 1921.5 2010 11 47
 end
 durationcanvas 169730 classinstance_ref 143043 // sipping:SIPFCTRY
   xyzwh 1515 1974 2010 11 33
@@ -368,13 +368,13 @@ durationcanvas 170114 classinstance_ref 128467 // _sudp:SUDP
   xyzwh 119 1993 2010 11 55
 end
 durationcanvas 170498 classinstance_ref 134257 // B:PHONE
-  xyzwh 1657 2019.4 2010 11 28
+  xyzwh 1658 2019 2010 11 28
 end
 durationcanvas 170882 classinstance_ref 128979 // smsv_x:SL_SM_SV
-  xyzwh 954 160.5 2010 11 31
+  xyzwh 953 160.5 2010 11 31
 end
 durationcanvas 171138 classinstance_ref 129491 // alo_x:ALO
-  xyzwh 1323 176 2010 11 30
+  xyzwh 1322 176 2010 11 30
 end
 msg 128770 return
   from durationcanvas_ref 141251
@@ -792,9 +792,9 @@ msg 159874 synchronous
 msg 160130 synchronous
   from durationcanvas_ref 159490
   to durationcanvas_ref 160002
-  yz 696 2015 explicitmsg "call(INVITEy,s=alo_x,d=B,timerA)"
+  yz 1416 2015 explicitmsg "call(INVITEy,s=alo_x,d=B,timerA)"
   show_full_operations_definition default drawing_language default
-  label_xy 579 682
+  label_xy 579 1402
 msg 160258 return
   from durationcanvas_ref 159746
   to durationcanvas_ref 159490
@@ -804,27 +804,27 @@ msg 160258 return
 msg 160770 synchronous
   from durationcanvas_ref 160002
   to durationcanvas_ref 160642
-  yz 700 2020 explicitmsg "event(INVITEy, s=alo_x,d=smcl_y)"
+  yz 1420 2020 explicitmsg "event(INVITEy, s=alo_x,d=smcl_y)"
   show_full_operations_definition default drawing_language default
-  label_xy 903 688
+  label_xy 903 1408
 msg 160898 return
   from durationcanvas_ref 160642
   to durationcanvas_ref 160002
-  yz 727 2025 explicitmsg "action(INVITEy,s=smcl_y,d=B,INVITEy,s=smcl_y,d=B,TIMERA)"
+  yz 1447 2025 explicitmsg "action(INVITEy,s=smcl_y,d=B,INVITEy,s=smcl_y,d=B,TIMERA)"
   show_full_operations_definition default drawing_language default
-  label_xy 864 712
+  label_xy 863 1432
 msg 161154 synchronous
   from durationcanvas_ref 160002
   to durationcanvas_ref 161026
-  yz 741 2015 explicitmsg "new_timerA(INVITEy,s=alo_x,d=B, timerA)"
+  yz 1461 2015 explicitmsg "new_timerA(INVITEy,s=alo_x,d=B, timerA)"
   show_full_operations_definition default drawing_language default
-  label_xy 1170 729
+  label_xy 1170 1449
 msg 161410 synchronous
   from durationcanvas_ref 160002
   to durationcanvas_ref 161282
-  yz 741 2030 explicitmsg "send(INVITEy,s=smcl_y,d=B)"
+  yz 1461 2030 explicitmsg "send(INVITEy,s=smcl_y,d=B)"
   show_full_operations_definition default drawing_language default
-  label_xy 399 727
+  label_xy 398 1447
 msg 161666 synchronous
   from durationcanvas_ref 161282
   to durationcanvas_ref 161538
@@ -948,7 +948,7 @@ msg 166914 return
 msg 167042 return
   from durationcanvas_ref 160002
   to durationcanvas_ref 159490
-  yz 780 2040 unspecifiedmsg
+  yz 1500 2040 unspecifiedmsg
   show_full_operations_definition default drawing_language default
 msg 167298 synchronous
   from durationcanvas_ref 166530

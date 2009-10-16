@@ -53,7 +53,7 @@ int main(void) {
 	gg.setSL_CC(&sl_cc);
 	gg.linkSUDP(&mystack);
 
-	mystack.init(5060, &gg, "sipsl.gugli.com");
+	mystack.init(5062, &gg, "sipsl.gugli.com");
 
 
     mystack.start();

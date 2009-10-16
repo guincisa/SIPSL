@@ -93,7 +93,7 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 	*/
     DEBOUT("BASEMESSAGE::BASEMESSAGE","copy")
 
-	echoClntAddr = _basemessage->getSocket();
+	echoClntAddr = _basemessage->getAddress();
     sock = _basemessage->getSock();
 
     inc_ts = _creaTime;
@@ -175,7 +175,7 @@ string &BASEMESSAGE::getKey(void){
 void BASEMESSAGE::setKey(string _key){
 	key = _key;
 }
-struct sockaddr_in BASEMESSAGE::getSocket(void){
+struct sockaddr_in BASEMESSAGE::getAddress(void){
 	return echoClntAddr;
 }
 int BASEMESSAGE::getSock(void){
@@ -737,6 +737,14 @@ void MESSAGE::dropHeader(string _header){
 	if (!found) {
 		DEBOUT("MESSAGE::removeHeader not found",_header)
 	}
+}
+void MESSAGE::setFireTime(SysTime _systime){
+
+	fireTime = _systime;
+}
+SysTime MESSAGE::getFireTime(void){
+
+	return fireTime;
 }
 
 /*

@@ -98,7 +98,7 @@ transitioncanvas 132482 transition_ref 128898 // event<RINGy, s=b, d=smcly>
 end
 transitioncanvas 133122 transition_ref 129026 // event<OKy, s=b, d=smcly>
   
-  from ref 131586 z 2001 label "event<OKy, s=b, d=smcly>" xyz 559 786 2001 to ref 132994
+  from ref 131586 z 2001 label "event<OKy, s=b, d=smcly>" xyz 572 786 2001 to ref 132994
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 133634 transition_ref 129154 // event<ACKy, s=alo, d=smcly>

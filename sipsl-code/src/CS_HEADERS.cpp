@@ -1693,17 +1693,80 @@ bool C_HeadContact::isStar(void){
 //  To: Bob <sip:bob@biloxi.example.com>;tag=8321234356
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+//C_HeadTo::C_HeadTo(string _content) :
+//    S_HeadGeneric(_content),
+//    to(_content){
+//}
+//void C_HeadTo::doParse(void){
+//
+//	if (parsed)
+//		return;
+//
+//	parsed = true;
+//
+//}
+//void C_HeadTo::buildContent(void){
+//
+//	if (contentReady) {
+//		return;
+//	}
+//    else {
+//    	//TODO
+//    	contentReady = true;
+//    	DEBASSERT("void C_HeadTo::buildContent(void)")
+//    }
+//}
+//C_AttContactElem &C_HeadTo::getTo(void){
+//	if (!parsed)
+//		doParse();
+//	return to;
+//}
+//C_AttContactElem &C_HeadTo::getChangeTo(void){
+//	if (!parsed)
+//		doParse();
+//	contentReady = true;
+//	return to;
+//}
+//C_AttContactElem C_HeadTo::copyTo(void){
+//	if (!parsed)
+//		doParse();
+//	return to;
+//}
 C_HeadTo::C_HeadTo(string _content) :
-    S_HeadGeneric(_content),
-    to(_content){
+    S_AttGeneric(_content),
+    sipUri(""),
+    uriParms(""){
 }
 void C_HeadTo::doParse(void){
 
-	if (parsed)
-		return;
+    if(parsed)
+        return;
 
-	parsed = true;
+	Tuple s = brkin2(content, " ");
 
+    string newCo = s.Rvalue;
+    string line;
+    int q = hasQuote(newCo);
+    if (q >=0){
+    	string line1 = replaceHttpChars(newCo.substr(q+1, -1));
+
+		line = trimUseless(newCo.substr(0,q+1) + line1);
+
+    }
+    else {
+    	line = trimUseless(newCo);
+    }
+
+    Tuple s1 = brkin2(line, "<");
+    nameUri = s1.Lvalue; // "Mr. Watson"
+    string tmp = "<" + s1.Rvalue;
+
+    Tuple s2 = brkin2(tmp, ";");
+    sipUri.setContent(s2.Lvalue);
+    uriParms.setContent(s2.Rvalue);
+
+    parsed = true;
+    return;
 }
 void C_HeadTo::buildContent(void){
 
@@ -1713,25 +1776,76 @@ void C_HeadTo::buildContent(void){
     else {
     	//TODO
     	contentReady = true;
-    	DEBASSERT("void C_HeadTo::buildContent(void)")
+    	DEBASSERT("void C_HeadFrom::buildContent(void)")
     }
 }
-C_AttContactElem &C_HeadTo::getTo(void){
-	if (!parsed)
-		doParse();
-	return to;
+string &C_HeadTo::getNameUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return nameUri;
 }
-C_AttContactElem &C_HeadTo::getChangeTo(void){
-	if (!parsed)
-		doParse();
-	contentReady = true;
-	return to;
+void C_HeadTo::setNameUri(string _nameUri){
+
+    if(!parsed)
+        doParse();
+    nameUri = _nameUri;
+    contentReady = false;
+    return;
 }
-C_AttContactElem C_HeadTo::copyTo(void){
-	if (!parsed)
-		doParse();
-	return to;
+
+string C_HeadTo::copyNameUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return nameUri;
 }
+
+C_AttSipUri &C_HeadTo::getC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return sipUri;
+}
+C_AttSipUri &C_HeadTo::getChangeC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+    contentReady = false;
+    return sipUri;
+}
+C_AttSipUri C_HeadTo::copyC_AttSipUri(void){
+
+    if(!parsed)
+        doParse();
+
+    return sipUri;
+}
+C_AttUriParms &C_HeadTo::getC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+
+    return uriParms;
+}
+C_AttUriParms &C_HeadTo::getChangeC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+    contentReady = false;
+    return uriParms;
+}
+C_AttUriParms C_HeadTo::copyC_AttUriParms(void){
+
+    if(!parsed)
+        doParse();
+
+    return uriParms;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // C_HeadFrom

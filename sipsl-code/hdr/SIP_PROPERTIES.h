@@ -23,3 +23,7 @@
 #define SIP_PROPERTIES_H
 
 #define MAX_INVITE_RESEND 5
+//seconds
+#define TIMER_1_sc 0
+//microseconds 1.000.000
+#define TIMER_1_mc 5000

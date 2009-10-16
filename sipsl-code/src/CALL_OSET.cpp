@@ -25,6 +25,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <map>
+#include <string.h>
 
 #include <assert.h>
 #include <sys/types.h>
@@ -167,11 +168,13 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("ETRY ", actionList.top().getMessage()->getIncBuffer().c_str())
 					sendto(actionList.top().getMessage()->getSock(),
 							actionList.top().getMessage()->getIncBuffer().c_str(),
-							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getSocket()),
-							sizeof(actionList.top().getMessage()->getSocket()));
+							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getAddress()),
+							sizeof(actionList.top().getMessage()->getAddress()));
 
 					//TODO purge try
 				}
+				// TODO else...
+
 				actionList.pop();
 			}
 		}
@@ -207,7 +210,64 @@ void SL_CO::call(MESSAGE* _message){
 		ACTION* action = sl_sm_cl->event(_message);
 
 		if (action != 0x0){
-				//TODO qui
+
+			// now act
+			stack<SingleAction> actionList;
+			actionList = action->getActionList();
+			while (!actionList.empty()){
+				DEBOUT("SL_CO::reading action stack", "")
+				if (actionList.top().getMessage()->getDestEntity() == SODE_BPOINT){
+
+
+					if (actionList.top().getMessage()->getFireTime().tv.tv_sec == 0 &&
+							actionList.top().getMessage()->getFireTime().tv.tv_usec == 0) {
+						DEBOUT("SL_CO::destination is b", actionList.top().getMessage()->getHeadSipRequest().getContent())
+
+						struct sockaddr_in si_bpart;
+						memset((char *) &si_bpart, 0, sizeof(si_bpart));
+						si_bpart.sin_family = AF_INET;
+						//TODO ???
+						// port nel TO o nella request
+						DEBOUT("create addess", actionList.top().getMessage()->getHeadTo().getContent())
+						DEBOUT("create addess 2", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getHostName());
+						si_bpart.sin_port = htons(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
+						if (inet_aton(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_bpart.sin_addr)==0){
+							DEBASSERT("can't create b address")
+						} else{
+
+							DEBOUT("sending", actionList.top().getMessage()->getIncBuffer())
+
+
+
+							if (sendto(actionList.top().getMessage()->getSock(),
+								actionList.top().getMessage()->getIncBuffer().c_str(),
+								actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart,
+								sizeof(si_bpart)) == -1) {
+								DEBASSERT("not sent")
+							}
+
+						}
+					} else { // to alarm
+						DEBOUT("SL_CO::destination is ALARM", actionList.top().getMessage()->getHeadSipRequest().getContent())
+						//TODO continuare 16 ott
+					}
+
+				}
+				// TODO else...
+				actionList.pop();
+			}
+		}
+		else {
+			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
+			//if (purgeMessage){
+				string key = _message->getKey();
+				pthread_mutex_lock(&messTableMtx);
+				DEBOUT("SL_SM_SV::delete message",key)
+				globalMessTable.erase(key);
+				delete _message;
+				pthread_mutex_unlock(&messTableMtx);
+			//}
+			return;
 		}
 	}
 	//do something with action
@@ -289,6 +349,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				etry->dropHeader("Content-Length:");
 				DEBOUT("ETRY","delete Allow:")
 				etry->dropHeader("Allow:");
+				//crash here...
+
 
 				//via add rport
 				C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
@@ -372,15 +434,45 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				ACTION* action = new ACTION();
 
-				//12 ottobre
-				//TODO qui
-//				//ACTIONS:
-//				// 1.forward invite
-//				// 2.store invite into timerobject for resend
-//				//_message changes its dest and gen
-//				_message->setDestEntity(SODE_BPOINT);
-//				_message->setGenEntity(SODE_SMCLPOINT);
-//				SingleAction sa_1 = SingleAction(_message);
+				// create two actions:
+				// send message
+				// send message + timer
+				// move to state 1
+				_message->setDestEntity(SODE_BPOINT);
+				_message->setGenEntity(SODE_SMCLPOINT);
+				SingleAction sa_1 = SingleAction(_message);
+
+				char bu[512];
+				SysTime inTime;
+				GETTIME(inTime);
+				MESSAGE* __message;
+				__message = new MESSAGE(_message, SODE_SMCLPOINT, inTime);
+				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
+				sprintf(bu, "%x#%llu",__message,num);
+				string key(bu);
+				__message->setKey(key);
+				DEBOUT("NEW MESSAGE for timer",__message->getIncBuffer());
+				DEBOUT("NEW MESSAGE for timer lines",__message->getTotLines());
+				pthread_mutex_lock(&messTableMtx);
+				globalMessTable.insert(pair<string, MESSAGE*>(key, _message));
+				pthread_mutex_unlock(&messTableMtx);
+
+				__message->setDestEntity(SODE_BPOINT);
+
+				SysTime afterT;
+				GETTIME(afterT);
+				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc;
+				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc;
+				__message->setFireTime(afterT);
+				SingleAction sa_2 = SingleAction(__message);
+
+				action->addSingleAction(sa_1);
+				action->addSingleAction(sa_2);
+
+				DEBOUT("SL_SM_CL::actions set", _message->getHeadSipRequest().getContent())
+
+				State = 1;
+				return action;
 
 			}
 
