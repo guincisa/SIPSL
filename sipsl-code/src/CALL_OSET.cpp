@@ -230,14 +230,14 @@ void SL_CO::call(MESSAGE* _message){
 						// port nel TO o nella request
 						DEBOUT("create addess", actionList.top().getMessage()->getHeadTo().getContent())
 						DEBOUT("create addess 2", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getHostName());
+						DEBOUT("create addess 3", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
+
 						si_bpart.sin_port = htons(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
 						if (inet_aton(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_bpart.sin_addr)==0){
 							DEBASSERT("can't create b address")
 						} else{
 
 							DEBOUT("sending", actionList.top().getMessage()->getIncBuffer())
-
-
 
 							if (sendto(actionList.top().getMessage()->getSock(),
 								actionList.top().getMessage()->getIncBuffer().c_str(),

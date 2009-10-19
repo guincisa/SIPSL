@@ -74,7 +74,7 @@ void VALO::onInvite(MESSAGE* _message){
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
-		message->setHeadSipRequest("INVITE sip:sipslguic@127.0.0.1:5061 SIP/2.0");
+		message->setHeadSipRequest("INVITE sip:sipslguic@127.0.0.1:5060 SIP/2.0");
 
 		//Cseq new to 1
 		message->replaceHeadCSeq("999 INVITE");
