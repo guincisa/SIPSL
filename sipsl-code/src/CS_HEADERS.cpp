@@ -1742,6 +1742,8 @@ void C_HeadTo::doParse(void){
     if(parsed)
         return;
 
+    DEBOUT("C_HeadTo::doParse",content)
+
 	Tuple s = brkin2(content, " ");
 
     string newCo = s.Rvalue;

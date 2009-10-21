@@ -738,6 +738,25 @@ void MESSAGE::dropHeader(string _header){
 		DEBOUT("MESSAGE::removeHeader not found",_header)
 	}
 }
+void MESSAGE::setGenericHeader(string _header, string _content){
+
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,_header.size()).compare(_header)==0){
+			flex_line[i] = _header + " " + _content;
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		DEBOUT("MESSAGE::setGenericHeader not found",_header)
+	}
+}
+void addGenericHeader(string _header, string _content){
+
+}
+
 void MESSAGE::setFireTime(SysTime _systime){
 
 	fireTime = _systime;

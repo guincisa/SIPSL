@@ -98,6 +98,14 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	}
 	else {
+		// purge it
+		string key = _mess->getKey();
+		pthread_mutex_lock(&messTableMtx);
+		DEBOUT("SIPENGINE::parse delete message",key)
+		globalMessTable.erase(key);
+		delete _mess;
+		pthread_mutex_unlock(&messTableMtx);
+
 		//syntax error
 	}
 }

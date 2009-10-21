@@ -345,10 +345,16 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				etry->removeMaxForwards();
 				DEBOUT("ETRY","delete Content-Type:")
 				etry->dropHeader("Content-Type:");
-				DEBOUT("ETRY","delete Content-Length:")
-				etry->dropHeader("Content-Length:");
 				DEBOUT("ETRY","delete Allow:")
 				etry->dropHeader("Allow:");
+				DEBOUT("ETRY","delete Route:")
+				etry->dropHeader("Route:");
+				DEBOUT("ETRY","delete Date:")
+				etry->dropHeader("Date:");
+
+//				DEBOUT("ETRY","delete Content-Length:")
+//				etry->dropHeader("Content-Length:");
+				etry->setGenericHeader("Content-Length:","0");
 				//crash here...
 
 

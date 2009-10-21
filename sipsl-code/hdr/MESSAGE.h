@@ -243,6 +243,10 @@ class MESSAGE : public BASEMESSAGE {
     	void removeMaxForwards(void);
     	void increaseMaxForwards(void);
 
+    	void setGenericHeader(string header, string content);
+    	bool queryGenericHeader(string header); //if is present
+    	void addGenericHeader(string header, string content);
+
     	// position of first line of SDP
     	// it is needed when I need to add headers
     	// which have to be inserted before
