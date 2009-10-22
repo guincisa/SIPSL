@@ -26,7 +26,6 @@
 #include "ENGINE.h"
 #endif
 
-
 class ALO : public ENGINE {
 	public:
 

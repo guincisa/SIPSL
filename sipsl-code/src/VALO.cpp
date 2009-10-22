@@ -39,21 +39,8 @@ void VALO::onInvite(MESSAGE* _message){
 	//	// create b2b invite related message & so on...
 	//	//TODO clean this
 
+		CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
-		char bu[512];
-		SysTime inTime;
-		GETTIME(inTime);
-		MESSAGE* message;
-		message = new MESSAGE(_message, SODE_ALOPOINT, inTime);
-		long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
-		sprintf(bu, "%x#%llu",message,num);
-		string key(bu);
-		message->setKey(key);
-		DEBOUT("NEW MESSAGE",message->getIncBuffer());
-		DEBOUT("NEW MESSAGE lines",message->getTotLines());
-		pthread_mutex_lock(&messTableMtx);
-		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
-		pthread_mutex_unlock(&messTableMtx);
 		// REQUEST
 		// maybe changed or unchanged
 		// ---- unchanged
@@ -83,7 +70,7 @@ void VALO::onInvite(MESSAGE* _message){
 		//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 
 		char viatmp[512];
-		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
+		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
 		string viatmpS(viatmp);
 		message->purgeSTKHeadVia();
 		message->pushHeadVia(viatmpS);

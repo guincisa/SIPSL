@@ -84,11 +84,13 @@ class ALMGR {
 		void alarmer(void);
 
 		//Alarm manager in a separate thread
+		ALMGR(void);
 		void initAlarm(SL_CC* sl_cc, timespec sleep_time);
 		void insertAlarm(MESSAGE* message, SysTime fireTime);
 		void cancelAlarm(MESSAGE* message);
 
 };
+
 
 
 //#include <pthread.h>

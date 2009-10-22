@@ -37,6 +37,10 @@
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
+//#ifndef ALARM_H
+//#include "ALARM.h"
+//#endif
+
 
 
 ////**********************************************************************************
@@ -51,6 +55,7 @@
 ////**********************************************************************************
 class SUDP;
 class ENGINE;
+class ALMGR;
 //
 //**********************************************************************************
 //**********************************************************************************
@@ -70,7 +75,7 @@ class SUDP {
     public:
 
         // Init stack
-        void init(int _PORT, ENGINE *_ENGINE, string _domain);
+        void init(int _PORT, ENGINE* _ENGINE, string _domain, ALMGR* _alarm);
 
         // Start call processing
         void start(void);
@@ -85,6 +90,7 @@ class SUDP {
         void listen(void);
         string getDomain(void);
         int getPort(void);
+        ALMGR* getAlmgr(void);
         //SUDP * getInstance(void);
     	//SUDP(void);
 
@@ -107,4 +113,6 @@ class SUDP {
         sockaddr_inX echoClntAddr;
         char echoBuffer[ECHOMAX];
         int recvMsgSize;
+
+        ALMGR* alarm;
 };

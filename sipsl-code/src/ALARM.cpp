@@ -49,8 +49,12 @@ void * ALARMSTACK(void *_tgtObject) {
     return (NULL);
 }
 //**********************************************************************************
+ALMGR::ALMGR(void){
+	DEBOUT("ALMGR::ALMGR", "alarm created")
+}
 void ALMGR::initAlarm(SL_CC* _sl_cc, timespec _sleep_time){
 
+	DEBOUT("ALMGR::initAlarm", "init")
 	sleep_time = _sleep_time;
 	sl_cc = _sl_cc;
 
@@ -60,13 +64,19 @@ void ALMGR::initAlarm(SL_CC* _sl_cc, timespec _sleep_time){
     t1->st = this;
     int res;
     res = pthread_create(&(listenerThread->thread), NULL, ALARMSTACK, (void *) t1 );
+	DEBOUT("ALMGR::initAlarm", "started")
     return;
-
-
 }
 void ALMGR::alarmer(void){
 
+	int counter;
+	DEBOUT("ALMGR::alarmer", "begin")
 	for(;;){
+
+		counter++;
+		counter = counter % 1000;
+		if (counter == 0)
+			DEBOUT("ALMGR::alarmer", "sleep 1000")
 
 		nanosleep(&sleep_time,NULL);
 
@@ -75,25 +85,27 @@ void ALMGR::alarmer(void){
 		GETTIME(mytime);
 		long long int curr = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;
 		long long int tcu = 0;
-		tcu = alarm_pq.top();
-		while (!alarm_pq.empty() && curr >= tcu){
-
-			alarm_pq.pop();
-
-			// now get a list of alarms from the multi map
-			multimap<long long int, ALARM*>::iterator iter = time_alarm_mumap.find(tcu);
-
-		    while( iter != time_alarm_mumap.end() ) {
-		    	ALARM* tmal = iter->second;
-		    	if (tmal->isActive()){
-		    		sl_cc->p_w(tmal->getMessage());
-		    	}
-		    	//else
-		    	time_alarm_mumap.erase(iter);
-		    	mess_alm_map.erase(tmal->getMessage());
-		    	delete tmal;
-		    }
+		if (!alarm_pq.empty()) {
 			tcu = alarm_pq.top();
+			while (!alarm_pq.empty() && curr >= tcu){
+
+				alarm_pq.pop();
+
+				// now get a list of alarms from the multi map
+				multimap<long long int, ALARM*>::iterator iter = time_alarm_mumap.find(tcu);
+
+				while( iter != time_alarm_mumap.end() ) {
+					ALARM* tmal = iter->second;
+					if (tmal->isActive()){
+						sl_cc->p_w(tmal->getMessage());
+					}
+					//else
+					time_alarm_mumap.erase(iter);
+					mess_alm_map.erase(tmal->getMessage());
+					delete tmal;
+				}
+				tcu = alarm_pq.top();
+			}
 		}
 	}
 }
@@ -161,5 +173,4 @@ MESSAGE* ALARM::getMessage(void){
 bool ALARM::isActive(void){
 	return active;
 }
-
 

@@ -54,7 +54,25 @@ typedef struct {
 #define DEBY  cout << "DEBY " << __FILE__ <<" " <<__LINE__<< endl;
 #define DEBASSERT(m1) cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; assert(0);
 
+#define PURGEMESSAGE(m1,m2)  {string key = m1->getKey();\
+	pthread_mutex_lock(&messTableMtx);\
+	DEBOUT(m2,key)\
+	globalMessTable.erase(key);\
+	delete m1;\
+	pthread_mutex_unlock(&messTableMtx);}
 
+#define CREATEMESSAGE(m1, m2, m3) char bu[512];\
+				SysTime inTime;\
+				GETTIME(inTime);\
+				MESSAGE* m1 = new MESSAGE(m2, m3, inTime);\
+				DEBOUT("NEW MESSAGE"," " + m1->getTotLines());\
+				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
+				sprintf(bu, "%x#%llu",m1,num);\
+				string key(bu);\
+				m1->setKey(key);\
+				pthread_mutex_lock(&messTableMtx);\
+				globalMessTable.insert(pair<string, MESSAGE*>(m1->getKey(), m1));\
+				pthread_mutex_unlock(&messTableMtx);
 
 
 class ThreadWrapper {

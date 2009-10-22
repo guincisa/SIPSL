@@ -37,11 +37,19 @@
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
+#ifndef ALARM_H
+#include "ALARM.h"
+#endif
+#ifndef SIP_PROPERTIES_H
+#include "SIP_PROPERTIES.h"
+#endif
+
 
 /*
 #include "REG_AC.h"
 #include "PROXY_AC.h"
 */
+
 
 int main(void) {
 
@@ -53,8 +61,16 @@ int main(void) {
 	gg.setSL_CC(&sl_cc);
 	gg.linkSUDP(&mystack);
 
-	mystack.init(5060, &gg, "sipsl.gugli.com");
 
+	ALMGR alarm;
+
+
+	timespec sleep_time;
+	sleep_time.tv_sec = 0;
+	sleep_time.tv_nsec = 100000;
+	alarm.initAlarm(&sl_cc, sleep_time);
+
+	mystack.init(5060, &gg, "sipsl.gugli.com", &alarm);
 
     mystack.start();
     pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;

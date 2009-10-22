@@ -57,6 +57,10 @@
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
+#ifndef ALARM_H
+#include "ALARM.h"
+#endif
+
 
 //// *****************************************************************************************
 //// ************************************
@@ -103,7 +107,7 @@ DEBOUT("SUDPSTACK started","")
 //	return instance;
 //}
 
-void SUDP::init(int _port, ENGINE *_engine, string _domain){
+void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm){
 
     DEBOUT("SUDP init",_domain)
 
@@ -112,6 +116,8 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain){
     engine = _engine;
 
     echoServPort = _port;
+
+    alarm = _alarm;
 
     /* Create socket for sending/receiving datagrams */
     if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
@@ -241,4 +247,8 @@ string SUDP::getDomain(void) {
 int SUDP::getPort(void){
 	return echoServPort;
 }
+ALMGR* SUDP::getAlmgr(void){
+	return alarm;
+}
+
 

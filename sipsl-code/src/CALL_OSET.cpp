@@ -171,7 +171,8 @@ void SL_CO::call(MESSAGE* _message){
 							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getAddress()),
 							sizeof(actionList.top().getMessage()->getAddress()));
 
-					//TODO purge try
+					//Purge Etry
+					PURGEMESSAGE(actionList.top().getMessage(), "PURGE TRY")
 				}
 				// TODO else...
 
@@ -181,12 +182,13 @@ void SL_CO::call(MESSAGE* _message){
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 			//if (purgeMessage){
-				string key = _message->getKey();
-				pthread_mutex_lock(&messTableMtx);
-				DEBOUT("SL_SM_SV::delete message",key)
-				globalMessTable.erase(key);
-				delete _message;
-				pthread_mutex_unlock(&messTableMtx);
+			PURGEMESSAGE(_message,"SL_SM_SV::delete message")
+//				string key = _message->getKey();
+//				pthread_mutex_lock(&messTableMtx);
+//				DEBOUT("SL_SM_SV::delete message",key)
+//				globalMessTable.erase(key);
+//				delete _message;
+//				pthread_mutex_unlock(&messTableMtx);
 			//}
 			return;
 		}
@@ -245,6 +247,8 @@ void SL_CO::call(MESSAGE* _message){
 								sizeof(si_bpart)) == -1) {
 								DEBASSERT("not sent")
 							}
+							//DELETE INVITE HERE...
+							PURGEMESSAGE(actionList.top().getMessage(), "PURGE INVITE")
 
 						}
 					} else { // to alarm
@@ -260,12 +264,13 @@ void SL_CO::call(MESSAGE* _message){
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 			//if (purgeMessage){
-				string key = _message->getKey();
-				pthread_mutex_lock(&messTableMtx);
-				DEBOUT("SL_SM_SV::delete message",key)
-				globalMessTable.erase(key);
-				delete _message;
-				pthread_mutex_unlock(&messTableMtx);
+			PURGEMESSAGE(_message, "SL_SM_SV::delete message")
+//				string key = _message->getKey();
+//				pthread_mutex_lock(&messTableMtx);
+//				DEBOUT("SL_SM_SV::delete message",key)
+//				globalMessTable.erase(key);
+//				delete _message;
+//				pthread_mutex_unlock(&messTableMtx);
 			//}
 			return;
 		}
@@ -321,19 +326,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				SingleAction sa_1 = SingleAction(_message);
 
 				//etry is filled later by SL_CO (see design)
-				char bu[512];
-				SysTime inTime;
-				GETTIME(inTime);
-				MESSAGE* etry = new MESSAGE(_message, SODE_SMSVPOINT, inTime);
-				DEBOUT("NEW MESSAGE"," " + etry->getTotLines());
-				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
-				sprintf(bu, "%x#%llu",etry,num);
-				string key(bu);
-				etry->setKey(key);
+				CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
 
-				pthread_mutex_lock(&messTableMtx);
-				globalMessTable.insert(pair<string, MESSAGE*>(etry->getKey(), etry));
-				pthread_mutex_unlock(&messTableMtx);
 				//TODO qui fare etry...
 				DEBOUT("ETRY","SIP/2.0 100 Trying")
 				etry->setHeadSipReply("SIP/2.0 100 Trying");
@@ -448,20 +442,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				_message->setGenEntity(SODE_SMCLPOINT);
 				SingleAction sa_1 = SingleAction(_message);
 
-				char bu[512];
-				SysTime inTime;
-				GETTIME(inTime);
-				MESSAGE* __message;
-				__message = new MESSAGE(_message, SODE_SMCLPOINT, inTime);
-				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
-				sprintf(bu, "%x#%llu",__message,num);
-				string key(bu);
-				__message->setKey(key);
-				DEBOUT("NEW MESSAGE for timer",__message->getIncBuffer());
-				DEBOUT("NEW MESSAGE for timer lines",__message->getTotLines());
-				pthread_mutex_lock(&messTableMtx);
-				globalMessTable.insert(pair<string, MESSAGE*>(key, _message));
-				pthread_mutex_unlock(&messTableMtx);
+				CREATEMESSAGE(__message, _message, SODE_SMCLPOINT)
 
 				__message->setDestEntity(SODE_BPOINT);
 
