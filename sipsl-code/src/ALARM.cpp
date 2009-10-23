@@ -73,10 +73,10 @@ void ALMGR::alarmer(void){
 	DEBOUT("ALMGR::alarmer", "begin")
 	for(;;){
 
-		counter++;
-		counter = counter % 1000;
-		if (counter == 0)
-			DEBOUT("ALMGR::alarmer", "sleep 1000")
+//		counter++;
+//		counter = counter % 1000;
+//		if (counter == 0)
+//			DEBOUT("ALMGR::alarmer", "sleep 1000")
 
 		nanosleep(&sleep_time,NULL);
 
@@ -86,23 +86,29 @@ void ALMGR::alarmer(void){
 		long long int curr = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;
 		long long int tcu = 0;
 		if (!alarm_pq.empty()) {
+			DEBY
 			tcu = alarm_pq.top();
+			DEBY
 			while (!alarm_pq.empty() && curr >= tcu){
 
 				alarm_pq.pop();
 
 				// now get a list of alarms from the multi map
+				DEBY
 				multimap<long long int, ALARM*>::iterator iter = time_alarm_mumap.find(tcu);
-
+				DEBY
 				while( iter != time_alarm_mumap.end() ) {
+					DEBY
 					ALARM* tmal = iter->second;
 					if (tmal->isActive()){
+						DEBY
 						sl_cc->p_w(tmal->getMessage());
 					}
 					//else
 					time_alarm_mumap.erase(iter);
 					mess_alm_map.erase(tmal->getMessage());
 					delete tmal;
+					iter++;
 				}
 				tcu = alarm_pq.top();
 			}
@@ -114,9 +120,11 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	//check if message already exists and cancel related alarm
 	//do note remove it from multimap and from mess_alm map
 
+	DEBOUT("ALMGR::insertAlarm", _fireTime.tv.tv_sec*1000000+_fireTime.tv.tv_usec)
 	map<MESSAGE*, ALARM*>::iterator p;
-	p = mess_alm_map.find(_message);
-	if (p != mess_alm_map.end()){
+
+	if (!mess_alm_map.empty()){
+		p = mess_alm_map.find(_message);
 		ALARM* tmp = (ALARM*)p->second;
 		tmp->cancel();
 	}

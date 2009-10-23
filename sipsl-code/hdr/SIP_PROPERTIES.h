@@ -27,4 +27,5 @@
 #define TIMER_1_sc 0
 //microseconds 1.000.000
 #define TIMER_1_mc 5000
+#define TIMER_zero 0
 

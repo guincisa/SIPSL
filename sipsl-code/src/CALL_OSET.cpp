@@ -66,6 +66,9 @@
 #ifndef SIP_PROPERTIES_H
 #include "SIP_PROPERTIES.h"
 #endif
+#ifndef ALARM_H
+#include "ALARM.h"
+#endif
 
 //**********************************************************************************
 //**********************************************************************************
@@ -253,7 +256,12 @@ void SL_CO::call(MESSAGE* _message){
 						}
 					} else { // to alarm
 						DEBOUT("SL_CO::destination is ALARM", actionList.top().getMessage()->getHeadSipRequest().getContent())
-						//TODO continuare 16 ott
+						SysTime st1 = actionList.top().getMessage()->getFireTime();
+						SysTime st2;
+						st2.tv.tv_sec = 0;
+						st2.tv.tv_usec = 0;
+						actionList.top().getMessage()->setFireTime(st2);
+						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(actionList.top().getMessage(),st1);
 					}
 
 				}
@@ -459,6 +467,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				DEBOUT("SL_SM_CL::actions set", _message->getHeadSipRequest().getContent())
 
 				State = 1;
+				resend_invite++;
 				return action;
 
 			}
