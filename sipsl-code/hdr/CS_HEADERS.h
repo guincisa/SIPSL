@@ -120,7 +120,7 @@ inline Tuple brkin2(string couple, string separator) {
     }
 
     tt.Lvalue = couple.substr(0, a);
-    tt.Rvalue = couple.substr(a+1, -1);
+    tt.Rvalue = couple.substr(a+separator.length(), -1);
 
     return tt;
 }
@@ -146,6 +146,18 @@ inline string replaceHttpChars(string s){
 		return s;
 
 }
+inline string cleanHttpChars(string s){
+
+	int a = s.find("%20", 0);
+	if (a >= 0){
+		Tuple t = brkin2(s,"%20");
+		return t.Lvalue + " " + t.Rvalue;
+	}
+	else
+		return s;
+
+}
+
 inline vector<string> parse(string _par, string head, string sep, bool _trimspaces) {
 
     int h = 0; // if has head then 1

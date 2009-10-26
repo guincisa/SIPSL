@@ -74,6 +74,9 @@ typedef struct {
 				globalMessTable.insert(pair<string, MESSAGE*>(m1->getKey(), m1));\
 				pthread_mutex_unlock(&messTableMtx);
 
+#define DUPLICATEMESSAGE(m1, m2, m3) \
+		CREATEMESSAGE(m1, m2, m3)\
+		m1->setSourceMessage(m2->getSourceMessage());
 
 class ThreadWrapper {
     public:

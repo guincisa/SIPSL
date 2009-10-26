@@ -237,6 +237,16 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headRoute(""){
 	DEBOUT("MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):","")
 	source = _message;
+	s_headVia_p = false;
+	headMaxFwd_p = false;
+	headContact_p = false;
+	headTo_p = false;
+	headFrom_p = false;
+	headCallId_p = false;
+	headCSeq_p = false;
+	headRoute_p = false;
+	//, headRoute_e;
+
 	return;
 }
 //ONLY FOR TEST
@@ -326,14 +336,22 @@ void MESSAGE::compileMessage(void){
     }
     incMessBuff = "";
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
-    	incMessBuff = incMessBuff + (*theIterator) + "\n";
+    	if (theIterator != flex_line.end()) {
+    		incMessBuff = incMessBuff + (*theIterator) + "\r\n";
+    	}else {
+    		incMessBuff = incMessBuff + (*theIterator);
+    	}
+
     }
-    incMessBuff = incMessBuff + "\r";
 
 }
 MESSAGE* MESSAGE::getSourceMessage(void){
 	return source;
 }
+void MESSAGE::setSourceMessage(MESSAGE* _source){
+	source = _source;
+}
+
 
 /*
  * Request
@@ -740,6 +758,7 @@ void MESSAGE::dropHeader(string _header){
 }
 void MESSAGE::setGenericHeader(string _header, string _content){
 
+	DEBOUT("MESSAGE::setGenericHeader", _header + " " + _content)
 	unsigned int i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){

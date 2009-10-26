@@ -21,6 +21,8 @@
 //**********************************************************************************
 
 #include <pthread.h>
+#include <assert.h>
+
 
 #ifndef ENGINE_H
 #include "ENGINE.h"
@@ -100,9 +102,13 @@ void ALMGR::alarmer(void){
 				while( iter != time_alarm_mumap.end() ) {
 					DEBY
 					ALARM* tmal = iter->second;
+					tmal->getMessage()->setHeadSipRequest("INVITE sip:STRONZONE@172.21.160.117:5062 SIP/2.0");
+					tmal->getMessage()->compileMessage();
+					tmal->getMessage()->dumpVector();
 					if (tmal->isActive()){
 						DEBY
 						sl_cc->p_w(tmal->getMessage());
+					} else {
 					}
 					//else
 					time_alarm_mumap.erase(iter);

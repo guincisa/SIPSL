@@ -87,6 +87,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 	//e creare la CL
 
 	// if the message comes from A then it is a new message that will trigger a new CALL OBJECT
+	DEBOUT("Incoming message generating entity", _mess->getGenEntity())
 	if (_mess->getGenEntity() == SODE_APOINT){
 
 		DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
@@ -128,6 +129,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 	}
 	else if (_mess->getGenEntity() == SODE_ALOPOINT){
+		DEBOUT("SL_CC::parse gen entity","SODE_ALOPOINT")
 
 		_mess->setDestEntity(SODE_SMCLPOINT);
 

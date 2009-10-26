@@ -61,7 +61,7 @@ void VALO::onInvite(MESSAGE* _message){
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
-		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.126:5061 SIP/2.0");
+		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0");
 
 		//Cseq new to 1
 		message->replaceHeadCSeq("999 INVITE");
@@ -84,7 +84,7 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
 		// change tag
 		char fromtmp[512];
-		sprintf(fromtmp, "%s;tag=%s",message->getHeadFrom().getC_AttSipUri().getContent().c_str(),message->getKey().c_str());
+		sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),message->getKey().c_str());
 		string fromtmpS(fromtmp);
 		DEBOUT("******** FROM new" , fromtmpS)
 		message->replaceHeadFrom(fromtmpS);

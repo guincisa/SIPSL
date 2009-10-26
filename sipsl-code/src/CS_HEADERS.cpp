@@ -1915,6 +1915,9 @@ string &C_HeadFrom::getNameUri(void){
     if(!parsed)
         doParse();
 
+    string nameUrit = cleanHttpChars(nameUri);
+    nameUri = trimUseless(nameUrit);
+
     return nameUri;
 }
 void C_HeadFrom::setNameUri(string _nameUri){

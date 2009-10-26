@@ -192,6 +192,7 @@ class MESSAGE : public BASEMESSAGE {
 
     	// also use for getting the callIDx to retrieve CALL_OSET SV side
     	MESSAGE* getSourceMessage(void);
+    	void setSourceMessage(MESSAGE*);
 
         //translates the flex_line into a string to be sent to network
         void compileMessage(void);

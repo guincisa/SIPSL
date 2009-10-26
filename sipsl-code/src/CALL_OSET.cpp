@@ -201,6 +201,11 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("*******************to client state machine**************************","")
 
 		//get new idy
+		DEBOUT("_message->getHeadCallId().getNormCallId()", _message->getHeadCallId().getNormCallId())
+		// fails
+		DEBOUT("_message->getSTKHeadVia().top()", _message->getSTKHeadVia().top())
+		DEBOUT("_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue(\"branch\")", _message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch"))
+
 		string callidy = _message->getHeadCallId().getNormCallId() +
 				_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 
@@ -360,6 +365,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				//crash here...
 
 
+
 				//via add rport
 				C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
 				DEBOUT("via1", viatmp->getC_AttVia().getContent())
@@ -425,6 +431,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 	bool purgeMessage = false;
 
 	//TODO qui
+	// gestire quando arriva dal timer
 	//
 
 	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
@@ -448,11 +455,19 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				// move to state 1
 				_message->setDestEntity(SODE_BPOINT);
 				_message->setGenEntity(SODE_SMCLPOINT);
+				SysTime nowT;
+				nowT.tv.tv_sec = 0;
+				nowT.tv.tv_usec = 0;
+				_message->setFireTime(nowT);
+
 				SingleAction sa_1 = SingleAction(_message);
 
-				CREATEMESSAGE(__message, _message, SODE_SMCLPOINT)
+				//careful with source message.
+				DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
 
 				__message->setDestEntity(SODE_BPOINT);
+				__message->setGenEntity(SODE_ALOPOINT);
+
 
 				SysTime afterT;
 				GETTIME(afterT);

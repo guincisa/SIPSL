@@ -1,7 +1,7 @@
-window_sizes 1280 729 249 1025 579 68
+window_sizes 1280 729 345 929 579 68
 windows_style
 show_stereotypes
-selected sequencediagram_ref 140546 // F6 VALO
+selected sequencediagram_ref 153602 // F7 TIMER
 open
   usecaseview_ref 128134 // VANILLA_CALL
 end
