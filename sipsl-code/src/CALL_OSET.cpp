@@ -453,6 +453,8 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				// send message
 				// send message + timer
 				// move to state 1
+
+				// this is to be sent immediately
 				_message->setDestEntity(SODE_BPOINT);
 				_message->setGenEntity(SODE_SMCLPOINT);
 				SysTime nowT;
@@ -465,6 +467,11 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				//careful with source message.
 				DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
 
+				//This is to be sent later after timer expires
+				//the generating is to be set to ALO
+				//so when sl_cc receives from timer it will resend it to
+				//client state machine which
+				//TODO review states and interaction...
 				__message->setDestEntity(SODE_BPOINT);
 				__message->setGenEntity(SODE_ALOPOINT);
 

@@ -1,6 +1,6 @@
 format 68
 "SIPSL"
-  revision 50
+  revision 51
   modified_by 2 "guic"
 
 
@@ -577,7 +577,7 @@ s
       show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
       comment "Oct 26- 2009
 correct timer interaction with client state machine"
-      overlapping_bars size A2
+      overlapping_bars size A1
     end
   end
 end
