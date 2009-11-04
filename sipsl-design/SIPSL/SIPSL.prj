@@ -1,6 +1,6 @@
 format 68
 "SIPSL"
-  revision 51
+  revision 52
   modified_by 2 "guic"
 
 
@@ -540,6 +540,10 @@ s
 	transition 128642 "event<RINGy, s=b, d=smcly>"
 	  on state_ref 128514 // 4
 	  external 
+	end
+
+	transition 135682 "101 Dialog Establishement"
+	  on state_ref 128258 // 2
 	end
       end
 

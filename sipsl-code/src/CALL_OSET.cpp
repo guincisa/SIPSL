@@ -493,8 +493,71 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				return action;
 
 			}
+		}
+		if (State == 1){
+			DEBOUT("SL_SM_CL::event" , "state 1")
+
+			DEBOUT("SL_SM_CL::dest" , _message->getDestEntity())
+			DEBOUT("SL_SM_CL::gen" , _message->getGenEntity())
+			DEBOUT("SL_SM_CL::resend" , resend_invite)
+
+
+			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+				&& _message->getDestEntity() == SODE_SMCLPOINT
+				&& _message->getGenEntity() ==  SODE_ALOPOINT
+				&& resend_invite < MAX_INVITE_RESEND) {
+
+				DEBOUT("SL_SM_CL::event move to state 1", _message->getHeadSipRequest().getContent())
+
+				ACTION* action = new ACTION();
+
+				// create two actions:
+				// send message
+				// send message + timer
+				// move to state 1
+
+				// this is to be sent immediately
+				_message->setDestEntity(SODE_BPOINT);
+				_message->setGenEntity(SODE_SMCLPOINT);
+				SysTime nowT;
+				nowT.tv.tv_sec = 0;
+				nowT.tv.tv_usec = 0;
+				_message->setFireTime(nowT);
+
+				SingleAction sa_1 = SingleAction(_message);
+
+				//careful with source message.
+				DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
+
+				//This is to be sent later after timer expires
+				//the generating is to be set to ALO
+				//so when sl_cc receives from timer it will resend it to
+				//client state machine which
+				//TODO review states and interaction...
+				__message->setDestEntity(SODE_BPOINT);
+				__message->setGenEntity(SODE_ALOPOINT);
+
+
+				SysTime afterT;
+				GETTIME(afterT);
+				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc;
+				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc;
+				__message->setFireTime(afterT);
+				SingleAction sa_2 = SingleAction(__message);
+
+				action->addSingleAction(sa_1);
+				action->addSingleAction(sa_2);
+
+				DEBOUT("SL_SM_CL::actions set", _message->getHeadSipRequest().getContent())
+
+				State = 1;
+				resend_invite++;
+				return action;
+
+			}
 
 		}
+
 
 	}
 

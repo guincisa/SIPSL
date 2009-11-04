@@ -11,12 +11,12 @@ note 128642 "action
 [INVITEy, s=smcly, d=b]
 [INVITEy, s=smcly, d=b, time=t]
 store timerID (=message_ID) = y"
-  xyzwh 285 301.8 2000 214 91
+  xyzwh 125 276.8 2000 214 91
 note 129282 "action
 [clear timer y]
 [timer wait for RING]
 "
-  xyzwh 518.8 414.8 2000 168 82
+  xyzwh 504.8 456.8 2000 168 82
 statecanvas 130050 state_ref 128258 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 397.7 505.1 2000 40 37
@@ -104,6 +104,13 @@ end
 transitioncanvas 133634 transition_ref 129154 // event<ACKy, s=alo, d=smcly>
   
   from ref 132994 z 2001 label "event<ACKy, s=alo, d=smcly>" xyz 264 839 2001 to ref 133506
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 134274 transition_ref 135682 // 101 Dialog Establishement
+  
+  from ref 130050 z 2001 label "101 Dialog Establishement" xyz 192 408 3000 to point 414 390
+  line 134402 z 2001 to point 345 409
+  line 134530 z 2001 to ref 130050
   write_horizontally default show_definition default drawing_language default
 end
 line 128770 -_-_

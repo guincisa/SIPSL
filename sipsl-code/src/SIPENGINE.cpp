@@ -95,7 +95,7 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	}
 	else if ( type == REPSUPP) {
-
+		DEBOUT("SIPENGINE::parse type REPSUPP", "ignoring, to be implemented")
 	}
 	else {
 		// purge it

@@ -102,7 +102,7 @@ void ALMGR::alarmer(void){
 				while( iter != time_alarm_mumap.end() ) {
 					DEBY
 					ALARM* tmal = iter->second;
-					tmal->getMessage()->setHeadSipRequest("INVITE sip:STRONZONE@172.21.160.117:5062 SIP/2.0");
+					tmal->getMessage()->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
 					tmal->getMessage()->compileMessage();
 					tmal->getMessage()->dumpVector();
 					if (tmal->isActive()){
