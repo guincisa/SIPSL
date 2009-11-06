@@ -95,7 +95,14 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	}
 	else if ( type == REPSUPP) {
-		DEBOUT("SIPENGINE::parse type REPSUPP", "ignoring, to be implemented")
+		DEBOUT("SIPENGINE::parse getReply content", _mess->getHeadSipReply().getReply().getContent())
+		int reply_id = _mess->getHeadSipReply().getReply().getReplyID();
+		int code = _mess->getHeadSipReply().getReply().getCode();
+		DEBOUT("SIPENGINE::reply type and code", reply_id << " " << code)
+
+		if (code == TRYING_100 || code == DIALOGE_101){
+			sl_cc->p_w(_mess);
+		}
 	}
 	else {
 		// purge it

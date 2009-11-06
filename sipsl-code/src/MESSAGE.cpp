@@ -299,6 +299,7 @@ int MESSAGE::getReqRepType(void){
 		return reqRep;
 	}
 	if(flex_line[0].substr(0,3).compare("SIP")==0){
+		DEBOUT("MESSAGE::getReqRepType", flex_line[0])
 		headSipReply.setContent(flex_line[0]);
 		reqRep = REPSUPP;
 	}

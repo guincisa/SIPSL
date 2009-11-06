@@ -479,7 +479,7 @@ void S_AttReply::buildContent(void) {
     }
 
 }
-void S_AttReply::setContent(string _replyID, string _code){
+void S_AttReply::setContent(string _code, string _replyID){
 
     if (!compare_it(_replyID)) {
         parsed = true;
@@ -501,20 +501,28 @@ inline bool S_AttReply::compare_it(string _reply) {
         correct = true;
         return true;
     }
-    if (_reply.compare("RINGING") == 0){
-        reply = "RINGING";
+    if (_reply.compare("Ringing") == 0){
+        reply = "Ringing";
         replyID = RINGING_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
-    if (_reply.compare("TRY") == 0){
-        reply = "TRY";
+    if (_reply.compare("Trying") == 0){
+        reply = "Trying";
         replyID = TRY_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
+    if (_reply.compare("Dialog") == 0){
+        reply = "Dialog";
+        replyID = DE_RESPONSE;
+        parsed = true;
+        correct = true;
+        return true;
+    }
+
 }
 int S_AttReply::getCode(void){
 
@@ -1476,7 +1484,6 @@ void C_HeadSipReply::doParse(void){
     if(parsed){
         return;
     }
-
     vector<string> elements = brkSpaces(content);
 
     vector<string>::iterator iter;
@@ -1485,8 +1492,10 @@ void C_HeadSipReply::doParse(void){
 
     iter++;
     string s1 = *iter;
+
     iter++;
     string s2 = *iter;
+
     //TODO S_AttReply will re-parse it...
     reply.setContent(s1, s2);
 
