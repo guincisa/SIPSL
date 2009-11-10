@@ -517,11 +517,19 @@ inline bool S_AttReply::compare_it(string _reply) {
     }
     if (_reply.compare("Dialog") == 0){
         reply = "Dialog";
-        replyID = DE_RESPONSE;
+        replyID = DIAEST_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
+    if (_reply.compare("Decline") == 0){
+        reply = "Decline";
+        replyID = DECLINE_RESPONSE;
+        parsed = true;
+        correct = true;
+        return true;
+    }
+
 
 }
 int S_AttReply::getCode(void){

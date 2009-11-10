@@ -38,10 +38,12 @@ using namespace std;
 #define TRY_RESPONSE 51
 #define RINGING_RESPONSE 52
 #define OK_RESPONSE 53
-#define DE_RESPONSE 54
+#define DIAEST_RESPONSE 54
+#define DECLINE_RESPONSE 55
 
 #define TRYING_100 100
 #define DIALOGE_101 101
+#define DECLINE_603 603
 
 
 #define INTERNALS_METHOD 9000
