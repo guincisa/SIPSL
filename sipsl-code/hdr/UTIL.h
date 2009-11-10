@@ -67,7 +67,7 @@ typedef struct {
 				MESSAGE* m1 = new MESSAGE(m2, m3, inTime);\
 				DEBOUT("NEW MESSAGE"," " + m1->getTotLines());\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
-				sprintf(bu, "%x#%llu",m1,num);\
+				sprintf(bu, "%x%llu",m1,num);\
 				string key(bu);\
 				m1->setKey(key);\
 				pthread_mutex_lock(&messTableMtx);\

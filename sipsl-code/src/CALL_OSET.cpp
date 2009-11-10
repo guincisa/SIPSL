@@ -118,6 +118,10 @@ void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
 	mm_sl_sm_cl.insert(make_pair(_callId_Y,  _sl_cl));
 	return;
 }
+string CALL_OSET::getCallIdX(void){
+	return callId_X;
+}
+
 //**********************************************************************************
 //**********************************************************************************
 ALO* CALL_OSET::getALO(void){
@@ -214,8 +218,12 @@ void SL_CO::call(MESSAGE* _message){
 		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
 		if (sl_sm_cl == 0x0){
+			DEBOUT("Creating CL machine callidy", callidy)
 			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE());
 			call_oset->addSL_SM_CL(callidy, sl_sm_cl);
+			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
+			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 		}
 		ACTION* action = sl_sm_cl->event(_message);
 

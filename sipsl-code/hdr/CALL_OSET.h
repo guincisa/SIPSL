@@ -59,6 +59,8 @@ class CALL_OSET {
 		SL_SM_SV* getSL_SM_SV(void);
 		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
 
+		string getCallIdX(void);
+
 		SL_SM_CL* getSL_SM_CL(string callId_Y);
 		ALO* getALO(void);
 		ENGINE* getENGINE(void);

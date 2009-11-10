@@ -190,7 +190,7 @@ void SUDP::listen() {
 		SysTime inTime;
 		GETTIME(inTime);
 		MESSAGE* message;
-		message = new MESSAGE(echoBuffer, SODE_APOINT, inTime, sock, echoClntAddr);
+		message = new MESSAGE(echoBuffer, SODE_NTWPOINT, inTime, sock, echoClntAddr);
 		long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
 		sprintf(bu, "%x#%llu",message,num);
 		string key(bu);

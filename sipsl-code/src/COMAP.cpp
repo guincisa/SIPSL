@@ -78,9 +78,9 @@ CALL_OSET* COMAP::getCALL_OSET_SV(string _callId_X){
 	p = comap_mm.find(_callId_X);
 	if (p != comap_mm.end()){
 			tmp = (CALL_OSET*)p->second;
-			DEBOUT("COMAP::getCALL_OSET found ", tmp)
+			DEBOUT("COMAP::getCALL_OSET X found ", tmp)
 	}else {
-		DEBOUT("COMAP::getCALL_OSET not found, is a new call", "")
+		DEBOUT("COMAP::getCALL_OSET X not found", "")
 	}
 	//else return 0x0
 	return tmp;
@@ -89,7 +89,26 @@ CALL_OSET* COMAP::getCALL_OSET_SV(string _callId_X){
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_CL(string _callId_Y){
 
-	DEBOUT("COMAP::getCALL_OSET_CL not implemented ", _callId_Y)
+	DEBOUT("COMAP::getCALL_OSET_CL retrieving ", _callId_Y)
+
+	CALL_OSET* tmp = 0x0;
+	string tmp2 = "";
+	map<string, CALL_OSET*>::iterator p;
+	map<string, string>::iterator p2;
+	p2 = call_id_y2x.find(_callId_Y);
+	if (p2 != call_id_y2x.end()){
+		tmp2 = (string)p2->second;
+		DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp2)
+		p = comap_mm.find(tmp2);
+		if (p != comap_mm.end()){
+				tmp = (CALL_OSET*)p->second;
+				DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp)
+
+				return tmp;
+		}
+	}
+	DEBOUT("COMAP::getCALL_OSET Y-X not found", "")
+	return tmp; //0x0
 
 }
 //**********************************************************************************

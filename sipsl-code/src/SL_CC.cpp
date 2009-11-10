@@ -78,6 +78,10 @@ SL_CC::SL_CC(void) {
 
 	comap = new COMAP();
 }
+COMAP* SL_CC::getCOMAP(void){
+	return comap;
+}
+
 //**********************************************************************************
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {
@@ -87,8 +91,10 @@ void SL_CC::parse(MESSAGE* _mess) {
 	//e creare la CL
 
 	// if the message comes from A then it is a new message that will trigger a new CALL OBJECT
+
 	DEBOUT("Incoming message generating entity", _mess->getGenEntity())
-	if (_mess->getGenEntity() == SODE_APOINT){
+
+	if (_mess->getGenEntity() == SODE_NTWPOINT){
 
 		DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
 		DEBOUT("SL_CC::parse", _mess)
@@ -101,8 +107,21 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		call_oset = comap->getCALL_OSET_SV(callidx);
 
+		if (call_oset != 0x0) {
+			DEBOUT("SL_CC::parse", "A SIDE")
+			_mess->setGenEntity(SODE_APOINT);
+			call_oset->getSL_CO()->call(_mess);
+		}
+		else {
+			call_oset = comap->getCALL_OSET_CL(callidx);
+			if (call_oset != 0x0){
+				DEBOUT("SL_CC::parse", "B SIDE")
+				_mess->setGenEntity(SODE_BPOINT);
+				call_oset->getSL_CO()->call(_mess);
+			}
+		}
 		if (call_oset == 0x0) {
-			//new call
+			//new call X SIDE
 			DEBOUT("SL_CC::parse new call", "CALL_OSET creation x side")
 
 			call_oset = new CALL_OSET(this);
@@ -120,14 +139,49 @@ void SL_CC::parse(MESSAGE* _mess) {
 			//_mess->setDestEntity(SODE_SMSVPOINT);
 			sl_co->call(_mess);
 			//END.
-
-		} else {
-			//CALL Exists
-			DEBOUT("SL_CC::parse existing call", "")
-			//_mess->setDestEntity(SODE_SMSVPOINT);
-			call_oset->getSL_CO()->call(_mess);
 		}
 	}
+
+//	if (_mess->getGenEntity() == SODE_APOINT){
+//
+//		DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
+//		DEBOUT("SL_CC::parse", _mess)
+//
+//		CALL_OSET* call_oset = 0x0;
+//
+//		string callidx = _mess->getHeadCallId().getNormCallId() +
+//				_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+//		DEBOUT("CALLOSET ID",callidx)
+//
+//		call_oset = comap->getCALL_OSET_SV(callidx);
+//
+//		if (call_oset == 0x0) {
+//			//new call
+//			DEBOUT("SL_CC::parse new call", "CALL_OSET creation x side")
+//
+//			call_oset = new CALL_OSET(this);
+//			SL_CO* sl_co = new SL_CO(call_oset);
+//			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this);
+//			//NEED USER DEFINED CLASS
+//			VALO* alo = new VALO(this);
+//			alo->linkSUDP(getSUDP());
+//
+//			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
+//			DEBOUT("SL_CC::parse", "CALL_OSET created x side")
+//
+//			comap->setCALL_OSET(callidx, call_oset);
+//
+//			//_mess->setDestEntity(SODE_SMSVPOINT);
+//			sl_co->call(_mess);
+//			//END.
+//
+//		} else {
+//			//CALL Exists
+//			DEBOUT("SL_CC::parse existing call", "")
+//			//_mess->setDestEntity(SODE_SMSVPOINT);
+//			call_oset->getSL_CO()->call(_mess);
+//		}
+//	}
 	else if (_mess->getGenEntity() == SODE_ALOPOINT){
 		DEBOUT("SL_CC::parse gen entity","SODE_ALOPOINT")
 

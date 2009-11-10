@@ -39,6 +39,7 @@ class SL_CC : public ENGINE {
     public:
         void parse(MESSAGE*);
         SL_CC();
+        COMAP* getCOMAP(void);
 
         //void sendReply(MESSAGE);
 
