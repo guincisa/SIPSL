@@ -49,7 +49,8 @@ typedef struct {
 #define STARTTIME {GETTIME(inittime)}
 #define ENDTIME {char bu[512];GETTIME(endtime); sprintf(bu, "[%s %d] init %lld end %lld tot %lld\n",__FILE__, __LINE__, inittime.tv.tv_sec*1000000+inittime.tv.tv_usec,endtime.tv.tv_sec*1000000+endtime.tv.tv_usec ,endtime.tv.tv_sec*1000000+endtime.tv.tv_usec  - inittime.tv.tv_sec*1000000+inittime.tv.tv_usec ); cout << bu << flush;}
 
-#define DEBOUT(m1,m2)  cout << "DEBOUT " << __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]"<< endl;
+//#define DEBOUT(m1,m2)  cout << "DEBOUT " << pthread_self() << __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]"<< endl;
+#define DEBOUT(m1,m2)  cout << "DEBOUT " <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]"<< endl;
 #define DEBERROR(m1)  cout << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]"<< endl;
 #define DEBY  cout << "DEBY " << __FILE__ <<" " <<__LINE__<< endl;
 #define DEBASSERT(m1) cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; assert(0);
@@ -67,12 +68,27 @@ typedef struct {
 				MESSAGE* m1 = new MESSAGE(m2, m3, inTime);\
 				DEBOUT("NEW MESSAGE"," " + m1->getTotLines());\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
-				sprintf(bu, "%x%llu",m1,num);\
+				sprintf(bu, "%x#%llu",m1,num);\
 				string key(bu);\
 				m1->setKey(key);\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<string, MESSAGE*>(m1->getKey(), m1));\
 				pthread_mutex_unlock(&messTableMtx);
+
+#define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) char bu[512];\
+				SysTime inTime;\
+				GETTIME(inTime);\
+				MESSAGE* __mess = new MESSAGE(__echob, __sode, inTime, __sock, __echoAddr);\
+				DEBOUT("NEW MESSAGE"," " + __mess->getTotLines());\
+				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
+				sprintf(bu, "%x#%llu",__mess,num);\
+				string key(bu);\
+				__mess->setKey(key);\
+				DEBOUT("Incoming\n****************************************************\n",__mess->getIncBuffer() << "]\nkey [" << key)\
+				pthread_mutex_lock(&messTableMtx);\
+				globalMessTable.insert(pair<string, MESSAGE*>(__mess->getKey(), __mess));\
+				pthread_mutex_unlock(&messTableMtx);
+
 
 #define DUPLICATEMESSAGE(m1, m2, m3) \
 		CREATEMESSAGE(m1, m2, m3)\

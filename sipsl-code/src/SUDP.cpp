@@ -187,18 +187,19 @@ void SUDP::listen() {
         }
 
         //Message handling
-		SysTime inTime;
-		GETTIME(inTime);
-		MESSAGE* message;
-		message = new MESSAGE(echoBuffer, SODE_NTWPOINT, inTime, sock, echoClntAddr);
-		long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
-		sprintf(bu, "%x#%llu",message,num);
-		string key(bu);
-		message->setKey(key);
-		DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer() + "\n key " + key)
-		pthread_mutex_lock(&messTableMtx);
-		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
-		pthread_mutex_unlock(&messTableMtx);
+        CREATENEWMESSAGE(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
+//		SysTime inTime;
+//		GETTIME(inTime);
+//		MESSAGE* message;
+//		message = new MESSAGE(echoBuffer, SODE_NTWPOINT, inTime, sock, echoClntAddr);
+//		long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
+//		sprintf(bu, "%x#%llu",message,num);
+//		string key(bu);
+//		message->setKey(key);
+//		DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer() + "\n key " + key)
+//		pthread_mutex_lock(&messTableMtx);
+//		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
+//		pthread_mutex_unlock(&messTableMtx);
 
 		message->setDestEntity(SODE_SMSVPOINT);
 

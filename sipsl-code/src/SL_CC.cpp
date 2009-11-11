@@ -96,7 +96,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	if (_mess->getGenEntity() == SODE_NTWPOINT){
 
-		DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
+		DEBOUT("SL_CC::parse", _mess->getIncBuffer())
 
 		CALL_OSET* call_oset = 0x0;
 
