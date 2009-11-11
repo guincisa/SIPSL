@@ -217,6 +217,8 @@ void SL_CO::call(MESSAGE* _message){
 
 		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
+		//Client state machine doe not exists
+		//create and put in comap
 		if (sl_sm_cl == 0x0){
 			DEBOUT("Creating CL machine callidy", callidy)
 			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE());
