@@ -97,25 +97,25 @@ void SL_CC::parse(MESSAGE* _mess) {
 	if (_mess->getGenEntity() == SODE_NTWPOINT){
 
 		DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
-		DEBOUT("SL_CC::parse", _mess)
 
 		CALL_OSET* call_oset = 0x0;
 
 		string callidx = _mess->getHeadCallId().getNormCallId() +
 				_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
-		DEBOUT("CALLOSET ID",callidx)
+
+		DEBOUT("SL_CC::parse CALLOSET ID",callidx)
 
 		call_oset = comap->getCALL_OSET_SV(callidx);
 
 		if (call_oset != 0x0) {
-			DEBOUT("SL_CC::parse", "A SIDE")
+			DEBOUT("SL_CC::parse", "A SIDE call_oset existing")
 			_mess->setGenEntity(SODE_APOINT);
 			call_oset->getSL_CO()->call(_mess);
 		}
 		else {
 			call_oset = comap->getCALL_OSET_CL(callidx);
 			if (call_oset != 0x0){
-				DEBOUT("SL_CC::parse", "B SIDE")
+				DEBOUT("SL_CC::parse", "B SIDE call_oset existing")
 				_mess->setGenEntity(SODE_BPOINT);
 				call_oset->getSL_CO()->call(_mess);
 			}
