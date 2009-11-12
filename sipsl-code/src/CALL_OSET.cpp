@@ -149,10 +149,13 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 void SL_CO::call(MESSAGE* _message){
 
 	DEBOUT("SL_CO::call", _message->getHeadSipRequest().getContent())
-    DEBOUT("SL_CO::call", _message->getHeadCallId().getContent())
+    DEBOUT("SL_CO::call", _message->getHeadCallId().getContent() << "#" << _message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch"))
 
 
 	if (_message->getDestEntity() == SODE_SMSVPOINT) {
+		DEBOUT("********************************************************************","")
+		DEBOUT("*******************to server state machine**************************","")
+
 
 		SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
 
@@ -203,12 +206,6 @@ void SL_CO::call(MESSAGE* _message){
 	else if (_message->getDestEntity() == SODE_SMCLPOINT){
 		DEBOUT("********************************************************************","")
 		DEBOUT("*******************to client state machine**************************","")
-
-		//get new idy
-		DEBOUT("_message->getHeadCallId().getNormCallId()", _message->getHeadCallId().getNormCallId())
-		// fails
-		DEBOUT("_message->getSTKHeadVia().top()", _message->getSTKHeadVia().top())
-		DEBOUT("_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue(\"branch\")", _message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch"))
 
 		string callidy = _message->getHeadCallId().getNormCallId() +
 				_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
