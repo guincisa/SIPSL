@@ -109,6 +109,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		if (call_oset != 0x0) {
 			DEBOUT("SL_CC::parse", "A SIDE call_oset existing")
+			_mess->setDestEntity(SODE_SMSVPOINT);
 			_mess->setGenEntity(SODE_APOINT);
 			call_oset->getSL_CO()->call(_mess);
 		}
@@ -117,12 +118,17 @@ void SL_CC::parse(MESSAGE* _mess) {
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset existing")
 				_mess->setGenEntity(SODE_BPOINT);
+				_mess->setDestEntity(SODE_SMCLPOINT);
 				call_oset->getSL_CO()->call(_mess);
 			}
 		}
 		if (call_oset == 0x0) {
 			//new call X SIDE
 			DEBOUT("SL_CC::parse new call", "CALL_OSET creation x side")
+
+			_mess->setGenEntity(SODE_APOINT);
+			_mess->setDestEntity(SODE_SMSVPOINT);
+
 
 			call_oset = new CALL_OSET(this);
 			SL_CO* sl_co = new SL_CO(call_oset);

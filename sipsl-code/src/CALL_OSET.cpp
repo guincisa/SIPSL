@@ -327,6 +327,10 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 	DEBOUT("SL_SM_SV::event call id", _message->getHeadCallId().getContent())
 
+	//TODO
+	//Invert state and event for more readibility...
+
+
 	if (_message->getReqRepType() == REQSUPP) {
 		DEBOUT("SL_SM_SV::event REQSUPP", _message->getHeadSipRequest().getContent())
 
@@ -413,7 +417,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 	}
 	if (_message->getReqRepType() == REPSUPP) {
-		DEBOUT("SL_SM_SV::event", _message->getHeadSipReply().getContent())
+		DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())
 	}
 
 	State = 0;
@@ -443,10 +447,12 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
 
-	if (_message->getReqRepType() == REQSUPP) {
-		DEBOUT("SL_SM_CL::event", _message->getHeadSipRequest().getContent())
-		if (State == 0){
+	if (State == 0){
+		if (_message->getReqRepType() == REQSUPP) {
+
+			DEBOUT("SL_SM_CL::event", _message->getHeadSipRequest().getContent())
 			DEBOUT("SL_SM_CL::event" , "state 0")
+
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 				&& _message->getDestEntity() == SODE_SMCLPOINT
 				&& _message->getGenEntity() ==  SODE_ALOPOINT
@@ -500,21 +506,23 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				return action;
 
 			}
+		} else {
+			// discard
 		}
-		if (State == 1){
-			DEBOUT("SL_SM_CL::event" , "state 1")
+	}
+	if (State == 1){
+		DEBOUT("SL_SM_CL::event" , "state 1")
 
-			DEBOUT("SL_SM_CL::dest" , _message->getDestEntity())
-			DEBOUT("SL_SM_CL::gen" , _message->getGenEntity())
-			DEBOUT("SL_SM_CL::resend" , resend_invite)
-
+		if (_message->getReqRepType() == REQSUPP) {
 
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
-				&& _message->getDestEntity() == SODE_SMCLPOINT
-				&& _message->getGenEntity() ==  SODE_ALOPOINT
-				&& resend_invite < MAX_INVITE_RESEND) {
+			&& _message->getDestEntity() == SODE_SMCLPOINT
+			&& _message->getGenEntity() ==  SODE_ALOPOINT
+			&& resend_invite < MAX_INVITE_RESEND) {
 
-				DEBOUT("SL_SM_CL::event move to state 1", _message->getHeadSipRequest().getContent())
+				DEBOUT("SL_SM_CL::resend" , resend_invite)
+
+				DEBOUT("SL_SM_CL::event keep state 1", _message->getHeadSipRequest().getContent())
 
 				ACTION* action = new ACTION();
 
@@ -560,12 +568,26 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				State = 1;
 				resend_invite++;
 				return action;
-
 			}
+
+		}
+		if (_message->getReqRepType() == REPSUPP) {
+			//if ((_message->getHeadSipReply().getReply().getCode() == TRYING_100 || _message->getHeadSipReply().getReply().getCode() == DIALOGE_101)
+			if (_message->getHeadSipReply().getReply().getCode() == TRYING_100
+			&& _message->getDestEntity() == SODE_SMCLPOINT
+			&& _message->getGenEntity() ==  SODE_BPOINT) {
+
+				DEBOUT("SL_SM_CL::event state 1 try or dialog est",  _message->getHeadSipReply().getReply().getCode() )
+
+				// TODO clear timer ad create new timer for the ringing
+				State = 2;
+			}
+
 
 		}
 
 
 	}
+
 
 }
