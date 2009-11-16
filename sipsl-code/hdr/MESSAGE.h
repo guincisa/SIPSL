@@ -308,12 +308,17 @@ static pthread_mutex_t messTableMtx;
 ///////////////////////////////////////////////////////////////////////////////
 //// MESSAGE PLACEHOLDER or EMPTYMESSAGE
 //// The empty message is a command sent by the states machines
-//// the SL_CO will generate the full message using the generator
+//// It helps to interpret the command
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 class EMPTYMESSAGE {
 
 	private:
+
+		// 1 send message message
+		// 2 timer on
+		// 3 timer off
+
 		int method;
 		int destination;
 		int source;

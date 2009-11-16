@@ -168,13 +168,13 @@ void SL_CO::call(MESSAGE* _message){
 			actionList = action->getActionList();
 			while (!actionList.empty()){
 				DEBOUT("SL_CO::reading action stack", "")
-				if (actionList.top().getMessage()->getDestEntity() == SODE_ALOPOINT){
+				if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
 
 					DEBOUT("SL_CO::call action is ALO", actionList.top().getMessage()->getHeadSipRequest().getContent())
 					call_oset->getALO()->p_w(actionList.top().getMessage());
 				}
-				if (actionList.top().getMessage()->getDestEntity() == SODE_APOINT){
+				if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_APOINT){
 					DEBOUT("ETRY ", actionList.top().getMessage()->getIncBuffer().c_str())
 					sendto(actionList.top().getMessage()->getSock(),
 							actionList.top().getMessage()->getIncBuffer().c_str(),
@@ -204,6 +204,7 @@ void SL_CO::call(MESSAGE* _message){
 		}
 	}
 	else if (_message->getDestEntity() == SODE_SMCLPOINT){
+
 		DEBOUT("********************************************************************","")
 		DEBOUT("*******************to client state machine**************************","")
 
@@ -224,6 +225,7 @@ void SL_CO::call(MESSAGE* _message){
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 		}
+
 		ACTION* action = sl_sm_cl->event(_message);
 
 		if (action != 0x0){
@@ -233,53 +235,48 @@ void SL_CO::call(MESSAGE* _message){
 			actionList = action->getActionList();
 			while (!actionList.empty()){
 				DEBOUT("SL_CO::reading action stack", "")
-				if (actionList.top().getMessage()->getDestEntity() == SODE_BPOINT){
+				if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_BPOINT){
 
+					DEBOUT("SL_CO::destination is b", actionList.top().getMessage()->getHeadSipRequest().getContent())
 
-					if (actionList.top().getMessage()->getFireTime().tv.tv_sec == 0 &&
-							actionList.top().getMessage()->getFireTime().tv.tv_usec == 0) {
-						DEBOUT("SL_CO::destination is b", actionList.top().getMessage()->getHeadSipRequest().getContent())
+					struct sockaddr_in si_bpart;
+					memset((char *) &si_bpart, 0, sizeof(si_bpart));
+					si_bpart.sin_family = AF_INET;
+					//TODO ???
+					// port nel TO o nella request
+					DEBOUT("create addess", actionList.top().getMessage()->getHeadTo().getContent())
+					DEBOUT("create addess 2", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getHostName());
+					DEBOUT("create addess 3", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
 
-						struct sockaddr_in si_bpart;
-						memset((char *) &si_bpart, 0, sizeof(si_bpart));
-						si_bpart.sin_family = AF_INET;
-						//TODO ???
-						// port nel TO o nella request
-						DEBOUT("create addess", actionList.top().getMessage()->getHeadTo().getContent())
-						DEBOUT("create addess 2", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getHostName());
-						DEBOUT("create addess 3", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
+					si_bpart.sin_port = htons(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
+					if (inet_aton(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_bpart.sin_addr)==0){
+						DEBASSERT("can't create b address")
+					} else{
 
-						si_bpart.sin_port = htons(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
-						if (inet_aton(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_bpart.sin_addr)==0){
-							DEBASSERT("can't create b address")
-						} else{
+						DEBOUT("sending", actionList.top().getMessage()->getIncBuffer())
 
-							DEBOUT("sending", actionList.top().getMessage()->getIncBuffer())
-
-							if (sendto(actionList.top().getMessage()->getSock(),
-								actionList.top().getMessage()->getIncBuffer().c_str(),
-								actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart,
-								sizeof(si_bpart)) == -1) {
-								DEBASSERT("not sent")
-							}
-							//DELETE INVITE HERE...
-							PURGEMESSAGE(actionList.top().getMessage(), "PURGE INVITE")
-
+						if (sendto(actionList.top().getMessage()->getSock(),
+							actionList.top().getMessage()->getIncBuffer().c_str(),
+							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart,
+							sizeof(si_bpart)) == -1) {
+							DEBASSERT("not sent")
 						}
-					} else { // to alarm
-						DEBOUT("SL_CO::destination is ALARM", actionList.top().getMessage()->getHeadSipRequest().getContent())
-						SysTime st1 = actionList.top().getMessage()->getFireTime();
-						SysTime st2;
-						st2.tv.tv_sec = 0;
-						st2.tv.tv_usec = 0;
-						actionList.top().getMessage()->setFireTime(st2);
-						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(actionList.top().getMessage(),st1);
 					}
+					//DELETE INVITE HERE...
+					PURGEMESSAGE(actionList.top().getMessage(), "PURGE INVITE")
 
+				} else if (actionList.top().getDriver() == ACT_TIMERON){ // to alarm
+					DEBOUT("SL_CO::destination is ALARM", actionList.top().getMessage()->getHeadSipRequest().getContent())
+					SysTime st1 = actionList.top().getMessage()->getFireTime();
+					SysTime st2;
+					st2.tv.tv_sec = 0;
+					st2.tv.tv_usec = 0;
+					actionList.top().getMessage()->setFireTime(st2);
+					call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(actionList.top().getMessage(),st1);
 				}
-				// TODO else...
-				actionList.pop();
 			}
+			// TODO else...
+			actionList.pop();
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
@@ -330,7 +327,6 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 	//TODO
 	//Invert state and event for more readibility...
 
-
 	if (_message->getReqRepType() == REQSUPP) {
 		DEBOUT("SL_SM_SV::event REQSUPP", _message->getHeadSipRequest().getContent())
 
@@ -347,7 +343,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				//_message changes its dest and gen
 				_message->setDestEntity(SODE_ALOPOINT);
 				_message->setGenEntity(SODE_SMSVPOINT);
-				SingleAction sa_1 = SingleAction(_message);
+				SingleAction sa_1 = SingleAction(_message, ACT_SEND);
 
 				//etry is filled later by SL_CO (see design)
 				CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
@@ -398,7 +394,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				etry->compileMessage();
 				etry->dumpVector();
 
-				SingleAction sa_2 = SingleAction(etry);
+				SingleAction sa_2 = SingleAction(etry, ACT_SEND);
 
 				action->addSingleAction(sa_1);
 				action->addSingleAction(sa_2);
@@ -475,7 +471,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				nowT.tv.tv_usec = 0;
 				_message->setFireTime(nowT);
 
-				SingleAction sa_1 = SingleAction(_message);
+				SingleAction sa_1 = SingleAction(_message, ACT_SEND);
 
 				//careful with source message.
 				DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
@@ -494,7 +490,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc;
 				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc;
 				__message->setFireTime(afterT);
-				SingleAction sa_2 = SingleAction(__message);
+				SingleAction sa_2 = SingleAction(__message, ACT_TIMERON);
 
 				action->addSingleAction(sa_1);
 				action->addSingleAction(sa_2);
@@ -539,7 +535,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				nowT.tv.tv_usec = 0;
 				_message->setFireTime(nowT);
 
-				SingleAction sa_1 = SingleAction(_message);
+				SingleAction sa_1 = SingleAction(_message, ACT_SEND);
 
 				//careful with source message.
 				DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
@@ -558,7 +554,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc;
 				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc;
 				__message->setFireTime(afterT);
-				SingleAction sa_2 = SingleAction(__message);
+				SingleAction sa_2 = SingleAction(__message, ACT_TIMERON);
 
 				action->addSingleAction(sa_1);
 				action->addSingleAction(sa_2);
@@ -572,22 +568,31 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 		}
 		if (_message->getReqRepType() == REPSUPP) {
-			//if ((_message->getHeadSipReply().getReply().getCode() == TRYING_100 || _message->getHeadSipReply().getReply().getCode() == DIALOGE_101)
 			if (_message->getHeadSipReply().getReply().getCode() == TRYING_100
 			&& _message->getDestEntity() == SODE_SMCLPOINT
 			&& _message->getGenEntity() ==  SODE_BPOINT) {
 
-				DEBOUT("SL_SM_CL::event state 1 try or dialog est",  _message->getHeadSipReply().getReply().getCode() )
+				DEBOUT("SL_SM_CL::event state 1 try",  _message->getHeadSipReply().getReply().getCode() )
+
+				// TODO clear timer ad create new timer for the ringing
+
+				ACTION* action = new ACTION();
+
+				State = 2;
+			}
+		}
+	}
+	if (State == 2){
+		if (_message->getReqRepType() == REPSUPP) {
+			if (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
+			&& _message->getDestEntity() == SODE_SMCLPOINT
+			&& _message->getGenEntity() ==  SODE_BPOINT) {
+
+				DEBOUT("SL_SM_CL::event state 2 dialog est",  _message->getHeadSipReply().getReply().getCode() )
 
 				// TODO clear timer ad create new timer for the ringing
 				State = 2;
 			}
-
-
 		}
-
-
 	}
-
-
 }

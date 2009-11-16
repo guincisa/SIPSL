@@ -45,12 +45,20 @@ stack<SingleAction> ACTION::getActionList(void){
 // *****************************************************************************************
 // *****************************************************************************************
 // *****************************************************************************************
-SingleAction::SingleAction(MESSAGE* _message){
+//SingleAction::SingleAction(MESSAGE* _message){
+//	DEBASSERT("use message, 1")
+//	message = _message;
+//}
+SingleAction::SingleAction(MESSAGE* _message, int _driver){
 	message = _message;
+	driver = _driver;
 }
 // *****************************************************************************************
 // *****************************************************************************************
 MESSAGE* SingleAction::getMessage(void){
 	return message;
+}
+int SingleAction::getDriver(void){
+	return driver;
 }
 

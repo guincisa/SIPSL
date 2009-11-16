@@ -26,17 +26,30 @@
 #include "MESSAGE.h"
 #endif
 
+#define ACT_SEND 1
+#define ACT_TIMERON 2
+#define ACT_TIMEROFF 3
 
 class SingleAction {
 	private:
 		MESSAGE *message;
-		//non ricordo perche emptymessage...
-		EMPTYMESSAGE *emessage;
+
+		// 1 send embedded message
+		// 2 start timer
+		// 3 stop timer
+		int driver;
+
+		//For other actions
+		//not a pointer
+		//EMPTYMESSAGE emessage;
+
 	public:
-		SingleAction(MESSAGE*);
-		SingleAction(EMPTYMESSAGE*);
+//		SingleAction(MESSAGE*);
+//		SingleAction(EMPTYMESSAGE*);
+		SingleAction(MESSAGE*, int driver);
 		MESSAGE* getMessage(void);
-		EMPTYMESSAGE* getEmptyMessage(void);
+		//EMPTYMESSAGE* getEmptyMessage(void);
+		int getDriver(void);
 };
 
 class ACTION {
