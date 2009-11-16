@@ -102,19 +102,21 @@ void ALMGR::alarmer(void){
 				while( iter != time_alarm_mumap.end() ) {
 					DEBY
 					ALARM* tmal = iter->second;
-					tmal->getMessage()->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
-					tmal->getMessage()->compileMessage();
-					tmal->getMessage()->dumpVector();
 					if (tmal->isActive()){
 						DEBY
+						tmal->getMessage()->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
+						tmal->getMessage()->compileMessage();
+						tmal->getMessage()->dumpVector();
 						sl_cc->p_w(tmal->getMessage());
 					} else {
+						DEBY
 					}
 					//else
 					time_alarm_mumap.erase(iter);
 					mess_alm_map.erase(tmal->getMessage());
 					delete tmal;
 					iter++;
+					DEBY
 				}
 				tcu = alarm_pq.top();
 			}
@@ -146,19 +148,44 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	//used to cancel an alarm by using the message pointer
 	mess_alm_map.insert(pair<MESSAGE*, ALARM*>(_message, alm));
 
+	string callid = _message->getHeadCallId().getNormCallId() +
+			_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+	callid_alm_map.insert(pair<string, ALARM*>(callid, alm));
+
+	callid_message.insert(pair<string, MESSAGE*>(callid, _message));
+	message_callid.insert(pair<MESSAGE*, string>(_message, callid));
+
 	return;
 
 }
-void ALMGR::cancelAlarm(MESSAGE* _message){
+//void ALMGR::cancelAlarm(MESSAGE* _message){
+//
+//	// alarm is deactivated and the related message may have been
+//	// purged so
+//
+//	DEBOUT("ALMGR::cancelAlarm", _message)
+//	//lookup alarm into map
+//	map<MESSAGE*, ALARM*> ::iterator p;
+//	p = mess_alm_map.find(_message);
+//	ALARM* tmp = 0x0;
+//	if (p != mess_alm_map.end()){
+//		DEBOUT("ALMGR::cancelAlarm", "found")
+//		tmp = (ALARM*)p->second;
+//		tmp->cancel();
+//	}
+//}
+void ALMGR::cancelAlarm(string _callid){
 
 	// alarm is deactivated and the related message may have been
 	// purged so
 
+	DEBOUT("ALMGR::cancelAlarm", _callid)
 	//lookup alarm into map
-	map<MESSAGE*, ALARM*> ::iterator p;
-	p = mess_alm_map.find(_message);
+	map<string, ALARM*> ::iterator p;
+	p = callid_alm_map.find(_callid);
 	ALARM* tmp = 0x0;
-	if (p != mess_alm_map.end()){
+	if (p != callid_alm_map.end()){
+		DEBOUT("ALMGR::cancelAlarm", "found")
 		tmp = (ALARM*)p->second;
 		tmp->cancel();
 	}

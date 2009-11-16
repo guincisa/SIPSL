@@ -77,6 +77,13 @@ class ALMGR {
 		// to cancel an alarm I use the MESSAGE*
 		map<MESSAGE*, ALARM*> mess_alm_map;
 
+		//string callidy = _message->getHeadCallId().getNormCallId() +
+		//		_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+
+		map<string, ALARM*> callid_alm_map;
+		map<string, MESSAGE*> callid_message;
+		map<MESSAGE*, string> message_callid;
+
         ThreadWrapper *listenerThread;
 
 
@@ -87,7 +94,11 @@ class ALMGR {
 		ALMGR(void);
 		void initAlarm(SL_CC* sl_cc, timespec sleep_time);
 		void insertAlarm(MESSAGE* message, SysTime fireTime);
+
+		void cancelAlarm(string call_id);
 		void cancelAlarm(MESSAGE* message);
+
+		void purgeAlarm(ALARM*);
 
 };
 

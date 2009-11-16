@@ -273,10 +273,15 @@ void SL_CO::call(MESSAGE* _message){
 					st2.tv.tv_usec = 0;
 					actionList.top().getMessage()->setFireTime(st2);
 					call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(actionList.top().getMessage(),st1);
+				} else if (actionList.top().getDriver() == ACT_TIMEROFF){
+					string callid = actionList.top().getMessage()->getHeadCallId().getNormCallId() +
+							actionList.top().getMessage()->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+					DEBOUT("SL_CO::cancel alarm, callid", callid)
+					call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid);
 				}
+				// TODO else...
+				actionList.pop();
 			}
-			// TODO else...
-			actionList.pop();
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
@@ -577,8 +582,14 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				// TODO clear timer ad create new timer for the ringing
 
 				ACTION* action = new ACTION();
+				SingleAction sa_1 = SingleAction(_message, ACT_TIMEROFF);
+				action->addSingleAction(sa_1);
+
+				//TODO timer for ring
+
 
 				State = 2;
+				return action;
 			}
 		}
 	}
@@ -591,7 +602,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				DEBOUT("SL_SM_CL::event state 2 dialog est",  _message->getHeadSipReply().getReply().getCode() )
 
 				// TODO clear timer ad create new timer for the ringing
+
 				State = 2;
+				return (ACTION*)0x0;
 			}
 		}
 	}
