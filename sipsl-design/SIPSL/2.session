@@ -1,11 +1,7 @@
-window_sizes 1280 729 195 1079 579 68
+window_sizes 1274 726 113 1155 582 68
 windows_style
-diagrams
-  active  statediagram_ref 147074 // Y
-    1079 579 100 2 178 0
-end
 show_stereotypes
-selected statediagram_ref 147074 // Y
+selected sequencediagram_ref 153602 // F7 TIMER
 open
   state_ref 128002 // SM_SL_CL
 end
