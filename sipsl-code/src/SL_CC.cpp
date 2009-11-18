@@ -132,7 +132,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			call_oset = new CALL_OSET(this);
 			SL_CO* sl_co = new SL_CO(call_oset);
-			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this);
+			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this, _mess);
 			//NEED USER DEFINED CLASS
 			VALO* alo = new VALO(this);
 			alo->linkSUDP(getSUDP());

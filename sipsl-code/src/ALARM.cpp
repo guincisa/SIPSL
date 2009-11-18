@@ -110,6 +110,7 @@ void ALMGR::alarmer(void){
 						sl_cc->p_w(tmal->getMessage());
 					} else {
 						DEBY
+						//TODO purge alarms
 					}
 					//else
 					time_alarm_mumap.erase(iter);
@@ -132,21 +133,28 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	map<MESSAGE*, ALARM*>::iterator p;
 
 	if (!mess_alm_map.empty()){
+		DEBY
 		p = mess_alm_map.find(_message);
 		ALARM* tmp = (ALARM*)p->second;
-		tmp->cancel();
+		if (tmp != 0x0)
+			tmp->cancel();
 	}
+	DEBY
 
 	ALARM* alm = new ALARM(_message, _fireTime);
 	// insert into priority q
 	alarm_pq.push(alm->getTriggerTime());
+	DEBY
+
 
 	//insert into map time - alarm
 	time_alarm_mumap.insert(pair<long long int, ALARM*>(alm->getTriggerTime(), alm));
+	DEBY
 
 	//insert or replace into map message - alarm
 	//used to cancel an alarm by using the message pointer
 	mess_alm_map.insert(pair<MESSAGE*, ALARM*>(_message, alm));
+	DEBY
 
 	string callid = _message->getHeadCallId().getNormCallId() +
 			_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
@@ -154,6 +162,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 
 	callid_message.insert(pair<string, MESSAGE*>(callid, _message));
 	message_callid.insert(pair<MESSAGE*, string>(_message, callid));
+	DEBY
 
 	return;
 

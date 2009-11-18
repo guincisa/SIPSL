@@ -219,7 +219,7 @@ void SL_CO::call(MESSAGE* _message){
 		//create and put in comap
 		if (sl_sm_cl == 0x0){
 			DEBOUT("Creating CL machine callidy", callidy)
-			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE());
+			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), _message);
 			call_oset->addSL_SM_CL(callidy, sl_sm_cl);
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
@@ -273,6 +273,7 @@ void SL_CO::call(MESSAGE* _message){
 					st2.tv.tv_usec = 0;
 					actionList.top().getMessage()->setFireTime(st2);
 					call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(actionList.top().getMessage(),st1);
+
 				} else if (actionList.top().getDriver() == ACT_TIMEROFF){
 					string callid = actionList.top().getMessage()->getHeadCallId().getNormCallId() +
 							actionList.top().getMessage()->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
@@ -307,20 +308,25 @@ void SL_CO::call(MESSAGE* _message){
 
 //**********************************************************************************
 //**********************************************************************************
-SL_SM::SL_SM(ENGINE* _engine){
+SL_SM::SL_SM(ENGINE* _engine, MESSAGE* _message){
 	sl_cc = _engine;
+	messageGenerator = _message;
 }
 ENGINE* SL_SM::getSL_CC(void){
 	return sl_cc;
 }
-SL_SM_SV::SL_SM_SV(ENGINE* _engine):
-	SL_SM(_engine){
+MESSAGE* SL_SM::getGenerator(void){
+	return messageGenerator;
+}
+SL_SM_SV::SL_SM_SV(ENGINE* _engine, MESSAGE* _message):
+	SL_SM(_engine, _message){
 
 	DEBOUT("SL_SM_SV::state","0")
 
 	State = 0;
 
 }
+
 //**********************************************************************************
 //**********************************************************************************
 ACTION* SL_SM_SV::event(MESSAGE* _message){
@@ -426,8 +432,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_CL::SL_SM_CL(ENGINE* _engine):
-	SL_SM(_engine){
+SL_SM_CL::SL_SM_CL(ENGINE* _engine, MESSAGE* _messgenerator):
+	SL_SM(_engine, _messgenerator){
 
 	DEBOUT("SL_SM_CL::state","0")
 
@@ -492,8 +498,8 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				SysTime afterT;
 				GETTIME(afterT);
-				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc;
-				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc;
+				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(resend_invite+1);
+				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(resend_invite+1);
 				__message->setFireTime(afterT);
 				SingleAction sa_2 = SingleAction(__message, ACT_TIMERON);
 
@@ -508,7 +514,8 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 			}
 		} else {
-			// discard
+			//TODO purge state machine(?)
+			return 0x0;
 		}
 	}
 	if (State == 1){
@@ -556,8 +563,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				SysTime afterT;
 				GETTIME(afterT);
-				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc;
-				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc;
+				//TODO check if mc is overflowed
+				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(resend_invite+1);
+				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(resend_invite+1);
 				__message->setFireTime(afterT);
 				SingleAction sa_2 = SingleAction(__message, ACT_TIMERON);
 
@@ -569,6 +577,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				State = 1;
 				resend_invite++;
 				return action;
+			}
+			else {
+				return 0x0;
 			}
 
 		}
@@ -585,12 +596,15 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				SingleAction sa_1 = SingleAction(_message, ACT_TIMEROFF);
 				action->addSingleAction(sa_1);
 
-				//TODO timer for ring
+//				//TODO timer for ring
 
 
 				State = 2;
 				return action;
 			}
+		}
+		else {
+			return 0x0;
 		}
 	}
 	if (State == 2){

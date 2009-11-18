@@ -88,8 +88,9 @@ class SL_CO {
 //**********************************************************************************
 class SL_SM {
 	public:
-		SL_SM(ENGINE* sl_cc);
+		SL_SM(ENGINE* sl_cc, MESSAGE* generator);
 		ENGINE* getSL_CC(void);
+		MESSAGE* getGenerator(void);
 
 #ifdef TESTING
 		virtual ACTION* event(MESSAGE*);
@@ -99,6 +100,8 @@ class SL_SM {
     protected:
 
 		ENGINE* sl_cc;
+		//The Request message that has triggered the creation of the state maqchine
+		MESSAGE* messageGenerator;
 
         int State;
 //    public:
@@ -120,7 +123,7 @@ class SL_SM_CL : public SL_SM {
 		int resend_invite;
 
 		ACTION* event(MESSAGE*);
-		SL_SM_CL(ENGINE*);
+		SL_SM_CL(ENGINE*, MESSAGE*);
 
 //    public:
 //    SL_SM_CL();
@@ -138,7 +141,7 @@ class SL_SM_SV : public SL_SM {
 		int placeholder;
 
 		ACTION* event(MESSAGE*);
-		SL_SM_SV(ENGINE*);
+		SL_SM_SV(ENGINE*, MESSAGE*);
 
 //    public:
 //
