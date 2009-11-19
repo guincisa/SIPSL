@@ -154,6 +154,7 @@ void SL_CO::call(MESSAGE* _message){
 	DEBOUT("SL_CO::call", _message->getHeadSipRequest().getContent())
     DEBOUT("SL_CO::call", _message->getExtendedInternalCID())
 
+    ACTION* action = 0x0;
 
 	if (_message->getDestEntity() == SODE_SMSVPOINT) {
 		DEBOUT("********************************************************************","")
@@ -162,7 +163,7 @@ void SL_CO::call(MESSAGE* _message){
 
 		SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
 
-		ACTION* action = sl_sm_sv->event(_message);
+		action = sl_sm_sv->event(_message);
 
 		if (action != 0x0){
 
@@ -182,11 +183,12 @@ void SL_CO::call(MESSAGE* _message){
 
 				}
 				if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_APOINT){
-					DEBOUT("SL_CO::call action is send to APOINT, string:", actionList.top().getMessage()->getIncBuffer().c_str())
-					sendto(actionList.top().getMessage()->getSock(),
-							actionList.top().getMessage()->getIncBuffer().c_str(),
-							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getAddress()),
-							sizeof(actionList.top().getMessage()->getAddress()));
+					ATRANSMIT(actionList.top().getMessage())
+//					DEBOUT("SL_CO::call action is send to APOINT, string:", actionList.top().getMessage()->getIncBuffer().c_str())
+//					sendto(actionList.top().getMessage()->getSock(),
+//							actionList.top().getMessage()->getIncBuffer().c_str(),
+//							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getAddress()),
+//							sizeof(actionList.top().getMessage()->getAddress()));
 
 					//Purge message
 					PURGEMESSAGE(actionList.top().getMessage(), "PURGE MESSAGE")
@@ -260,19 +262,29 @@ void SL_CO::call(MESSAGE* _message){
 						DEBASSERT("can't create b address")
 					} else{
 
-						DEBOUT("sending", actionList.top().getMessage()->getIncBuffer())
+						BTRANSMIT(actionList.top().getMessage())
 
-						if (sendto(actionList.top().getMessage()->getSock(),
-							actionList.top().getMessage()->getIncBuffer().c_str(),
-							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart,
-							sizeof(si_bpart)) == -1) {
-							DEBASSERT("not sent")
-						}
+//						if (sendto(actionList.top().getMessage()->getSock(),
+//							actionList.top().getMessage()->getIncBuffer().c_str(),
+//							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart,
+//							sizeof(si_bpart)) == -1) {
+//							DEBASSERT("not sent")}
 					}
 					//This INVITE belongs to ALO cannot be deleted here
+					//but it can be a retransission. and so it's a copy.
 					//DELETE INVITE HERE...
-					//PURGEMESSAGE(actionList.top().getMessage(), "PURGE INVITE")
+					PURGEMESSAGE(actionList.top().getMessage(), "PURGE INVITE")
 
+				} else if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_APOINT) {
+					ATRANSMIT(actionList.top().getMessage())
+//					DEBOUT("SL_CO::call action is send to APOINT, string:", actionList.top().getMessage()->getIncBuffer().c_str())
+//					sendto(actionList.top().getMessage()->getSock(),
+//							actionList.top().getMessage()->getIncBuffer().c_str(),
+//							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getAddress()),
+//							sizeof(actionList.top().getMessage()->getAddress()));
+
+					//Purge message
+					PURGEMESSAGE(actionList.top().getMessage(), "PURGE MESSAGE")
 				} else if (actionList.top().getDriver() == ACT_TIMERON){ // to alarm
 					DEBOUT("SL_CO::call action is send to ALARM", actionList.top().getMessage()->getLine(0) << " ** " << actionList.top().getMessage()->getExtendedInternalCID())
 					SysTime st1 = actionList.top().getMessage()->getFireTime();
@@ -299,6 +311,11 @@ void SL_CO::call(MESSAGE* _message){
 			PURGEMESSAGE(_message, "SL_SM_SV::delete message")
 			return;
 		}
+	}
+
+	DEBOUT("SL_CO::call ended","")
+	if (action != 0x0){
+		delete action;
 	}
 }
 //**********************************************************************************
@@ -420,9 +437,10 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 	}
 	if (_message->getReqRepType() == REPSUPP) {
 		DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())
+		return 0x0;
 	}
 
-	State = 0;
+	//State = 0;
 
 }
 //**********************************************************************************
@@ -610,16 +628,66 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				DEBOUT("SL_SM_CL::event state 2 dialog est",  _message->getHeadSipReply().getReply().getCode() )
 
+				ACTION* action = new ACTION();
+
 				// TODO clear timer ad create new timer for the ringing
 
+				// Dialog establish must derive from incoming invite
+				// get incoming invite
+				MESSAGE* __message = getGenerator();
+				DEBOUT("MESSAGE GENERATOR", __message)
+				CREATEMESSAGE(dialoge_x, __message, SODE_SMCLPOINT)
+				dialoge_x->setDestEntity(SODE_APOINT);
+
+				//TODO qui fare dialoge_x...
+				DEBOUT("dialoge_x","SIP/2.0 101 Dialog Establishement")
+				dialoge_x->setHeadSipReply("SIP/2.0 101 Dialog Establishement");
+				DEBOUT("dialoge_x","Purge sdp")
+				dialoge_x->purgeSDP();
+				DEBOUT("dialoge_x","delete User-Agent:")
+				dialoge_x->dropHeader("User-Agent:");
+				DEBOUT("dialoge_x","delete Max-Forwards:")
+				dialoge_x->removeMaxForwards();
+				DEBOUT("dialoge_x","delete Allow:")
+				dialoge_x->dropHeader("Allow:");
+				DEBOUT("dialoge_x","delete Route:")
+				dialoge_x->dropHeader("Route:");
+				DEBOUT("dialoge_x","delete Date:")
+				dialoge_x->dropHeader("Date:");
+
+				dialoge_x->setGenericHeader("Content-Length:","0");
+				//crash here...
+
+				//via add rport
+				DEBY
+				C_HeadVia* viatmp = (C_HeadVia*) dialoge_x->getSTKHeadVia().top();
+				DEBOUT("via1", viatmp->getC_AttVia().getContent())
+				DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+				//TODO 124??
+				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
+				DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+
+				DEBOUT("via4", viatmp->getC_AttVia().getContent())
+				dialoge_x->popSTKHeadVia();
+				dialoge_x->pushHeadVia(viatmp->getC_AttVia().getContent());
+
+				dialoge_x->compileMessage();
+				dialoge_x->dumpVector();
+
+				SingleAction sa_1 = SingleAction(dialoge_x, ACT_SEND);
+
+				action->addSingleAction(sa_1);
+
 				State = 2;
-				return (ACTION*)0x0;
+				return action;
 			}
 			else {
 				DEBOUT("SL_SM_CL::event state 2 reply not implemented",  _message->getHeadSipReply().getReply().getCode() )
-				State = 2;
+				State = 4;
 				return (ACTION*)0x0;
 			}
 		}
 	}
+	return 0x0;
 }

@@ -57,10 +57,24 @@ typedef struct {
 
 #define PURGEMESSAGE(m1,m2)  {string key = m1->getKey();\
 	pthread_mutex_lock(&messTableMtx);\
-	DEBOUT(m2,key)\
+	DEBOUT(m2,key << " [" <<m1<<"]")\
 	globalMessTable.erase(key);\
 	delete m1;\
 	pthread_mutex_unlock(&messTableMtx);}
+
+#define ATRANSMIT(message) \
+	DEBOUT("SL_CO::call action is send APOINT string:", message->getIncBuffer()) \
+	sendto(message->getSock(), \
+			message->getIncBuffer().c_str(), \
+			message->getIncBuffer().length() , 0, (struct sockaddr *) &(message->getAddress()), \
+			sizeof(message->getAddress()));
+
+#define BTRANSMIT(message) \
+		DEBOUT("SL_CO::call action is send BPOINT string:", message->getIncBuffer()) \
+		sendto(actionList.top().getMessage()->getSock(), \
+							actionList.top().getMessage()->getIncBuffer().c_str(), \
+							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart, \
+							sizeof(si_bpart));
 
 #define CREATEMESSAGE(m1, m2, m3) char bu[512];\
 				SysTime inTime;\

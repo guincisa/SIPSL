@@ -341,12 +341,14 @@ void MESSAGE::compileMessage(void){
     	}
     }
     incMessBuff = "";
+	flex_line.insert(theIterator ,1 , "");
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
-    	if (theIterator != flex_line.end()) {
-    		incMessBuff = incMessBuff + (*theIterator) + "\r\n";
-    	}else {
-    		incMessBuff = incMessBuff + (*theIterator);
-    	}
+    	incMessBuff = incMessBuff + (*theIterator) + "\r\n";
+//    	if (theIterator != flex_line.end()) {
+//    		incMessBuff = incMessBuff + (*theIterator) + "\r\n";
+//    	}else {
+//    		incMessBuff = incMessBuff + (*theIterator) + "\r\n";
+//    	}
 
     }
 
