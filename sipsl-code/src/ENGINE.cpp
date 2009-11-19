@@ -64,7 +64,6 @@ ENGINE::ENGINE(void) {
     int res;
     // unlock the CONSmutex once the derived class contructor has ended
     //res = pthread_mutex_lock(&CONSmutex);
-    //
 
     ENGtuple *t1,*t2,*t3,*t4,*t5;
     t1 = new ENGtuple;
@@ -82,7 +81,7 @@ ENGINE::ENGINE(void) {
     t4->id = 3;
     t5->ps = this;
     t5->id = 4;
-    //pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
+
     parsethread[0] = new ThreadWrapper();
     parsethread[1] = new ThreadWrapper();
     parsethread[2] = new ThreadWrapper();
@@ -134,16 +133,14 @@ void ENGINE::p_w(MESSAGE* _m) {
 void * threadparser (void * _pt){
 
     ENGtuple *pt = (ENGtuple *)  _pt;
-    int id = pt->id;
     ENGINE * ps = pt->ps;
-    int res;
     while(true) {
         pthread_mutex_lock(&(ps->sb.condvarmutex));
         while(ps->sb.isEmpty() ) {
-            DEBOUT("ENGINE thread isempty","")
+            DEBOUT("ENGINE thread is empty","")
             pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
         }
-        //TODO NEW CODE
+
         MESSAGE* m = ps->sb.get();
         if (m == NULL)  {
             DEBOUT("ENGINE thread NULL","")

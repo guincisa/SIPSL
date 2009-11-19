@@ -37,19 +37,6 @@
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
-//#ifndef ALARM_H
-//#include "ALARM.h"
-//#endif
-
-
-
-////**********************************************************************************
-////**********************************************************************************
-//class ParseEx {
-//    public:
-//    string error;
-//    ParseEx(string);
-//};
 
 ////**********************************************************************************
 ////**********************************************************************************
@@ -65,9 +52,11 @@ typedef struct tuple {
 //**********************************************************************************
 //**********************************************************************************
 //SUDP
-//Runs on two threads one for
-//listening messages one for
-//commands
+// One thread on the socket.
+// Future:
+// Runs on two threads one for
+// listening messages one for
+// commands
 //**********************************************************************************
 //**********************************************************************************
 class SUDP {
@@ -91,18 +80,9 @@ class SUDP {
         string getDomain(void);
         int getPort(void);
         ALMGR* getAlmgr(void);
-        //SUDP * getInstance(void);
-    	//SUDP(void);
-
-//        MESS_TABLE globalMessTable;
-//
-//        pthread_mutex_t messTableMtx;
-
-
 
     private:
 
-    	//SUDP * instance;
         ENGINE * engine;
         ThreadWrapper *listenerThread;
         string domain;

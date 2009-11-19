@@ -57,8 +57,6 @@ class ENGINE {
 
 	private:
 
-		//
-
 		ThreadWrapper* parsethread[5];
 
         SUDP* sudp;

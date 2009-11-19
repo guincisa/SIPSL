@@ -169,6 +169,11 @@ int BASEMESSAGE::getDestEntity(void){
 void BASEMESSAGE::setDestEntity(int _destEntity){
 	destEntity = _destEntity;
 }
+void BASEMESSAGE::setEndPoints(int _genEntity, int _destEntity){
+	destEntity = _destEntity;
+	genEntity = _genEntity;
+}
+
 string &BASEMESSAGE::getKey(void){
 	return key;
 }
@@ -784,6 +789,11 @@ void MESSAGE::setFireTime(SysTime _systime){
 SysTime MESSAGE::getFireTime(void){
 
 	return fireTime;
+}
+string MESSAGE::getExtendedInternalCID(void){
+
+	return getHeadCallId().getNormCallId() + getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+
 }
 
 /*

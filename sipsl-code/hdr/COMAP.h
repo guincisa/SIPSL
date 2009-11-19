@@ -32,7 +32,7 @@ typedef map<string, CALL_OSET *> COMAP_MM;
 typedef multimap<string, string> CALL_ID_Y2X;
 
 
-//TODO MAY 1 2009 to implement
+//Call Object Map
 class COMAP {
 
 	private:
@@ -40,8 +40,8 @@ class COMAP {
 		CALL_ID_Y2X call_id_y2x;
 
 	public:
-		CALL_OSET* getCALL_OSET_SV(string callId_X);
-		CALL_OSET* getCALL_OSET_CL(string callId_Y);
+		CALL_OSET* getCALL_OSET_XMain(string callId_X);
+		CALL_OSET* getCALL_OSET_YDerived(string callId_Y);
 		void setCALL_OSET(string callId_X, CALL_OSET*);
 		void setY2XCallId(string callId_Y, string callId_X);
 		void deleteCALL_OSET(string callId_X);

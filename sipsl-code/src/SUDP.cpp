@@ -61,15 +61,6 @@
 #include "ALARM.h"
 #endif
 
-
-//// *****************************************************************************************
-//// ************************************
-//ParseEx::ParseEx(string s) {
-//    error = s;
-//}
-// *****************************************************************************************
-
-
 // *****************************************************************************************
 // Socket listener thread
 // *****************************************************************************************
@@ -77,15 +68,14 @@
 extern "C" void* SUPDSTACK (void*);
 
 void * SUDPSTACK(void *_tgtObject) {
-    int res;
 
-DEBOUT("SUDPSTACK start","")
+    DEBOUT("SUDPSTACK start","")
 
 	SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
 
     tgtObject->st->listen();
 
-DEBOUT("SUDPSTACK started","")
+    DEBOUT("SUDPSTACK started","")
 
     return (NULL);
 }
@@ -94,19 +84,7 @@ DEBOUT("SUDPSTACK started","")
 // SUDP
 // Initialize Stack
 // *****************************************************************************************
-//// *****************************************************************************************
-//SUDP::SUDP(void) {
-////	instance == NULL;
-//}
-
-//SUDP * SUDP::getInstance(void){
-//
-//	if (instance == NULL){
-//		instance = new SUDP;
-//	}
-//	return instance;
-//}
-
+// *****************************************************************************************
 void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm){
 
     DEBOUT("SUDP init",_domain)
@@ -121,7 +99,7 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm){
 
     /* Create socket for sending/receiving datagrams */
     if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-        DEBERROR("socket() failed)")
+        DEBASSERT("socket() failed)")
         return;
     }
 
@@ -131,7 +109,7 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm){
     echoServAddr.sin_addr.s_addr = htonl(INADDR_ANY); /* Any incoming interface */
     echoServAddr.sin_port = htons(echoServPort);      /* Local port */
 
-    //Init other things
+    //Init mutex
     pthread_mutex_init(&messTableMtx,NULL);
 
     /* Bind to the local address */
@@ -152,6 +130,7 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm){
 // *****************************************************************************************
 // *****************************************************************************************
 void SUDP::start(void) {
+
     // allocate thread and starts
 
     DEBOUT("SUDP::start","")
@@ -160,9 +139,9 @@ void SUDP::start(void) {
     SUDPtuple *t1;
     t1 = new SUDPtuple;
     t1->st = this;
-    // TODO ???
-    int res;
-    res = pthread_create(&(listenerThread->thread), NULL, SUDPSTACK, (void *) t1 );
+
+    //TODO result not used
+    int res = pthread_create(&(listenerThread->thread), NULL, SUDPSTACK, (void *) t1 );
     return;
 }
 
@@ -170,8 +149,6 @@ void SUDP::start(void) {
 // Listen to network
 // *****************************************************************************************
 void SUDP::listen() {
-
-	char bu[512];
 
     for (;;){
         /* Set the size of the in-out parameter */
@@ -188,20 +165,6 @@ void SUDP::listen() {
 
         //Message handling
         CREATENEWMESSAGE(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
-//		SysTime inTime;
-//		GETTIME(inTime);
-//		MESSAGE* message;
-//		message = new MESSAGE(echoBuffer, SODE_NTWPOINT, inTime, sock, echoClntAddr);
-//		long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;
-//		sprintf(bu, "%x#%llu",message,num);
-//		string key(bu);
-//		message->setKey(key);
-//		DEBOUT("Incoming\n****************************************************\n",message->getIncBuffer() + "\n key " + key)
-//		pthread_mutex_lock(&messTableMtx);
-//		globalMessTable.insert(pair<string, MESSAGE*>(key, message));
-//		pthread_mutex_unlock(&messTableMtx);
-
-		//message->setDestEntity(SODE_SMSVPOINT);
 
 		//DECTIME
 		//STARTTIME
@@ -210,36 +173,8 @@ void SUDP::listen() {
 
 	}
 }
-//void SUDP::listen() {
-//    for (;;) /* Run forever */ {
-//        /* Set the size of the in-out parameter */
-//        cliAddrLen = sizeof(echoClntAddr);
-//
-//        /* Block until receive message from a client */
-//        memset(&echoBuffer, 0x0, ECHOMAX);   /* Zero out structure */
-//        if ((recvMsgSize = recvfrom(sock, echoBuffer, ECHOMAX, 0,
-//            (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
-//            DEBERROR("rcvfrom() failed")
-//            return;
-//        }
-//		SysTime mytime;
-//		GETTIME(mytime);
-//		MESSAGE im(echoBuffer, mytime);
-//		//im.etGenEntity = SODE_APOINT;
-//
-//		//GETTIME(im.in_ts)
-//
-//		DEBOUT("Incoming",im.getIncBuffer())
-//
-//		//DECTIME
-//		//STARTTIME
-//		engine->p_w(im);
-//		//ENDTIME
-//
-//	}
-//}
 // *****************************************************************************************
-// getDomain
+// getters
 // *****************************************************************************************
 // *****************************************************************************************
 string SUDP::getDomain(void) {

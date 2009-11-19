@@ -51,14 +51,20 @@ void * ALARMSTACK(void *_tgtObject) {
     return (NULL);
 }
 //**********************************************************************************
-ALMGR::ALMGR(void){
+ALMGR::ALMGR(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
+	sleep_time.tv_sec = _sec;
+	sleep_time.tv_nsec = _nsec;
+	sl_cc = _sl_cc;
 	DEBOUT("ALMGR::ALMGR", "alarm created")
 }
-void ALMGR::initAlarm(SL_CC* _sl_cc, timespec _sleep_time){
-
-	DEBOUT("ALMGR::initAlarm", "init")
+ALMGR::ALMGR(SL_CC* _sl_cc, timespec _sleep_time){
 	sleep_time = _sleep_time;
 	sl_cc = _sl_cc;
+	DEBOUT("ALMGR::ALMGR", "alarm created")
+}
+void ALMGR::initAlarm(void){
+
+	DEBOUT("ALMGR::initAlarm", "init")
 
     listenerThread = new ThreadWrapper;
     ALMGRtuple *t1;

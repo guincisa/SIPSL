@@ -69,7 +69,9 @@
 #ifndef ALARM_H
 #include "ALARM.h"
 #endif
-
+//**********************************************************************************
+//**********************************************************************************
+// CALL_OSET
 //**********************************************************************************
 //**********************************************************************************
 CALL_OSET::CALL_OSET(ENGINE* _engine){
@@ -116,8 +118,11 @@ SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
 void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
 
 	mm_sl_sm_cl.insert(make_pair(_callId_Y,  _sl_cl));
+
 	return;
 }
+//**********************************************************************************
+//**********************************************************************************
 string CALL_OSET::getCallIdX(void){
 	return callId_X;
 }
@@ -134,11 +139,9 @@ SL_CO* CALL_OSET::getSL_CO(void){
 	return sl_co;
 }
 
-//		SL_CO* getSL_CO(void);
-//
-//		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
-//		SL_SM_CL* getSL_SM_SL(string callId_Y);
-//		ALO* getALO(void);
+//**********************************************************************************
+//**********************************************************************************
+// SL_CO
 //**********************************************************************************
 //**********************************************************************************
 SL_CO::SL_CO(CALL_OSET* _call_oset){
@@ -149,7 +152,7 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 void SL_CO::call(MESSAGE* _message){
 
 	DEBOUT("SL_CO::call", _message->getHeadSipRequest().getContent())
-    DEBOUT("SL_CO::call", _message->getHeadCallId().getContent() << "#" << _message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch"))
+    DEBOUT("SL_CO::call", _message->getExtendedInternalCID())
 
 
 	if (_message->getDestEntity() == SODE_SMSVPOINT) {
@@ -163,43 +166,42 @@ void SL_CO::call(MESSAGE* _message){
 
 		if (action != 0x0){
 
-			// now act
+			// now read actions
 			stack<SingleAction> actionList;
 			actionList = action->getActionList();
+
 			while (!actionList.empty()){
-				DEBOUT("SL_CO::reading action stack", "")
+
+				DEBOUT("SL_CO::reading action stack, message:", actionList.top().getMessage()->getIncBuffer())
+
 				if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
 
-					DEBOUT("SL_CO::call action is ALO", actionList.top().getMessage()->getHeadSipRequest().getContent())
+					DEBOUT("SL_CO::call action is send to ALO", actionList.top().getMessage()->getLine(0) << " ** " << actionList.top().getMessage()->getExtendedInternalCID())
 					call_oset->getALO()->p_w(actionList.top().getMessage());
+
 				}
 				if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_APOINT){
-					DEBOUT("ETRY ", actionList.top().getMessage()->getIncBuffer().c_str())
+					DEBOUT("SL_CO::call action is send to APOINT, string:", actionList.top().getMessage()->getIncBuffer().c_str())
 					sendto(actionList.top().getMessage()->getSock(),
 							actionList.top().getMessage()->getIncBuffer().c_str(),
 							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getAddress()),
 							sizeof(actionList.top().getMessage()->getAddress()));
 
-					//Purge Etry
-					PURGEMESSAGE(actionList.top().getMessage(), "PURGE TRY")
+					//Purge message
+					PURGEMESSAGE(actionList.top().getMessage(), "PURGE MESSAGE")
+				} else {
+					//TODO
+					DEBOUT("SL_CO::call action is ???", "")
 				}
-				// TODO else...
 
 				actionList.pop();
+
 			}
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
-			//if (purgeMessage){
 			PURGEMESSAGE(_message,"SL_SM_SV::delete message")
-//				string key = _message->getKey();
-//				pthread_mutex_lock(&messTableMtx);
-//				DEBOUT("SL_SM_SV::delete message",key)
-//				globalMessTable.erase(key);
-//				delete _message;
-//				pthread_mutex_unlock(&messTableMtx);
-			//}
 			return;
 		}
 	}
@@ -208,19 +210,21 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("********************************************************************","")
 		DEBOUT("*******************to client state machine**************************","")
 
-		string callidy = _message->getHeadCallId().getNormCallId() +
-				_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+		string callidy = _message->getExtendedInternalCID();
 
 		DEBOUT("Message to CL machine callidy", callidy)
 
 		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
-		//Client state machine doe not exists
-		//create and put in comap
 		if (sl_sm_cl == 0x0){
+
+			//Client state machine does not exists
+			//create and put in comap
+
 			DEBOUT("Creating CL machine callidy", callidy)
 			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), _message);
 			call_oset->addSL_SM_CL(callidy, sl_sm_cl);
+
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
@@ -230,23 +234,26 @@ void SL_CO::call(MESSAGE* _message){
 
 		if (action != 0x0){
 
-			// now act
+			// now read actions
+
 			stack<SingleAction> actionList;
 			actionList = action->getActionList();
 			while (!actionList.empty()){
-				DEBOUT("SL_CO::reading action stack", "")
+
+				DEBOUT("SL_CO::reading action stack, message:", actionList.top().getMessage()->getIncBuffer())
+
 				if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_BPOINT){
 
-					DEBOUT("SL_CO::destination is b", actionList.top().getMessage()->getHeadSipRequest().getContent())
+					DEBOUT("SL_CO::call action is send to B", actionList.top().getMessage()->getLine(0) << " ** " << actionList.top().getMessage()->getExtendedInternalCID())
 
 					struct sockaddr_in si_bpart;
 					memset((char *) &si_bpart, 0, sizeof(si_bpart));
 					si_bpart.sin_family = AF_INET;
 					//TODO ???
 					// port nel TO o nella request
-					DEBOUT("create addess", actionList.top().getMessage()->getHeadTo().getContent())
-					DEBOUT("create addess 2", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getHostName());
-					DEBOUT("create addess 3", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
+//					DEBOUT("create addess", actionList.top().getMessage()->getHeadTo().getContent())
+//					DEBOUT("create addess 2", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getHostName());
+//					DEBOUT("create addess 3", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
 
 					si_bpart.sin_port = htons(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
 					if (inet_aton(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_bpart.sin_addr)==0){
@@ -262,11 +269,12 @@ void SL_CO::call(MESSAGE* _message){
 							DEBASSERT("not sent")
 						}
 					}
+					//This INVITE belongs to ALO cannot be deleted here
 					//DELETE INVITE HERE...
-					PURGEMESSAGE(actionList.top().getMessage(), "PURGE INVITE")
+					//PURGEMESSAGE(actionList.top().getMessage(), "PURGE INVITE")
 
 				} else if (actionList.top().getDriver() == ACT_TIMERON){ // to alarm
-					DEBOUT("SL_CO::destination is ALARM", actionList.top().getMessage()->getHeadSipRequest().getContent())
+					DEBOUT("SL_CO::call action is send to ALARM", actionList.top().getMessage()->getLine(0) << " ** " << actionList.top().getMessage()->getExtendedInternalCID())
 					SysTime st1 = actionList.top().getMessage()->getFireTime();
 					SysTime st2;
 					st2.tv.tv_sec = 0;
@@ -275,37 +283,24 @@ void SL_CO::call(MESSAGE* _message){
 					call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(actionList.top().getMessage(),st1);
 
 				} else if (actionList.top().getDriver() == ACT_TIMEROFF){
-					string callid = actionList.top().getMessage()->getHeadCallId().getNormCallId() +
-							actionList.top().getMessage()->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+					DEBOUT("SL_CO::call action is clear ALARM", actionList.top().getMessage()->getLine(0) << " ** " << actionList.top().getMessage()->getExtendedInternalCID())
+					string callid = actionList.top().getMessage()->getExtendedInternalCID();
 					DEBOUT("SL_CO::cancel alarm, callid", callid)
 					call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid);
+				} else {
+					//TODO
+					DEBOUT("SL_CO::call action is ???", "")
 				}
-				// TODO else...
 				actionList.pop();
 			}
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
-			//if (purgeMessage){
 			PURGEMESSAGE(_message, "SL_SM_SV::delete message")
-//				string key = _message->getKey();
-//				pthread_mutex_lock(&messTableMtx);
-//				DEBOUT("SL_SM_SV::delete message",key)
-//				globalMessTable.erase(key);
-//				delete _message;
-//				pthread_mutex_unlock(&messTableMtx);
-			//}
 			return;
 		}
 	}
-	//do something with action
 }
-//**********************************************************************************
-//**********************************************************************************
-//ACTION SL_SM::event(MESSAGE* _message){
-//	DEBOUT("SL_SM::event", _message->getIncBuffer())
-//}
-
 //**********************************************************************************
 //**********************************************************************************
 SL_SM::SL_SM(ENGINE* _engine, MESSAGE* _message){
@@ -617,6 +612,11 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				// TODO clear timer ad create new timer for the ringing
 
+				State = 2;
+				return (ACTION*)0x0;
+			}
+			else {
+				DEBOUT("SL_SM_CL::event state 2 reply not implemented",  _message->getHeadSipReply().getReply().getCode() )
 				State = 2;
 				return (ACTION*)0x0;
 			}

@@ -40,13 +40,15 @@ class SL_SM_CL;
 class SL_SM_SV;
 class SL_CO;
 
-
+//Umbrella class which hosts states machines and call object
 class CALL_OSET {
 
 	private:
+
 		SL_CO* sl_co;
 		ALO* alo;
 		SL_SM_SV* sl_sm_sv;
+
 		//map callId_y and related states machines
 		map<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
@@ -104,11 +106,6 @@ class SL_SM {
 		MESSAGE* messageGenerator;
 
         int State;
-//    public:
-//        SL_SM();
-//        int getState (void);
-//
-//        virtual MESSAGE * event(MESSAGE&);
 };
 //**********************************************************************************
 //**********************************************************************************
@@ -125,11 +122,6 @@ class SL_SM_CL : public SL_SM {
 		ACTION* event(MESSAGE*);
 		SL_SM_CL(ENGINE*, MESSAGE*);
 
-//    public:
-//    SL_SM_CL();
-//	// array of pointers to messages
-//    MESSAGE ** event(MESSAGE&);
-//    int dummy;
 };
 //**********************************************************************************
 //**********************************************************************************
@@ -137,15 +129,11 @@ class SL_SM_CL : public SL_SM {
 //**********************************************************************************
 //**********************************************************************************
 class SL_SM_SV : public SL_SM {
+
 	public:
 		int placeholder;
 
 		ACTION* event(MESSAGE*);
 		SL_SM_SV(ENGINE*, MESSAGE*);
 
-//    public:
-//
-//	// array of pointers to messages
-//    MESSAGE ** event(MESSAGE&);
-//    int dummy;
 };

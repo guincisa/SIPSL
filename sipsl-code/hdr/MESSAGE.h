@@ -95,6 +95,8 @@ class BASEMESSAGE {
         void setDestEntity(int);
         int getDestEntity(void);
 
+        void setEndPoints(int from, int to);
+
 
         string &getKey(void);
         void setKey(string key);
@@ -220,6 +222,7 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadSubject		&getHeadSubject(void);
     	C_HeadRoute			&getHeadRoute(void) throw (HeaderException);
 
+    	string getExtendedInternalCID(void);
 
     	void removeHeadRoute(void);
 

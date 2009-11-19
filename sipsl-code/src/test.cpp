@@ -44,68 +44,32 @@
 #include "SIP_PROPERTIES.h"
 #endif
 
-
-/*
-#include "REG_AC.h"
-#include "PROXY_AC.h"
-*/
-
-
 int main(void) {
 
 	SUDP mystack;
 
-	SIPENGINE gg;
+	//Second stage engine: Call Control
 	SL_CC sl_cc;
 	sl_cc.linkSUDP(&mystack);
+
+	//First stage engine: Lazy parser
+	SIPENGINE gg;
 	gg.setSL_CC(&sl_cc);
 	gg.linkSUDP(&mystack);
 
-
-	ALMGR alarm;
-
-
-	timespec sleep_time;
-	sleep_time.tv_sec = 0;
-	sleep_time.tv_nsec = 100000;
-	alarm.initAlarm(&sl_cc, sleep_time);
+	//Alarm setup
+	//sec , nsec
+	ALMGR alarm(&sl_cc, 0, 100000);
+	alarm.initAlarm();
 
 	mystack.init(5060, &gg, "sipsl.gugli.com", &alarm);
-
     mystack.start();
+
     pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
     int res = pthread_mutex_lock(&gu);
     res = pthread_mutex_lock(&gu);
     res = pthread_mutex_lock(&gu);
 
     return 0;
-
-//    cout << "begin" << endl << flush;
-//    SUDP mystack;
-//    SIPRATYPE rt;
-//    CSL_CC csl_cc(&rt);
-///* del b2bua
-//    REG_AC regac(&rt);
-//    PROXY_AC proxyac(&rt);
-//*/
-//    AC_CALLBACK cb;
-//    //rt.associateCB(&cb);
-//    //del b2bua rt.associateAC(&regac,&proxyac);
-//    rt.associateCSL_CC(&csl_cc);
-///* del b2bua
-//    regac.associateSIPSTACK(&mystack);
-//    proxyac.associateSIPSTACK(&mystack);
-//*/
-//    csl_cc.associateSIPSTACK(&mystack);
-//
-//    // blocca
-//    mystack.init(5061, & rt, "es.atosorigin.com");
-//    mystack.start();
-//    pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
-//    int res = pthread_mutex_lock(&gu);
-//    res = pthread_mutex_lock(&gu);
-//    res = pthread_mutex_lock(&gu);
-//
-//    return 0;
 
 }

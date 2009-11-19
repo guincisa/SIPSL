@@ -28,11 +28,8 @@
 #include "COMAP.h"
 #endif
 //**********************************************************************************
-// * SL_CC.h
-// * Call Control
-//**********************************************************************************
-//**********************************************************************************
-// SL_CC
+// * SL_CC
+// * Call Control second stage Engine
 //**********************************************************************************
 class SL_CC : public ENGINE {
 
@@ -41,14 +38,9 @@ class SL_CC : public ENGINE {
         SL_CC();
         COMAP* getCOMAP(void);
 
-        //void sendReply(MESSAGE);
-
     private:
 
     	COMAP* comap;
 
-    	//COMAP *callMap; // array
-        //CO * co; // ??? non corretto
-        //SUDP * sipStack;
 };
 

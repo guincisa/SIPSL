@@ -86,11 +86,11 @@ COMAP* SL_CC::getCOMAP(void){
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {
 
+	//TODO ???
 	//rifare tutta perche qui se entro col messaggio destinato alla SV ok
 	//ma se entro con un messaggio destinato alla CL devo prendere ls SV
 	//e creare la CL
 
-	// if the message comes from A then it is a new message that will trigger a new CALL OBJECT
 
 	DEBOUT("Incoming message generating entity", _mess->getGenEntity())
 
@@ -100,108 +100,71 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		CALL_OSET* call_oset = 0x0;
 
-		string callidx = _mess->getHeadCallId().getNormCallId() +
-				_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+		string callidx = _mess->getExtendedInternalCID();
 
 		DEBOUT("SL_CC::parse CALLOSET ID",callidx)
 
-		call_oset = comap->getCALL_OSET_SV(callidx);
+		call_oset = comap->getCALL_OSET_XMain(callidx);
 
+		//First try to get Server (originating) state machine
 		if (call_oset != 0x0) {
-			DEBOUT("SL_CC::parse", "A SIDE call_oset existing")
-			_mess->setDestEntity(SODE_SMSVPOINT);
-			_mess->setGenEntity(SODE_APOINT);
+			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
+			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
+
 			call_oset->getSL_CO()->call(_mess);
 		}
+		// Then try to get Client (terminating) state machine
 		else {
-			call_oset = comap->getCALL_OSET_CL(callidx);
+			call_oset = comap->getCALL_OSET_YDerived(callidx);
 			if (call_oset != 0x0){
-				DEBOUT("SL_CC::parse", "B SIDE call_oset existing")
-				_mess->setGenEntity(SODE_BPOINT);
-				_mess->setDestEntity(SODE_SMCLPOINT);
+				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
+				_mess->setEndPoints(SODE_BPOINT, SODE_SMCLPOINT);
+
 				call_oset->getSL_CO()->call(_mess);
 			}
 		}
+		// Does not exists on any side
 		if (call_oset == 0x0) {
-			//new call X SIDE
-			DEBOUT("SL_CC::parse new call", "CALL_OSET creation x side")
+			//new call Server (originating) side
+			DEBOUT("SL_CC::parse new call", "CALL_OSET creation X side")
 
-			_mess->setGenEntity(SODE_APOINT);
-			_mess->setDestEntity(SODE_SMSVPOINT);
+			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
 
-
+			//Start - Initialization block
 			call_oset = new CALL_OSET(this);
 			SL_CO* sl_co = new SL_CO(call_oset);
 			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this, _mess);
-			//NEED USER DEFINED CLASS
 			VALO* alo = new VALO(this);
 			alo->linkSUDP(getSUDP());
+			//End
 
 			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
 			DEBOUT("SL_CC::parse", "CALL_OSET created x side")
 
 			comap->setCALL_OSET(callidx, call_oset);
 
-			//_mess->setDestEntity(SODE_SMSVPOINT);
 			sl_co->call(_mess);
-			//END.
 		}
 	}
-
-//	if (_mess->getGenEntity() == SODE_APOINT){
-//
-//		DEBOUT("SL_CC::parse", _mess->getHeadSipRequest().getContent())
-//		DEBOUT("SL_CC::parse", _mess)
-//
-//		CALL_OSET* call_oset = 0x0;
-//
-//		string callidx = _mess->getHeadCallId().getNormCallId() +
-//				_mess->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
-//		DEBOUT("CALLOSET ID",callidx)
-//
-//		call_oset = comap->getCALL_OSET_SV(callidx);
-//
-//		if (call_oset == 0x0) {
-//			//new call
-//			DEBOUT("SL_CC::parse new call", "CALL_OSET creation x side")
-//
-//			call_oset = new CALL_OSET(this);
-//			SL_CO* sl_co = new SL_CO(call_oset);
-//			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this);
-//			//NEED USER DEFINED CLASS
-//			VALO* alo = new VALO(this);
-//			alo->linkSUDP(getSUDP());
-//
-//			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
-//			DEBOUT("SL_CC::parse", "CALL_OSET created x side")
-//
-//			comap->setCALL_OSET(callidx, call_oset);
-//
-//			//_mess->setDestEntity(SODE_SMSVPOINT);
-//			sl_co->call(_mess);
-//			//END.
-//
-//		} else {
-//			//CALL Exists
-//			DEBOUT("SL_CC::parse existing call", "")
-//			//_mess->setDestEntity(SODE_SMSVPOINT);
-//			call_oset->getSL_CO()->call(_mess);
-//		}
-//	}
+	// Message comes from ALO
 	else if (_mess->getGenEntity() == SODE_ALOPOINT){
-		DEBOUT("SL_CC::parse gen entity","SODE_ALOPOINT")
+		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT", SODE_ALOPOINT)
 
-		_mess->setDestEntity(SODE_SMCLPOINT);
+		//TODO remove after test
+		//_mess->setDestEntity(SODE_SMCLPOINT);
 
-		//get original idx
-		string callidx = _mess->getSourceMessage()->getHeadCallId().getNormCallId() +
-				_mess->getSourceMessage()->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+		//This could be done using the callidy and getCALL_OSET_YDerived
+		// it shoudl be equivalent, but since we have the generating message
+		// we use it
 
-		DEBOUT("Message from ALO generating SV machine callidx", callidx)
+		//get generating idx to get the call object
+		string callidx = _mess->getSourceMessage()->getExtendedInternalCID();
+
+		DEBOUT("Message from ALO generating call object", callidx)
 
 		CALL_OSET* call_oset = 0x0;
 
-		call_oset = comap->getCALL_OSET_SV(callidx);
+		call_oset = comap->getCALL_OSET_XMain(callidx);
 
 		if (call_oset == 0x0) {
 			DEBOUT("SL_CC::parse","Orphan Invite")
@@ -212,118 +175,5 @@ void SL_CC::parse(MESSAGE* _mess) {
 			}
 		}
 
-//    if ( m._ReqLine.getMethodId() == INTERNALS_METHOD) {
-//        DEBOUT("INTERNALS_METHOD","SL_CC::parse")
-//        return;
-//    }
-//    // DOMAIN
-//    //
-//    DEBOUT("=============================================================================","")
-//    DEBOUT("=============================================================================","")
-//    DEBOUT("=============================================================================","")
-//    DEBOUT("=============================================================================","")
-//    DEBOUT("=============================================================================","")
-//    DEBOUT("=============================================================================","")
-//
-//    DEBOUT ("check Domain", sipStack->getDomain())
-//    DEBOUT ("Incoming request domain",  m._ReqLine.getURI().getSipUri().getHost())
-//    if (sipStack->getDomain() != m._ReqLine.getURI().getSipUri().getHost()) {
-//        DEBOUT("not allowed","")
-//        return;
-//    }
-//    else {
-//        DEBOUT ("allowed","")
-//    }
-//
-//    //////////////////////////////////////////////////////////////////////////
-//    // begin here mutex on call ID.
-//    // -> access/creation of call map must be mutexed
-//    // -> access/creation of regmap must be mutexed
-//    // -> access to state machine must be mutexed
-//    // -> access to call object (CO) in general must be mutexed
-//    // mutex can be :
-//    // - per call id -> generate a lock for every new call id
-//    // - per modulus call id -> reduce the number of locks
-//    //
-//
-//    // look for call ID
-//    // access to call map not in mutex but probably it should...
-//    DEBOUT("LOOK call id", m._CallID.getCallId())
-//    SL_CO *_cotmp = callMap->find(m._CallID.getCallId());
-//    if ( _cotmp == NULL) {
-//        DEBOUT("call id not found in call map","")
-//        DEBOUT("check contact","")
-//        DEBOUT("check TO","")
-//
-//        // NEW CALL
-//        SL_CO * co = new SL_CO(this, m);
-//        DEBOUT("Call Object Created","")
-//        m._CallID32 = callMap->store(co,m._CallID.getCallId());
-//        DEBOUT("Internal call id", m._CallID32)
-//        _cotmp = co;
-//    }
-//    else {
-//        DEBOUT("CALL id exists", m._CallID.getCallId())
-//    }
-//    if (m.source == 1 && m.destination == 0) {
-//        m.destination = 1;
-//    }
-//    else if (m.source == 2 && m.destination == 0){
-//        m.destination = 2;
-//    }
-//    _cotmp->call(m);
-//    DEBOUT("after _cotmp->call()","")
-//
-///* b2bua non so
-//        if (_cotmp->getSM()->getState() == S_REM_T ) {
-//            DEBOUT("Deleting Call Object",m._CallID.getCallId())
-//            callMap.removeCall(m._CallID.getCallId());
-//            delete _cotmp;
-//        }
-//*/
-//    DEBOUT("SL_CC:parse end","")
     return;
 }
-////**********************************************************************************
-////**********************************************************************************
-//void SL_CC::associateSIPSTACK(SUDP * _s) {
-//    sipStack = _s;
-//}
-////**********************************************************************************
-////**********************************************************************************
-//void SL_CC::sendReply(MESSAGE me) {
-//    //cout << "AC::sendReply" << endl << flush;
-//    me.sendReply("");
-//
-//    // check if CO has to be deleted by checking in state = 3 E_END
-//    if (co->getSM()->getState() == S_END) {
-//        //cout << "delete" << endl;
-//        delete co;
-//        // remove record
-//        //callMap.removeCall(me.I_I);
-//    }
-//*/
-//    return;
-//}
-//**********************************************************************************
-//**********************************************************************************
-//**********************************************************************************
-// SL_CC_SM_SV
-//**********************************************************************************
-//void SL_CC_SM_SV::stateChange(int evt) {
-//    DEBOUT("","SL_CC_SM_SV::stateChange")
-//}
-//**********************************************************************************
-// SL_CC_SM_CL
-//**********************************************************************************
-//void SL_CC_SM_CL::stateChange(int evt) {
-//    DEBOUT("","SL_CC_SM_CL::stateChange")
-//}
-//**********************************************************************************
-// SL_CC_CO
-//**********************************************************************************
-//void SL_CC_CO::call(MESSAGE& m) {
-//            DEBOUT("SL_CC_CO::call invoked","")
-//}
-
-
