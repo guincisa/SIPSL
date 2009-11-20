@@ -25,11 +25,14 @@ ISSUES
 ************************************************************************************
 ************************************************************************************
 ------------------------------------------------------------------------------------
-1.
+1. FIXED
 Stop occasionali su allarme, non sempre si verifica.
 
 E' ovvio. il messaggio generator è eliminato... il generator deve essere quello
 che arriva da A invece vedo che è quello che mando a B
 ---> correggere
+
+FIX: impostato genmessage in SL_CO
+eliminati i messaggi associati alle state machine
 ------------------------------------------------------------------------------------
 

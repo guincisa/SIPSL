@@ -126,22 +126,22 @@ void SL_CC::parse(MESSAGE* _mess) {
 		// Does not exists on any side
 		if (call_oset == 0x0) {
 			//new call Server (originating) side
-			DEBOUT("SL_CC::parse new call", "CALL_OSET creation X side")
+			DEBOUT("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
 
 			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
 
 			//Start - Initialization block
-			call_oset = new CALL_OSET(this);
+			call_oset = new CALL_OSET(this, _mess);
 			SL_CO* sl_co = new SL_CO(call_oset);
-			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this, _mess);
+			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this, sl_co);
 			VALO* alo = new VALO(this);
 			alo->linkSUDP(getSUDP());
+			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
+			comap->setCALL_OSET(callidx, call_oset);
 			//End
 
-			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
 			DEBOUT("SL_CC::parse", "CALL_OSET created x side")
 
-			comap->setCALL_OSET(callidx, call_oset);
 
 			sl_co->call(_mess);
 		}
@@ -149,13 +149,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 	// Message comes from ALO
 	else if (_mess->getGenEntity() == SODE_ALOPOINT){
 		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT", SODE_ALOPOINT)
-
-		//TODO remove after test
-		//_mess->setDestEntity(SODE_SMCLPOINT);
-
-		//This could be done using the callidy and getCALL_OSET_YDerived
-		// it shoudl be equivalent, but since we have the generating message
-		// we use it
 
 		//get generating idx to get the call object
 		string callidx = _mess->getSourceMessage()->getExtendedInternalCID();

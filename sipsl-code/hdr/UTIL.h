@@ -69,12 +69,16 @@ typedef struct {
 			message->getIncBuffer().length() , 0, (struct sockaddr *) &(message->getAddress()), \
 			sizeof(message->getAddress()));
 
-#define BTRANSMIT(message) \
+#define BTRANSMIT(message) { \
+		struct sockaddr_in si_bpart; \
+		memset((char *) &si_bpart, 0, sizeof(si_bpart)); \
+		si_bpart.sin_family = AF_INET; \
+		si_bpart.sin_port = htons(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort()); \
 		DEBOUT("SL_CO::call action is send BPOINT string:", message->getIncBuffer()) \
 		sendto(actionList.top().getMessage()->getSock(), \
 							actionList.top().getMessage()->getIncBuffer().c_str(), \
 							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart, \
-							sizeof(si_bpart));
+							sizeof(si_bpart));}
 
 #define CREATEMESSAGE(m1, m2, m3) char bu[512];\
 				SysTime inTime;\

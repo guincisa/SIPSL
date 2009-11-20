@@ -53,9 +53,10 @@ class CALL_OSET {
 		map<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
 		string callId_X;
+		MESSAGE* genMessage;
 
 	public:
-		CALL_OSET(ENGINE*);
+		CALL_OSET(ENGINE*, MESSAGE*);
 		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
 		SL_SM_SV* getSL_SM_SV(void);
@@ -66,6 +67,8 @@ class CALL_OSET {
 		SL_SM_CL* getSL_SM_CL(string callId_Y);
 		ALO* getALO(void);
 		ENGINE* getENGINE(void);
+
+		MESSAGE* getGenMessage(void);
 };
 //**********************************************************************************
 //**********************************************************************************
@@ -73,6 +76,7 @@ class CALL_OSET {
 //**********************************************************************************
 //**********************************************************************************
 class SL_CO {
+
 	public:
 		int placeholder;
 
@@ -89,10 +93,14 @@ class SL_CO {
 //**********************************************************************************
 //**********************************************************************************
 class SL_SM {
+
 	public:
-		SL_SM(ENGINE* sl_cc, MESSAGE* generator);
+		//SL_SM(ENGINE* sl_cc, SL_CO* sl_co, MESSAGE* generator);
+		SL_SM(ENGINE* sl_cc, SL_CO* sl_co);
+
 		ENGINE* getSL_CC(void);
-		MESSAGE* getGenerator(void);
+		//MESSAGE* getGenerator(void);
+		SL_CO* getSL_CO(void);
 
 #ifdef TESTING
 		virtual ACTION* event(MESSAGE*);
@@ -102,10 +110,11 @@ class SL_SM {
     protected:
 
 		ENGINE* sl_cc;
-		//The Request message that has triggered the creation of the state maqchine
-		MESSAGE* messageGenerator;
+		//The Request message that has triggered the creation of the state machine
+		//MESSAGE* messageGenerator;
 
         int State;
+        SL_CO* sl_co;
 };
 //**********************************************************************************
 //**********************************************************************************
@@ -120,7 +129,7 @@ class SL_SM_CL : public SL_SM {
 		int resend_invite;
 
 		ACTION* event(MESSAGE*);
-		SL_SM_CL(ENGINE*, MESSAGE*);
+		SL_SM_CL(ENGINE*, SL_CO*);
 
 };
 //**********************************************************************************
@@ -134,6 +143,6 @@ class SL_SM_SV : public SL_SM {
 		int placeholder;
 
 		ACTION* event(MESSAGE*);
-		SL_SM_SV(ENGINE*, MESSAGE*);
+		SL_SM_SV(ENGINE*, SL_CO*);
 
 };

@@ -74,11 +74,16 @@
 // CALL_OSET
 //**********************************************************************************
 //**********************************************************************************
-CALL_OSET::CALL_OSET(ENGINE* _engine){
+CALL_OSET::CALL_OSET(ENGINE* _engine, MESSAGE* _genMessage){
 
 	engine = _engine;
+	genMessage = _genMessage;
 
 }
+MESSAGE* CALL_OSET::getGenMessage(void){
+	return genMessage;
+}
+
 //**********************************************************************************
 //**********************************************************************************
 ENGINE* CALL_OSET::getENGINE(void){
@@ -167,9 +172,8 @@ void SL_CO::call(MESSAGE* _message){
 
 		if (action != 0x0){
 
-			// now read actions
-			stack<SingleAction> actionList;
-			actionList = action->getActionList();
+			// now get actions
+			stack<SingleAction> actionList = action->getActionList();
 
 			while (!actionList.empty()){
 
@@ -183,15 +187,11 @@ void SL_CO::call(MESSAGE* _message){
 
 				}
 				if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_APOINT){
-					ATRANSMIT(actionList.top().getMessage())
-//					DEBOUT("SL_CO::call action is send to APOINT, string:", actionList.top().getMessage()->getIncBuffer().c_str())
-//					sendto(actionList.top().getMessage()->getSock(),
-//							actionList.top().getMessage()->getIncBuffer().c_str(),
-//							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getAddress()),
-//							sizeof(actionList.top().getMessage()->getAddress()));
 
+					ATRANSMIT(actionList.top().getMessage())
 					//Purge message
 					PURGEMESSAGE(actionList.top().getMessage(), "PURGE MESSAGE")
+
 				} else {
 					//TODO
 					DEBOUT("SL_CO::call action is ???", "")
@@ -224,7 +224,7 @@ void SL_CO::call(MESSAGE* _message){
 			//create and put in comap
 
 			DEBOUT("Creating CL machine callidy", callidy)
-			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), _message);
+			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), this);
 			call_oset->addSL_SM_CL(callidy, sl_sm_cl);
 
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
@@ -248,44 +248,19 @@ void SL_CO::call(MESSAGE* _message){
 
 					DEBOUT("SL_CO::call action is send to B", actionList.top().getMessage()->getLine(0) << " ** " << actionList.top().getMessage()->getExtendedInternalCID())
 
-					struct sockaddr_in si_bpart;
-					memset((char *) &si_bpart, 0, sizeof(si_bpart));
-					si_bpart.sin_family = AF_INET;
-					//TODO ???
-					// port nel TO o nella request
-//					DEBOUT("create addess", actionList.top().getMessage()->getHeadTo().getContent())
-//					DEBOUT("create addess 2", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getHostName());
-//					DEBOUT("create addess 3", actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
+					BTRANSMIT(actionList.top().getMessage())
 
-					si_bpart.sin_port = htons(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort());
-					if (inet_aton(actionList.top().getMessage()->getHeadTo().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_bpart.sin_addr)==0){
-						DEBASSERT("can't create b address")
-					} else{
-
-						BTRANSMIT(actionList.top().getMessage())
-
-//						if (sendto(actionList.top().getMessage()->getSock(),
-//							actionList.top().getMessage()->getIncBuffer().c_str(),
-//							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart,
-//							sizeof(si_bpart)) == -1) {
-//							DEBASSERT("not sent")}
-					}
-					//This INVITE belongs to ALO cannot be deleted here
-					//but it can be a retransission. and so it's a copy.
 					//DELETE INVITE HERE...
 					PURGEMESSAGE(actionList.top().getMessage(), "PURGE INVITE")
 
 				} else if (actionList.top().getDriver() == ACT_SEND && actionList.top().getMessage()->getDestEntity() == SODE_APOINT) {
-					ATRANSMIT(actionList.top().getMessage())
-//					DEBOUT("SL_CO::call action is send to APOINT, string:", actionList.top().getMessage()->getIncBuffer().c_str())
-//					sendto(actionList.top().getMessage()->getSock(),
-//							actionList.top().getMessage()->getIncBuffer().c_str(),
-//							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *) &(actionList.top().getMessage()->getAddress()),
-//							sizeof(actionList.top().getMessage()->getAddress()));
 
+					ATRANSMIT(actionList.top().getMessage())
 					//Purge message
 					PURGEMESSAGE(actionList.top().getMessage(), "PURGE MESSAGE")
+
 				} else if (actionList.top().getDriver() == ACT_TIMERON){ // to alarm
+
 					DEBOUT("SL_CO::call action is send to ALARM", actionList.top().getMessage()->getLine(0) << " ** " << actionList.top().getMessage()->getExtendedInternalCID())
 					SysTime st1 = actionList.top().getMessage()->getFireTime();
 					SysTime st2;
@@ -295,10 +270,12 @@ void SL_CO::call(MESSAGE* _message){
 					call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(actionList.top().getMessage(),st1);
 
 				} else if (actionList.top().getDriver() == ACT_TIMEROFF){
+
 					DEBOUT("SL_CO::call action is clear ALARM", actionList.top().getMessage()->getLine(0) << " ** " << actionList.top().getMessage()->getExtendedInternalCID())
 					string callid = actionList.top().getMessage()->getExtendedInternalCID();
 					DEBOUT("SL_CO::cancel alarm, callid", callid)
 					call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid);
+
 				} else {
 					//TODO
 					DEBOUT("SL_CO::call action is ???", "")
@@ -320,18 +297,19 @@ void SL_CO::call(MESSAGE* _message){
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM::SL_SM(ENGINE* _engine, MESSAGE* _message){
+SL_SM::SL_SM(ENGINE* _engine, SL_CO* _sl_co){
+
+	sl_co = _sl_co;
 	sl_cc = _engine;
-	messageGenerator = _message;
 }
 ENGINE* SL_SM::getSL_CC(void){
 	return sl_cc;
 }
-MESSAGE* SL_SM::getGenerator(void){
-	return messageGenerator;
+SL_CO* SL_SM::getSL_CO(void){
+	return sl_co;
 }
-SL_SM_SV::SL_SM_SV(ENGINE* _engine, MESSAGE* _message):
-	SL_SM(_engine, _message){
+SL_SM_SV::SL_SM_SV(ENGINE* _engine,SL_CO* _sl_co):
+	SL_SM(_engine, _sl_co){
 
 	DEBOUT("SL_SM_SV::state","0")
 
@@ -445,8 +423,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_CL::SL_SM_CL(ENGINE* _engine, MESSAGE* _messgenerator):
-	SL_SM(_engine, _messgenerator){
+SL_SM_CL::SL_SM_CL(ENGINE* _engine, SL_CO* _sl_co):
+	SL_SM(_engine, _sl_co){
 
 	DEBOUT("SL_SM_CL::state","0")
 
@@ -634,7 +612,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				// Dialog establish must derive from incoming invite
 				// get incoming invite
-				MESSAGE* __message = getGenerator();
+				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
 				DEBOUT("MESSAGE GENERATOR", __message)
 				CREATEMESSAGE(dialoge_x, __message, SODE_SMCLPOINT)
 				dialoge_x->setDestEntity(SODE_APOINT);
