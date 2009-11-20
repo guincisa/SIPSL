@@ -1,9 +1,5 @@
 window_sizes 1280 729 188 1086 579 68
 windows_style
-diagrams
-  active  sequencediagram_ref 153602 // F7 TIMER
-    1086 579 80 0 1380 495
-end
 show_stereotypes
 selected statediagram_ref 147074 // Y
 open
