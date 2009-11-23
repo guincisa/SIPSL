@@ -20,6 +20,7 @@ like a new call.
 3.
 Change the Action and Alarm to support internal operation and message sending
 Must still change the code
+INTERNALOP must go through SL_CC::p_w so it must be a message
 ************************************************************************************
 ************************************************************************************
 
