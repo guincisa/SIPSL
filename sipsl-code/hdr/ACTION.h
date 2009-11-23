@@ -33,23 +33,19 @@
 class SingleAction {
 	private:
 		MESSAGE *message;
-
-		// 1 send embedded message
-		// 2 start timer
-		// 3 stop timer
-		int driver;
-
-		//For other actions
-		//not a pointer
-		//EMPTYMESSAGE emessage;
+		INTERNALOP internalOp;
+		int type;
 
 	public:
-//		SingleAction(MESSAGE*);
-//		SingleAction(EMPTYMESSAGE*);
-		SingleAction(MESSAGE*, int driver);
+		//Default is to send the message
+		SingleAction(MESSAGE*);
+
+		SingleAction(INTERNALOP internalOp);
+
 		MESSAGE* getMessage(void);
-		//EMPTYMESSAGE* getEmptyMessage(void);
-		int getDriver(void);
+		INTERNALOP getInternalOp(void);
+
+		int getType();
 };
 
 class ACTION {

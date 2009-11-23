@@ -17,6 +17,9 @@ The solution can be that ALO defines itself an APOINT so the message will be han
 like a new call.
 
 ------------------------------------------------------------------------------------
+3.
+Change the Action and Alarm to support internal operation and message sending
+Must still change the code
 ************************************************************************************
 ************************************************************************************
 

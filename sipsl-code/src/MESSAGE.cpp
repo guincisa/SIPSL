@@ -81,6 +81,7 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
 
 	arrayFilled = false;
 
+
 	return;
 }
 BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _creaTime){
@@ -107,6 +108,7 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 
 	return;
 }
+
 vector<string> BASEMESSAGE::getLines(void){
 	return flex_line;
 }
@@ -798,161 +800,16 @@ string MESSAGE::getExtendedInternalCID(void){
 
 }
 
-/*
- * Message generated internally
- *
- * change the flex_line with the string of the new header
- *
- * change header: (from)
- * 		easy, just replace it
- *
- * remove header: (route, via)
- * 		set it to xxDxx
- *
- * add header (via)
- * 		insert(int i, string)
- * 		inserts before i
- *
- */
-
-
-
-
-
-
-
-/*
-C_HeadContentType &MESSAGE::getHeadContentType(void){
-
-	if(headContentType_p){
-		return headContentType;
-	}
-
-	int i;
-
-	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,13).compare("Content-Type:")){
-			headContentType.setContent(flex_line[i],genEntity);
-		}
-	}
-	headContentType_p = true;
-		return headContentType;
+INTERNALOP::INTERNALOP(int _internalOp, string _Key, string _extendedFakeCallId){
+	key = _Key;
+	internalOp = _internalOp;
+	extendedFakeCallId = _extendedFakeCallId;
 }
-*/
-/*
-C_HeadSipReply &MESSAGE::getHeadSipReply(void){
-
-	if(reqRep == 0){
-		int i = getReqRepType();
-	}
-
-	if (reqRep == REPSUPP || REPUNSUPP)
-		return headSipReply;
-
-	headSipReply.setContent(flex_line[0])
-}*/
-
-/*
-void MESSAGE::headPlacement(void){
-
-	if (headersPlaced)
-		return;
-
-	bool stilllines = false;
-	int i = 1;
-	int viaPos=0;
-
-	//skip first line
-	while (stilllines){
-		Tuple s = bkrin2(flex_line[i], ":");
-		if(s.lValue.compare("Via")){
-			C_HeadVia s(s.Rvalue.substr(1,-1),genEntity, viaPos++);
-			s_headVia.push_back(s);
-		}
-		else if(s.lValue.compare("Max-Forwards")){
-			headMaxFwd.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("To")){
-			headTo.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("From")){
-			headFrom.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("Call-ID")){
-			headCallId.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("CSeq")){
-			headCSeq.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("Contact")){
-			headContact.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("Content-Type")){
-			headContentType.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("Allow")){
-			headAllow.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("Organization")){
-		}
-		else if(s.lValue.compare("Subject")){
-			headSubject.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-		else if(s.lValue.compare("Supported")){
-		}
-		else if(s.lValue.compare("User-Agent")){
-		}
-		else if(s.lValue.compare("Content-Lenght")){
-			headContentLenght.setContent(s.Rvalue.substr(1,-1),genEntity);
-		}
-	}
+int INTERNALOP::getDriver(void){
+	return driver;
 }
-
-MESSAGE::MESSAGE(string _s, int _sock, struct sockaddr_in _echoClntAddr ) {
-
-    incomingMessage = _s;
-    sock = _sock;
-    echoClntAddr = _echoClntAddr;
+void INTERNALOP::setDriver(int _driver){
+	driver = _driver;
 }
-void MESSAGE::createReplyTemplate(string pay) {
-    //replyTemplate.I_I = I_I;
-    //replyTemplate.P_P = pay;
-    char m[256];
-    //sprintf(m, "M:REPLY-%s\nI:%s\nR:%d\nP:%s", M_M.c_str(), I_I.c_str(), R_R, pay.c_str());
-    sprintf(m, "gugli reply template");
-    replyTemplate.message = m;
-    return;
-}
-void MESSAGE::sendReply(string message) {
-        char ecco[ECHOMAX];
-        //replyTemplate.out_ts = gethrtime();
-        GETTIME(replyTemplate.out_ts)
-        sprintf(ecco, "%s\nTI:%lld\nTO:%lld", replyTemplate.message.c_str(), in_ts, replyTemplate.out_ts);
-        sendto(sock, ecco, ECHOMAX, 0, (struct sockaddr *) &(echoClntAddr), sizeof(echoClntAddr));
-        return;
-
-}
-// ack
-void MESSAGE::sendAck(string message) {
-        char ecco[ECHOMAX];
-        //sprintf(ecco, "M:OK %s\nI:%s\nR:%d", message.c_str(), I_I.c_str(), R_R);
-        sprintf(ecco, "gugli ack");
-        sendto(sock, ecco, ECHOMAX, 0, (struct sockaddr *) &(echoClntAddr), sizeof(echoClntAddr));
-
-}
-void MESSAGE::sendNAck(int errnum, string message) {
-        char ecco[ECHOMAX];
-        //sprintf(ecco, "M:NOK! %s\nI:%s\nR:%d", message.c_str(), I_I.c_str(), R_R);
-        sprintf(ecco, "gugli nack");
-        sendto(sock, ecco, ECHOMAX, 0, (struct sockaddr *) &(echoClntAddr), sizeof(echoClntAddr));
-}
-//auto_ptr<REGISTER200OK> MESSAGE::create200OK(void) {
-REGISTER200OK * MESSAGE::p_create200ok(void) {
-    REGISTER200OK * p_notuse;
-    p_notuse = new REGISTER200OK;
-    return p_notuse;
-}
-
-*/
 
 

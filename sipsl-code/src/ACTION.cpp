@@ -49,16 +49,24 @@ stack<SingleAction> ACTION::getActionList(void){
 //	DEBASSERT("use message, 1")
 //	message = _message;
 //}
-SingleAction::SingleAction(MESSAGE* _message, int _driver){
+SingleAction::SingleAction(MESSAGE* _message):
+	internalOp(0, "", ""){
+	type = 1;
 	message = _message;
-	driver = _driver;
+}
+SingleAction::SingleAction(INTERNALOP _internalOp):
+	internalOp(_internalOp){
+	type = 2;
 }
 // *****************************************************************************************
 // *****************************************************************************************
 MESSAGE* SingleAction::getMessage(void){
 	return message;
 }
-int SingleAction::getDriver(void){
-	return driver;
+INTERNALOP SingleAction::getInternalOp(void){
+	return internalOp;
+}
+int SingleAction::getType(void){
+	return type;
 }
 

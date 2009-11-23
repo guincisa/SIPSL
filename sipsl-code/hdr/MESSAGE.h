@@ -135,6 +135,7 @@ class BASEMESSAGE {
 
         vector<int> linePosition;
 
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -314,23 +315,25 @@ static pthread_mutex_t messTableMtx;
 //// It helps to interpret the command
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class EMPTYMESSAGE {
+class INTERNALOP {
 
-	private:
-
-		// 1 send message message
-		// 2 timer on
-		// 3 timer off
-
-		int method;
-		int destination;
-		int source;
-
-	public:
-		EMPTYMESSAGE(int method, int destination, int source);
-		int getMethod(void);
-		int getDestination(void);
-		int getSource(void);
+    private:
+        // an operation is for now a delete of state machine due to
+        // a time out
+        // type of operation, if has value it's an operation otherwise is a message
+		// 1 send embedded message
+		// 2 start timer
+		// 3 stop timer
+        int driver;
+        //key of generating message
+        string Key;
+        // using the extededcallid of the generating message
+        string extendedFakeCallId;
+    public:
+        INTERNALOP(int driver, string Key, string extendedFakeCallId);
+        INTERNALOP(const INTERNALOP&);
+        void setDriver(int);
+        int getDriver(void);
 };
 
 
