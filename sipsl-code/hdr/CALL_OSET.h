@@ -115,6 +115,11 @@ class SL_SM {
 
         int State;
         SL_CO* sl_co;
+
+        //Mutex the state machine
+        //First option when every SM has its own mutex.
+        pthread_mutex_t mutex;
+
 };
 //**********************************************************************************
 //**********************************************************************************

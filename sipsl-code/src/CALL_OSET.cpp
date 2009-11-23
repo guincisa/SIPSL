@@ -301,6 +301,9 @@ SL_SM::SL_SM(ENGINE* _engine, SL_CO* _sl_co){
 
 	sl_co = _sl_co;
 	sl_cc = _engine;
+
+    pthread_mutex_init(&mutex, NULL);
+
 }
 ENGINE* SL_SM::getSL_CC(void){
 	return sl_cc;
@@ -321,12 +324,15 @@ SL_SM_SV::SL_SM_SV(ENGINE* _engine,SL_CO* _sl_co):
 //**********************************************************************************
 ACTION* SL_SM_SV::event(MESSAGE* _message){
 
-	bool purgeMessage = false;
 
 	DEBOUT("SL_SM_SV::event call id", _message->getHeadCallId().getContent())
 
 	//TODO
 	//Invert state and event for more readibility...
+
+	//Mutex this method
+	pthread_mutex_lock(&mutex);
+
 
 	if (_message->getReqRepType() == REQSUPP) {
 		DEBOUT("SL_SM_SV::event REQSUPP", _message->getHeadSipRequest().getContent())
@@ -403,6 +409,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				DEBOUT("SL_SM_SV::actions set", _message->getHeadSipRequest().getContent())
 
 				State = 1;
+
+				pthread_mutex_unlock(&mutex);
 				return action;
 			}else {
 				DEBOUT("SL_SM_SV::event State 0 unexpected message ignored", _message->getHeadCallId().getContent())
@@ -410,11 +418,13 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 		}else if (State == 1){
 			DEBOUT("SL_SM_SV::event State 1 probable retransmission","")
 		}
+		pthread_mutex_unlock(&mutex);
 		return 0x0;
 
 	}
 	if (_message->getReqRepType() == REPSUPP) {
 		DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())
+		pthread_mutex_unlock(&mutex);
 		return 0x0;
 	}
 
@@ -437,13 +447,11 @@ SL_SM_CL::SL_SM_CL(ENGINE* _engine, SL_CO* _sl_co):
 //**********************************************************************************
 ACTION* SL_SM_CL::event(MESSAGE* _message){
 
-	bool purgeMessage = false;
-
-	//TODO qui
-	// gestire quando arriva dal timer
-	//
 
 	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
+
+	//Mutex this method
+	pthread_mutex_lock(&mutex);
 
 	if (State == 0){
 		if (_message->getReqRepType() == REQSUPP) {
@@ -501,11 +509,13 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				State = 1;
 				resend_invite++;
+				pthread_mutex_unlock(&mutex);
 				return action;
 
 			}
 		} else {
 			//TODO purge state machine(?)
+			pthread_mutex_unlock(&mutex);
 			return 0x0;
 		}
 	}
@@ -567,9 +577,11 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				State = 1;
 				resend_invite++;
+				pthread_mutex_unlock(&mutex);
 				return action;
 			}
 			else {
+				pthread_mutex_unlock(&mutex);
 				return 0x0;
 			}
 
@@ -591,10 +603,12 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 
 				State = 2;
+				pthread_mutex_unlock(&mutex);
 				return action;
 			}
 		}
 		else {
+			pthread_mutex_unlock(&mutex);
 			return 0x0;
 		}
 	}
@@ -658,14 +672,17 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				action->addSingleAction(sa_1);
 
 				State = 2;
+				pthread_mutex_unlock(&mutex);
 				return action;
 			}
 			else {
 				DEBOUT("SL_SM_CL::event state 2 reply not implemented",  _message->getHeadSipReply().getReply().getCode() )
 				State = 4;
+				pthread_mutex_unlock(&mutex);
 				return (ACTION*)0x0;
 			}
 		}
 	}
+	pthread_mutex_unlock(&mutex);
 	return 0x0;
 }
