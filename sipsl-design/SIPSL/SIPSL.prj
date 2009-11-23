@@ -1,7 +1,7 @@
 format 70
 "SIPSL"
-  revision 56
-  modified_by 2 "guic"
+  revision 57
+  modified_by 55 "guic"
 
 
   
@@ -525,6 +525,11 @@ s
 	transition 128386 "event<timer y>"
 	  on state_ref 128130 // 1
 	end
+
+	transition 128055 "max resend of INVITE reached"
+	  on pseudostate_ref 128055 // exit_point
+	  external 
+	end
       end
 
       stateaction 128002
@@ -542,8 +547,13 @@ s
 	  external 
 	end
 
-	transition 135682 "101 Dialog Establishement"
+	transition 135682 "event<DialogEst, s=b d=smcly>"
 	  on state_ref 128258 // 2
+	end
+
+	transition 128183 "event<timer for ring expired>"
+	  on pseudostate_ref 128055 // exit_point
+	  external 
 	end
       end
 
@@ -564,6 +574,16 @@ s
 	  on state_ref 128642 // 5
 	  external 
 	end
+
+	transition 128311 "event<timer for ring expired>"
+	  on pseudostate_ref 128055 // exit_point
+	  external 
+	end
+
+	transition 128439 "event<max time for ringing>"
+	  on pseudostate_ref 128055 // exit_point
+	  external 
+	end
       end
 
       state 128642 "5"
@@ -574,6 +594,9 @@ s
       end
 
       state 128770 "6"
+      end
+
+      pseudostate 128055 exit_point "TIMEOUT CLEAR MACHINE"
       end
     end
 
