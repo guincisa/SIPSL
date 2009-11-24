@@ -104,6 +104,10 @@ class BASEMESSAGE {
         struct sockaddr_in getAddress(void);
         int getSock(void);
 
+        SysTime getCreationTime(void);
+
+        virtual void dummy(void) = 0;
+
     protected:
         int genEntity;
         int destEntity;
@@ -263,59 +267,16 @@ class MESSAGE : public BASEMESSAGE {
 
     	void setFireTime(SysTime fireTime);
     	SysTime getFireTime(void);
-    	/*
-    // INTERNAL params
-        int headerType[MAXLINES];
 
-        int genEntity;
-        int destEntity;
+    	void dummy(void);
 
-        //TIMER
-        int deltams;
-        int deltaalg; // if the delta increases with the iterations
-        int iters;
-
-
-
-        void setMethodPointer(void);
-
-
-        //REPLY
-        REGISTER200OK * p_create200ok(void);
-
-
-        //REPLY TEMPLATE
-        REPLY replyTemplate;
-
-        //REPLY METHODS
-        //void sendReply(int, string); // deprecated
-        void sendReply(string);
-        void sendAck(string);
-        void sendNAck(int, string);
-        void createReplyTemplate(string);
-
-        private:
-        // TODO use pointer...
-        char *echoBuffer;
-		*/
 };
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//// ALLOCATED MESSAGES TABLE
+//// INTERNALOP
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-static multimap<string, MESSAGE *> globalMessTable;
-static pthread_mutex_t messTableMtx;
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//// MESSAGE PLACEHOLDER or EMPTYMESSAGE
-//// The empty message is a command sent by the states machines
-//// It helps to interpret the command
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-class INTERNALOP {
+class INTERNALOP : public MESSAGE{
 
     private:
         // an operation is for now a delete of state machine due to
@@ -325,15 +286,22 @@ class INTERNALOP {
 		// 2 start timer
 		// 3 stop timer
         int driver;
-        //key of generating message
-        string Key;
-        // using the extededcallid of the generating message
+        //key of generating message        // using the extededcallid of the generating message
         string extendedFakeCallId;
     public:
-        INTERNALOP(int driver, string Key, string extendedFakeCallId);
-        INTERNALOP(const INTERNALOP&);
+        INTERNALOP(int internalOp, string extendedFakeCallId, MESSAGE* message, int genEntity, SysTime creaTime);
         void setDriver(int);
         int getDriver(void);
+
+        void dummy(void);
 };
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//// ALLOCATED MESSAGES TABLE
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+static multimap<string, MESSAGE *> globalMessTable;
+static pthread_mutex_t messTableMtx;
 
 

@@ -49,22 +49,14 @@ stack<SingleAction> ACTION::getActionList(void){
 //	DEBASSERT("use message, 1")
 //	message = _message;
 //}
-SingleAction::SingleAction(MESSAGE* _message):
-	internalOp(0, "", ""){
-	type = 1;
+SingleAction::SingleAction(MESSAGE* _message, int _type){
+	type =  _type;
 	message = _message;
-}
-SingleAction::SingleAction(INTERNALOP _internalOp):
-	internalOp(_internalOp){
-	type = 2;
 }
 // *****************************************************************************************
 // *****************************************************************************************
 MESSAGE* SingleAction::getMessage(void){
 	return message;
-}
-INTERNALOP SingleAction::getInternalOp(void){
-	return internalOp;
 }
 int SingleAction::getType(void){
 	return type;

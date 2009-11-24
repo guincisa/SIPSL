@@ -86,6 +86,8 @@ class ALMGR {
 
         ThreadWrapper *listenerThread;
 
+        pthread_mutex_t mutex;
+
 
 	public:
 		void alarmer(void);

@@ -72,6 +72,11 @@ void ALMGR::initAlarm(void){
     t1->st = this;
     int res;
     res = pthread_create(&(listenerThread->thread), NULL, ALARMSTACK, (void *) t1 );
+
+
+    //TODO check consistency!!!
+    pthread_mutex_init(&mutex, NULL);
+
 	DEBOUT("ALMGR::initAlarm", "started")
     return;
 }
@@ -94,26 +99,34 @@ void ALMGR::alarmer(void){
 		long long int curr = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;
 		long long int tcu = 0;
 		if (!alarm_pq.empty()) {
-			DEBY
 			tcu = alarm_pq.top();
-			DEBY
 			while (!alarm_pq.empty() && curr >= tcu){
 
 				alarm_pq.pop();
 
 				// now get a list of alarms from the multi map
-				DEBY
 				multimap<long long int, ALARM*>::iterator iter = time_alarm_mumap.find(tcu);
-				DEBY
 				while( iter != time_alarm_mumap.end() ) {
 					DEBY
 					ALARM* tmal = iter->second;
 					if (tmal->isActive()){
-						DEBY
-						tmal->getMessage()->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
-						tmal->getMessage()->compileMessage();
-						tmal->getMessage()->dumpVector();
-						sl_cc->p_w(tmal->getMessage());
+
+						MESSAGE* _tmpMess = tmal->getMessage();
+						INTERNALOP* iop = dynamic_cast<INTERNALOP*>(_tmpMess);
+
+						//ALMGR shall not care about message or internalop
+						//SL_CC does it but here if for debug purposes
+
+						if ( iop == 0x0 ){
+							DEBY
+							_tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
+							_tmpMess->compileMessage();
+							_tmpMess->dumpVector();
+							sl_cc->p_w(_tmpMess);
+						} else {
+							DEBOUT("ALMGR::alarmer operation", _tmpMess)
+							sl_cc->p_w(_tmpMess);
+						}
 					} else {
 						DEBY
 						//TODO purge alarms
@@ -164,7 +177,11 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 
 	string callid = _message->getHeadCallId().getNormCallId() +
 			_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+
+	//pthread_mutex_lock(&mutex);
 	callid_alm_map.insert(pair<string, ALARM*>(callid, alm));
+	//pthread_mutex_unlock(&mutex);
+
 
 	callid_message.insert(pair<string, MESSAGE*>(callid, _message));
 	message_callid.insert(pair<MESSAGE*, string>(_message, callid));
@@ -196,6 +213,8 @@ void ALMGR::cancelAlarm(string _callid){
 
 	DEBOUT("ALMGR::cancelAlarm", _callid)
 	//lookup alarm into map
+	//pthread_mutex_lock(&mutex);
+
 	map<string, ALARM*> ::iterator p;
 	p = callid_alm_map.find(_callid);
 	ALARM* tmp = 0x0;
@@ -204,6 +223,8 @@ void ALMGR::cancelAlarm(string _callid){
 		tmp = (ALARM*)p->second;
 		tmp->cancel();
 	}
+	//pthread_mutex_unlock(&mutex);
+
 }
 //**********************************************************************************
 ALARM::ALARM(MESSAGE *_message, SysTime _fireTime){

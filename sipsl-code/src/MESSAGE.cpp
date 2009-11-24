@@ -182,6 +182,9 @@ string &BASEMESSAGE::getKey(void){
 void BASEMESSAGE::setKey(string _key){
 	key = _key;
 }
+SysTime BASEMESSAGE::getCreationTime(void){
+	return inc_ts;
+}
 struct sockaddr_in BASEMESSAGE::getAddress(void){
 	return echoClntAddr;
 }
@@ -800,9 +803,9 @@ string MESSAGE::getExtendedInternalCID(void){
 
 }
 
-INTERNALOP::INTERNALOP(int _internalOp, string _Key, string _extendedFakeCallId){
-	key = _Key;
-	internalOp = _internalOp;
+INTERNALOP::INTERNALOP(int _internalOp, string _extendedFakeCallId, MESSAGE* _message, int _genEntity, SysTime _creaTime):
+	MESSAGE(_message, _genEntity, _creaTime){
+	driver = _internalOp;
 	extendedFakeCallId = _extendedFakeCallId;
 }
 int INTERNALOP::getDriver(void){

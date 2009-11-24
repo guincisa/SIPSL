@@ -19,8 +19,9 @@ like a new call.
 ------------------------------------------------------------------------------------
 3.
 Change the Action and Alarm to support internal operation and message sending
-Must still change the code
-INTERNALOP must go through SL_CC::p_w so it must be a message
+Now MESSAGE and INTERNALOP are 
+INTERNALOP : public MESSAGE
+then use dynamic_cast to check if the incoming message is operation or not.
 ************************************************************************************
 ************************************************************************************
 
@@ -39,4 +40,9 @@ che arriva da A invece vedo che è quello che mando a B
 FIX: impostato genmessage in SL_CO
 eliminati i messaggi associati alle state machine
 ------------------------------------------------------------------------------------
+2. 
+Check if mutex on alarm structures is making sense
+------------------------------------------------------------------------------------
+
+
 

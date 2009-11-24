@@ -26,26 +26,26 @@
 #include "MESSAGE.h"
 #endif
 
-#define ACT_SEND 1
-#define ACT_TIMERON 2
-#define ACT_TIMEROFF 3
+#define TYPE_MESS 1
+#define TYPE_OP 2
+
+#define TYPE_OP_TIMER_ON 2
+#define TYPE_OP_TIMER_OFF 3
+
 
 class SingleAction {
 	private:
 		MESSAGE *message;
-		INTERNALOP internalOp;
 		int type;
 
 	public:
 		//Default is to send the message
-		SingleAction(MESSAGE*);
-
-		SingleAction(INTERNALOP internalOp);
+		SingleAction(MESSAGE*, int type);
 
 		MESSAGE* getMessage(void);
-		INTERNALOP getInternalOp(void);
 
-		int getType();
+		int getType(void);
+
 };
 
 class ACTION {
