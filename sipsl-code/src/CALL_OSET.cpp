@@ -179,6 +179,8 @@ void SL_CO::call(MESSAGE* _message){
 
 			while (!actionList.empty()){
 
+				DEBY
+
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
 				INTERNALOP *iop = dynamic_cast<INTERNALOP*>(_tmpMessage);
 
@@ -188,10 +190,12 @@ void SL_CO::call(MESSAGE* _message){
 					// send message to ALO
 
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
-					call_oset->getALO()->p_w(actionList.top().getMessage());
+					call_oset->getALO()->p_w(_tmpMessage);
 
 				}
-				if (actionList.top().getType() == TYPE_MESS && iop == 0x0 && _tmpMessage->getDestEntity() == SODE_APOINT){
+				else if (actionList.top().getType() == TYPE_MESS && iop == 0x0 && _tmpMessage->getDestEntity() == SODE_APOINT){
+
+					DEBY
 
 					ATRANSMIT(_tmpMessage)
 					//Purge message
@@ -199,7 +203,7 @@ void SL_CO::call(MESSAGE* _message){
 
 				} else {
 					//TODO
-					DEBOUT("SL_CO::call action is ???", "")
+					DEBASSERT("SL_CO::call action is ???")
 				}
 
 				actionList.pop();
@@ -251,7 +255,7 @@ void SL_CO::call(MESSAGE* _message){
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
 				INTERNALOP *iop = dynamic_cast<INTERNALOP*>(_tmpMessage);
 
-				DEBOUT("SL_CO::reading action stack, message:", actionList.top().getMessage()->getIncBuffer())
+				DEBOUT("SL_CO::reading action stack, message:", _tmpMessage->getIncBuffer())
 
 				if (actionList.top().getType() == TYPE_MESS && iop == 0x0 && _tmpMessage->getDestEntity() == SODE_BPOINT){
 
@@ -433,7 +437,6 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 		}
 		pthread_mutex_unlock(&mutex);
 		return 0x0;
-
 	}
 	if (_message->getReqRepType() == REPSUPP) {
 		DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())

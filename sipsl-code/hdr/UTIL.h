@@ -70,6 +70,7 @@ typedef struct {
 			sizeof(message->getAddress()));
 
 #define BTRANSMIT(message) { \
+		DEBOUT("SL_CO::call action is send APOINT string:", message->getIncBuffer()) \
 		struct sockaddr_in si_bpart; \
 		memset((char *) &si_bpart, 0, sizeof(si_bpart)); \
 		si_bpart.sin_family = AF_INET; \
