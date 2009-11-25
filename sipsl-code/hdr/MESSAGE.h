@@ -106,8 +106,6 @@ class BASEMESSAGE {
 
         SysTime getCreationTime(void);
 
-        virtual void dummy(void) = 0;
-
     protected:
         int genEntity;
         int destEntity;
@@ -268,34 +266,10 @@ class MESSAGE : public BASEMESSAGE {
     	void setFireTime(SysTime fireTime);
     	SysTime getFireTime(void);
 
-    	void dummy(void);
+    	int typeOfInternal; // Message or operation
+    	int typeOfOperation; // Type of operation
 
 };
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//// INTERNALOP
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-class INTERNALOP : public MESSAGE{
-
-    private:
-        // an operation is for now a delete of state machine due to
-        // a time out
-        // type of operation, if has value it's an operation otherwise is a message
-		// 1 send embedded message
-		// 2 start timer
-		// 3 stop timer
-        int driver;
-        //key of generating message        // using the extededcallid of the generating message
-        string extendedFakeCallId;
-    public:
-        INTERNALOP(int internalOp, string extendedFakeCallId, MESSAGE* message, int genEntity, SysTime creaTime);
-        void setDriver(int);
-        int getDriver(void);
-
-        void dummy(void);
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //// ALLOCATED MESSAGES TABLE

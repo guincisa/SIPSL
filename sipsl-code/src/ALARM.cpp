@@ -112,12 +112,11 @@ void ALMGR::alarmer(void){
 					if (tmal->isActive()){
 
 						MESSAGE* _tmpMess = tmal->getMessage();
-						INTERNALOP* iop = dynamic_cast<INTERNALOP*>(_tmpMess);
 
 						//ALMGR shall not care about message or internalop
 						//SL_CC does it but here if for debug purposes
 
-						if ( iop == 0x0 ){
+						if ( _tmpMess->typeOfInternal == TYPE_MESS ){
 							DEBY
 							_tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
 							_tmpMess->compileMessage();

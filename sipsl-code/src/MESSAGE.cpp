@@ -194,10 +194,6 @@ int BASEMESSAGE::getSock(void){
 void BASEMESSAGE::removeHeader(int _pos){
 	flex_line[_pos] = "xxDxx";
 }
-void BASEMESSAGE::dummy(void){
-	DEBOUT("void BASEMESSAGE::dummy(void)","");
-}
-
 // *****************************************************************************************
 // *****************************************************************************************
 // *****************************************************************************************
@@ -805,23 +801,3 @@ string MESSAGE::getExtendedInternalCID(void){
 	return getHeadCallId().getNormCallId() + getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 
 }
-void MESSAGE::dummy(void){
-	DEBOUT("MESSAGE::dummy(void)","")
-}
-
-INTERNALOP::INTERNALOP(int _internalOp, string _extendedFakeCallId, MESSAGE* _message, int _genEntity, SysTime _creaTime):
-	MESSAGE(_message, _genEntity, _creaTime){
-	driver = _internalOp;
-	extendedFakeCallId = _extendedFakeCallId;
-}
-int INTERNALOP::getDriver(void){
-	return driver;
-}
-void INTERNALOP::setDriver(int _driver){
-	driver = _driver;
-}
-void INTERNALOP::dummy(void){
-	DEBOUT("INTERNALOP::dummy(void)","")
-}
-
-

@@ -29,22 +29,20 @@
 #define TYPE_MESS 1
 #define TYPE_OP 2
 
-#define TYPE_OP_TIMER_ON 2
-#define TYPE_OP_TIMER_OFF 3
+#define TYPE_OP_NOOP 0
+#define TYPE_OP_TIMER_ON 3
+#define TYPE_OP_TIMER_OFF 4
 
 
 class SingleAction {
 	private:
 		MESSAGE *message;
-		int type;
 
 	public:
 		//Default is to send the message
-		SingleAction(MESSAGE*, int type);
+		SingleAction(MESSAGE*);
 
 		MESSAGE* getMessage(void);
-
-		int getType(void);
 
 };
 

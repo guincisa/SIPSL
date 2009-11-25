@@ -179,21 +179,18 @@ void SL_CO::call(MESSAGE* _message){
 
 			while (!actionList.empty()){
 
-				DEBY
-
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
-				INTERNALOP *iop = dynamic_cast<INTERNALOP*>(_tmpMessage);
 
 				DEBOUT("SL_CO::reading action stack, message:", _tmpMessage->getIncBuffer())
 
-				if (actionList.top().getType() == TYPE_MESS && iop == 0x0 && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
 
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
 					call_oset->getALO()->p_w(_tmpMessage);
 
 				}
-				else if (actionList.top().getType() == TYPE_MESS && iop == 0x0 && _tmpMessage->getDestEntity() == SODE_APOINT){
+				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_APOINT){
 
 					DEBY
 
@@ -253,11 +250,10 @@ void SL_CO::call(MESSAGE* _message){
 			while (!actionList.empty()){
 
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
-				INTERNALOP *iop = dynamic_cast<INTERNALOP*>(_tmpMessage);
 
 				DEBOUT("SL_CO::reading action stack, message:", _tmpMessage->getIncBuffer())
 
-				if (actionList.top().getType() == TYPE_MESS && iop == 0x0 && _tmpMessage->getDestEntity() == SODE_BPOINT){
+				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_BPOINT){
 
 					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
 
@@ -266,31 +262,35 @@ void SL_CO::call(MESSAGE* _message){
 					//DELETE INVITE HERE...
 					PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
 
-				} else if (actionList.top().getType() == TYPE_MESS && iop == 0x0 && _tmpMessage->getDestEntity() == SODE_APOINT) {
+				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_APOINT) {
 
 					ATRANSMIT(_tmpMessage)
 
 					//Purge message
 					PURGEMESSAGE(_tmpMessage, "PURGE MESSAGE")
 
-				} else if (actionList.top().getType() == TYPE_OP){ // to alarm
+				} else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
 
-					if ( iop != 0x0 && iop->getDriver() == TYPE_OP_TIMER_ON){
+					DEBOUT("SL_CO:: TYPE_OP","")
 
+					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
 						DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
 						SysTime st1 = _tmpMessage->getFireTime();
 						SysTime st2;
 						st2.tv.tv_sec = 0;
 						st2.tv.tv_usec = 0;
 						_tmpMessage->setFireTime(st2);
-						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm((MESSAGE*)iop,st1);
+						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st2);
 
-					} else if (iop != 0x0 && iop->getDriver() == TYPE_OP_TIMER_ON){
+					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
 						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
 						string callid = _tmpMessage->getExtendedInternalCID();
 						DEBOUT("SL_CO::cancel alarm, callid", callid)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid);
+					}
+					else {
+						DEBASSERT("SL_CO client side inconsistency")
 					}
 
 				} else {
@@ -367,7 +367,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				//_message changes its dest and gen
 				_message->setDestEntity(SODE_ALOPOINT);
 				_message->setGenEntity(SODE_SMSVPOINT);
-				SingleAction sa_1 = SingleAction(_message, TYPE_MESS);
+				_message->typeOfInternal = TYPE_MESS;
+				SingleAction sa_1 = SingleAction(_message);
 
 				//etry is filled later by SL_CO (see design)
 				CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
@@ -417,8 +418,9 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 				etry->compileMessage();
 				etry->dumpVector();
+				etry->typeOfInternal = TYPE_MESS;
 
-				SingleAction sa_2 = SingleAction(etry, TYPE_MESS);
+				SingleAction sa_2 = SingleAction(etry);
 
 				action->addSingleAction(sa_1);
 				action->addSingleAction(sa_2);
@@ -496,8 +498,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				nowT.tv.tv_sec = 0;
 				nowT.tv.tv_usec = 0;
 				_message->setFireTime(nowT);
+				_message->typeOfInternal = TYPE_MESS;
 
-				SingleAction sa_1 = SingleAction(_message, TYPE_MESS);
+				SingleAction sa_1 = SingleAction(_message);
 
 				//careful with source message.
 				DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
@@ -510,17 +513,18 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				__message->setDestEntity(SODE_BPOINT);
 				__message->setGenEntity(SODE_ALOPOINT);
 
-
 				SysTime afterT;
 				GETTIME(afterT);
 				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(resend_invite+1);
 				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(resend_invite+1);
 				__message->setFireTime(afterT);
-				INTERNALOP* iop = new INTERNALOP(TYPE_OP_TIMER_ON, __message->getExtendedInternalCID(), __message, __message->getGenEntity(), __message->getCreationTime());
-				SingleAction sa_2 = SingleAction((MESSAGE*)iop, TYPE_OP);
+				__message->typeOfInternal = TYPE_OP;
+				__message->typeOfOperation = TYPE_OP_TIMER_ON;
+				SingleAction sa_2 = SingleAction(__message);
 
 				action->addSingleAction(sa_1);
 				action->addSingleAction(sa_2);
+
 
 				DEBOUT("SL_SM_CL::actions set", _message->getHeadSipRequest().getContent())
 
@@ -564,8 +568,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				nowT.tv.tv_sec = 0;
 				nowT.tv.tv_usec = 0;
 				_message->setFireTime(nowT);
+				_message->typeOfInternal = TYPE_MESS;
 
-				SingleAction sa_1 = SingleAction(_message, TYPE_MESS);
+				SingleAction sa_1 = SingleAction(_message);
 
 				//careful with source message.
 				DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
@@ -585,8 +590,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(resend_invite+1);
 				afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(resend_invite+1);
 				__message->setFireTime(afterT);
-				INTERNALOP* iop = new INTERNALOP(TYPE_OP_TIMER_ON, __message->getExtendedInternalCID(), __message, __message->getGenEntity(), __message->getCreationTime());
-				SingleAction sa_2 = SingleAction((MESSAGE*)iop, TYPE_OP);
+				__message->typeOfInternal = TYPE_OP;
+				__message->typeOfOperation = TYPE_OP_TIMER_ON;
+				SingleAction sa_2 = SingleAction(__message);
 
 				action->addSingleAction(sa_1);
 				action->addSingleAction(sa_2);
@@ -614,8 +620,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				// TODO clear timer ad create new timer for the ringing
 
 				ACTION* action = new ACTION();
-				INTERNALOP* iop = new INTERNALOP(TYPE_OP_TIMER_OFF, _message->getExtendedInternalCID(), _message, _message->getGenEntity(), _message->getCreationTime());
-				SingleAction sa_1 = SingleAction((MESSAGE*)iop, TYPE_OP);
+				_message->typeOfInternal = TYPE_OP;
+				_message->typeOfOperation = TYPE_OP_TIMER_OFF;
+				SingleAction sa_1 = SingleAction(_message);
 				action->addSingleAction(sa_1);
 
 //				//TODO timer for ring
@@ -685,8 +692,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				dialoge_x->compileMessage();
 				dialoge_x->dumpVector();
+				dialoge_x->typeOfInternal = TYPE_MESS;
 
-				SingleAction sa_1 = SingleAction(dialoge_x, TYPE_MESS);
+				SingleAction sa_1 = SingleAction(dialoge_x);
 
 				action->addSingleAction(sa_1);
 
