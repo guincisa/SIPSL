@@ -268,6 +268,7 @@ class MESSAGE : public BASEMESSAGE {
 
     	int typeOfInternal; // Message or operation
     	int typeOfOperation; // Type of operation
+    	int specialAction; //delete co
 
 };
 ///////////////////////////////////////////////////////////////////////////////

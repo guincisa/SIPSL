@@ -17,11 +17,16 @@ The solution can be that ALO defines itself an APOINT so the message will be han
 like a new call.
 
 ------------------------------------------------------------------------------------
-3.
+3. Fixed 
 Change the Action and Alarm to support internal operation and message sending
 Now MESSAGE and INTERNALOP are 
 INTERNALOP : public MESSAGE
 then use dynamic_cast to check if the incoming message is operation or not.
+
+Fixed in other manner.
+
+
+
 ************************************************************************************
 ************************************************************************************
 
@@ -43,6 +48,13 @@ eliminati i messaggi associati alle state machine
 2. 
 Check if mutex on alarm structures is making sense
 ------------------------------------------------------------------------------------
+3.
+Dialog Established is received at sm_y and sent directly to A but it must be sent
+to sm_x and send by it.
+------------------------------------------------------------------------------------
+4.
+Dialog established needs state in x and y machines???
+
 
 
 

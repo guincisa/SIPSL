@@ -1,8 +1,8 @@
-window_sizes 1280 729 188 1086 579 68
+window_sizes 1274 726 191 1077 582 68
 windows_style
 show_stereotypes
-selected statediagram_ref 147074 // Y
+selected sequencediagram_ref 153602 // F7 TIMER
 open
-  state_ref 128002 // SM_SL_CL
+  usecaseview_ref 128134 // VANILLA_CALL
 end
 end

@@ -436,6 +436,58 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 			}
 		}else if (State == 1){
 			DEBOUT("SL_SM_SV::event State 1 probable retransmission","")
+			ACTION* action = new ACTION();
+
+			CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
+
+			//TODO qui fare etry...
+			DEBOUT("ETRY","SIP/2.0 100 Trying")
+			etry->setHeadSipReply("SIP/2.0 100 Trying");
+			DEBOUT("ETRY","Purge sdp")
+			etry->purgeSDP();
+			DEBOUT("ETRY","delete User-Agent:")
+			etry->dropHeader("User-Agent:");
+			DEBOUT("ETRY","delete Max-Forwards:")
+			etry->removeMaxForwards();
+			DEBOUT("ETRY","delete Content-Type:")
+			etry->dropHeader("Content-Type:");
+			DEBOUT("ETRY","delete Allow:")
+			etry->dropHeader("Allow:");
+			DEBOUT("ETRY","delete Route:")
+			etry->dropHeader("Route:");
+			DEBOUT("ETRY","delete Date:")
+			etry->dropHeader("Date:");
+
+			etry->setGenericHeader("Content-Length:","0");
+
+			//via add rport
+			C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
+			DEBOUT("via1", viatmp->getC_AttVia().getContent())
+			DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+			//TODO 124??
+			viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+			//viatmp->getC_AttVia().getViaParms().compileTupleVector();
+			DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+
+			DEBOUT("via4", viatmp->getC_AttVia().getContent())
+			etry->popSTKHeadVia();
+			etry->pushHeadVia(viatmp->getC_AttVia().getContent());
+
+
+
+			DEBOUT("ETRY","setDestEntity")
+			etry->setDestEntity(SODE_APOINT);
+
+			etry->compileMessage();
+			etry->dumpVector();
+			etry->typeOfInternal = TYPE_MESS;
+
+			SingleAction sa_1 = SingleAction(etry);
+
+			action->addSingleAction(sa_1);
+			pthread_mutex_unlock(&mutex);
+			return action;
+
 		}
 		pthread_mutex_unlock(&mutex);
 		return 0x0;
@@ -511,9 +563,8 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				//client state machine which
 				//TODO review states and interaction...
 				__message->setDestEntity(SODE_BPOINT);
-				//TODO ?????
-				//SMCL???
-				__message->setGenEntity(SODE_ALOPOINT);
+				__message->setGenEntity(SODE_SMCLPOINT);
+
 
 				SysTime afterT;
 				GETTIME(afterT);
@@ -583,7 +634,8 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				//client state machine which
 				//TODO review states and interaction...
 				__message->setDestEntity(SODE_BPOINT);
-				__message->setGenEntity(SODE_ALOPOINT);
+				__message->setGenEntity(SODE_SMCLPOINT);
+
 
 
 				SysTime afterT;
@@ -657,6 +709,10 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
 				DEBOUT("MESSAGE GENERATOR", __message)
 				CREATEMESSAGE(dialoge_x, __message, SODE_SMCLPOINT)
+
+				//TODO SODE_SMSVPOINT!!!
+				//state machine client cannot communicate with A
+				//26 nov fix this
 				dialoge_x->setDestEntity(SODE_APOINT);
 
 				//TODO qui fare dialoge_x...

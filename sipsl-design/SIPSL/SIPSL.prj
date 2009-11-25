@@ -1,7 +1,7 @@
 format 70
 "SIPSL"
-  revision 58
-  modified_by 55 "guic"
+  revision 60
+  modified_by 2 "guic"
 
 
   
@@ -453,6 +453,10 @@ s
 	  on state_ref 128289 // 2
 	  external 
 	end
+
+	transition 142210 "event<DIAGE,s=sm_y, d=sm_x>"
+	  on state_ref 128161 // 1
+	end
       end
 
       pseudostate 128161 shallow_history 
@@ -517,7 +521,7 @@ s
       end
 
       state 128130 "1"
-	transition 128258 "event<TRYy, s=b, d=smcly>"
+	transition 128258 "event<TRYy, s=b, d=sm_y>"
 	  on state_ref 128258 // 2
 	  external 
 	end
@@ -542,16 +546,16 @@ s
 	  external 
 	end
 
-	transition 128642 "event<RINGy, s=b, d=smcly>"
+	transition 128642 "event<RINGy, s=b, d=sm_y>"
 	  on state_ref 128514 // 4
 	  external 
 	end
 
-	transition 135682 "event<DialogEst, s=b d=smcly>"
+	transition 135682 "event<DialogEst, s=b d=sm_y>"
 	  on state_ref 128258 // 2
 	end
 
-	transition 128183 "event<timer for ring expired>"
+	transition 128183 "event<TYPE_ABORT_CO state2>"
 	  on pseudostate_ref 128055 // exit_point
 	  external 
 	end
@@ -580,7 +584,7 @@ s
 	  external 
 	end
 
-	transition 128439 "event<max time for ringing>"
+	transition 128439 "event<TYPE_ABORT_CO state4>"
 	  on pseudostate_ref 128055 // exit_point
 	  external 
 	end
@@ -602,7 +606,10 @@ s
 
     sequencediagram 153602 "F7 TIMER"
       show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
-      comment "Oct 26- 2009
+      comment "26Nov:
+dialog E must traverse the x state machine
+
+Oct 26- 2009
 correct timer interaction with client state machine"
       overlapping_bars size A0
     end
