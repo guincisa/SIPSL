@@ -511,6 +511,8 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				//client state machine which
 				//TODO review states and interaction...
 				__message->setDestEntity(SODE_BPOINT);
+				//TODO ?????
+				//SMCL???
 				__message->setGenEntity(SODE_ALOPOINT);
 
 				SysTime afterT;

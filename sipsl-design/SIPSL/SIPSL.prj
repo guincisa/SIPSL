@@ -1,6 +1,6 @@
 format 70
 "SIPSL"
-  revision 57
+  revision 58
   modified_by 55 "guic"
 
 
@@ -449,7 +449,7 @@ s
 	  on state_ref 128161 // 1
 	end
 
-	transition 128673 "event<180RINGy, s=cl_y, d=sv_x>"
+	transition 128673 "event<180RINGy, s=sm_y, d=sm_x>"
 	  on state_ref 128289 // 2
 	  external 
 	end
@@ -468,23 +468,23 @@ s
       end
 
       state 128289 "2"
-	transition 128801 "event<180RINGy, s=cl_y, d=sv_x>"
+	transition 128801 "event<180RINGy, s=sm_y, d=sm_x>"
 	  on state_ref 128289 // 2
 	end
 
-	transition 128929 "event<200OKx, s=alo_x, d=sv_x>"
+	transition 128929 "event<200OKx, s=alo, d=sm_x>"
 	  on state_ref 128417 // 3
 	  external 
 	end
 
-	transition 129057 "event<200OKy, s=cl_y, d=sv_x>"
+	transition 129057 "event<200OKy, s=cl_y, d=sv_x> (alternative)"
 	  on state_ref 128417 // 3
 	  external 
 	end
       end
 
       state 128417 "3"
-	transition 129185 "event<ACKx, s=A, d=sv_x>"
+	transition 129185 "event<ACKx, s=A, d=sm_x>"
 	  on state_ref 128545 // 4
 	  external 
 	end
@@ -510,7 +510,7 @@ s
       end
 
       pseudostate 128002 entry_point "init"
-	transition 128002 "event<INVITEy, s=alo, d=smcly>"
+	transition 128002 "event<INVITEy, s=alo, d=sm_y>"
 	  on state_ref 128130 // 1
 	  external 
 	end
@@ -522,7 +522,7 @@ s
 	  external 
 	end
 
-	transition 128386 "event<timer y>"
+	transition 128386 "event<INVITEy, s=alo, d=B>"
 	  on state_ref 128130 // 1
 	end
 

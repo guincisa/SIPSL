@@ -1,4 +1,4 @@
-format 66
+format 70
 
 pseudostatecanvas 128033 pseudostate_ref 128033 // entry_point
    xyz 71 122 3005 label_xy 74 141
@@ -10,44 +10,42 @@ statecanvas 128417 state_ref 128161 // 1
   xyzwh 457 114 2000 40 33
 end
 note 129569 "action:
-[INVITEx, s=sv_x, d=alo]
-[empty100TRYx, s=sv_x, d=A] "
-  xyzwh 177 154 2000 174 64
+[TYPE_MESS, INVITEx, s=sm_x, d=alo]
+[TYPE_MESS, 100TRYx, s=sm_x, d=A] "
+  xyzwh 179 153 2000 215 65
 note 130465 "action:
-[INVITEx, s=sv_x, d=sm_y]
-[empty100TRYx, s=sv_x, d=B] "
-  xyzwh 508 167 2000 174 64
+[TYPE_MESS, INVITEx, s=sm_x, d=sm_y]
+[TYPE_MESS, 100TRYx, s=sm_x, d=A] "
+  xyzwh 538 86 2000 231 73
 statecanvas 130849 state_ref 128289 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 457 421 2000 40 33
 end
 note 131105 "action:
-[empty180RINGx, s=sv_x, d=A]
-
-"
-  xyzwh 498 295 2000 189 47
+[TYPE_MESS, 180RINGx, s=sm_x, d=A]"
+  xyzwh 501 295 2000 251 57
 note 131745 "action:
-[empty180RINGx, s=sv_x, d=A]
+[TYPE_MESS, 180RINGx, s=sm_x, d=A]
 
 "
-  xyzwh 603 435 2000 189 47
+  xyzwh 609 449 2000 233 53
 statecanvas 132001 state_ref 128417 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 81 438 2000 40 33
 end
 note 132257 "action:
-[200OKx, s=sv_x, d=A]"
-  xyzwh 323 529 2000 161 50
+[TYPE_MESS, 200OKx, s=sm_x, d=A]"
+  xyzwh 216 291 2000 203 49
 note 132897 "action:
-[empty200OKx, s=sv_x, d=A]"
-  xyzwh 148 363 2000 178 47
+[TYPE_MESS, 200OKx, s=sm_x, d=A]"
+  xyzwh 352 538 2000 249 51
 statecanvas 133025 state_ref 128545 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 82 684 2000 40 33
 end
 note 133281 "action:
-[ACKx, s=sv_x, d=cl_y]"
-  xyzwh 116 590 2000 186 52
+[TYPE_MESS, ACKx, s=sm_x, d=sm_y]"
+  xyzwh 152 605 2000 219 49
 transitioncanvas 129313 transition_ref 128417 // event<INVITEx, s=A, d=sv_x>
   
   from ref 128033 z 1999 label "event<INVITEx, s=A, d=sv_x>" xyz 209 109 1999 to ref 128417
@@ -55,48 +53,49 @@ transitioncanvas 129313 transition_ref 128417 // event<INVITEx, s=A, d=sv_x>
 end
 transitioncanvas 129953 transition_ref 128545 // event<INVITEx, s=A, d=sv_x>
   
-  from ref 128417 z 1999 label "event<INVITEx, s=A, d=sv_x>" xyz 505 151 1999 to point 456 178
-  line 130081 z 1999 to point 479 190
-  line 130337 z 1999 to point 497 183
-  line 130209 z 1999 to ref 128417
+  from ref 128417 z 1999 label "event<INVITEx, s=A, d=sv_x>" xyz 418 52.5 1999 to point 450 70
+  line 130081 z 1999 to point 484 67
+  line 130337 z 1999 to ref 128417
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 130977 transition_ref 128673 // event<180RINGy, s=cl_y, d=sv_x>
+transitioncanvas 130977 transition_ref 128673 // event<180RINGy, s=sm_y, d=sm_x>
   
-  from ref 128417 z 1999 label "event<180RINGy, s=cl_y, d=sv_x>" xyz 501 272 1999 to ref 130849
+  from ref 128417 z 1999 label "event<180RINGy, s=sm_y, d=sm_x>" xyz 498 262 1999 to ref 130849
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 131361 transition_ref 128801 // event<180RINGy, s=cl_y, d=sv_x>
+transitioncanvas 131361 transition_ref 128801 // event<180RINGy, s=sm_y, d=sm_x>
   
-  from ref 130849 z 1999 label "event<180RINGy, s=cl_y, d=sv_x>" xyz 593 412 1999 to point 590 461
+  from ref 130849 z 1999 label "event<180RINGy, s=sm_y, d=sm_x>" xyz 612 405 1999 to point 590 461
   line 131489 z 1999 to point 589 411
   line 131617 z 1999 to ref 130849
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 132129 transition_ref 128929 // event<200OKx, s=alo_x, d=sv_x>
+transitioncanvas 132129 transition_ref 128929 // event<200OKx, s=alo, d=sm_x>
   decenter_begin 272
   
-  from ref 130849 z 1999 label "event<200OKx, s=alo_x, d=sv_x>" xyz 304 511 1999 to point 237 521
+  from ref 130849 z 1999 label "event<200OKx, s=alo, d=sm_x>" xyz 140 359 1999 to point 291 374
   line 132641 z 1999 to ref 132001
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 132513 transition_ref 129057 // event<200OKy, s=cl_y, d=sv_x>
+transitioncanvas 132513 transition_ref 129057 // event<200OKy, s=cl_y, d=sv_x> (alternative)
   
-  from ref 130849 z 1999 label "event<200OKy, s=cl_y, d=sv_x>" xyz 143 346 1999 to point 305 389
+  from ref 130849 z 1999 label "event<200OKy, s=cl_y, d=sv_x> (alternative)" xyz 307 514 1999 to point 288 505
   line 132769 z 1999 to ref 132001
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 133153 transition_ref 129185 // event<ACKx, s=A, d=sv_x>
+transitioncanvas 133153 transition_ref 129185 // event<ACKx, s=A, d=sm_x>
   
-  from ref 132001 z 1999 label "event<ACKx, s=A, d=sv_x>" xyz 111 568 1999 to ref 133025
+  from ref 132001 z 1999 label "event<ACKx, s=A, d=sm_x>" xyz 110 563 1999 to ref 133025
   write_horizontally default show_definition default drawing_language default
 end
+line 128183 -_-_
+  from ref 132897 z 2001 to ref 132513
 line 128289 -_-_
   from ref 128161 z 1999 to ref 128033
 line 129825 -_-_
   from ref 129569 z 1998 to ref 129313
 line 130721 -_-_
-  from ref 130465 z 1998 to ref 130209
+  from ref 130465 z 1998 to ref 130337
 line 131233 -_-_
   from ref 131105 z 1998 to ref 130977
 line 131873 -_-_
