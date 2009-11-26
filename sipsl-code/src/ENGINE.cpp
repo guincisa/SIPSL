@@ -62,7 +62,7 @@ ENGINE::ENGINE(void) {
 
     DEBOUT("ENGINE::ENGINE()","")
     int res;
-    // unlock the CONSmutex once the derived class contructor has ended
+    // unlock the CONSmutex once the derived class constructor has ended
     //res = pthread_mutex_lock(&CONSmutex);
 
     ENGtuple *t1,*t2,*t3,*t4,*t5;
@@ -116,14 +116,15 @@ SUDP* ENGINE::getSUDP(void){
 //**********************************************************************************
 void ENGINE::p_w(MESSAGE* _m) {
 
+	DEBY
     pthread_mutex_lock(&(sb.condvarmutex));
-
+	DEBY
     sb.put(_m);
-
+	DEBY
     pthread_cond_signal(&(sb.condvar));
-
+	DEBY
     pthread_mutex_unlock(&(sb.condvarmutex));
-
+	DEBY
     return;
 
 }
@@ -135,21 +136,22 @@ void * threadparser (void * _pt){
     ENGtuple *pt = (ENGtuple *)  _pt;
     ENGINE * ps = pt->ps;
     while(true) {
+        DEBOUT("ENGINE thread",_pt)
         pthread_mutex_lock(&(ps->sb.condvarmutex));
         while(ps->sb.isEmpty() ) {
-            DEBOUT("ENGINE thread is empty","")
+            DEBOUT("ENGINE thread is empty",_pt)
             pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
         }
 
         MESSAGE* m = ps->sb.get();
         if (m == NULL)  {
-            DEBOUT("ENGINE thread NULL","")
+            DEBOUT("ENGINE thread NULL",_pt)
             ps->sb.move();
         }
         else {
             pt->ps->parse(m);
         }
-        pthread_mutex_unlock(&(ps->sb.condvarmutex));
+        //pthread_mutex_unlock(&(ps->sb.condvarmutex));
     }
     return (NULL);
 }

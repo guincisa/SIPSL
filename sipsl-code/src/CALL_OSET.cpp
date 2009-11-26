@@ -265,7 +265,10 @@ void SL_CO::call(MESSAGE* _message){
 				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
-					call_oset->getALO()->p_w(_tmpMessage);
+					SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+					tmp_sl_cc->p_w(_tmpMessage);
+
+					//call_oset->getALO()->p_w(_tmpMessage);
 					DEBY
 
 				} else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm

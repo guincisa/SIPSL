@@ -93,6 +93,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 
 	DEBOUT("Incoming message generating entity", _mess->getGenEntity())
+	pthread_mutex_unlock(&(sb.condvarmutex));
 
 	if (_mess->getGenEntity() == SODE_NTWPOINT){
 

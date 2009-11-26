@@ -67,6 +67,13 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	//Check if Request or Reply
 	DEBOUT("SIPENGINE::parse",_mess->getIncBuffer())
+	pthread_mutex_unlock(&(sb.condvarmutex));
+
+
+//	timespec sleep_time;
+//	sleep_time.tv_sec = 40;
+//	sleep_time.tv_nsec = 0;
+//	nanosleep(&sleep_time,NULL);
 
 	int tl = _mess->getTotLines();
 	DEBOUT("SIPENGINE::parse tot lines",tl)

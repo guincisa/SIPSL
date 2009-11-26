@@ -39,6 +39,8 @@ ALO::ALO(ENGINE* _sl_cc):ENGINE(){
 void ALO::parse(MESSAGE* _message) {
 
 	DEBOUT("ALO","Dispatcher")
+	pthread_mutex_unlock(&(sb.condvarmutex));
+
 	// check message type and invoke call back...
 
 	if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
