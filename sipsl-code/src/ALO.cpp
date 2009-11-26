@@ -45,6 +45,10 @@ void ALO::parse(MESSAGE* _message) {
 		DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 		onInvite(_message);
 	}
+	else {
+		DEBOUT("ALO Decoupling ",_message->getHeadSipRequest().getContent())
+		sl_cc->p_w(_message);
+	}
 
 
 }
