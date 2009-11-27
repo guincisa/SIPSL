@@ -654,6 +654,7 @@ void MESSAGE::replaceHeadCSeq(string _content){
 C_HeadRoute &MESSAGE::getHeadRoute(void) throw (HeaderException){
 
 	if(headRoute_e){
+		DEBOUT("MESSAGE::getHeadRoute","No Route header")
 		throw HeaderException("No Route header");
 	}
 	if(headRoute_p){
@@ -675,6 +676,7 @@ C_HeadRoute &MESSAGE::getHeadRoute(void) throw (HeaderException){
 	}
 	else {
 		headRoute_e = true;
+		DEBOUT("MESSAGE::getHeadRoute","No Route header")
 		throw HeaderException("No Route header");
 	}
 }

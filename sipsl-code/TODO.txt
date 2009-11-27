@@ -54,6 +54,12 @@ to sm_x and send by it.
 ------------------------------------------------------------------------------------
 4.
 Dialog established needs state in x and y machines???
+------------------------------------------------------------------------------------
+5.
+27 Nov
+Dialog established is malformed (objects are not initiated correctly) tuplevector
+exception
+
 
 
 

@@ -209,8 +209,8 @@ void SL_CO::call(MESSAGE* _message){
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
-			PURGEMESSAGE(_message,"SL_SM_SV::delete message")
-			return;
+			PURGEMESSAGE(_message,"SL_CO::delete message")
+			//return;
 		}
 	}
 	else if (_message->getDestEntity() == SODE_SMCLPOINT){
@@ -263,7 +263,8 @@ void SL_CO::call(MESSAGE* _message){
 					PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
 
 				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
-
+					//TODO questo messaggio non è creato bene
+					DEBY
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 					DEBY
@@ -302,7 +303,7 @@ void SL_CO::call(MESSAGE* _message){
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 			PURGEMESSAGE(_message, "SL_SM_SV::delete message")
-			return;
+			//return;
 		}
 	}
 
@@ -517,7 +518,8 @@ SL_SM_CL::SL_SM_CL(ENGINE* _engine, SL_CO* _sl_co):
 ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 
-	DEBOUT("SL_SM_CL::event", _message->getHeadCallId().getContent())
+	DEBOUT("SL_SM_CL::event ", _message->getLine(0)<< " ** " << _message->getHeadCallId().getContent())
+
 
 	//Mutex this method
 	pthread_mutex_lock(&mutex);
@@ -703,9 +705,6 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				// TODO clear timer ad create new timer for the ringing
 
-				_message->setDestEntity(SODE_SMSVPOINT);
-				_message->setGenEntity(SODE_SMCLPOINT);
-				_message->typeOfInternal = TYPE_MESS;
 				//SingleAction sa_1 = SingleAction(_message);
 
 
@@ -715,6 +714,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
 				DEBOUT("MESSAGE GENERATOR", __message)
 				CREATEMESSAGE(dialoge_x, __message, SODE_SMCLPOINT)
+				dialoge_x->setDestEntity(SODE_SMSVPOINT);
+				dialoge_x->setGenEntity(SODE_SMCLPOINT);
+				dialoge_x->typeOfInternal = TYPE_MESS;
 
 				//TODO SODE_SMSVPOINT!!!
 				//state machine client cannot communicate with A
@@ -756,7 +758,6 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				dialoge_x->compileMessage();
 				dialoge_x->dumpVector();
-				dialoge_x->typeOfInternal = TYPE_MESS;
 
 				SingleAction sa_1 = SingleAction(dialoge_x);
 

@@ -211,7 +211,7 @@ class HeaderException  {
 	private:
 		string message;
 	public:
-		HeaderException(string m) : message(m){};
+		HeaderException(string m) : message(m){DEBOUT("HeaderException", m)};
 		string getMessage(void) {return message;};
 };
 //Att* are attibutes

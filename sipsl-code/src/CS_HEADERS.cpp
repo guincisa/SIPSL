@@ -144,16 +144,14 @@ TupleVector::TupleVector(const TupleVector& _t) {
 	DEBASSERT("COPY of TupleVector")
 }
 TupleVector::TupleVector(string tuples, string _separator) : S_AttGeneric(tuples) {
-
-   separator = _separator;
-   hasheader = false;
-   header = "";
+	separator = _separator;
+	hasheader = false;
+	header = "";
 }
 TupleVector::TupleVector(string tuples, string _separator, string _header) : S_AttGeneric(tuples) {
-
-   separator = _separator;
-   header = _header;
-   hasheader = true;
+	separator = _separator;
+	header = _header;
+	hasheader = true;
 }
 void TupleVector::setTupleVector(string _tuples, string _separator, string _header){
 	setContent(_tuples);
@@ -197,13 +195,13 @@ void TupleVector::doParse(void) {
 		parsed = true;
     }catch(...){
     	correct = false;
-    	throw HeaderException("TupleVector malformed");
+    	throw HeaderException("TupleVector malformed [" + content + "]");
     }
 }
 string TupleVector::findRvalue(string _Lvalue){
 
 	if (!correct){
-		throw HeaderException("TupleVector malformed");
+		throw HeaderException("TupleVector malformed [" + _Lvalue + "]");
 	}
     if (!parsed) {
         doParse();
@@ -218,13 +216,13 @@ string TupleVector::findRvalue(string _Lvalue){
     }
     catch(...){
     	correct = false;
-    	throw HeaderException("TupleVector malformed");
+    	throw HeaderException("TupleVector malformed [" + _Lvalue + "]");
     }
 }
 void TupleVector::replaceRvalue(string _Lvalue, string _Rvalue){
 
 	if(!correct){
-		throw HeaderException("TupleVector Malformed");
+		throw HeaderException("TupleVector Malformed [" + _Lvalue + " ** " + _Rvalue + "]");
 	}
     if (!parsed) {
         doParse();
@@ -245,7 +243,7 @@ void TupleVector::replaceRvalue(string _Lvalue, string _Rvalue){
     }
     catch(...){
     	correct = false;
-		throw HeaderException("TupleVector Malformed");
+		throw HeaderException("TupleVector Malformed [" + _Lvalue + " ** " + _Rvalue + "]");
     }
 }
 void TupleVector::buildContent(void){
@@ -276,7 +274,7 @@ void TupleVector::buildContent(void){
     }
     catch(...){
     	correct = false;
-    	throw HeaderException("TupleVector malformed");
+    	throw HeaderException("TupleVector malformed [" + content + "]");
     }
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -786,7 +784,7 @@ S_AttHostPort::S_AttHostPort(string _content)
 void S_AttHostPort::doParse(void){
 
 	if(!correct){
-		throw HeaderException("HostPort malformed");
+		throw HeaderException("HostPort malformed [" + content + "]");
 	}
     if (parsed) {
         return;
@@ -808,7 +806,7 @@ void S_AttHostPort::doParse(void){
     }
     catch(...){
     	correct = false;
-    	throw HeaderException("HostPort malformed");
+    	throw HeaderException("HostPort malformed [" + content + "]");
     }
 }
 void S_AttHostPort::buildContent(void){
@@ -824,8 +822,9 @@ void S_AttHostPort::buildContent(void){
     }
 }
 void S_AttHostPort::setPort(int _port){
+
 	if(!correct){
-		throw HeaderException("HostPort malformed");
+		throw HeaderException("HostPort malformed getPort");
 	}
     if (!parsed)
         doParse();
@@ -834,7 +833,7 @@ void S_AttHostPort::setPort(int _port){
 }
 void S_AttHostPort::setHostName(string _hostName){
 	if(!correct){
-		throw HeaderException("HostPort malformed");
+		throw HeaderException("HostPort malformed [" + _hostName + "]");
 	}
     if (!parsed)
         doParse();
@@ -843,7 +842,7 @@ void S_AttHostPort::setHostName(string _hostName){
 }
 string &S_AttHostPort::getHostName(void){
 	if(!correct){
-		throw HeaderException("HostPort malformed");
+		throw HeaderException("HostPort malformed [" + content + "]");
 	}
     if (!parsed)
         doParse();
@@ -851,7 +850,7 @@ string &S_AttHostPort::getHostName(void){
 }
 string S_AttHostPort::copyHostName(void){
 	if(!correct){
-		throw HeaderException("HostPort malformed");
+		throw HeaderException("HostPort malformed [" + hostName + "]");
 	}
     if (!parsed)
         doParse();
@@ -859,7 +858,7 @@ string S_AttHostPort::copyHostName(void){
 }
 int S_AttHostPort::getPort(void){
 	if(!correct){
-		throw HeaderException("HostPort malformed");
+		throw HeaderException( "HostPort malformed getPort");
 	}
     if (!parsed)
         doParse();
