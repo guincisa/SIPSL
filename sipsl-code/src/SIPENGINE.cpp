@@ -63,11 +63,12 @@ void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
 //**********************************************************************************
 void SIPENGINE::parse(MESSAGE* _mess) {
 
+	pthread_mutex_unlock(&(sb.condvarmutex));
+
 	//B2BUA, NGApplication, SBC
 
 	//Check if Request or Reply
 	DEBOUT("SIPENGINE::parse",_mess->getIncBuffer())
-	pthread_mutex_unlock(&(sb.condvarmutex));
 
 
 //	timespec sleep_time;

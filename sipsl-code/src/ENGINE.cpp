@@ -116,15 +116,10 @@ SUDP* ENGINE::getSUDP(void){
 //**********************************************************************************
 void ENGINE::p_w(MESSAGE* _m) {
 
-	DEBY
     pthread_mutex_lock(&(sb.condvarmutex));
-	DEBY
     sb.put(_m);
-	DEBY
     pthread_cond_signal(&(sb.condvar));
-	DEBY
     pthread_mutex_unlock(&(sb.condvarmutex));
-	DEBY
     return;
 
 }
@@ -151,7 +146,7 @@ void * threadparser (void * _pt){
         else {
             pt->ps->parse(m);
         }
-        //pthread_mutex_unlock(&(ps->sb.condvarmutex));
+        pthread_mutex_unlock(&(ps->sb.condvarmutex));
     }
     return (NULL);
 }

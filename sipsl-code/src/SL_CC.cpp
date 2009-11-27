@@ -91,9 +91,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 	//ma se entro con un messaggio destinato alla CL devo prendere ls SV
 	//e creare la CL
 
+	pthread_mutex_unlock(&(sb.condvarmutex));
 
 	DEBOUT("Incoming message generating entity", _mess->getGenEntity())
-	pthread_mutex_unlock(&(sb.condvarmutex));
 
 	if (_mess->getGenEntity() == SODE_NTWPOINT){
 

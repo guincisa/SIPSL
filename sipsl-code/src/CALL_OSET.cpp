@@ -265,10 +265,7 @@ void SL_CO::call(MESSAGE* _message){
 				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
-					SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-					tmp_sl_cc->p_w(_tmpMessage);
-
-					//call_oset->getALO()->p_w(_tmpMessage);
+					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 					DEBY
 
 				} else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
@@ -709,59 +706,59 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				_message->setDestEntity(SODE_SMSVPOINT);
 				_message->setGenEntity(SODE_SMCLPOINT);
 				_message->typeOfInternal = TYPE_MESS;
-				SingleAction sa_1 = SingleAction(_message);
-//
-//
-//
-//				// Dialog establish must derive from incoming invite
-//				// get incoming invite
-//				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
-//				DEBOUT("MESSAGE GENERATOR", __message)
-//				CREATEMESSAGE(dialoge_x, __message, SODE_SMCLPOINT)
-//
-//				//TODO SODE_SMSVPOINT!!!
-//				//state machine client cannot communicate with A
-//				//26 nov fix this
-//				dialoge_x->setDestEntity(SODE_SODE_SMSVPOINT);
-//
-//				//TODO qui fare dialoge_x...
-//				DEBOUT("dialoge_x","SIP/2.0 101 Dialog Establishement")
-//				dialoge_x->setHeadSipReply("SIP/2.0 101 Dialog Establishement");
-//				DEBOUT("dialoge_x","Purge sdp")
-//				dialoge_x->purgeSDP();
-//				DEBOUT("dialoge_x","delete User-Agent:")
-//				dialoge_x->dropHeader("User-Agent:");
-//				DEBOUT("dialoge_x","delete Max-Forwards:")
-//				dialoge_x->removeMaxForwards();
-//				DEBOUT("dialoge_x","delete Allow:")
-//				dialoge_x->dropHeader("Allow:");
-//				DEBOUT("dialoge_x","delete Route:")
-//				dialoge_x->dropHeader("Route:");
-//				DEBOUT("dialoge_x","delete Date:")
-//				dialoge_x->dropHeader("Date:");
-//
-//				dialoge_x->setGenericHeader("Content-Length:","0");
-//				//crash here...
-//
-//				//via add rport
-//				DEBY
-//				C_HeadVia* viatmp = (C_HeadVia*) dialoge_x->getSTKHeadVia().top();
-//				DEBOUT("via1", viatmp->getC_AttVia().getContent())
-//				DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-//				//TODO 124??
-//				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-//				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
-//				DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-//
-//				DEBOUT("via4", viatmp->getC_AttVia().getContent())
-//				dialoge_x->popSTKHeadVia();
-//				dialoge_x->pushHeadVia(viatmp->getC_AttVia().getContent());
-//
-//				dialoge_x->compileMessage();
-//				dialoge_x->dumpVector();
-//				dialoge_x->typeOfInternal = TYPE_MESS;
-//
-//				SingleAction sa_1 = SingleAction(dialoge_x);
+				//SingleAction sa_1 = SingleAction(_message);
+
+
+
+				// Dialog establish must derive from incoming invite
+				// get incoming invite
+				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
+				DEBOUT("MESSAGE GENERATOR", __message)
+				CREATEMESSAGE(dialoge_x, __message, SODE_SMCLPOINT)
+
+				//TODO SODE_SMSVPOINT!!!
+				//state machine client cannot communicate with A
+				//26 nov fix this
+				dialoge_x->setDestEntity(SODE_SMSVPOINT);
+
+				//TODO qui fare dialoge_x...
+				DEBOUT("dialoge_x","SIP/2.0 101 Dialog Establishement")
+				dialoge_x->setHeadSipReply("SIP/2.0 101 Dialog Establishement");
+				DEBOUT("dialoge_x","Purge sdp")
+				dialoge_x->purgeSDP();
+				DEBOUT("dialoge_x","delete User-Agent:")
+				dialoge_x->dropHeader("User-Agent:");
+				DEBOUT("dialoge_x","delete Max-Forwards:")
+				dialoge_x->removeMaxForwards();
+				DEBOUT("dialoge_x","delete Allow:")
+				dialoge_x->dropHeader("Allow:");
+				DEBOUT("dialoge_x","delete Route:")
+				dialoge_x->dropHeader("Route:");
+				DEBOUT("dialoge_x","delete Date:")
+				dialoge_x->dropHeader("Date:");
+
+				dialoge_x->setGenericHeader("Content-Length:","0");
+				//crash here...
+
+				//via add rport
+				DEBY
+				C_HeadVia* viatmp = (C_HeadVia*) dialoge_x->getSTKHeadVia().top();
+				DEBOUT("via1", viatmp->getC_AttVia().getContent())
+				DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+				//TODO 124??
+				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
+				DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+
+				DEBOUT("via4", viatmp->getC_AttVia().getContent())
+				dialoge_x->popSTKHeadVia();
+				dialoge_x->pushHeadVia(viatmp->getC_AttVia().getContent());
+
+				dialoge_x->compileMessage();
+				dialoge_x->dumpVector();
+				dialoge_x->typeOfInternal = TYPE_MESS;
+
+				SingleAction sa_1 = SingleAction(dialoge_x);
 
 				action->addSingleAction(sa_1);
 
