@@ -705,10 +705,6 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				// TODO clear timer ad create new timer for the ringing
 
-				//SingleAction sa_1 = SingleAction(_message);
-
-
-
 				// Dialog establish must derive from incoming invite
 				// get incoming invite
 				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
@@ -717,11 +713,6 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				dialoge_x->setDestEntity(SODE_SMSVPOINT);
 				dialoge_x->setGenEntity(SODE_SMCLPOINT);
 				dialoge_x->typeOfInternal = TYPE_MESS;
-
-				//TODO SODE_SMSVPOINT!!!
-				//state machine client cannot communicate with A
-				//26 nov fix this
-				dialoge_x->setDestEntity(SODE_SMSVPOINT);
 
 				//TODO qui fare dialoge_x...
 				DEBOUT("dialoge_x","SIP/2.0 101 Dialog Establishement")
