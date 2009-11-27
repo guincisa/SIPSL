@@ -1092,20 +1092,28 @@ void C_AttVia::doParse(void){
 
     if(parsed)
         return;
-
-    Tuple s1 = brkin2(content, " ");
-
-    Tuple s2 = brkin2(s1.Lvalue, "/");
-    Tuple s3 = brkin2(s2.Rvalue, "/");
-    transport = s3.Rvalue;
-    version.setVersion(s3.Lvalue);
-    version.setProtocol(s2.Lvalue);
-    //fix the contentReady
-    version.getContent();
-
-    Tuple s4 = brkin2(s1.Rvalue, ";");
-    hostPort.setContent(s4.Lvalue);
-    viaParms.setContent(s4.Rvalue);
+//    DEBOUT("C_AttVia::doParse content", content)
+//    Tuple s1 = brkin2(content, " ");
+//    DEBOUT("C_AttVia::doParse brk spazio s1", s1.Lvalue << " ** " << s1.Rvalue)
+//
+//    Tuple s2 = brkin2(s1.Lvalue, "/");
+//    DEBOUT("C_AttVia::doParse brk / s2", s2.Lvalue << " ** " << s2.Rvalue)
+//
+//    Tuple s3 = brkin2(s2.Rvalue, "/");
+//    DEBOUT("C_AttVia::doParse brk / s3", s3.Lvalue << " ** " << s3.Rvalue)
+//
+//    transport = s3.Rvalue;
+//    version.setVersion(s3.Lvalue);
+//    version.setProtocol(s2.Lvalue);
+//    //fix the contentReady
+//    version.getContent();
+//
+//    Tuple s4 = brkin2(s1.Rvalue, ";");
+//    DEBOUT("C_AttVia::doParse brk ; s4", s4.Lvalue << " ** " << s4.Rvalue)
+//    hostPort.setContent(s4.Lvalue);
+//    viaParms.setContent(s4.Rvalue);
+    DEBOUT("C_AttVia::doParse", content)
+    viaParms.setContent(content);
 
     correct = true;
     parsed = true;
@@ -1570,6 +1578,7 @@ void C_HeadVia::doParse(void) {
         return;
 
     Tuple s1 = brkin2(content, " ");
+    DEBOUT("C_HeadVia::doParse", s1.Lvalue << " ** "<< s1.Rvalue)
     via.setContent(s1.Rvalue);
 
     parsed = true;

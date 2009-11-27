@@ -265,7 +265,8 @@ void SL_CO::call(MESSAGE* _message){
 				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 					//TODO questo messaggio non è creato bene
 					DEBY
-					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
+					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
+					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getExtendedInternalCID())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 					DEBY
 
@@ -710,6 +711,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
 				DEBOUT("MESSAGE GENERATOR", __message)
 				CREATEMESSAGE(dialoge_x, __message, SODE_SMCLPOINT)
+				//CREATENEWMESSAGE(dialoge_x, __message->getIncBuffer(),__message->getSock(), __message->getAddress(), SODE_SMCLPOINT)
 				dialoge_x->setDestEntity(SODE_SMSVPOINT);
 				dialoge_x->setGenEntity(SODE_SMCLPOINT);
 				dialoge_x->typeOfInternal = TYPE_MESS;
@@ -745,10 +747,18 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				DEBOUT("via4", viatmp->getC_AttVia().getContent())
 				dialoge_x->popSTKHeadVia();
+				dialoge_x->dumpVector();
 				dialoge_x->pushHeadVia(viatmp->getC_AttVia().getContent());
 
+				dialoge_x->dumpVector();
 				dialoge_x->compileMessage();
 				dialoge_x->dumpVector();
+
+				C_HeadVia* viatmp2 = (C_HeadVia*) dialoge_x->getSTKHeadVia().top();
+				DEBOUT("DIALOG E final via 1", viatmp2->getContent() << " ** " << (viatmp2->isParsed() ? "vero":"falso"))
+				DEBOUT("DIALOG E final via 2", "att via" << (viatmp2->getC_AttVia().isParsed() ? "v":"f"))
+
+				DEBOUT("DIALOG E final via branch", viatmp2->getC_AttVia().getViaParms().getContent())
 
 				SingleAction sa_1 = SingleAction(dialoge_x);
 

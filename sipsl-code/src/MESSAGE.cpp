@@ -215,7 +215,6 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headRoute(""){
 
 	reqRep = 0;
-	isInternal = false;
 
 	s_headVia_p = false;
 	headMaxFwd_p = false;
@@ -254,6 +253,7 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headCallId_p = false;
 	headCSeq_p = false;
 	headRoute_p = false;
+	reqRep = 0;
 	//, headRoute_e;
 
 	return;
@@ -487,11 +487,11 @@ void MESSAGE::pushHeadVia(string _content){
     	}
     }
 	if (found){
-		DEBOUT("MESSAGE::pushHeadVia", "found")
+		DEBOUT("MESSAGE::pushHeadVia", "SDP found")
 		flex_line.insert(theIterator ,1 , "Via: " + _content);
 	}
 	else {
-		DEBOUT("MESSAGE::pushHeadVia", "not found")
+		DEBOUT("MESSAGE::pushHeadVia", "SDP not found")
 		theIterator = getSDPposition();
 		flex_line.insert(theIterator ,1 , "Via: " + _content);
 	}

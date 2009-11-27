@@ -55,10 +55,19 @@ to sm_x and send by it.
 4.
 Dialog established needs state in x and y machines???
 ------------------------------------------------------------------------------------
-5.
+5. TEST FIX
 27 Nov
 Dialog established is malformed (objects are not initiated correctly) tuplevector
 exception
+
+issue is in Via management
+to test
+------------------------------------------------------------------------------------
+6.
+DEBOUT ../sipsl-code/src/SIPENGINE.cpp 107 SIPENGINE::parse getHeadSipReply content[]
+terminate called after throwing an instance of 'std::length_error'
+  what():  basic_string::_S_create
+
 
 
 
