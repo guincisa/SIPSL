@@ -73,7 +73,7 @@ void VALO::onInvite(MESSAGE* _message){
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
 		string viatmpS(viatmp);
 		message->purgeSTKHeadVia();
-		message->pushHeadVia(viatmpS);
+		message->pushHeadVia("Via: " + viatmpS);
 
 		//From changes
 		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48

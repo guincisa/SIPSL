@@ -474,7 +474,6 @@ void MESSAGE::pushHeadVia(string _content){
 
 	C_HeadVia* s = new C_HeadVia(_content);
 	s_headVia.push(s);
-	DEBOUT("MESSAGE::pushHeadVia", "pushed")
 	// first search Via and insert before
 	// if no via, then search SDP
 	unsigned int i;
@@ -487,13 +486,13 @@ void MESSAGE::pushHeadVia(string _content){
     	}
     }
 	if (found){
-		DEBOUT("MESSAGE::pushHeadVia", "SDP found")
-		flex_line.insert(theIterator ,1 , "Via: " + _content);
+		string tmp = "Via: " + _content;
+		flex_line.insert(theIterator ,1 , _content);
 	}
 	else {
-		DEBOUT("MESSAGE::pushHeadVia", "SDP not found")
 		theIterator = getSDPposition();
-		flex_line.insert(theIterator ,1 , "Via: " + _content);
+		DEBOUT("string tmp", _content)
+		flex_line.insert(theIterator ,1 , _content);
 	}
 }
 void MESSAGE::purgeSDP(void){

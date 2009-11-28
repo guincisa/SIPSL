@@ -410,7 +410,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 				DEBOUT("via4", viatmp->getC_AttVia().getContent())
 				etry->popSTKHeadVia();
-				etry->pushHeadVia(viatmp->getC_AttVia().getContent());
+				etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
 
 
 
@@ -472,7 +472,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 			DEBOUT("via4", viatmp->getC_AttVia().getContent())
 			etry->popSTKHeadVia();
-			etry->pushHeadVia(viatmp->getC_AttVia().getContent());
+			etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
 
 
 
@@ -738,27 +738,16 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				//via add rport
 				DEBY
 				C_HeadVia* viatmp = (C_HeadVia*) dialoge_x->getSTKHeadVia().top();
-				DEBOUT("via1", viatmp->getC_AttVia().getContent())
-				DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
 				//TODO 124??
+				DEBOUT("viatmp->getContent", viatmp->getContent())
 				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
-				DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-
-				DEBOUT("via4", viatmp->getC_AttVia().getContent())
 				dialoge_x->popSTKHeadVia();
-				dialoge_x->dumpVector();
-				dialoge_x->pushHeadVia(viatmp->getC_AttVia().getContent());
+				dialoge_x->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
 
-				dialoge_x->dumpVector();
 				dialoge_x->compileMessage();
 				dialoge_x->dumpVector();
 
 				C_HeadVia* viatmp2 = (C_HeadVia*) dialoge_x->getSTKHeadVia().top();
-				DEBOUT("DIALOG E final via 1", viatmp2->getContent() << " ** " << (viatmp2->isParsed() ? "vero":"falso"))
-				DEBOUT("DIALOG E final via 2", "att via" << (viatmp2->getC_AttVia().isParsed() ? "v":"f"))
-
-				DEBOUT("DIALOG E final via branch", viatmp2->getC_AttVia().getViaParms().getContent())
 
 				SingleAction sa_1 = SingleAction(dialoge_x);
 
