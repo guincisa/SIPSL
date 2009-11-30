@@ -44,6 +44,7 @@ using namespace std;
 #define TRYING_100 100
 #define DIALOGE_101 101
 #define DECLINE_603 603
+#define RINGING_180 180
 
 
 #define INTERNALS_METHOD 9000

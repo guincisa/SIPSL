@@ -499,8 +499,9 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 		} else if (State == 1) {
 
-			if (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101) {
-				DEBOUT("SL_SM_SV::REPSUPP in state 1, DIALOGE arrived", _message->getLine(0))
+			if (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
+					|| _message->getHeadSipReply().getReply().getCode() == RINGING_180) {
+				DEBOUT("SL_SM_SV::REPSUPP in state 1, DIALOGE or RINGING arrived", _message->getLine(0))
 				ACTION* action = new ACTION();
 				_message->setDestEntity(SODE_APOINT);
 				_message->setGenEntity(SODE_SMCLPOINT);
@@ -510,7 +511,6 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 				action->addSingleAction(sa_1);
 				pthread_mutex_unlock(&mutex);
 				return action;
-
 			}
 			DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())
 		}
@@ -776,7 +776,66 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				pthread_mutex_unlock(&mutex);
 				return action;
 			}
-			else {
+			else if (_message->getHeadSipReply().getReply().getCode() == RINGING_180
+					&& _message->getDestEntity() == SODE_SMCLPOINT
+					&& _message->getGenEntity() ==  SODE_BPOINT) {
+
+				DEBOUT("SL_SM_CL::event state 2 ringing",  _message->getHeadSipReply().getReply().getCode() )
+				ACTION* action = new ACTION();
+
+				// TODO clear timer ad create new timer for the ringing
+
+				// Dialog establish must derive from incoming invite
+				// get incoming invite
+				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
+				DEBOUT("MESSAGE GENERATOR", __message)
+				CREATEMESSAGE(ring_x, __message, SODE_SMCLPOINT)
+				ring_x->setDestEntity(SODE_SMSVPOINT);
+				ring_x->setGenEntity(SODE_SMCLPOINT);
+				ring_x->typeOfInternal = TYPE_MESS;
+
+				//TODO qui fare dialoge_x...
+				DEBOUT("ring_x","SIP/2.0 180 Ringnig")
+				ring_x->setHeadSipReply("SIP/2.0 180 Ringing");
+				DEBOUT("ring_x","Purge sdp")
+				ring_x->purgeSDP();
+				DEBOUT("ring_x","delete User-Agent:")
+				ring_x->dropHeader("User-Agent:");
+				DEBOUT("ring_x","delete Max-Forwards:")
+				ring_x->removeMaxForwards();
+				DEBOUT("ring_x","delete Allow:")
+				ring_x->dropHeader("Allow:");
+				DEBOUT("ring_x","delete Route:")
+				ring_x->dropHeader("Route:");
+				DEBOUT("ring_x","delete Date:")
+				ring_x->dropHeader("Date:");
+
+				ring_x->setGenericHeader("Content-Length:","0");
+				//crash here...
+
+				//via add rport
+				DEBY
+				C_HeadVia* viatmp = (C_HeadVia*) ring_x->getSTKHeadVia().top();
+				//TODO 124??
+				DEBOUT("viatmp->getContent", viatmp->getContent())
+				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+				ring_x->popSTKHeadVia();
+				ring_x->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
+
+				ring_x->compileMessage();
+				ring_x->dumpVector();
+
+				C_HeadVia* viatmp2 = (C_HeadVia*) ring_x->getSTKHeadVia().top();
+
+				SingleAction sa_1 = SingleAction(ring_x);
+
+				action->addSingleAction(sa_1);
+
+				State = 4;
+				pthread_mutex_unlock(&mutex);
+				return action;
+
+			}else {
 				DEBOUT("SL_SM_CL::event state 2 reply not implemented",  _message->getHeadSipReply().getReply().getCode() )
 				State = 4;
 				pthread_mutex_unlock(&mutex);

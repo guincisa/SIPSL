@@ -1,12 +1,9 @@
 window_sizes 1280 729 191 1083 579 68
 windows_style
-diagrams
-  active  statediagram_ref 129185 // X
-    1083 579 100 2 0 0
-end
 show_stereotypes
-selected statediagram_ref 129185 // X
+selected statediagram_ref 147074 // Y
 open
   state_ref 128033 // SL_SM_SV
+  state_ref 128002 // SM_SL_CL
 end
 end
