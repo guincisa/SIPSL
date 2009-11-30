@@ -508,6 +508,7 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 
 				SingleAction sa_1 = SingleAction(_message);
 				action->addSingleAction(sa_1);
+				pthread_mutex_unlock(&mutex);
 				return action;
 
 			}
