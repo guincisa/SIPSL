@@ -614,7 +614,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 			return 0x0;
 		}
 	}
-	if (State == 1){
+	else if (State == 1){
 		DEBOUT("SL_SM_CL::event" , "state 1")
 
 		if (_message->getReqRepType() == REQSUPP) {
@@ -713,7 +713,7 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 			return 0x0;
 		}
 	}
-	if (State == 2){
+	else if (State == 2){
 		if (_message->getReqRepType() == REPSUPP) {
 			if (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
 			&& _message->getDestEntity() == SODE_SMCLPOINT
@@ -840,6 +840,74 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				State = 4;
 				pthread_mutex_unlock(&mutex);
 				return (ACTION*)0x0;
+			}
+		}
+	}
+	else if (State == 4){
+		if (_message->getReqRepType() == REPSUPP) {
+			if (_message->getHeadSipReply().getReply().getCode() == OK_200
+			&& _message->getDestEntity() == SODE_SMCLPOINT
+			&& _message->getGenEntity() ==  SODE_BPOINT) {
+
+				DEBOUT("SL_SM_CL::event state 2 ringing",  _message->getHeadSipReply().getReply().getCode() )
+				ACTION* action = new ACTION();
+
+				// TODO clear timer ad create new timer for the ringing
+
+				// Dialog establish must derive from incoming invite
+				// get incoming invite
+				MESSAGE* __message = getSL_CO()->call_oset->getGenMessage();
+				DEBOUT("MESSAGE GENERATOR", __message)
+				CREATEMESSAGE(ok_x, __message, SODE_SMCLPOINT)
+				ok_x->setDestEntity(SODE_SMSVPOINT);
+				ok_x->setGenEntity(SODE_SMCLPOINT);
+				ok_x->typeOfInternal = TYPE_MESS;
+
+				//TODO qui fare dialoge_x...
+				DEBOUT("ok_x","SIP/2.0 200 OK")
+				ok_x->setHeadSipReply("SIP/2.0 200 OK");
+
+				DEBOUT("ok_x","delete User-Agent:")
+				ok_x->dropHeader("User-Agent:");
+				DEBOUT("ok_x","delete Max-Forwards:")
+				ok_x->removeMaxForwards();
+				DEBOUT("ok_x","delete Allow:")
+				ok_x->dropHeader("Allow:");
+				DEBOUT("ok_x","delete Route:")
+				ok_x->dropHeader("Route:");
+				DEBOUT("ok_x","delete Date:")
+				ok_x->dropHeader("Date:");
+
+				ok_x->setGenericHeader("Content-Length:","0");
+				//crash here...
+
+				//SDP must copy the SDP from incoming OK and put here
+				DEBOUT("ok_x","Copy sdp")
+				ok_x->importSDP(_message);
+
+
+				//via add rport
+				DEBY
+				C_HeadVia* viatmp = (C_HeadVia*) ok_x->getSTKHeadVia().top();
+				//TODO 124??
+				DEBOUT("viatmp->getContent", viatmp->getContent())
+				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+				ok_x->popSTKHeadVia();
+				ok_x->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
+
+				ok_x->compileMessage();
+				ok_x->dumpVector();
+
+				C_HeadVia* viatmp2 = (C_HeadVia*) ok_x->getSTKHeadVia().top();
+
+				SingleAction sa_1 = SingleAction(ok_x);
+
+				action->addSingleAction(sa_1);
+
+				State = 4;
+				pthread_mutex_unlock(&mutex);
+				return action;
+
 			}
 		}
 	}

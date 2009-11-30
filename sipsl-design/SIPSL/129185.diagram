@@ -15,6 +15,8 @@ note 128642 "action:
 note 128898 "qui
 "
   xyzwh 988 264 2000 71 43
+note 129154 "RINGING IS NOT REPEATED"
+  xyzwh 293.5 64.5 2000 381 187
 note 129569 "action:
 [TYPE_MESS, INVITEx, s=sm_x, d=alo]
 [TYPE_MESS, 100TRYx, s=sm_x, d=A] "
@@ -53,7 +55,7 @@ note 133281 "action:
   xyzwh 152 605 2000 219 49
 transitioncanvas 128258 transition_ref 142210 // event<DIAGE,s=sm_y, d=sm_x>
   
-  from ref 128417 z 2001 label "event<DIAGE,s=sm_y, d=sm_x>" xyz 749 35 3000 to point 695 23
+  from ref 128417 z 2001 label "event<DIAGE,s=sm_y, d=sm_x>" xyz 749 35 2001 to point 695 23
   line 128386 z 2001 to point 751 76
   line 128514 z 2001 to ref 128417
   write_horizontally default show_definition default drawing_language default

@@ -1,5 +1,11 @@
-window_sizes 1280 729 191 1083 579 68
+window_sizes 1280 729 253 1021 579 68
 windows_style
+diagrams
+  active  statediagram_ref 147074 // Y
+    1083 579 100 2 600 80
+  statediagram_ref 129185 // X
+    1083 579 100 2 180 0
+end
 show_stereotypes
 selected statediagram_ref 147074 // Y
 open

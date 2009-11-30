@@ -45,6 +45,7 @@ using namespace std;
 #define DIALOGE_101 101
 #define DECLINE_603 603
 #define RINGING_180 180
+#define OK_200 200
 
 
 #define INTERNALS_METHOD 9000

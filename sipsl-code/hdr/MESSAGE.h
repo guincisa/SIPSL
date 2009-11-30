@@ -239,6 +239,9 @@ class MESSAGE : public BASEMESSAGE {
     	//remove SDP, is for reply
     	void purgeSDP(void);
 
+    	//Copy SDP
+    	void importSDP(MESSAGE* message);
+
 		//purge all vias
     	void purgeSTKHeadVia(void);
     	//insert via

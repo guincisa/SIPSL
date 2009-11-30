@@ -68,6 +68,8 @@ note 133890 "action
   xyzwh 247.9 1070.9 2000 164 52
 note 135554 "qui"
   xyzwh 1173.4 723 2000 54 36
+note 135810 "RINGING IS NOT REPEATED"
+  xyzwh 384 459 2000 381 187
 transitioncanvas 128258 transition_ref 128002 // event<INVITEy, s=alo, d=sm_y>
   decenter_begin 472
   
@@ -86,20 +88,20 @@ transitioncanvas 129079 transition_ref 128183 // event<TYPE_ABORT_CO state2>
 end
 transitioncanvas 130178 transition_ref 128258 // event<TRYy, s=b, d=sm_y>
   
-  from ref 128130 z 2001 label "event<TRYy, s=b, d=sm_y>" xyz 592.5 298.5 2001 to ref 130050
+  from ref 128130 z 2001 label "event<TRYy, s=b, d=sm_y>" xyz 592 298 2001 to ref 130050
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130306 transition_ref 128386 // event<INVITEy, s=alo, d=B>
   
-  from ref 128130 z 2001 label "event<INVITEy, s=alo, d=B>" xyz 669 19 2001 to point 700.1 82.6
-  line 130434 z 2001 to point 640.1 32.6
+  from ref 128130 z 2001 label "event<INVITEy, s=alo, d=B>" xyz 669 19 2001 to point 700 82
+  line 130434 z 2001 to point 640 32
   line 130562 z 2001 to ref 128130
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130487 transition_ref 128439 // event<TYPE_ABORT_CO state4>
   decenter_end 532
   
-  from ref 131586 z 3006 label "event<TYPE_ABORT_CO state4>" xyz 920.5 802.5 3006 to point 982.3 757.5
+  from ref 131586 z 3006 label "event<TYPE_ABORT_CO state4>" xyz 920 802 3006 to point 982 757
   line 131383 z 3006 to ref 128567
   write_horizontally default show_definition default drawing_language default
 end
@@ -111,8 +113,8 @@ end
 transitioncanvas 132482 transition_ref 128898 // event<RINGy, s=b, d=smcly>
   decenter_end 483
   
-  from ref 131586 z 2001 label "event<RINGy, s=b, d=smcly>" xyz 291 907 2001 to point 478.7 929.4
-  line 132610 z 2001 to point 440.7 883.8
+  from ref 131586 z 2001 label "event<RINGy, s=b, d=smcly>" xyz 291 907 2001 to point 478 929
+  line 132610 z 2001 to point 440 883
   line 132738 z 2001 to ref 131586
   write_horizontally default show_definition default drawing_language default
 end
@@ -128,8 +130,8 @@ transitioncanvas 133634 transition_ref 129154 // event<ACKy, s=alo, d=smcly>
 end
 transitioncanvas 134274 transition_ref 135682 // event<DialogEst, s=b d=sm_y>
   
-  from ref 130050 z 2001 label "event<DialogEst, s=b d=sm_y>" xyz 340 515 2001 to point 455.6 543.3
-  line 134402 z 2001 to point 475.6 589
+  from ref 130050 z 2001 label "event<DialogEst, s=b d=sm_y>" xyz 340 515 2001 to point 455 543
+  line 134402 z 2001 to point 475 589
   line 134530 z 2001 to ref 130050
   write_horizontally default show_definition default drawing_language default
 end
