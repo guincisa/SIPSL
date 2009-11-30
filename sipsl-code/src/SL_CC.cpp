@@ -148,13 +148,14 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 	}
 	// Message comes from ALO
-	else if (_mess->getGenEntity() == SODE_ALOPOINT){
-		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT", SODE_ALOPOINT)
+	else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_SMCLPOINT){
+
+		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_SMCLPOINT (4)", _mess->getGenEntity() )
 
 		//get generating idx to get the call object
 		string callidx = _mess->getSourceMessage()->getExtendedInternalCID();
 
-		DEBOUT("Message from ALO generating call object", callidx)
+		DEBOUT("Message from ALO/SMCL generating call object", callidx)
 
 		CALL_OSET* call_oset = 0x0;
 
@@ -166,8 +167,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 		else {
 				call_oset->getSL_CO()->call(_mess);
-			}
 		}
-
+	}
     return;
 }

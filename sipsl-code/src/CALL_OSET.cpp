@@ -263,12 +263,9 @@ void SL_CO::call(MESSAGE* _message){
 					PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
 
 				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
-					//TODO questo messaggio non è creato bene
-					DEBY
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
 					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getExtendedInternalCID())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-					DEBY
 
 				} else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
 
@@ -494,7 +491,28 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 		return 0x0;
 	}
 	if (_message->getReqRepType() == REPSUPP) {
-		DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())
+		if (State == 0){
+			DEBOUT("SL_SM_SV::REPSUPP in state 0, ignore", _message->getLine(0))
+
+			pthread_mutex_unlock(&mutex);
+			return 0x0;
+
+		} else if (State == 1) {
+
+			if (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101) {
+				DEBOUT("SL_SM_SV::REPSUPP in state 1, DIALOGE arrived", _message->getLine(0))
+				ACTION* action = new ACTION();
+				_message->setDestEntity(SODE_APOINT);
+				_message->setGenEntity(SODE_SMCLPOINT);
+				_message->typeOfInternal = TYPE_MESS;
+
+				SingleAction sa_1 = SingleAction(_message);
+				action->addSingleAction(sa_1);
+				return action;
+
+			}
+			DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())
+		}
 		pthread_mutex_unlock(&mutex);
 		return 0x0;
 	}
