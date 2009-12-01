@@ -240,12 +240,9 @@ class MESSAGE : public BASEMESSAGE {
 
     	void replaceHeadCSeq(string content);
 
-    	//remove SDP, is for reply
+    	//SDP management
     	void purgeSDP(void);
-
-    	//Copy SDP
-    	void importSDP(MESSAGE* message);
-
+    	void importSDP(vector<string> sdp);
     	vector<string> getSDP(void);
     	int getSDPSize(void);
 

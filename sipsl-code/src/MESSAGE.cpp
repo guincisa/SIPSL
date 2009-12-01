@@ -293,7 +293,7 @@ vector<string>::iterator MESSAGE::getSDPposition(void){
 
 	vector<string>::iterator theIterator;
 
-    for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
+	for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
     	if ((*theIterator).size() == 0) {
     		return theIterator--;
     	}
@@ -506,9 +506,13 @@ void MESSAGE::purgeSDP(void){
 
 	theIterator = getSDPposition();
 	theIteratorEnd = flex_line.end();
+	sdpSize = 0;
 	if ( sdpVector_p ) {
 		sdpVector.clear();
+	} else {
+		sdpVector_p = true;
 	}
+
 	if (theIterator == flex_line.end()){
 		//nothing to erase
 		return;
@@ -528,13 +532,11 @@ vector<string> MESSAGE::getSDP(void) {
 		theIterator = getSDPposition();
 
 		if (theIterator != flex_line.end()){
-			//skip first
 			theIterator ++;
 		}
 		sdpSize = 0;
 		while(theIterator != flex_line.end()){
 			sdpSize = sdpSize + (*theIterator).length() + 2;
-			DEBOUT("*** SDP ", (*theIterator))
 			sdpVector.push_back((*theIterator));
 			theIterator++;
 		}
@@ -553,8 +555,23 @@ int MESSAGE::getSDPSize(void){
 	}
 
 }
-void MESSAGE::importSDP(MESSAGE* _message){
+void MESSAGE::importSDP(vector<string> _sdp){
 
+	vector<string>::iterator theIterator;
+
+	sdpVector = _sdp;
+
+	theIterator = _sdp.begin();
+	sdpSize = 0;
+	sdpVector_p = true;
+	if (theIterator!= _sdp.end()){
+		flex_line.push_back("");
+	}
+	while (theIterator != _sdp.end()){
+		sdpSize = sdpSize + (*theIterator).length() + 2;
+		flex_line.push_back((*theIterator));
+		theIterator++;
+	}
 }
 
 /*

@@ -881,28 +881,39 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 				ok_x->setGenericHeader("Content-Length:","0");
 				//crash here...
 
-				//SDP must copy the SDP from incoming OK and put here
-				DEBOUT("ok_x","Copy sdp")
-//				ok_x->importSDP(_message);
-				vector<string> _sdp = ok_x->getSDP();
-				vector<string>::iterator it = _sdp.begin();
+				if (ok_x->getSDPSize() != 0 ){
+					//SDP must copy the SDP from incoming OK and put here
+					DEBOUT("ok_x","Copy sdp")
+					vector<string> _sdp = ok_x->getSDP();
+					vector<string>::iterator it = _sdp.begin();
+					while(it != _sdp.end()){
+						DEBOUT("ok_x original ---> ", (*it))
+						it++;
+					}
+					DEBOUT("SIZE ok_x orignal", ok_x->getSDPSize() )
 
-				while(it != _sdp.end()){
-					DEBOUT("_sdp ---> ", (*it))
-					it++;
+					vector<string> __sdp = _message->getSDP();
+					vector<string>::iterator iit = __sdp.begin();
+					while(iit != __sdp.end()){
+						DEBOUT("INVITEx ---> ", (*iit))
+						iit++;
+					}
+					DEBOUT("SIZE __", _message->getSDPSize() )
+
+					ok_x->purgeSDP();
+					ok_x->importSDP(__sdp);
+					vector<string> ___sdp = ok_x->getSDP();
+					vector<string>::iterator iiit = ___sdp.begin();
+
+					while(iiit != ___sdp.end()){
+						DEBOUT("ok_x with invitex sdp ---> ", (*iiit))
+						iiit++;
+					}
+					DEBOUT("SIZE ok_x with b sdp", ok_x->getSDPSize() )
+					char aaa[10];
+					sprintf(aaa,"%d", _message->getSDPSize());
+					ok_x->setGenericHeader("Content-Length:", aaa );
 				}
-				DEBOUT("SIZE _", ok_x->getSDPSize() )
-
-				vector<string> __sdp = _message->getSDP();
-				vector<string>::iterator iit = __sdp.begin();
-
-				while(iit != __sdp.end()){
-					DEBOUT("__sdp ---> ", (*iit))
-					iit++;
-				}
-				DEBOUT("SIZE __", _message->getSDPSize() )
-
-
 
 				//via add rport
 				DEBY
