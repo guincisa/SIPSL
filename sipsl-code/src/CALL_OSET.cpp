@@ -883,7 +883,25 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				//SDP must copy the SDP from incoming OK and put here
 				DEBOUT("ok_x","Copy sdp")
-				ok_x->importSDP(_message);
+//				ok_x->importSDP(_message);
+				vector<string> _sdp = ok_x->getSDP();
+				vector<string>::iterator it = _sdp.begin();
+
+				while(it != _sdp.end()){
+					DEBOUT("_sdp ---> ", (*it))
+					it++;
+				}
+				DEBOUT("SIZE _", ok_x->getSDPSize() )
+
+				vector<string> __sdp = _message->getSDP();
+				vector<string>::iterator iit = __sdp.begin();
+
+				while(iit != __sdp.end()){
+					DEBOUT("__sdp ---> ", (*iit))
+					iit++;
+				}
+				DEBOUT("SIZE __", _message->getSDPSize() )
+
 
 
 				//via add rport

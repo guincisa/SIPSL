@@ -40,12 +40,15 @@ using namespace std;
 #define OK_RESPONSE 53
 #define DIAEST_RESPONSE 54
 #define DECLINE_RESPONSE 55
+#define BUSY_HERE 56
 
 #define TRYING_100 100
 #define DIALOGE_101 101
 #define DECLINE_603 603
 #define RINGING_180 180
 #define OK_200 200
+#define BUSYH_486 486
+
 
 
 #define INTERNALS_METHOD 9000

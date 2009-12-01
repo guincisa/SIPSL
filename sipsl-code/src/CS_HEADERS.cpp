@@ -527,6 +527,13 @@ inline bool S_AttReply::compare_it(string _reply) {
         correct = true;
         return true;
     }
+    if (_reply.compare("Busy") == 0){
+        reply = "Busy";
+        replyID = BUSY_HERE;
+        parsed = true;
+        correct = true;
+        return true;
+    }
 
 
 }

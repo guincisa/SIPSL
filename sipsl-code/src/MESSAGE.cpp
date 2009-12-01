@@ -225,6 +225,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headCSeq_p = false;
 	headRoute_p = false;
 	headRoute_e = false;
+	sdpVector_p = false;
+	sdpSize = 0;
 
 	source=0x0;
 
@@ -253,6 +255,8 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headCallId_p = false;
 	headCSeq_p = false;
 	headRoute_p = false;
+	sdpVector_p = false;
+	sdpSize = 0;
 	reqRep = 0;
 	//, headRoute_e;
 
@@ -502,12 +506,55 @@ void MESSAGE::purgeSDP(void){
 
 	theIterator = getSDPposition();
 	theIteratorEnd = flex_line.end();
+	if ( sdpVector_p ) {
+		sdpVector.clear();
+	}
 	if (theIterator == flex_line.end()){
 		//nothing to erase
 		return;
 	}
 
 	flex_line.erase(theIterator, theIteratorEnd);
+}
+vector<string> MESSAGE::getSDP(void) {
+
+
+	if ( sdpVector_p )  {
+		return sdpVector;
+	}
+	else {
+		vector<string>::iterator theIterator;
+
+		theIterator = getSDPposition();
+
+		if (theIterator != flex_line.end()){
+			//skip first
+			theIterator ++;
+		}
+		sdpSize = 0;
+		while(theIterator != flex_line.end()){
+			sdpSize = sdpSize + (*theIterator).length() + 2;
+			DEBOUT("*** SDP ", (*theIterator))
+			sdpVector.push_back((*theIterator));
+			theIterator++;
+		}
+		sdpVector_p = true;
+		return sdpVector;
+	}
+}
+int MESSAGE::getSDPSize(void){
+
+	if ( sdpVector_p )  {
+		return sdpSize;
+	}
+	else {
+		getSDP();
+		return sdpSize;
+	}
+
+}
+void MESSAGE::importSDP(MESSAGE* _message){
+
 }
 
 /*

@@ -174,6 +174,10 @@ class MESSAGE : public BASEMESSAGE {
 							//parsed, exists, correct
     	bool 				headRoute_p, headRoute_e;
 
+    	vector<string>		sdpVector;
+    	bool				sdpVector_p;
+    	int					sdpSize;
+
     	// Used to generate a message from an incoming one
     	// tipically a reply
     	MESSAGE* source;
@@ -241,6 +245,9 @@ class MESSAGE : public BASEMESSAGE {
 
     	//Copy SDP
     	void importSDP(MESSAGE* message);
+
+    	vector<string> getSDP(void);
+    	int getSDPSize(void);
 
 		//purge all vias
     	void purgeSTKHeadVia(void);
