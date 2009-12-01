@@ -48,11 +48,11 @@ eliminati i messaggi associati alle state machine
 2. 
 Check if mutex on alarm structures is making sense
 ------------------------------------------------------------------------------------
-3.
+3. FIXED
 Dialog Established is received at sm_y and sent directly to A but it must be sent
 to sm_x and send by it.
 ------------------------------------------------------------------------------------
-4.
+4. 
 Dialog established needs state in x and y machines???
 ------------------------------------------------------------------------------------
 5. TEST FIX
@@ -63,7 +63,7 @@ exception
 issue is in Via management
 to test
 ------------------------------------------------------------------------------------
-6.
+6. FIXED (need to test with new kind or reply)
 DEBOUT ../sipsl-code/src/SIPENGINE.cpp 107 SIPENGINE::parse getHeadSipReply content[]
 terminate called after throwing an instance of 'std::length_error'
   what():  basic_string::_S_create

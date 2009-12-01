@@ -499,42 +499,44 @@ inline bool S_AttReply::compare_it(string _reply) {
         correct = true;
         return true;
     }
-    if (_reply.compare("Ringing") == 0){
+    else if (_reply.compare("Ringing") == 0){
         reply = "Ringing";
         replyID = RINGING_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
-    if (_reply.compare("Trying") == 0){
+    else if (_reply.compare("Trying") == 0){
         reply = "Trying";
         replyID = TRY_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
-    if (_reply.compare("Dialog") == 0){
+    else if (_reply.compare("Dialog") == 0){
         reply = "Dialog";
         replyID = DIAEST_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
-    if (_reply.compare("Decline") == 0){
+    else if (_reply.compare("Decline") == 0){
         reply = "Decline";
         replyID = DECLINE_RESPONSE;
         parsed = true;
         correct = true;
         return true;
     }
-    if (_reply.compare("Busy") == 0){
+    else if (_reply.compare("Busy") == 0){
         reply = "Busy";
         replyID = BUSY_HERE;
         parsed = true;
         correct = true;
         return true;
     }
-
+    else {
+    	return false;
+    }
 
 }
 int S_AttReply::getCode(void){
@@ -588,6 +590,7 @@ string &S_AttReply::getReply(void){
 }
 void S_AttReply::setReply(string _reply){
 
+	DEBASSERT("S_AttReply::setReply method needs to be rewritten")
 	   if(!parsed) {
 	        doParse();
 	   }
@@ -2181,7 +2184,6 @@ void C_HeadRoute::buildContent(void){
     else {
     	//TODO
     	contentReady = true;
-    	DEBASSERT("void C_HeadRoute::buildContent(void)")
     }
 }
 
