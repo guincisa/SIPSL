@@ -25,6 +25,11 @@ then use dynamic_cast to check if the incoming message is operation or not.
 
 Fixed in other manner.
 
+------------------------------------------------------------------------------------
+4.
+Dialog established, rining and 200 ok must first go to ALO and then to SMSV
+ALO needs to build the message and send it to SMSV which changes state and
+sends to network side A
 
 
 ************************************************************************************

@@ -500,8 +500,9 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 		} else if (State == 1) {
 
 			if (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
-					|| _message->getHeadSipReply().getReply().getCode() == RINGING_180) {
-				DEBOUT("SL_SM_SV::REPSUPP in state 1, DIALOGE or RINGING arrived", _message->getLine(0))
+					|| _message->getHeadSipReply().getReply().getCode() == RINGING_180
+					|| _message->getHeadSipReply().getReply().getCode() == OK_200) {
+				DEBOUT("SL_SM_SV::REPSUPP in state 1, DIALOGE or RINGING or OK arrived", _message->getLine(0))
 				ACTION* action = new ACTION();
 				_message->setDestEntity(SODE_APOINT);
 				_message->setGenEntity(SODE_SMCLPOINT);
@@ -883,33 +884,9 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 
 				if (ok_x->getSDPSize() != 0 ){
 					//SDP must copy the SDP from incoming OK and put here
-					DEBOUT("ok_x","Copy sdp")
-					vector<string> _sdp = ok_x->getSDP();
-					vector<string>::iterator it = _sdp.begin();
-					while(it != _sdp.end()){
-						DEBOUT("ok_x original ---> ", (*it))
-						it++;
-					}
-					DEBOUT("SIZE ok_x orignal", ok_x->getSDPSize() )
-
 					vector<string> __sdp = _message->getSDP();
-					vector<string>::iterator iit = __sdp.begin();
-					while(iit != __sdp.end()){
-						DEBOUT("INVITEx ---> ", (*iit))
-						iit++;
-					}
-					DEBOUT("SIZE __", _message->getSDPSize() )
-
 					ok_x->purgeSDP();
 					ok_x->importSDP(__sdp);
-					vector<string> ___sdp = ok_x->getSDP();
-					vector<string>::iterator iiit = ___sdp.begin();
-
-					while(iiit != ___sdp.end()){
-						DEBOUT("ok_x with invitex sdp ---> ", (*iiit))
-						iiit++;
-					}
-					DEBOUT("SIZE ok_x with b sdp", ok_x->getSDPSize() )
 					char aaa[10];
 					sprintf(aaa,"%d", _message->getSDPSize());
 					ok_x->setGenericHeader("Content-Length:", aaa );
