@@ -28,8 +28,8 @@
 
 //map to store callId_X to call object
 typedef map<string, CALL_OSET *> COMAP_MM;
-//multimap to associate callId_Y to callId_X
-typedef multimap<string, string> CALL_ID_Y2X;
+//map to associate callId_Y to callId_X
+typedef map<string, string> CALL_ID_Y2X;
 
 
 //Call Object Map

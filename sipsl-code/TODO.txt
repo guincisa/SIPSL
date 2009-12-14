@@ -31,6 +31,11 @@ Dialog established, rining and 200 ok must first go to ALO and then to SMSV
 ALO needs to build the message and send it to SMSV which changes state and
 sends to network side A
 
+------------------------------------------------------------------------------------
+5.
+Is it needed to have this as multimap???
+callx-cally 1:n
+typedef multimap<string, string> CALL_ID_Y2X;
 
 ************************************************************************************
 ************************************************************************************

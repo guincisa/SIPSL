@@ -96,6 +96,7 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y){
 	map<string, CALL_OSET*>::iterator p;
 	map<string, string>::iterator p2;
 	p2 = call_id_y2x.find(_callId_Y);
+
 	if (p2 != call_id_y2x.end()){
 		tmp2 = (string)p2->second;
 		DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp2)

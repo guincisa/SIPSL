@@ -105,8 +105,13 @@ void ALMGR::alarmer(void){
 				alarm_pq.pop();
 
 				// now get a list of alarms from the multi map
-				multimap<long long int, ALARM*>::iterator iter = time_alarm_mumap.find(tcu);
-				while( iter != time_alarm_mumap.end() ) {
+
+				multimap<long long int, ALARM*>::iterator iter;
+				pair<multimap<long long int,ALARM*>::iterator,multimap<long long int,ALARM*>::iterator> ret;
+
+				ret = time_alarm_mumap.equal_range(tcu);
+
+			    for (iter=ret.first; iter!=ret.second; ++iter){
 					DEBY
 					ALARM* tmal = iter->second;
 					if (tmal->isActive()){
@@ -134,7 +139,6 @@ void ALMGR::alarmer(void){
 					time_alarm_mumap.erase(iter);
 					mess_alm_map.erase(tmal->getMessage());
 					delete tmal;
-					iter++;
 					DEBY
 				}
 				tcu = alarm_pq.top();
