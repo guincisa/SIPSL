@@ -134,7 +134,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			//Start - Initialization block
 			call_oset = new CALL_OSET(this, _mess);
 			SL_CO* sl_co = new SL_CO(call_oset);
-			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this, sl_co);
+			SL_SM_SV2* sl_sm_sv = new SL_SM_SV2(this, sl_co);
 			VALO* alo = new VALO(this);
 			alo->linkSUDP(getSUDP());
 			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);

@@ -92,7 +92,7 @@ ENGINE* CALL_OSET::getENGINE(void){
 //**********************************************************************************
 //**********************************************************************************
 
-void CALL_OSET::setSL_X(string _callId_X, SL_CO* _sl_co, SL_SM_SV* _sl_sm_sv, ALO* _alo){
+void CALL_OSET::setSL_X(string _callId_X, SL_CO* _sl_co, SL_SM_SV2* _sl_sm_sv, ALO* _alo){
 
 	callId_X = _callId_X;
 	sl_co = _sl_co;
@@ -102,15 +102,15 @@ void CALL_OSET::setSL_X(string _callId_X, SL_CO* _sl_co, SL_SM_SV* _sl_sm_sv, AL
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
+SL_SM_SV2* CALL_OSET::getSL_SM_SV(void){
 
 	return sl_sm_sv;
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
+SL_SM_CL2* CALL_OSET::getSL_SM_CL(string _callidy){
 
-	map<string, SL_SM_CL*>::iterator iter = mm_sl_sm_cl.find(_callidy);
+	map<string, SL_SM_CL2*>::iterator iter = mm_sl_sm_cl.find(_callidy);
     if( iter != mm_sl_sm_cl.end() ) {
 		return iter->second;
     }
@@ -120,7 +120,7 @@ SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
 }
 //**********************************************************************************
 //**********************************************************************************
-void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
+void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL2* _sl_cl){
 
 	mm_sl_sm_cl.insert(make_pair(_callId_Y,  _sl_cl));
 
@@ -168,7 +168,7 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("*******************to server state machine**************************","")
 
 
-		SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
+		SL_SM_SV2* sl_sm_sv = call_oset->getSL_SM_SV();
 
 		action = sl_sm_sv->event(_message);
 
@@ -222,7 +222,7 @@ void SL_CO::call(MESSAGE* _message){
 
 		DEBOUT("Message to CL machine callidy", callidy)
 
-		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
+		SL_SM_CL2* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
 		if (sl_sm_cl == 0x0){
 
@@ -230,7 +230,7 @@ void SL_CO::call(MESSAGE* _message){
 			//create and put in comap
 
 			DEBOUT("Creating CL machine callidy", callidy)
-			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), this);
+			sl_sm_cl = new SL_SM_CL2(call_oset->getENGINE(), this);
 			call_oset->addSL_SM_CL(callidy, sl_sm_cl);
 
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
@@ -312,7 +312,7 @@ void SL_CO::call(MESSAGE* _message){
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM::SL_SM(ENGINE* _engine, SL_CO* _sl_co){
+SL_SM2::SL_SM2(ENGINE* _engine, SL_CO* _sl_co){
 
 	sl_co = _sl_co;
 	sl_cc = _engine;
@@ -320,14 +320,14 @@ SL_SM::SL_SM(ENGINE* _engine, SL_CO* _sl_co){
     pthread_mutex_init(&mutex, NULL);
 
 }
-ENGINE* SL_SM::getSL_CC(void){
+ENGINE* SL_SM2::getSL_CC(void){
 	return sl_cc;
 }
-SL_CO* SL_SM::getSL_CO(void){
+SL_CO* SL_SM2::getSL_CO(void){
 	return sl_co;
 }
-SL_SM_SV::SL_SM_SV(ENGINE* _engine,SL_CO* _sl_co):
-	SL_SM(_engine, _sl_co){
+SL_SM_SV2::SL_SM_SV2(ENGINE* _engine,SL_CO* _sl_co):
+	SL_SM2(_engine, _sl_co){
 
 	DEBOUT("SL_SM_SV::state","0")
 
@@ -337,7 +337,7 @@ SL_SM_SV::SL_SM_SV(ENGINE* _engine,SL_CO* _sl_co):
 
 //**********************************************************************************
 //**********************************************************************************
-ACTION* SL_SM_SV::event(MESSAGE* _message){
+ACTION* SL_SM_SV2::event(MESSAGE* _message){
 
 
 	DEBOUT("SL_SM_SV::event call id", _message->getHeadCallId().getContent())
@@ -524,8 +524,8 @@ ACTION* SL_SM_SV::event(MESSAGE* _message){
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_CL::SL_SM_CL(ENGINE* _engine, SL_CO* _sl_co):
-	SL_SM(_engine, _sl_co){
+SL_SM_CL2::SL_SM_CL2(ENGINE* _engine, SL_CO* _sl_co):
+	SL_SM2(_engine, _sl_co){
 
 	DEBOUT("SL_SM_CL::state","0")
 
@@ -536,7 +536,7 @@ SL_SM_CL::SL_SM_CL(ENGINE* _engine, SL_CO* _sl_co):
 }
 //**********************************************************************************
 //**********************************************************************************
-ACTION* SL_SM_CL::event(MESSAGE* _message){
+ACTION* SL_SM_CL2::event(MESSAGE* _message){
 
 
 	DEBOUT("SL_SM_CL::event ", _message->getLine(0)<< " ** " << _message->getHeadCallId().getContent())
@@ -920,3 +920,68 @@ ACTION* SL_SM_CL::event(MESSAGE* _message){
 	pthread_mutex_unlock(&mutex);
 	return 0x0;
 }
+//**********************************************************************************
+//**********************************************************************************
+PREDICATE_ACTION::PREDICATE_ACTION(SL_SM* _sm){
+	machine = _sm;
+}
+SL_SM::SL_SM(ENGINE* _eng, SL_CO* _sl_co){
+    pthread_mutex_init(&mutex, NULL);
+	State = 0;
+}
+//**********************************************************************************
+//**********************************************************************************
+void SL_SM::exec_it(MESSAGE* _event){
+
+	PREDICATE_ACTION* tmp;
+
+	DEBOUT("SM_SL::exec_it Look for state", State)
+
+	pair<multimap<int,PREDICATE_ACTION*>::iterator,multimap<int,PREDICATE_ACTION*>::iterator> ret;
+
+	multimap<int,PREDICATE_ACTION*>::iterator iter;
+
+	ret = move_sm.equal_range(State);
+
+	pthread_mutex_lock(&mutex);
+
+    for (iter=ret.first; iter!=ret.second; ++iter){
+		tmp  = iter->second;
+
+		if (tmp->predicate(_event)){
+			tmp->action(this);
+			pthread_mutex_lock(&mutex);
+			return;
+		}
+	}
+	pthread_mutex_lock(&mutex);
+
+	DEBOUT("SM_SL::exec_it unexpected event", _event)
+}
+//**********************************************************************************
+//**********************************************************************************
+void SL_SM::insert_move(int _i, PREDICATE_ACTION* _pa){
+
+	DEBOUT("SM_SL::insert_move", _i << " " << _pa )
+	move_sm.insert(pair<int, PREDICATE_ACTION*>(_i, _pa));
+
+}
+bool predicate_p1(MESSAGE* _s){
+	if (true)
+		return true;
+	else
+		return false;
+};
+void action_p1(SL_SM* _sm) {
+	cout << "EVENT is aaa input, move to 1" <<endl;
+	_sm->State = 1;
+};
+SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
+		SL_SM(_eng, _sl_co),
+		P1((SL_SM*)this){
+
+	P1.action = &action_p1;
+	P1.predicate = &predicate_p1;
+}
+
+

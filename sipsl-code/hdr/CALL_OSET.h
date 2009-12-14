@@ -36,8 +36,8 @@
  * with key = callid
  *
  **********************************************************************************/
-class SL_SM_CL;
-class SL_SM_SV;
+class SL_SM_CL2;
+class SL_SM_SV2;
 class SL_CO;
 
 //Umbrella class which hosts states machines and call object
@@ -47,24 +47,24 @@ class CALL_OSET {
 
 		SL_CO* sl_co;
 		ALO* alo;
-		SL_SM_SV* sl_sm_sv;
+		SL_SM_SV2* sl_sm_sv;
 
 		//map callId_y and related states machines
-		map<string, SL_SM_CL*> mm_sl_sm_cl;
+		map<string, SL_SM_CL2*> mm_sl_sm_cl;
 		ENGINE* engine;
 		string callId_X;
 		MESSAGE* genMessage;
 
 	public:
 		CALL_OSET(ENGINE*, MESSAGE*);
-		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
+		void setSL_X(string callId_X, SL_CO*, SL_SM_SV2*, ALO*);
 		SL_CO* getSL_CO(void);
-		SL_SM_SV* getSL_SM_SV(void);
-		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
+		SL_SM_SV2* getSL_SM_SV(void);
+		void addSL_SM_CL(string callId_Y, SL_SM_CL2*);
 
 		string getCallIdX(void);
 
-		SL_SM_CL* getSL_SM_CL(string callId_Y);
+		SL_SM_CL2* getSL_SM_CL(string callId_Y);
 		ALO* getALO(void);
 		ENGINE* getENGINE(void);
 
@@ -92,11 +92,11 @@ class SL_CO {
 // State machine
 //**********************************************************************************
 //**********************************************************************************
-class SL_SM {
+class SL_SM2 {
 
 	public:
 		//SL_SM(ENGINE* sl_cc, SL_CO* sl_co, MESSAGE* generator);
-		SL_SM(ENGINE* sl_cc, SL_CO* sl_co);
+		SL_SM2(ENGINE* sl_cc, SL_CO* sl_co);
 
 		ENGINE* getSL_CC(void);
 		//MESSAGE* getGenerator(void);
@@ -119,6 +119,74 @@ class SL_SM {
         //Mutex the state machine
         //First option when every SM has its own mutex.
         pthread_mutex_t mutex;
+};
+//**********************************************************************************
+//**********************************************************************************
+// State machine client (b side)
+//**********************************************************************************
+//**********************************************************************************
+class SL_SM_CL2 : public SL_SM2 {
+
+	public:
+		int placeholder;
+
+		int resend_invite;
+
+		ACTION* event(MESSAGE*);
+		SL_SM_CL2(ENGINE*, SL_CO*);
+
+};
+//**********************************************************************************
+//**********************************************************************************
+// State machine server (a side)
+//**********************************************************************************
+//**********************************************************************************
+class SL_SM_SV2 : public SL_SM2 {
+
+	public:
+		int placeholder;
+
+		ACTION* event(MESSAGE*);
+		SL_SM_SV2(ENGINE*, SL_CO*);
+
+};
+
+//**********************************************************************************
+//**********************************************************************************
+// New State machine
+//**********************************************************************************
+//**********************************************************************************
+class SL_SM;
+class PREDICATE_ACTION {
+
+	private:
+	SL_SM* machine;
+
+	public:
+
+	bool (*predicate)(MESSAGE*);
+	void (*action)(SL_SM*);
+
+	PREDICATE_ACTION(SL_SM*);
+
+};
+class SL_SM {
+
+	private:
+
+    pthread_mutex_t mutex;
+
+	multimap< int, PREDICATE_ACTION*> move_sm;
+
+	public:
+
+	SL_SM(ENGINE* sl_cc, SL_CO* sl_co);
+
+    int State; // initial 0, final -1
+
+	void insert_move(int, PREDICATE_ACTION*);
+
+	void exec_it(MESSAGE*);
 
 };
 //**********************************************************************************
@@ -132,6 +200,9 @@ class SL_SM_CL : public SL_SM {
 		int placeholder;
 
 		int resend_invite;
+
+		PREDICATE_ACTION P1;
+
 
 		ACTION* event(MESSAGE*);
 		SL_SM_CL(ENGINE*, SL_CO*);
@@ -151,3 +222,4 @@ class SL_SM_SV : public SL_SM {
 		SL_SM_SV(ENGINE*, SL_CO*);
 
 };
+
