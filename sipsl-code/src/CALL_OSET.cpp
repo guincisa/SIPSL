@@ -92,7 +92,7 @@ ENGINE* CALL_OSET::getENGINE(void){
 //**********************************************************************************
 //**********************************************************************************
 
-void CALL_OSET::setSL_X(string _callId_X, SL_CO* _sl_co, SL_SM_SV2* _sl_sm_sv, ALO* _alo){
+void CALL_OSET::setSL_X(string _callId_X, SL_CO* _sl_co, SL_SM_SV* _sl_sm_sv, ALO* _alo){
 
 	callId_X = _callId_X;
 	sl_co = _sl_co;
@@ -102,7 +102,7 @@ void CALL_OSET::setSL_X(string _callId_X, SL_CO* _sl_co, SL_SM_SV2* _sl_sm_sv, A
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_SV2* CALL_OSET::getSL_SM_SV(void){
+SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
 
 	return sl_sm_sv;
 }
@@ -168,7 +168,7 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("*******************to server state machine**************************","")
 
 
-		SL_SM_SV2* sl_sm_sv = call_oset->getSL_SM_SV();
+		SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
 
 		action = sl_sm_sv->event(_message);
 
@@ -326,202 +326,194 @@ ENGINE* SL_SM2::getSL_CC(void){
 SL_CO* SL_SM2::getSL_CO(void){
 	return sl_co;
 }
-SL_SM_SV2::SL_SM_SV2(ENGINE* _engine,SL_CO* _sl_co):
-	SL_SM2(_engine, _sl_co){
-
-	DEBOUT("SL_SM_SV::state","0")
-
-	State = 0;
-
-}
-
-//**********************************************************************************
-//**********************************************************************************
-ACTION* SL_SM_SV2::event(MESSAGE* _message){
-
-
-	DEBOUT("SL_SM_SV::event call id", _message->getHeadCallId().getContent())
-
-	//TODO
-	//Invert state and event for more readibility...
-
-	//Mutex this method
-	pthread_mutex_lock(&mutex);
-
-
-	if (_message->getReqRepType() == REQSUPP) {
-		DEBOUT("SL_SM_SV::event REQSUPP", _message->getHeadSipRequest().getContent())
-
-		if (State == 0){
-			DEBOUT("SL_SM_SV::event" , "state 0")
-			if ((_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
-				&& _message->getDestEntity() == SODE_SMSVPOINT
-				&& _message->getGenEntity() ==  SODE_APOINT) {
-
-				DEBOUT("SL_SM_SV::event move to state 1", _message->getHeadSipRequest().getContent())
-
-				ACTION* action = new ACTION();
-
-				//_message changes its dest and gen
-				_message->setDestEntity(SODE_ALOPOINT);
-				_message->setGenEntity(SODE_SMSVPOINT);
-				_message->typeOfInternal = TYPE_MESS;
-				SingleAction sa_1 = SingleAction(_message);
-
-				//etry is filled later by SL_CO (see design)
-				CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
-
-				//TODO qui fare etry...
-				DEBOUT("ETRY","SIP/2.0 100 Trying")
-				etry->setHeadSipReply("SIP/2.0 100 Trying");
-				DEBOUT("ETRY","Purge sdp")
-				etry->purgeSDP();
-				DEBOUT("ETRY","delete User-Agent:")
-				etry->dropHeader("User-Agent:");
-				DEBOUT("ETRY","delete Max-Forwards:")
-				etry->removeMaxForwards();
-				DEBOUT("ETRY","delete Content-Type:")
-				etry->dropHeader("Content-Type:");
-				DEBOUT("ETRY","delete Allow:")
-				etry->dropHeader("Allow:");
-				DEBOUT("ETRY","delete Route:")
-				etry->dropHeader("Route:");
-				DEBOUT("ETRY","delete Date:")
-				etry->dropHeader("Date:");
-
-//				DEBOUT("ETRY","delete Content-Length:")
-//				etry->dropHeader("Content-Length:");
-				etry->setGenericHeader("Content-Length:","0");
-				//crash here...
-
-
-
-				//via add rport
-				C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
-				DEBOUT("via1", viatmp->getC_AttVia().getContent())
-				DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-				//TODO 124??
-				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
-				DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-
-				DEBOUT("via4", viatmp->getC_AttVia().getContent())
-				etry->popSTKHeadVia();
-				etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
-
-
-
-				DEBOUT("ETRY","setDestEntity")
-				etry->setDestEntity(SODE_APOINT);
-
-				etry->compileMessage();
-				etry->dumpVector();
-				etry->typeOfInternal = TYPE_MESS;
-
-				SingleAction sa_2 = SingleAction(etry);
-
-				action->addSingleAction(sa_1);
-				action->addSingleAction(sa_2);
-
-				DEBOUT("SL_SM_SV::actions set", _message->getHeadSipRequest().getContent())
-
-				State = 1;
-
-				pthread_mutex_unlock(&mutex);
-				return action;
-			}else {
-				DEBOUT("SL_SM_SV::event State 0 unexpected message ignored", _message->getHeadCallId().getContent())
-			}
-		}else if (State == 1){
-			DEBOUT("SL_SM_SV::event State 1 probable retransmission","")
-			ACTION* action = new ACTION();
-
-			CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
-
-			//TODO qui fare etry...
-			DEBOUT("ETRY","SIP/2.0 100 Trying")
-			etry->setHeadSipReply("SIP/2.0 100 Trying");
-			DEBOUT("ETRY","Purge sdp")
-			etry->purgeSDP();
-			DEBOUT("ETRY","delete User-Agent:")
-			etry->dropHeader("User-Agent:");
-			DEBOUT("ETRY","delete Max-Forwards:")
-			etry->removeMaxForwards();
-			DEBOUT("ETRY","delete Content-Type:")
-			etry->dropHeader("Content-Type:");
-			DEBOUT("ETRY","delete Allow:")
-			etry->dropHeader("Allow:");
-			DEBOUT("ETRY","delete Route:")
-			etry->dropHeader("Route:");
-			DEBOUT("ETRY","delete Date:")
-			etry->dropHeader("Date:");
-
-			etry->setGenericHeader("Content-Length:","0");
-
-			//via add rport
-			C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
-			DEBOUT("via1", viatmp->getC_AttVia().getContent())
-			DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-			//TODO 124??
-			viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-			//viatmp->getC_AttVia().getViaParms().compileTupleVector();
-			DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-
-			DEBOUT("via4", viatmp->getC_AttVia().getContent())
-			etry->popSTKHeadVia();
-			etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
-
-
-
-			DEBOUT("ETRY","setDestEntity")
-			etry->setDestEntity(SODE_APOINT);
-
-			etry->compileMessage();
-			etry->dumpVector();
-			etry->typeOfInternal = TYPE_MESS;
-
-			SingleAction sa_1 = SingleAction(etry);
-
-			action->addSingleAction(sa_1);
-			pthread_mutex_unlock(&mutex);
-			return action;
-
-		}
-		pthread_mutex_unlock(&mutex);
-		return 0x0;
-	}
-	if (_message->getReqRepType() == REPSUPP) {
-		if (State == 0){
-			DEBOUT("SL_SM_SV::REPSUPP in state 0, ignore", _message->getLine(0))
-
-			pthread_mutex_unlock(&mutex);
-			return 0x0;
-
-		} else if (State == 1) {
-
-			if (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
-					|| _message->getHeadSipReply().getReply().getCode() == RINGING_180
-					|| _message->getHeadSipReply().getReply().getCode() == OK_200) {
-				DEBOUT("SL_SM_SV::REPSUPP in state 1, DIALOGE or RINGING or OK arrived", _message->getLine(0))
-				ACTION* action = new ACTION();
-				_message->setDestEntity(SODE_APOINT);
-				_message->setGenEntity(SODE_SMCLPOINT);
-				_message->typeOfInternal = TYPE_MESS;
-
-				SingleAction sa_1 = SingleAction(_message);
-				action->addSingleAction(sa_1);
-				pthread_mutex_unlock(&mutex);
-				return action;
-			}
-			DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())
-		}
-		pthread_mutex_unlock(&mutex);
-		return 0x0;
-	}
-
-	//State = 0;
-
-}
+////**********************************************************************************
+////**********************************************************************************
+//ACTION* SL_SM_SV2::event(MESSAGE* _message){
+//
+//
+//	DEBASSERT("deprecated")
+//	DEBOUT("SL_SM_SV::event call id", _message->getHeadCallId().getContent())
+//
+//	//TODO
+//	//Invert state and event for more readibility...
+//
+//	//Mutex this method
+//	pthread_mutex_lock(&mutex);
+//
+//
+//	if (_message->getReqRepType() == REQSUPP) {
+//		DEBOUT("SL_SM_SV::event REQSUPP", _message->getHeadSipRequest().getContent())
+//
+//		if (State == 0){
+//			DEBOUT("SL_SM_SV::event" , "state 0")
+//			if ((_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
+//				&& _message->getDestEntity() == SODE_SMSVPOINT
+//				&& _message->getGenEntity() ==  SODE_APOINT) {
+//
+//				DEBOUT("SL_SM_SV::event move to state 1", _message->getHeadSipRequest().getContent())
+//
+//				ACTION* action = new ACTION();
+//
+//				//_message changes its dest and gen
+//				_message->setDestEntity(SODE_ALOPOINT);
+//				_message->setGenEntity(SODE_SMSVPOINT);
+//				_message->typeOfInternal = TYPE_MESS;
+//				SingleAction sa_1 = SingleAction(_message);
+//
+//				//etry is filled later by SL_CO (see design)
+//				CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
+//
+//				//TODO qui fare etry...
+//				DEBOUT("ETRY","SIP/2.0 100 Trying")
+//				etry->setHeadSipReply("SIP/2.0 100 Trying");
+//				DEBOUT("ETRY","Purge sdp")
+//				etry->purgeSDP();
+//				DEBOUT("ETRY","delete User-Agent:")
+//				etry->dropHeader("User-Agent:");
+//				DEBOUT("ETRY","delete Max-Forwards:")
+//				etry->removeMaxForwards();
+//				DEBOUT("ETRY","delete Content-Type:")
+//				etry->dropHeader("Content-Type:");
+//				DEBOUT("ETRY","delete Allow:")
+//				etry->dropHeader("Allow:");
+//				DEBOUT("ETRY","delete Route:")
+//				etry->dropHeader("Route:");
+//				DEBOUT("ETRY","delete Date:")
+//				etry->dropHeader("Date:");
+//
+////				DEBOUT("ETRY","delete Content-Length:")
+////				etry->dropHeader("Content-Length:");
+//				etry->setGenericHeader("Content-Length:","0");
+//				//crash here...
+//
+//
+//
+//				//via add rport
+//				C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
+//				DEBOUT("via1", viatmp->getC_AttVia().getContent())
+//				DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+//				//TODO 124??
+//				viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+//				//viatmp->getC_AttVia().getViaParms().compileTupleVector();
+//				DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+//
+//				DEBOUT("via4", viatmp->getC_AttVia().getContent())
+//				etry->popSTKHeadVia();
+//				etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
+//
+//
+//
+//				DEBOUT("ETRY","setDestEntity")
+//				etry->setDestEntity(SODE_APOINT);
+//
+//				etry->compileMessage();
+//				etry->dumpVector();
+//				etry->typeOfInternal = TYPE_MESS;
+//
+//				SingleAction sa_2 = SingleAction(etry);
+//
+//				action->addSingleAction(sa_1);
+//				action->addSingleAction(sa_2);
+//
+//				DEBOUT("SL_SM_SV::actions set", _message->getHeadSipRequest().getContent())
+//
+//				State = 1;
+//
+//				pthread_mutex_unlock(&mutex);
+//				return action;
+//			}else {
+//				DEBOUT("SL_SM_SV::event State 0 unexpected message ignored", _message->getHeadCallId().getContent())
+//			}
+//		}else if (State == 1){
+//			DEBOUT("SL_SM_SV::event State 1 probable retransmission","")
+//			ACTION* action = new ACTION();
+//
+//			CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
+//
+//			//TODO qui fare etry...
+//			DEBOUT("ETRY","SIP/2.0 100 Trying")
+//			etry->setHeadSipReply("SIP/2.0 100 Trying");
+//			DEBOUT("ETRY","Purge sdp")
+//			etry->purgeSDP();
+//			DEBOUT("ETRY","delete User-Agent:")
+//			etry->dropHeader("User-Agent:");
+//			DEBOUT("ETRY","delete Max-Forwards:")
+//			etry->removeMaxForwards();
+//			DEBOUT("ETRY","delete Content-Type:")
+//			etry->dropHeader("Content-Type:");
+//			DEBOUT("ETRY","delete Allow:")
+//			etry->dropHeader("Allow:");
+//			DEBOUT("ETRY","delete Route:")
+//			etry->dropHeader("Route:");
+//			DEBOUT("ETRY","delete Date:")
+//			etry->dropHeader("Date:");
+//
+//			etry->setGenericHeader("Content-Length:","0");
+//
+//			//via add rport
+//			C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
+//			DEBOUT("via1", viatmp->getC_AttVia().getContent())
+//			DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+//			//TODO 124??
+//			viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+//			//viatmp->getC_AttVia().getViaParms().compileTupleVector();
+//			DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+//
+//			DEBOUT("via4", viatmp->getC_AttVia().getContent())
+//			etry->popSTKHeadVia();
+//			etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
+//
+//
+//
+//			DEBOUT("ETRY","setDestEntity")
+//			etry->setDestEntity(SODE_APOINT);
+//
+//			etry->compileMessage();
+//			etry->dumpVector();
+//			etry->typeOfInternal = TYPE_MESS;
+//
+//			SingleAction sa_1 = SingleAction(etry);
+//
+//			action->addSingleAction(sa_1);
+//			pthread_mutex_unlock(&mutex);
+//			return action;
+//
+//		}
+//		pthread_mutex_unlock(&mutex);
+//		return 0x0;
+//	}
+//	if (_message->getReqRepType() == REPSUPP) {
+//		if (State == 0){
+//			DEBOUT("SL_SM_SV::REPSUPP in state 0, ignore", _message->getLine(0))
+//
+//			pthread_mutex_unlock(&mutex);
+//			return 0x0;
+//
+//		} else if (State == 1) {
+//
+//			if (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
+//					|| _message->getHeadSipReply().getReply().getCode() == RINGING_180
+//					|| _message->getHeadSipReply().getReply().getCode() == OK_200) {
+//				DEBOUT("SL_SM_SV::REPSUPP in state 1, DIALOGE or RINGING or OK arrived", _message->getLine(0))
+//				ACTION* action = new ACTION();
+//				_message->setDestEntity(SODE_APOINT);
+//				_message->setGenEntity(SODE_SMCLPOINT);
+//				_message->typeOfInternal = TYPE_MESS;
+//
+//				SingleAction sa_1 = SingleAction(_message);
+//				action->addSingleAction(sa_1);
+//				pthread_mutex_unlock(&mutex);
+//				return action;
+//			}
+//			DEBOUT("SL_SM_SV::event to be implemented", _message->getHeadSipReply().getContent())
+//		}
+//		pthread_mutex_unlock(&mutex);
+//		return 0x0;
+//	}
+//
+//	//State = 0;
+//
+//}
 //**********************************************************************************
 //**********************************************************************************
 SL_SM_CL2::SL_SM_CL2(ENGINE* _engine, SL_CO* _sl_co):
@@ -925,15 +917,31 @@ ACTION* SL_SM_CL2::event(MESSAGE* _message){
 PREDICATE_ACTION::PREDICATE_ACTION(SL_SM* _sm){
 	machine = _sm;
 }
+bool predicate_p1(MESSAGE* _s){
+	if (true)
+		return true;
+	else
+		return false;
+}
+ACTION* action_p1(SL_SM* _sm, MESSAGE* _m) {
+	cout << "EVENT is aaa input, move to 1" <<endl;
+	_sm->State = 1;
+}
 SL_SM::SL_SM(ENGINE* _eng, SL_CO* _sl_co){
+
+	sl_cc = _eng;
+    sl_co = _sl_co;
+
     pthread_mutex_init(&mutex, NULL);
 	State = 0;
 }
 //**********************************************************************************
 //**********************************************************************************
-void SL_SM::exec_it(MESSAGE* _event){
+ACTION* SL_SM::event(MESSAGE* _event){
 
 	PREDICATE_ACTION* tmp;
+
+	ACTION* act=0x0;
 
 	DEBOUT("SM_SL::exec_it Look for state", State)
 
@@ -949,12 +957,13 @@ void SL_SM::exec_it(MESSAGE* _event){
 		tmp  = iter->second;
 
 		if (tmp->predicate(_event)){
-			tmp->action(this);
-			pthread_mutex_lock(&mutex);
-			return;
+			act = tmp->action(this, _event);
+			pthread_mutex_unlock(&mutex);
+			return act;
 		}
 	}
-	pthread_mutex_lock(&mutex);
+	pthread_mutex_unlock(&mutex);
+	return(act);
 
 	DEBOUT("SM_SL::exec_it unexpected event", _event)
 }
@@ -966,22 +975,213 @@ void SL_SM::insert_move(int _i, PREDICATE_ACTION* _pa){
 	move_sm.insert(pair<int, PREDICATE_ACTION*>(_i, _pa));
 
 }
-bool predicate_p1(MESSAGE* _s){
-	if (true)
-		return true;
-	else
-		return false;
-};
-void action_p1(SL_SM* _sm) {
-	cout << "EVENT is aaa input, move to 1" <<endl;
-	_sm->State = 1;
-};
 SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 		SL_SM(_eng, _sl_co),
 		P1((SL_SM*)this){
 
 	P1.action = &action_p1;
 	P1.predicate = &predicate_p1;
+
+}
+//**********************************************************************************
+//**********************************************************************************
+bool predicate_p0_sv(MESSAGE* _message){
+
+	if (_message->getReqRepType() == REQSUPP
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getDestEntity() == SODE_SMSVPOINT
+			&& _message->getGenEntity() ==  SODE_APOINT) {
+		return true;
+	}
+	else
+		return false;
+}
+ACTION* action_p0_sv(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SL_SM_SV::event move to state 1", _message->getHeadSipRequest().getContent())
+
+	ACTION* action = new ACTION();
+
+	//_message changes its dest and gen
+	_message->setDestEntity(SODE_ALOPOINT);
+	_message->setGenEntity(SODE_SMSVPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	//etry is filled later by SL_CO (see design)
+	CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
+
+	//TODO qui fare etry...
+	DEBOUT("ETRY","SIP/2.0 100 Trying")
+	etry->setHeadSipReply("SIP/2.0 100 Trying");
+	DEBOUT("ETRY","Purge sdp")
+	etry->purgeSDP();
+	DEBOUT("ETRY","delete User-Agent:")
+	etry->dropHeader("User-Agent:");
+	DEBOUT("ETRY","delete Max-Forwards:")
+	etry->removeMaxForwards();
+	DEBOUT("ETRY","delete Content-Type:")
+	etry->dropHeader("Content-Type:");
+	DEBOUT("ETRY","delete Allow:")
+	etry->dropHeader("Allow:");
+	DEBOUT("ETRY","delete Route:")
+	etry->dropHeader("Route:");
+	DEBOUT("ETRY","delete Date:")
+	etry->dropHeader("Date:");
+
+//				DEBOUT("ETRY","delete Content-Length:")
+//				etry->dropHeader("Content-Length:");
+	etry->setGenericHeader("Content-Length:","0");
+	//crash here...
+
+
+
+	//via add rport
+	C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
+	DEBOUT("via1", viatmp->getC_AttVia().getContent())
+	DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+	//TODO 124??
+	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+	//viatmp->getC_AttVia().getViaParms().compileTupleVector();
+	DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+
+	DEBOUT("via4", viatmp->getC_AttVia().getContent())
+	etry->popSTKHeadVia();
+	etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
+
+
+
+	DEBOUT("ETRY","setDestEntity")
+	etry->setDestEntity(SODE_APOINT);
+
+	etry->compileMessage();
+	etry->dumpVector();
+	etry->typeOfInternal = TYPE_MESS;
+
+	SingleAction sa_2 = SingleAction(etry);
+
+	action->addSingleAction(sa_1);
+	action->addSingleAction(sa_2);
+
+	DEBOUT("SL_SM_SV::actions set", _message->getHeadSipRequest().getContent())
+
+	_sm->State = 1;
+
+	return action;
+
+}
+
+bool predicate_p1a_sv(MESSAGE* _message){
+
+	if (_message->getReqRepType() == REQSUPP
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getDestEntity() == SODE_SMSVPOINT
+			&& _message->getGenEntity() ==  SODE_APOINT) {
+		return true;
+	}
+	else
+		return false;
+}
+ACTION* action_p1a_sv(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SL_SM_SV::event State 1 probable retransmission","")
+	ACTION* action = new ACTION();
+
+	CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
+
+	//TODO qui fare etry...
+	DEBOUT("ETRY","SIP/2.0 100 Trying")
+	etry->setHeadSipReply("SIP/2.0 100 Trying");
+	DEBOUT("ETRY","Purge sdp")
+	etry->purgeSDP();
+	DEBOUT("ETRY","delete User-Agent:")
+	etry->dropHeader("User-Agent:");
+	DEBOUT("ETRY","delete Max-Forwards:")
+	etry->removeMaxForwards();
+	DEBOUT("ETRY","delete Content-Type:")
+	etry->dropHeader("Content-Type:");
+	DEBOUT("ETRY","delete Allow:")
+	etry->dropHeader("Allow:");
+	DEBOUT("ETRY","delete Route:")
+	etry->dropHeader("Route:");
+	DEBOUT("ETRY","delete Date:")
+	etry->dropHeader("Date:");
+
+	etry->setGenericHeader("Content-Length:","0");
+
+	//via add rport
+	C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
+	DEBOUT("via1", viatmp->getC_AttVia().getContent())
+	DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+	//TODO 124??
+	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+	//viatmp->getC_AttVia().getViaParms().compileTupleVector();
+	DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
+
+	DEBOUT("via4", viatmp->getC_AttVia().getContent())
+	etry->popSTKHeadVia();
+	etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
+
+
+
+	DEBOUT("ETRY","setDestEntity")
+	etry->setDestEntity(SODE_APOINT);
+
+	etry->compileMessage();
+	etry->dumpVector();
+	etry->typeOfInternal = TYPE_MESS;
+
+	SingleAction sa_1 = SingleAction(etry);
+
+	action->addSingleAction(sa_1);
+	return action;
+
+}
+bool predicate_p1b_sv(MESSAGE* _message){
+
+	if (_message->getReqRepType() == REPSUPP
+			&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
+			|| _message->getHeadSipReply().getReply().getCode() == RINGING_180
+			|| _message->getHeadSipReply().getReply().getCode() == OK_200)) {
+		return true;
+	} else
+		return false;
+}
+
+ACTION* action_p1b_sv(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SL_SM_SV::REPSUPP in state 1, DIALOGE or RINGING or OK arrived", _message->getLine(0))
+	ACTION* action = new ACTION();
+	_message->setDestEntity(SODE_APOINT);
+	_message->setGenEntity(SODE_SMCLPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+
+	SingleAction sa_1 = SingleAction(_message);
+	action->addSingleAction(sa_1);
+	return action;
+
+}
+
+SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
+		SL_SM(_eng, _sl_co),
+		P0_SV((SL_SM*)this),
+		P1a_SV((SL_SM*)this),
+		P1b_SV((SL_SM*)this){
+
+	P0_SV.action = &action_p0_sv;
+	P0_SV.predicate = &predicate_p0_sv;
+
+	P1a_SV.action = &action_p1a_sv;
+	P1a_SV.predicate = &predicate_p1a_sv;
+
+	P1b_SV.action = &action_p1b_sv;
+	P1b_SV.predicate = &predicate_p1b_sv;
+
+	insert_move(0,&P0_SV);
+	insert_move(1,&P1a_SV);
+	insert_move(1,&P1b_SV);
+
+
 }
 
 

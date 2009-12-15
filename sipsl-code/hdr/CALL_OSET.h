@@ -37,7 +37,7 @@
  *
  **********************************************************************************/
 class SL_SM_CL2;
-class SL_SM_SV2;
+class SL_SM_SV;
 class SL_CO;
 
 //Umbrella class which hosts states machines and call object
@@ -47,7 +47,7 @@ class CALL_OSET {
 
 		SL_CO* sl_co;
 		ALO* alo;
-		SL_SM_SV2* sl_sm_sv;
+		SL_SM_SV* sl_sm_sv;
 
 		//map callId_y and related states machines
 		map<string, SL_SM_CL2*> mm_sl_sm_cl;
@@ -57,9 +57,9 @@ class CALL_OSET {
 
 	public:
 		CALL_OSET(ENGINE*, MESSAGE*);
-		void setSL_X(string callId_X, SL_CO*, SL_SM_SV2*, ALO*);
+		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
-		SL_SM_SV2* getSL_SM_SV(void);
+		SL_SM_SV* getSL_SM_SV(void);
 		void addSL_SM_CL(string callId_Y, SL_SM_CL2*);
 
 		string getCallIdX(void);
@@ -109,11 +109,11 @@ class SL_SM2 {
 #endif
     protected:
 
-		ENGINE* sl_cc;
 		//The Request message that has triggered the creation of the state machine
 		//MESSAGE* messageGenerator;
 
         int State;
+		ENGINE* sl_cc;
         SL_CO* sl_co;
 
         //Mutex the state machine
@@ -136,20 +136,6 @@ class SL_SM_CL2 : public SL_SM2 {
 		SL_SM_CL2(ENGINE*, SL_CO*);
 
 };
-//**********************************************************************************
-//**********************************************************************************
-// State machine server (a side)
-//**********************************************************************************
-//**********************************************************************************
-class SL_SM_SV2 : public SL_SM2 {
-
-	public:
-		int placeholder;
-
-		ACTION* event(MESSAGE*);
-		SL_SM_SV2(ENGINE*, SL_CO*);
-
-};
 
 //**********************************************************************************
 //**********************************************************************************
@@ -165,7 +151,7 @@ class PREDICATE_ACTION {
 	public:
 
 	bool (*predicate)(MESSAGE*);
-	void (*action)(SL_SM*);
+	ACTION* (*action)(SL_SM*,MESSAGE*);
 
 	PREDICATE_ACTION(SL_SM*);
 
@@ -178,6 +164,9 @@ class SL_SM {
 
 	multimap< int, PREDICATE_ACTION*> move_sm;
 
+	ENGINE* sl_cc;
+    SL_CO* sl_co;
+
 	public:
 
 	SL_SM(ENGINE* sl_cc, SL_CO* sl_co);
@@ -186,7 +175,7 @@ class SL_SM {
 
 	void insert_move(int, PREDICATE_ACTION*);
 
-	void exec_it(MESSAGE*);
+	ACTION* event(MESSAGE*);
 
 };
 //**********************************************************************************
@@ -207,6 +196,7 @@ class SL_SM_CL : public SL_SM {
 		ACTION* event(MESSAGE*);
 		SL_SM_CL(ENGINE*, SL_CO*);
 
+
 };
 //**********************************************************************************
 //**********************************************************************************
@@ -218,7 +208,10 @@ class SL_SM_SV : public SL_SM {
 	public:
 		int placeholder;
 
-		ACTION* event(MESSAGE*);
+		PREDICATE_ACTION P0_SV;
+		PREDICATE_ACTION P1a_SV;
+		PREDICATE_ACTION P1b_SV;
+
 		SL_SM_SV(ENGINE*, SL_CO*);
 
 };
