@@ -36,7 +36,7 @@
  * with key = callid
  *
  **********************************************************************************/
-class SL_SM_CL2;
+class SL_SM_CL;
 class SL_SM_SV;
 class SL_CO;
 
@@ -50,7 +50,7 @@ class CALL_OSET {
 		SL_SM_SV* sl_sm_sv;
 
 		//map callId_y and related states machines
-		map<string, SL_SM_CL2*> mm_sl_sm_cl;
+		map<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
 		string callId_X;
 		MESSAGE* genMessage;
@@ -60,11 +60,11 @@ class CALL_OSET {
 		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
 		SL_SM_SV* getSL_SM_SV(void);
-		void addSL_SM_CL(string callId_Y, SL_SM_CL2*);
+		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
 
 		string getCallIdX(void);
 
-		SL_SM_CL2* getSL_SM_CL(string callId_Y);
+		SL_SM_CL* getSL_SM_CL(string callId_Y);
 		ALO* getALO(void);
 		ENGINE* getENGINE(void);
 
@@ -92,51 +92,36 @@ class SL_CO {
 // State machine
 //**********************************************************************************
 //**********************************************************************************
-class SL_SM2 {
-
-	public:
-		//SL_SM(ENGINE* sl_cc, SL_CO* sl_co, MESSAGE* generator);
-		SL_SM2(ENGINE* sl_cc, SL_CO* sl_co);
-
-		ENGINE* getSL_CC(void);
-		//MESSAGE* getGenerator(void);
-		SL_CO* getSL_CO(void);
-
-#ifdef TESTING
-		virtual ACTION* event(MESSAGE*);
-#else
-		virtual ACTION* event(MESSAGE*) = 0;
-#endif
-    protected:
-
-		//The Request message that has triggered the creation of the state machine
-		//MESSAGE* messageGenerator;
-
-        int State;
-		ENGINE* sl_cc;
-        SL_CO* sl_co;
-
-        //Mutex the state machine
-        //First option when every SM has its own mutex.
-        pthread_mutex_t mutex;
-};
+//class SL_SM2 {
+//
+//	public:
+//		//SL_SM(ENGINE* sl_cc, SL_CO* sl_co, MESSAGE* generator);
+//		SL_SM2(ENGINE* sl_cc, SL_CO* sl_co);
+//
+//		ENGINE* getSL_CC(void);
+//		//MESSAGE* getGenerator(void);
+//		SL_CO* getSL_CO(void);
+//
+//#ifdef TESTING
+//		virtual ACTION* event(MESSAGE*);
+//#else
+//		virtual ACTION* event(MESSAGE*) = 0;
+//#endif
+//    protected:
+//
+//		//The Request message that has triggered the creation of the state machine
+//		//MESSAGE* messageGenerator;
+//
+//        int State;
+//		ENGINE* sl_cc;
+//        SL_CO* sl_co;
+//
+//        //Mutex the state machine
+//        //First option when every SM has its own mutex.
+//        pthread_mutex_t mutex;
+//};
 //**********************************************************************************
 //**********************************************************************************
-// State machine client (b side)
-//**********************************************************************************
-//**********************************************************************************
-class SL_SM_CL2 : public SL_SM2 {
-
-	public:
-		int placeholder;
-
-		int resend_invite;
-
-		ACTION* event(MESSAGE*);
-		SL_SM_CL2(ENGINE*, SL_CO*);
-
-};
-
 //**********************************************************************************
 //**********************************************************************************
 // New State machine
@@ -150,8 +135,8 @@ class PREDICATE_ACTION {
 
 	public:
 
-	bool (*predicate)(MESSAGE*);
-	ACTION* (*action)(SL_SM*,MESSAGE*);
+	bool (*predicate)(SL_SM*, MESSAGE*);
+	ACTION* (*action)(SL_SM*, MESSAGE*);
 
 	PREDICATE_ACTION(SL_SM*);
 
@@ -168,6 +153,10 @@ class SL_SM {
     SL_CO* sl_co;
 
 	public:
+
+	ENGINE* getSL_CC(void);
+	//MESSAGE* getGenerator(void);
+	SL_CO* getSL_CO(void);
 
 	SL_SM(ENGINE* sl_cc, SL_CO* sl_co);
 
@@ -190,10 +179,13 @@ class SL_SM_CL : public SL_SM {
 
 		int resend_invite;
 
-		PREDICATE_ACTION P1;
+		PREDICATE_ACTION P0_CL;
+		PREDICATE_ACTION P1a_CL;
+		PREDICATE_ACTION P1b_CL;
+		PREDICATE_ACTION P2a_CL;
+		PREDICATE_ACTION P2b_CL;
+		PREDICATE_ACTION P4_CL;
 
-
-		ACTION* event(MESSAGE*);
 		SL_SM_CL(ENGINE*, SL_CO*);
 
 
