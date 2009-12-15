@@ -51,8 +51,6 @@ void ALO::parse(MESSAGE* _message) {
 		DEBOUT("ALO Decoupling ",_message->getHeadSipRequest().getContent())
 		sl_cc->p_w(_message);
 	}
-
-
 }
 void ALO::onInvite(MESSAGE* m){
 	DEBOUT("ALO unoverridded onINVITE called ", m->getIncBuffer())

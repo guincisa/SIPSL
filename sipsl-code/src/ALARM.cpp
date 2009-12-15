@@ -136,11 +136,12 @@ void ALMGR::alarmer(void){
 						//TODO purge alarms
 					}
 					//else
-					time_alarm_mumap.erase(iter);
+					//time_alarm_mumap.erase(iter);
 					mess_alm_map.erase(tmal->getMessage());
 					delete tmal;
 					DEBY
 				}
+			    time_alarm_mumap.erase(tcu);
 				tcu = alarm_pq.top();
 			}
 		}

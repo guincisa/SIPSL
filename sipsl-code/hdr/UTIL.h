@@ -86,7 +86,7 @@ typedef struct {
 				SysTime inTime;\
 				GETTIME(inTime);\
 				MESSAGE* m1 = new MESSAGE(m2, m3, inTime);\
-				DEBOUT("NEW MESSAGE"," " + m1->getTotLines());\
+				DEBOUT("NEW MESSAGE"," " << m1->getTotLines());\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x#%llu",m1,num);\
 				string key(bu);\
@@ -99,7 +99,7 @@ typedef struct {
 				SysTime inTime;\
 				GETTIME(inTime);\
 				MESSAGE* __mess = new MESSAGE(__echob, __sode, inTime, __sock, __echoAddr);\
-				DEBOUT("NEW MESSAGE"," " + __mess->getTotLines());\
+				DEBOUT("NEW MESSAGE"," " << __mess->getTotLines());\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x#%llu",(unsigned int)__mess,num);\
 				string key(bu);\

@@ -32,12 +32,25 @@ ALO needs to build the message and send it to SMSV which changes state and
 sends to network side A
 
 ------------------------------------------------------------------------------------
-5. TO TEST
+5. FIXED
 Is it needed to have this as multimap???
 callx-cally 1:n
 typedef multimap<string, string> CALL_ID_Y2X;
 changed to map.
 
+------------------------------------------------------------------------------------
+6. OK CURRENT IMPLEMENTATION
+200 OK (and other replies) from B is sent to client sm and this one creates the new
+reply for A.
+It shoudl sent it to ALO. ALO can or not change it and forward to server sm, which
+sinds it to A.
+
+or:
+200OK arrives from B, is sent to client sm which fwd it to ALO, ALO creates the new
+200 ok (like the INVITE) and fwd to server sm which sends to A.
+
+INVITE arrives to svsm the to ALO, ALO creates the INVITE
+ALO must create the INVITE since it is made following busyness rules...
 ************************************************************************************
 ************************************************************************************
 

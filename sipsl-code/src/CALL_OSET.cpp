@@ -307,6 +307,7 @@ void SL_CO::call(MESSAGE* _message){
 
 	DEBOUT("SL_CO::call ended","")
 	if (action != 0x0){
+		DEBOUT("SL_CO::call delete action","")
 		delete action;
 	}
 }
@@ -1293,6 +1294,7 @@ ACTION* action_p4_cl(SL_SM* _sm, MESSAGE* _message) {
 
 	// Dialog establish must derive from incoming invite
 	// get incoming invite
+	//200 ok shoudl be sent to ALO
 	MESSAGE* __message = _sm->getSL_CO()->call_oset->getGenMessage();
 	DEBOUT("MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(ok_x, __message, SODE_SMCLPOINT)
