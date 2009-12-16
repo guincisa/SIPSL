@@ -866,3 +866,9 @@ string MESSAGE::getExtendedInternalCID(void){
 	return getHeadCallId().getNormCallId() + getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 
 }
+string MESSAGE::getDialogExtendedCID(void){
+
+	DEBOUT("MESSAGE::getDialogExtendedCID(void)", getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag"))
+	return getHeadCallId().getNormCallId() + getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag");
+
+}

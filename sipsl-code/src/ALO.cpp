@@ -48,7 +48,12 @@ void ALO::parse(MESSAGE* _message) {
 		onInvite(_message);
 	}
 	else {
+		//destination needs to be changed here!!!
 		DEBOUT("ALO Decoupling ",_message->getHeadSipRequest().getContent())
+		if(_message->getGenEntity() == SODE_SMCLPOINT)
+			_message->setDestEntity(SODE_SMSVPOINT);
+		else if (_message->getGenEntity() == SODE_SMSVPOINT)
+			_message->setDestEntity(SODE_SMCLPOINT);
 		sl_cc->p_w(_message);
 	}
 }

@@ -267,6 +267,10 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getExtendedInternalCID())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 
+				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
+					call_oset->getALO()->p_w(_tmpMessage);
+
 				} else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
 
 					DEBOUT("SL_CO:: TYPE_OP","")
@@ -1298,7 +1302,7 @@ ACTION* action_p4_cl(SL_SM* _sm, MESSAGE* _message) {
 	MESSAGE* __message = _sm->getSL_CO()->call_oset->getGenMessage();
 	DEBOUT("MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(ok_x, __message, SODE_SMCLPOINT)
-	ok_x->setDestEntity(SODE_SMSVPOINT);
+	ok_x->setDestEntity(SODE_ALOPOINT);
 	ok_x->setGenEntity(SODE_SMCLPOINT);
 	ok_x->typeOfInternal = TYPE_MESS;
 

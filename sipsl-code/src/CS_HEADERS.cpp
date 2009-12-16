@@ -143,12 +143,12 @@ TupleVector::TupleVector(void) {
 TupleVector::TupleVector(const TupleVector& _t) {
 	DEBASSERT("COPY of TupleVector")
 }
-TupleVector::TupleVector(string tuples, string _separator) : S_AttGeneric(tuples) {
+TupleVector::TupleVector(string _tuples, string _separator) : S_AttGeneric(_tuples) {
 	separator = _separator;
 	hasheader = false;
 	header = "";
 }
-TupleVector::TupleVector(string tuples, string _separator, string _header) : S_AttGeneric(tuples) {
+TupleVector::TupleVector(string _tuples, string _separator, string _header) : S_AttGeneric(_tuples) {
 	separator = _separator;
 	header = _header;
 	hasheader = true;
@@ -176,6 +176,7 @@ void TupleVector::doParse(void) {
     if (parsed)
         return;
     try {
+
 		vector<string> lval_rval;
 		if (hasheader) {
 			lval_rval = parse(content, header, separator,true);
@@ -885,6 +886,7 @@ C_AttUriParms::C_AttUriParms(string _content)
     return;
 }
 void C_AttUriParms::doParse(void){
+    tuples.setTupleVector(content,";");
     parsed = true;
     return;
 }
@@ -899,13 +901,19 @@ void C_AttUriParms::buildContent(void){
     }
 }
 TupleVector &C_AttUriParms::getTuples(void){
+	if (!parsed)
+		doParse();
     return tuples;
 }
 TupleVector &C_AttUriParms::getChangeTuples(void){
 	contentReady = false;
+	if (!parsed)
+		doParse();
     return tuples;
 }
 TupleVector C_AttUriParms::copyTuples(void){
+	if (!parsed)
+		doParse();
     return tuples;
 }
 C_AttUriParms::C_AttUriParms(const C_AttUriParms& _p) {

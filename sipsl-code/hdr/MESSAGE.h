@@ -231,6 +231,10 @@ class MESSAGE : public BASEMESSAGE {
 
     	string getExtendedInternalCID(void);
 
+    	//string getTransactionExtendedCID(void);
+
+    	string getDialogExtendedCID(void);
+
     	void removeHeadRoute(void);
 
     	void dropHeader(string header);
