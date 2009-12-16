@@ -229,9 +229,9 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadSubject		&getHeadSubject(void);
     	C_HeadRoute			&getHeadRoute(void) throw (HeaderException);
 
-    	string getExtendedInternalCID(void);
+    	//string getExtendedInternalCID(void);
 
-    	//string getTransactionExtendedCID(void);
+    	string getTransactionExtendedCID(void);
 
     	string getDialogExtendedCID(void);
 

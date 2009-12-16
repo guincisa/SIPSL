@@ -861,7 +861,7 @@ SysTime MESSAGE::getFireTime(void){
 
 	return fireTime;
 }
-string MESSAGE::getExtendedInternalCID(void){
+string MESSAGE::getTransactionExtendedCID(void){
 
 	return getHeadCallId().getNormCallId() + getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 

@@ -101,7 +101,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		CALL_OSET* call_oset = 0x0;
 
-		string callidx = _mess->getExtendedInternalCID();
+		string callidx = _mess->getDialogExtendedCID();
 
 		DEBOUT("SL_CC::parse", "*********************************************************")
 
@@ -157,7 +157,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_SMCLPOINT (4)", _mess->getGenEntity() )
 
 		//get generating idx to get the call object
-		string callidx = _mess->getSourceMessage()->getExtendedInternalCID();
+		string callidx = _mess->getSourceMessage()->getDialogExtendedCID();
 
 		DEBOUT("Message from ALO/SMCL generating call object", callidx)
 

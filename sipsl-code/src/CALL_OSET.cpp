@@ -157,7 +157,7 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 void SL_CO::call(MESSAGE* _message){
 
 	DEBOUT("SL_CO::call", _message->getHeadSipRequest().getContent())
-    DEBOUT("SL_CO::call", _message->getExtendedInternalCID())
+    DEBOUT("SL_CO::call", _message->getDialogExtendedCID())
 
     ACTION* action = 0x0;
 
@@ -186,7 +186,7 @@ void SL_CO::call(MESSAGE* _message){
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
 
-					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
+					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 					call_oset->getALO()->p_w(_tmpMessage);
 
 				}
@@ -218,7 +218,7 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("********************************************************************","")
 		DEBOUT("*******************to client state machine**************************","")
 
-		string callidy = _message->getExtendedInternalCID();
+		string callidy = _message->getDialogExtendedCID();
 
 		DEBOUT("Message to CL machine callidy", callidy)
 
@@ -255,7 +255,7 @@ void SL_CO::call(MESSAGE* _message){
 
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_BPOINT){
 
-					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
+					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 
 					BTRANSMIT(_tmpMessage)
 
@@ -264,11 +264,11 @@ void SL_CO::call(MESSAGE* _message){
 
 				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
-					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getExtendedInternalCID())
+					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getDialogExtendedCID())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 
 				} else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
-					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
+					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 					call_oset->getALO()->p_w(_tmpMessage);
 
 				} else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
@@ -276,7 +276,7 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("SL_CO:: TYPE_OP","")
 
 					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
-						DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
+						DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 						SysTime st1 = _tmpMessage->getFireTime();
 						SysTime st2;
 						st2.tv.tv_sec = 0;
@@ -286,8 +286,8 @@ void SL_CO::call(MESSAGE* _message){
 
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
-						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getExtendedInternalCID())
-						string callid = _tmpMessage->getExtendedInternalCID();
+						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+						string callid = _tmpMessage->getDialogExtendedCID();
 						DEBOUT("SL_CO::cancel alarm, callid", callid)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid);
 					}
