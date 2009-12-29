@@ -36,4 +36,5 @@ class VALO : public ALO {
 	public:
 	VALO(ENGINE*);
 	void onInvite(MESSAGE*);
+	void onAck(MESSAGE*);
 };

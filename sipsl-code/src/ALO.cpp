@@ -47,6 +47,10 @@ void ALO::parse(MESSAGE* _message) {
 		DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 		onInvite(_message);
 	}
+	else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
+		DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+		onAck(_message);
+	}
 	else {
 		//destination needs to be changed here!!!
 		DEBOUT("ALO Decoupling ",_message->getHeadSipRequest().getContent())
@@ -60,3 +64,7 @@ void ALO::parse(MESSAGE* _message) {
 void ALO::onInvite(MESSAGE* m){
 	DEBOUT("ALO unoverridded onINVITE called ", m->getIncBuffer())
 }
+void ALO::onAck(MESSAGE* m){
+	DEBOUT("ALO unoverridded onINVITE called ", m->getIncBuffer())
+}
+
