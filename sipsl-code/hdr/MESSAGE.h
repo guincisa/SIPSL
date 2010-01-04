@@ -176,6 +176,7 @@ class MESSAGE : public BASEMESSAGE {
 
     	vector<string>		sdpVector;
     	bool				sdpVector_p;
+    	bool				sdpVecrot_e; // exists
     	int					sdpSize;
 
     	// Used to generate a message from an incoming one
@@ -263,6 +264,7 @@ class MESSAGE : public BASEMESSAGE {
     	void increaseMaxForwards(void);
 
     	void setGenericHeader(string header, string content);
+    	string getGenericHeader(string header);
     	bool queryGenericHeader(string header); //if is present
     	void addGenericHeader(string header, string content);
 

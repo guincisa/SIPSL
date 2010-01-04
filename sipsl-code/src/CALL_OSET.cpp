@@ -583,6 +583,9 @@ ACTION* action_p2a_cl(SL_SM* _sm, MESSAGE* _message) {
 	dialoge_x->dropHeader("Route:");
 	DEBOUT("dialoge_x","delete Date:")
 	dialoge_x->dropHeader("Date:");
+	DEBOUT("dialoge_x","delete Content-Type:")
+	dialoge_x->dropHeader("Content-Type:");
+
 
 	dialoge_x->setGenericHeader("Content-Length:","0");
 	//crash here...
@@ -650,6 +653,8 @@ ACTION* action_p2b_cl(SL_SM* _sm, MESSAGE* _message) {
 	ring_x->dropHeader("Route:");
 	DEBOUT("ring_x","delete Date:")
 	ring_x->dropHeader("Date:");
+	DEBOUT("ring_x","delete Content-Type:")
+	ring_x->dropHeader("Content-Type:");
 
 	ring_x->setGenericHeader("Content-Length:","0");
 	//crash here...
@@ -719,18 +724,6 @@ ACTION* action_p4_cl(SL_SM* _sm, MESSAGE* _message) {
 	DEBOUT("ok_x","delete Date:")
 	ok_x->dropHeader("Date:");
 
-	ok_x->setGenericHeader("Content-Length:","0");
-	//crash here...
-
-	if (ok_x->getSDPSize() != 0 ){
-		//SDP must copy the SDP from incoming OK and put here
-		vector<string> __sdp = _message->getSDP();
-		ok_x->purgeSDP();
-		ok_x->importSDP(__sdp);
-		char aaa[10];
-		sprintf(aaa,"%d", _message->getSDPSize());
-		ok_x->setGenericHeader("Content-Length:", aaa );
-	}
 
 	//via add rport
 	DEBY
@@ -741,10 +734,23 @@ ACTION* action_p4_cl(SL_SM* _sm, MESSAGE* _message) {
 	ok_x->popSTKHeadVia();
 	ok_x->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
 
+	ok_x->setGenericHeader("Content-Length:","0");
+
+	if (ok_x->getSDPSize() != 0 ){
+		//SDP must copy the SDP from incoming OK and put here
+		vector<string> __sdp = _message->getSDP();
+		ok_x->purgeSDP();
+		DEBOUT("PURGED SDP","")
+		ok_x->dumpVector();
+		ok_x->importSDP(__sdp);
+		ok_x->dumpVector();
+	}
+
+
 	ok_x->compileMessage();
 	ok_x->dumpVector();
 
-	C_HeadVia* viatmp2 = (C_HeadVia*) ok_x->getSTKHeadVia().top();
+	//C_HeadVia* viatmp2 = (C_HeadVia*) ok_x->getSTKHeadVia().top();
 
 	SingleAction sa_1 = SingleAction(ok_x);
 

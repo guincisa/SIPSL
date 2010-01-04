@@ -349,14 +349,12 @@ void MESSAGE::compileMessage(void){
     	}
     }
     incMessBuff = "";
-	flex_line.insert(theIterator ,1 , "");
+    if (getGenericHeader("Content-Type:").size() == 0)
+    	flex_line.insert(theIterator ,1 , "");
+
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
+
     	incMessBuff = incMessBuff + (*theIterator) + "\r\n";
-//    	if (theIterator != flex_line.end()) {
-//    		incMessBuff = incMessBuff + (*theIterator) + "\r\n";
-//    	}else {
-//    		incMessBuff = incMessBuff + (*theIterator) + "\r\n";
-//    	}
 
     }
 
@@ -501,6 +499,9 @@ void MESSAGE::pushHeadVia(string _content){
 }
 void MESSAGE::purgeSDP(void){
 
+	dropHeader("Content-Length:");
+	dropHeader("Content-Type:");
+
 	vector<string>::iterator theIterator;
 	vector<string>::iterator theIteratorEnd;
 
@@ -565,13 +566,20 @@ void MESSAGE::importSDP(vector<string> _sdp){
 	sdpSize = 0;
 	sdpVector_p = true;
 	if (theIterator!= _sdp.end()){
+		flex_line.push_back("Content-Length: 0");
+		flex_line.push_back("Content-Type: application/sdp");
 		flex_line.push_back("");
 	}
 	while (theIterator != _sdp.end()){
+		DEBOUT("the iterator", *theIterator)
 		sdpSize = sdpSize + (*theIterator).length() + 2;
 		flex_line.push_back((*theIterator));
 		theIterator++;
 	}
+	char aaa[10];
+	sprintf(aaa,"%d", sdpSize);
+	setGenericHeader("Content-Length:", aaa );
+
 }
 
 /*
@@ -849,7 +857,28 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		DEBOUT("MESSAGE::setGenericHeader not found",_header)
 	}
 }
-void addGenericHeader(string _header, string _content){
+string MESSAGE::getGenericHeader(string _header){
+
+	DEBOUT("MESSAGE::getGenericHeader", _header)
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,_header.size()).compare(_header)==0){
+			Tuple s = brkin2(flex_line[i], " ");
+			found = true;
+			DEBOUT("found header",_header << "***"<< s.Rvalue)
+			return s.Rvalue;
+		}
+	}
+	if (!found) {
+		DEBOUT("MESSAGE::setGenericHeader not found",_header)
+				return "";
+	}
+}
+
+
+void MESSAGE::addGenericHeader(string _header, string _content){
+
 
 }
 
