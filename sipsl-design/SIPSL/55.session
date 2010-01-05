@@ -1,10 +1,6 @@
 window_sizes 1280 748 263 1011 639 35
-diagrams
-  active  statediagram_ref 128183 // CL V2
-    1011 639 100 2 420 0
-end
 show_stereotypes
-selected statediagram_ref 128055 // SV V2
+selected statediagram_ref 128183 // CL V2
 open
   state_ref 128002 // SM_SL_CL
   state_ref 128055 // SM_SV_V2

@@ -1,48 +1,44 @@
-format 70
+format 71
 
 pseudostatecanvas 128183 pseudostate_ref 134583 // initial
-   xyz 317 94 2000
+   xyz 217.8 47.6 2000
 end
 statecanvas 128311 state_ref 128183 // 1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 309 223 2000 40 27
+  xyzwh 219.8 118.8 2000 40 27
 end
 note 128951 "E=INVITE_A [s=A,d=SV]
 A={TRY_A [s=SV,d=A], INVITE_A[s=SV,d=CL]}
 "
-  xyzwh 338 129 2000 263 49
+  xyzwh 279.6 97.6 2000 263 49
 note 129975 "E=RING_B[s=CL,d=SV]
 A=RING_A[s=SV,d=A]"
-  xyzwh 452 286 2006 153 43
+  xyzwh 237.4 195.2 2006 153 43
 statecanvas 130231 state_ref 128311 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 285 327 2000 40 27
+  xyzwh 42 178.4 2000 40 27
 end
 statecanvas 130359 state_ref 135607 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 410 416 2000 40 27
+  xyzwh 60.6 264.4 2000 40 27
 end
 note 131127 "E=DE_B[s=CL,d=SV]
 A=DE_A[s=SV,d=A]"
-  xyzwh 90 253 2000 155 47
+  xyzwh 26 83.8 2000 155 47
 statecanvas 131511 state_ref 135735 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 604 474 2000 40 27
+  xyzwh 104.8 360 2000 40 27
 end
 note 131767 "E=200OK_B[s=CL,d=SV]
 A=200OK_B[s=SV,d=ALO]"
-  xyzwh 552 374 2000 157 45
+  xyzwh 208.4 305.2 2000 157 45
 statecanvas 132023 state_ref 136119 // 5
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 441 568 2000 40 27
+  xyzwh 80.2 477.4 2000 47 27
 end
 note 132279 "E=200OK_A[s=ALO,d=SV]
 A=200OK_A[s=SV,d=A]"
-  xyzwh 564 532 2000 179 55
-statecanvas 132535 state_ref 136247 // 6
-  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 227 627 2000 40 27
-end
+  xyzwh 251.2 423.6 2000 179 55
 transitioncanvas 128439 transition_ref 134967 // <transition>
   
   from ref 128183 z 2001 to ref 128311
@@ -71,11 +67,6 @@ end
 transitioncanvas 132151 transition_ref 143927 // <transition>
   
   from ref 131511 z 2001 to ref 132023
-  write_horizontally default show_definition default drawing_language default
-end
-transitioncanvas 132663 transition_ref 144055 // <transition>
-  
-  from ref 132023 z 2001 to ref 132535
   write_horizontally default show_definition default drawing_language default
 end
 line 129079 -_-_
