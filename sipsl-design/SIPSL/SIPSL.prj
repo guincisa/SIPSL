@@ -1,6 +1,6 @@
 format 70
 "SIPSL"
-  revision 62
+  revision 63
   modified_by 55 "guic"
 
 
@@ -616,8 +616,8 @@ correct timer interaction with client state machine"
 
     state 128055 "SM_SV_V2"
       stereotype "machine"
-      statediagram 128055 "V2"
-	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+      statediagram 128055 "SV V2"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
 	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
 	size A2
       end
@@ -639,6 +639,16 @@ correct timer interaction with client state machine"
 	  on state_ref 128311 // 2
 	  external 
 	end
+
+	transition 142775 "<transition>"
+	  on state_ref 135607 // 3
+	  external 
+	end
+
+	transition 142903 "<transition>"
+	  on state_ref 128311 // 2
+	  external 
+	end
       end
 
       stateaction 128055
@@ -653,12 +663,40 @@ correct timer interaction with client state machine"
       end
 
       state 128311 "2"
+	transition 143031 "<transition>"
+	  on state_ref 135607 // 3
+	  external 
+	end
+      end
+
+      state 135607 "3"
+	transition 143799 "<transition>"
+	  on state_ref 135735 // 4
+	  external 
+	end
+      end
+
+      state 135735 "4"
+	transition 143927 "<transition>"
+	  on state_ref 136119 // 5
+	  external 
+	end
+      end
+
+      state 136119 "5"
+	transition 144055 "<transition>"
+	  on state_ref 136247 // 6
+	  external 
+	end
+      end
+
+      state 136247 "6"
       end
     end
 
     state 128439 "SM_CL_V2"
       stereotype "machine"
-      statediagram 128183 "V2"
+      statediagram 128183 "CL V2"
 	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
 	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
 	size A2
@@ -672,6 +710,77 @@ correct timer interaction with client state machine"
       end
 
       state 128567 "1"
+	transition 141879 "<transition>"
+	  on state_ref 135095 // 2
+	  external 
+	end
+      end
+
+      state 135095 "2"
+	transition 142007 "<transition>"
+	  on state_ref 135095 // 2
+	end
+
+	transition 142135 "<transition>"
+	  on state_ref 135223 // 3
+	  external 
+	end
+
+	transition 143287 "<transition>"
+	  on state_ref 135479 // 5
+	  external 
+	end
+      end
+
+      state 135223 "3"
+	transition 142263 "<transition>"
+	  on state_ref 135351 // 4
+	  external 
+	end
+
+	transition 142391 "<transition>"
+	  on state_ref 135351 // 4
+	  external 
+	end
+
+	transition 142519 "<transition>"
+	  on state_ref 135351 // 4
+	  external 
+	end
+
+	transition 143415 "<transition>"
+	  on state_ref 135479 // 5
+	  external 
+	end
+      end
+
+      state 135351 "4"
+	transition 142647 "<transition>"
+	  on state_ref 135351 // 4
+	end
+
+	transition 143159 "<transition>"
+	  on state_ref 135479 // 5
+	  external 
+	end
+      end
+
+      state 135479 "5"
+	transition 143543 "<transition>"
+	  on state_ref 135863 // 6
+	  external 
+	end
+
+	state 135991 "6"
+	end
+
+	transition 143671 "<transition>"
+	  on state_ref 135991 // 6
+	  external 
+	end
+      end
+
+      state 135863 "6"
       end
     end
   end
