@@ -1,0 +1,21 @@
+format 70
+
+pseudostatecanvas 128055 pseudostate_ref 134711 // initial
+   xyz 125 66 2000
+end
+statecanvas 128183 state_ref 128567 // 1
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 111 232 2000 40 27
+end
+note 128439 "E= INVITE_A [s=SV,d=CL]
+A= INVITE_A [s=CL,d=ALO]"
+  xyzwh 184 89 2000 167 45
+transitioncanvas 128311 transition_ref 135351 // <transition>
+  decenter_end 574
+  
+  from ref 128055 z 2001 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+line 128567 -_-_
+  from ref 128439 z 2002 to ref 128311
+end

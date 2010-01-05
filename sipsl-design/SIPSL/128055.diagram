@@ -1,0 +1,39 @@
+format 70
+
+pseudostatecanvas 128183 pseudostate_ref 134583 // initial
+   xyz 121 85 2000
+end
+statecanvas 128311 state_ref 128183 // 1
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 113 214 2000 40 27
+end
+note 128951 "E=INVITE_A [s=A,d=SV]
+A={TRY_A [s=SV,d=A], INVITE_A[s=SV,d=CL]}
+"
+  xyzwh 142 120 2000 263 49
+statecanvas 129207 state_ref 128311 // 2
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 131 372 2000 40 27
+end
+note 129847 ""
+  xyzwh 263 254 2000 35 35
+transitioncanvas 128439 transition_ref 134967 // <transition>
+  
+  from ref 128183 z 2001 to ref 128311
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129335 transition_ref 135095 // <transition>
+  
+  from ref 128311 z 2001 to point 212 289
+  line 129463 z 2001 to ref 129207
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129591 transition_ref 135223 // <transition>
+  
+  from ref 128311 z 2001 to point 42 329
+  line 129719 z 2001 to ref 129207
+  write_horizontally default show_definition default drawing_language default
+end
+line 129079 -_-_
+  from ref 128951 z 2002 to ref 128439
+end

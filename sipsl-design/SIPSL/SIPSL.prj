@@ -1,7 +1,7 @@
 format 70
 "SIPSL"
-  revision 61
-  modified_by 2 "guic"
+  revision 62
+  modified_by 55 "guic"
 
 
   
@@ -612,6 +612,67 @@ dialog E must traverse the x state machine
 Oct 26- 2009
 correct timer interaction with client state machine"
       overlapping_bars size A0
+    end
+
+    state 128055 "SM_SV_V2"
+      stereotype "machine"
+      statediagram 128055 "V2"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+
+      pseudostate 134583 initial 
+	transition 134967 "<transition>"
+	  on state_ref 128183 // 1
+	  external 
+	end
+      end
+
+      state 128183 "1"
+	transition 135095 "<transition>"
+	  on state_ref 128311 // 2
+	  external 
+	end
+
+	transition 135223 "<transition>"
+	  on state_ref 128311 // 2
+	  external 
+	end
+      end
+
+      stateaction 128055
+	stereotype "receive-signal"
+      end
+
+      stateaction 128183
+      end
+
+      stateaction 128311
+	stereotype "TRY_A[s=SV, D=A]"
+      end
+
+      state 128311 "2"
+      end
+    end
+
+    state 128439 "SM_CL_V2"
+      stereotype "machine"
+      statediagram 128183 "V2"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+
+      pseudostate 134711 initial 
+	transition 135351 "<transition>"
+	  on state_ref 128567 // 1
+	  external 
+	end
+      end
+
+      state 128567 "1"
+      end
     end
   end
 end
