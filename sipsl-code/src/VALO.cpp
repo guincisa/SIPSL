@@ -113,7 +113,6 @@ void VALO::onInvite(MESSAGE* _message){
 void VALO::onAck(MESSAGE* _message){
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
-
 	message->setDestEntity(SODE_SMCLPOINT);
 
 	try {
@@ -172,7 +171,6 @@ void VALO::onAck(MESSAGE* _message){
 	message->dumpVector();
 	DEBOUT("New outgoing b2b message", message->getIncBuffer())
 
-	message->setDestEntity(SODE_SMCLPOINT);
 
 	//PURGE ACK
 	//PURGEMESSAGE(_message,"Purging ack from A")
