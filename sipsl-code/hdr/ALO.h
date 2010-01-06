@@ -42,6 +42,9 @@ class ALO : public ENGINE {
 
         virtual void onInvite(MESSAGE*);
         virtual void onAck(MESSAGE*);
+        virtual void on200Ok(MESSAGE*);
+
+        void noCallBack(MESSAGE*);
 	protected:
         //TODO must be private
         ENGINE* sl_cc;

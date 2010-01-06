@@ -43,22 +43,27 @@ void ALO::parse(MESSAGE* _message) {
 
 	// check message type and invoke call back...
 
-	if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
-		DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
-		onInvite(_message);
+	if (_message->getReqRepType() == REQSUPP){
+		if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			onInvite(_message);
+		}
+		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
+			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			onAck(_message);
+		}
+		else {
+			noCallBack(_message);
+		}
 	}
-	else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
-		DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
-		onAck(_message);
-	}
-	else {
-		//destination needs to be changed here!!!
-		DEBOUT("ALO Decoupling ",_message->getHeadSipRequest().getContent())
-		if(_message->getGenEntity() == SODE_SMCLPOINT)
-			_message->setDestEntity(SODE_SMSVPOINT);
-		else if (_message->getGenEntity() == SODE_SMSVPOINT)
-			_message->setDestEntity(SODE_SMCLPOINT);
-		sl_cc->p_w(_message);
+	else if (_message->getReqRepType() == REPSUPP){
+		if (_message->getHeadSipReply().getReply().getCode() == OK_200){
+			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			on200Ok(_message);
+		}
+		else {
+			noCallBack(_message);
+		}
 	}
 }
 void ALO::onInvite(MESSAGE* m){
@@ -66,5 +71,18 @@ void ALO::onInvite(MESSAGE* m){
 }
 void ALO::onAck(MESSAGE* m){
 	DEBOUT("ALO unoverridded onINVITE called ", m->getIncBuffer())
+}
+void ALO::noCallBack(MESSAGE* _message){
+
+	DEBOUT("ALO noCallBack - Decoupling ",_message->getHeadSipRequest().getContent())
+	if(_message->getGenEntity() == SODE_SMCLPOINT)
+		_message->setDestEntity(SODE_SMSVPOINT);
+	else if (_message->getGenEntity() == SODE_SMSVPOINT)
+		_message->setDestEntity(SODE_SMCLPOINT);
+
+	_message->setGenEntity(SODE_ALOPOINT);
+
+	sl_cc->p_w(_message);
+
 }
 
