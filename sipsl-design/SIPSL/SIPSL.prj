@@ -1,6 +1,6 @@
 format 71
 "SIPSL"
-  revision 65
+  revision 66
   modified_by 55 "guic"
 
 
@@ -672,7 +672,6 @@ correct timer interaction with client state machine"
 
       state 135735 "3"
       end
-
     end
 
     state 128439 "SM_CL_V2"

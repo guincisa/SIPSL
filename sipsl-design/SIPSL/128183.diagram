@@ -50,8 +50,8 @@ statecanvas 134711 state_ref 135991 // 6
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 496.4 633.6 2005 40 29
 end
-note 134967 "E=200OK_B[s=ALO,d=CL]
-A=200OK_B[s=CL,d=SV]"
+note 134967 "E=200OK_As=ALO,d=CL]
+A=200OK_A[s=CL,d=SV]"
   xyzwh 356.1 713.3 2011 181 49
 statecanvas 135735 state_ref 142775 // 7
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
@@ -106,7 +106,7 @@ transitioncanvas 134839 transition_ref 143671 // <transition>
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 135351 transition_ref 150967 // <transition>
-  decenter_end 524
+  decenter_end 523
   
   from ref 128183 z 2001 to ref 128695
   write_horizontally default show_definition default drawing_language default
