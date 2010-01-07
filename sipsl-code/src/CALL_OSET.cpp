@@ -1421,26 +1421,26 @@ ACTION* act_1_2_cl(SL_SM* _sm, MESSAGE* _message) {
 	return action;
 
 }
-bool pre_1_7_cl(SL_SM* _sm, MESSAGE* _message){
+bool pre_2_7_cl(SL_SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_1_7_cl","")
+	DEBOUT("SM_CL pre_2_7_cl","")
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_SMCLPOINT
 			&& _message->getGenEntity() ==  SODE_ALOPOINT
 		&& ((SL_SM_CL*)_sm)->resend_invite >= MAX_INVITE_RESEND) {
-		DEBOUT("SM_CL pre_1_7_cl","true")
+		DEBOUT("SM_CL pre_2_7_cl","true")
 		return true;
 	}
 	else {
-		DEBOUT("SM_CL pre_1_7_cl","false")
+		DEBOUT("SM_CL pre_2_7_cl","false")
 		return false;
 	}
 }
-ACTION* act_1_7_cl(SL_SM* _sm, MESSAGE* _message) {
+ACTION* act_2_7_cl(SL_SM* _sm, MESSAGE* _message) {
 
 	_sm->State = 7;
-	DEBASSERT("Do something act_1_7_cl")
+	DEBASSERT("Do something act_2_7_cl")
 	return (ACTION*) 0x0;
 
 
@@ -1463,7 +1463,7 @@ bool pre_2_3_cl(SL_SM* _sm, MESSAGE* _message){
 }
 ACTION* act_2_3_cl(SL_SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SL_SM_CL::event state 1 try",  _message->getHeadSipReply().getReply().getCode() )
+	DEBOUT("SM_CL act_2_3_cl",_message->getHeadSipReply().getReply().getCode())
 
 	// TODO clear timer ad create new timer for the ringing ?
 
@@ -1476,10 +1476,10 @@ ACTION* act_2_3_cl(SL_SM* _sm, MESSAGE* _message) {
 	_sm->State = 3;
 	return action;
 }
-//will do also pre_4_4_cl
+//will do also 4->4
 bool pre_3_4_cl(SL_SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_2_3_cl","")
+	DEBOUT("SM_CL pre_2_4_cl","")
 
 	if (_message->getReqRepType() == REPSUPP
 		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
@@ -1510,26 +1510,107 @@ ACTION* act_3_4_cl(SL_SM* _sm, MESSAGE* _message) {
 	_sm->State = 4;
 	return action;
 }
-//same for 2->4 3->4 2->5
-bool pre_4_5_cl(SL_SM* _sm, MESSAGE* _message){
+bool pre_2_4_cl(SL_SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_4_5_cl","")
+	DEBOUT("SM_CL pre_2_4_cl","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
+				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
+		&& _message->getDestEntity() == SODE_SMCLPOINT
+		&& _message->getGenEntity() ==  SODE_BPOINT) {
+			return true;
+			DEBOUT("SM_CL pre_2_4_cl","true")
+		}
+		else {
+			DEBOUT("SM_CL pre_2_4_cl","false")
+			return false;
+		}
+}
+ACTION* act_2_4_cl(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_CL act_3_4_cl","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_SMSVPOINT);
+	_message->setGenEntity(SODE_SMCLPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
+	__message->typeOfInternal = TYPE_OP;
+	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_2 = SingleAction(_message);
+	action->addSingleAction(sa_2);
+
+
+	action->addSingleAction(sa_1);
+
+	_sm->State = 4;
+	return action;
+}
+bool pre_2_5_cl(SL_SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_CL pre_2_5_cl","")
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_SMCLPOINT
 		&& _message->getGenEntity() ==  SODE_BPOINT) {
 			return true;
-			DEBOUT("SM_CL pre_4_5_cl","true")
+			DEBOUT("SM_CL pre_2_5_cl","true")
 		}
 		else {
-			DEBOUT("SM_CL pre_4_5_cl","false")
+			DEBOUT("SM_CL pre_2_5_cl","false")
 			return false;
 		}
 }
-ACTION* act_4_5_cl(SL_SM* _sm, MESSAGE* _message) {
+ACTION* act_2_5_cl(SL_SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_CL act_4_5_cl","")
+	DEBOUT("SM_CL act_2_5_cl","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_ALOPOINT);
+	_message->setGenEntity(SODE_SMCLPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	_sm->State = 5;
+	return action;
+
+	DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
+	__message->typeOfInternal = TYPE_OP;
+	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_2 = SingleAction(_message);
+	action->addSingleAction(sa_2);
+
+	_sm->State = 5;
+	return action;
+}
+//same for 4-5
+bool pre_3_5_cl(SL_SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_CL pre_3_5_cl","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&&_message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getDestEntity() == SODE_SMCLPOINT
+		&& _message->getGenEntity() ==  SODE_BPOINT) {
+			return true;
+			DEBOUT("SM_CL pre_3_5_cl","true")
+		}
+		else {
+			DEBOUT("SM_CL pre_3_5_cl","false")
+			return false;
+		}
+}
+ACTION* act_3_5_cl(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_CL act_3_5_cl","")
 
 	ACTION* action = new ACTION();
 

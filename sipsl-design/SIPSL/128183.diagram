@@ -1,65 +1,77 @@
 format 71
 
 pseudostatecanvas 128055 pseudostate_ref 134711 // initial
-   xyz 82.6 14.3 2000
+   xyz 206.6 20.3 2000
 end
 statecanvas 128183 state_ref 128567 // 1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 70.5 124 2000 40 29
+  xyzwh 194.5 130 2000 40 29
 end
 note 128439 "E= INVITE_A [s=SV,d=CL], resend < =maxresend
 A= INVITE_A [s=CL,d=ALO]"
-  xyzwh 187.7 52.5 2000 251 49
+  xyzwh 311.7 58.5 2000 251 49
 statecanvas 128695 state_ref 135095 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 72.2 224.4 2000 40 29
+  xyzwh 196.2 230.4 2000 40 29
 end
 note 128951 "E=INVITE_B[s=ALO,d=CL]
 A={INVITE_B[s=CL,d=B], ???TIMER_INVITE_B(time)[s=CL,d=B]
 "
-  xyzwh 151.3 123.9 2000 341 47
+  xyzwh 275.3 129.9 2000 341 47
 note 129591 "timer
 resend invite
 restart timer"
-  xyzwh 247.4 228.7 2000 89 59
+  xyzwh 371.4 234.7 2000 89 59
 statecanvas 129719 state_ref 135223 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 24.4 331.4 2000 40 29
+  xyzwh 173.4 373.4 2000 40 29
 end
 note 129975 "E=TRY_B[s=B,d=CL]
-A=null"
-  xyzwh 223.8 329 2000 123 45
+A=clear timer"
+  xyzwh 27.8 267 2000 123 45
 statecanvas 130231 state_ref 135351 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 219.7 531.7 2000 44 29
+  xyzwh 343.7 537.7 2000 44 29
 end
 note 130487 "E=RING_B[s=B,d=CL]
-A=RING_B[s=CL,d=SV]"
-  xyzwh 351.1 396.1 2006 165 45
+A=RING_B[s=CL,d=SV]
+clear timer"
+  xyzwh 662.1 298.1 2006 181 55
 note 131255 "E=DE_B[s=B,d=CL]
 A=DE_B[s=CL,d=SV]"
-  xyzwh 123.7 578.2 2007 149 45
+  xyzwh 10.7 564.2 2007 149 45
 statecanvas 132407 state_ref 135479 // 5
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 355.1 629.7 2000 40 29
+  xyzwh 479.1 635.7 2000 40 29
 end
 note 133815 "E=200OK_B[s=B,d=CL]
 A=200OK_B[s=CL,d=ALO]"
-  xyzwh 103.9 741.3 2000 159 49
+  xyzwh 290.9 742.3 2000 159 49
 statecanvas 134711 state_ref 135991 // 6
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 496.4 633.6 2005 40 29
+  xyzwh 620.4 639.6 2005 40 29
 end
 note 134967 "E=200OK_As=ALO,d=CL]
 A=200OK_A[s=CL,d=SV]"
-  xyzwh 356.1 713.3 2011 181 49
+  xyzwh 480.1 719.3 2011 181 49
 statecanvas 135735 state_ref 142775 // 7
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 629 170 2000 40 29
+  xyzwh 753 176 2000 40 29
 end
 note 135991 "E= INVITE_A [s=SV,d=CL],resend > maxresend
 A= null"
-  xyzwh 393.2 226 2000 225 53
+  xyzwh 501.2 239 2000 225 53
+note 138551 "E=DE_B[s=B,d=CL]
+A=DE_B[s=CL,d=SV]
+clear timer"
+  xyzwh 732.6 364.6 2006 173 63
+note 138935 "E=200OK_B[s=B,d=CL]
+A=200OK_B[s=CL,d=ALO]
+clear timer"
+  xyzwh 732.4 440.8 2000 175 57
+note 139447 "E=RING_B[s=B,d=CL]
+A=RING_B[s=CL,d=SV]"
+  xyzwh 726.6 514.6 2006 181 55
 transitioncanvas 128311 transition_ref 135351 // <transition>
   decenter_end 574
   
@@ -69,23 +81,23 @@ end
 transitioncanvas 130359 transition_ref 142263 // <transition>
   decenter_end 354
   
-  from ref 129719 z 2001 to point 164 476
-  line 130871 z 2001 to ref 130231
+  from ref 129719 z 2001 to ref 130231
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130999 transition_ref 142519 // <transition>
+  decenter_begin 774
   decenter_end 517
   
-  from ref 129719 z 2001 to point 134 516
+  from ref 129719 z 2001 to point 258 522
   line 131127 z 2001 to ref 130231
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131511 transition_ref 142647 // <transition>
   decenter_end 347
   
-  from ref 130231 z 2001 to point 326 571
-  line 135223 z 2001 to point 369 556
-  line 131639 z 2001 to point 368 509
+  from ref 130231 z 2001 to point 456 584
+  line 135223 z 2001 to point 493 562
+  line 131639 z 2001 to point 451 517
   line 131767 z 2001 to ref 130231
   write_horizontally default show_definition default drawing_language default
 end
@@ -96,7 +108,7 @@ transitioncanvas 132919 transition_ref 143159 // <transition>
 end
 transitioncanvas 133431 transition_ref 143415 // <transition>
   
-  from ref 129719 z 2001 to point 56 670
+  from ref 129719 z 2001 to point 180 676
   line 133559 z 2001 to ref 132407
   write_horizontally default show_definition default drawing_language default
 end
@@ -112,14 +124,15 @@ transitioncanvas 135351 transition_ref 150967 // <transition>
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 135607 transition_ref 151223 // <transition>
+  decenter_end 625
   
   from ref 128695 z 2001 to ref 129719
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 136503 transition_ref 151479 // <transition>
   
-  from ref 128695 z 2001 to point 214 233
-  line 136631 z 2001 to point 209 264
+  from ref 128695 z 2001 to point 338 239
+  line 136631 z 2001 to point 333 270
   line 136759 z 2001 to ref 128695
   write_horizontally default show_definition default drawing_language default
 end
@@ -129,18 +142,21 @@ transitioncanvas 137015 transition_ref 151607 // <transition>
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 137527 transition_ref 151735 // <transition>
+  decenter_begin 773
   
   from ref 128695 z 2001 to ref 130231
   write_horizontally default show_definition default drawing_language default
 end
+transitioncanvas 138167 transition_ref 158263 // <transition>
+  
+  from ref 128695 z 2001 to point 630 507
+  line 138295 z 2001 to ref 132407
+  write_horizontally default show_definition default drawing_language default
+end
 line 128567 -_-_ decenter_begin 400
   from ref 128439 z 2002 to ref 128311
-line 130615 -_-_ decenter_end 282
-  from ref 130487 z 2007 to ref 130359
 line 131383 -_-_
   from ref 131255 z 2008 to ref 130999
-line 132151 -_-_ decenter_begin 601
-  from ref 130487 z 2007 to ref 131767
 line 132279 -_-_
   from ref 131255 z 2008 to ref 131511
 line 134071 -_-_
@@ -159,6 +175,12 @@ line 137271 -_-_
   from ref 129975 z 2002 to ref 135607
 line 137655 -_-_
   from ref 130487 z 2007 to ref 137527
-line 137783 -_-_
-  from ref 131255 z 2008 to ref 137527
+line 138807 -_-_
+  from ref 138551 z 2007 to ref 137527
+line 140471 -_-_
+  from ref 139447 z 2007 to ref 130359
+line 140599 -_-_
+  from ref 139447 z 2007 to ref 131639
+line 140983 -_-_
+  from ref 138935 z 2002 to ref 138167
 end
