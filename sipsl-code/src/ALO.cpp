@@ -70,8 +70,12 @@ void ALO::onInvite(MESSAGE* m){
 	DEBOUT("ALO unoverridded onINVITE called ", m->getIncBuffer())
 }
 void ALO::onAck(MESSAGE* m){
-	DEBOUT("ALO unoverridded onINVITE called ", m->getIncBuffer())
+	DEBOUT("ALO unoverridded onAck called ", m->getIncBuffer())
 }
+void ALO::on200Ok(MESSAGE* m){
+	DEBOUT("ALO unoverridded on200Ok called ", m->getIncBuffer())
+}
+
 void ALO::noCallBack(MESSAGE* _message){
 
 	DEBOUT("ALO noCallBack - Decoupling ",_message->getHeadSipRequest().getContent())

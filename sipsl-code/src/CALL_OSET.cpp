@@ -1102,7 +1102,7 @@ SL_CO* SL_SM::getSL_CO(void){
 //}
 bool pre_0_1_sv(SL_SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_SV pre_0_1_sv","")
+	DEBOUT("SM_SV pre_0_1_sv","called")
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_SMSVPOINT
@@ -1659,47 +1659,56 @@ ACTION* act_5_6_cl(SL_SM* _sm, MESSAGE* _message) {
 
 SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 		SL_SM(_eng, _sl_co),
-		P0_CL((SL_SM*)this),
-		P1a_CL((SL_SM*)this),
-		P1b_CL((SL_SM*)this),
-		P2a_CL((SL_SM*)this),
-		P2b_CL((SL_SM*)this),
-		P4_CL((SL_SM*)this),
-		P4b_CL((SL_SM*)this){
+		P0_1CL((SL_SM*)this),
+		P1_2CL((SL_SM*)this),
+		P2_3CL((SL_SM*)this),
+		P2_4CL((SL_SM*)this),
+		P2_5CL((SL_SM*)this),
+		P3_4CL((SL_SM*)this),
+		P3_5CL((SL_SM*)this),
+		P5_6CL((SL_SM*)this){
 
 
 	resend_invite = 0;
 
-	P0_CL.action = &action_p0_cl;
-	P0_CL.predicate = &predicate_p0_cl;
+	P0_1CL.action = &act_0_1_cl;
+	P0_1CL.predicate = &pre_0_1_cl;
 
-	P1a_CL.action = &action_p1a_cl;
-	P1a_CL.predicate = &predicate_p1a_cl;
+	P1_2CL.action = &act_1_2_cl;
+	P1_2CL.predicate = &pre_1_2_cl;
 
-	P1b_CL.action = &action_p1b_cl;
-	P1b_CL.predicate = &predicate_p1b_cl;
+	P2_3CL.action = &act_2_3_cl;
+	P2_3CL.predicate = &pre_2_3_cl;
 
-	P2a_CL.action = &action_p2a_cl;
-	P2a_CL.predicate = &predicate_p2a_cl;
+	P2_4CL.action = &act_2_4_cl;
+	P2_4CL.predicate = &pre_2_4_cl;
 
-	P2b_CL.action = &action_p2b_cl;
-	P2b_CL.predicate = &predicate_p2b_cl;
+	P2_5CL.action = &act_2_5_cl;
+	P2_5CL.predicate = &pre_2_5_cl;
 
-	P4_CL.action = &action_p4_cl;
-	P4_CL.predicate = &predicate_p4_cl;
+	P3_4CL.action = &act_3_4_cl;
+	P3_4CL.predicate = &pre_3_4_cl;
 
-	P4b_CL.action = &action_p4b_cl;
-	P4b_CL.predicate = &predicate_p4b_cl;
+	P3_5CL.action = &act_3_5_cl;
+	P3_5CL.predicate = &pre_3_5_cl;
+
+	P5_6CL.action = &act_5_6_cl;
+	P5_6CL.predicate = &pre_5_6_cl;
 
 
-	insert_move(0,&P0_CL);
-	insert_move(1,&P1a_CL);
-	insert_move(1,&P1b_CL);
-	insert_move(2,&P2a_CL);
-	insert_move(2,&P2b_CL);
-	insert_move(4,&P4_CL);
-	insert_move(4,&P4b_CL);
+	insert_move(0,&P0_1CL);
+	insert_move(1,&P1_2CL);
+	insert_move(2,&P2_3CL);
+	insert_move(2,&P2_4CL);
+	insert_move(2,&P2_5CL);
 
+	insert_move(3,&P3_4CL);
+	insert_move(3,&P3_5CL);
+
+	insert_move(4,&P3_4CL);
+	insert_move(4,&P3_5CL);
+
+	insert_move(5,&P5_6CL);
 
 }
 

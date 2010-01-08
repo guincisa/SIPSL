@@ -10,7 +10,7 @@ end
 note 128951 "E=INVITE_A [s=A,d=SV]
 A={TRY_A [s=SV,d=A], INVITE_A[s=SV,d=CL]}
 "
-  xyzwh 279.6 97.6 2000 263 49
+  xyzwh 294.6 47.6 2000 263 49
 note 129975 "E=RING_B[s=CL,d=SV]
 A=RING_A[s=SV,d=A]"
   xyzwh 344.4 166.2 2006 153 43
@@ -20,7 +20,7 @@ statecanvas 130359 state_ref 135607 // 2
 end
 note 131127 "E=DE_B[s=CL,d=SV]
 A=DE_A[s=SV,d=A]"
-  xyzwh 26 161.8 2000 155 47
+  xyzwh 25 139.8 2000 155 47
 statecanvas 131511 state_ref 135735 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 219.8 383 2000 40 29

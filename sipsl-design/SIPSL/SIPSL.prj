@@ -1,6 +1,6 @@
 format 71
 "SIPSL"
-  revision 68
+  revision 70
   modified_by 55 "guic"
 
 
@@ -691,12 +691,12 @@ correct timer interaction with client state machine"
 
       state 128567 "1"
 	transition 150967 "<transition>"
-	  on state_ref 135095 // 2
+	  on state_ref 135095 // 2 TRY
 	  external 
 	end
 
 	transition 151095 "<transition>"
-	  on state_ref 135223 // 3
+	  on state_ref 135223 // 3 DE - RING
 	  external 
 	end
 
@@ -704,16 +704,25 @@ correct timer interaction with client state machine"
 	  on state_ref 142775 // 7
 	  external 
 	end
+
+	transition 164791 "<transition>"
+	  on state_ref 128567 // 1
+	end
+
+	transition 164919 "<transition>"
+	  on state_ref 135351 // 4 OK
+	  external 
+	end
       end
 
-      state 135095 "2"
+      state 135095 "2 TRY"
 	transition 151223 "<transition>"
-	  on state_ref 135223 // 3
+	  on state_ref 135223 // 3 DE - RING
 	  external 
 	end
 
 	transition 151479 "<transition>"
-	  on state_ref 135095 // 2
+	  on state_ref 135095 // 2 TRY
 	end
 
 	transition 151607 "<transition>"
@@ -722,7 +731,7 @@ correct timer interaction with client state machine"
 	end
 
 	transition 151735 "<transition>"
-	  on state_ref 135351 // 4
+	  on state_ref 135351 // 4 OK
 	  external 
 	end
 
@@ -730,21 +739,26 @@ correct timer interaction with client state machine"
 	  on state_ref 135479 // 5
 	  external 
 	end
+
+	transition 165047 "<transition>"
+	  on state_ref 135351 // 4 OK
+	  external 
+	end
       end
 
-      state 135223 "3"
+      state 135223 "3 DE - RING"
 	transition 142263 "<transition>"
-	  on state_ref 135351 // 4
+	  on state_ref 135351 // 4 OK
 	  external 
 	end
 
 	transition 142391 "<transition>"
-	  on state_ref 135351 // 4
+	  on state_ref 135351 // 4 OK
 	  external 
 	end
 
 	transition 142519 "<transition>"
-	  on state_ref 135351 // 4
+	  on state_ref 135351 // 4 OK
 	  external 
 	end
 
@@ -754,9 +768,9 @@ correct timer interaction with client state machine"
 	end
       end
 
-      state 135351 "4"
+      state 135351 "4 OK"
 	transition 142647 "<transition>"
-	  on state_ref 135351 // 4
+	  on state_ref 135351 // 4 OK
 	end
 
 	transition 143159 "<transition>"
@@ -784,6 +798,24 @@ correct timer interaction with client state machine"
       end
 
       state 142775 "7"
+      end
+    end
+
+    state 149303 "SM_SV_V3"
+      stereotype "machine"
+      statediagram 134711 "SV V3"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+    end
+
+    state 149431 "SM_CL_V3"
+      stereotype "machine"
+      statediagram 134839 "CL V3"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
       end
     end
   end

@@ -1,0 +1,128 @@
+format 71
+
+note 128055 "E= INVITE_B [s=ALO, d=CL], resend < =maxresend
+A= INVITE_B [s=CL,d=B]"
+  xyzwh 353.7 41 2000 251 49
+statecanvas 128183 state_ref 135223 // 3 DE - RING
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 127.4 389.9 2000 75 29
+end
+statecanvas 128439 state_ref 142775 // 7
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 868 134.5 2000 40 29
+end
+statecanvas 128695 state_ref 135351 // 4 OK
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 265.7 529.2 2000 44 29
+end
+pseudostatecanvas 128823 pseudostate_ref 134711 // initial
+   xyz 244.6 19.8 2000
+end
+note 128951 "E=DE_B[s=B,d=CL]
+A=DE_A[s=CL,d=SV]
+clear timer"
+  xyzwh 19.6 248.1 2006 173 63
+statecanvas 129079 state_ref 135095 // 2 TRY
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 594.2 281.9 2000 47 29
+end
+note 129207 "timer
+resend invite
+restart timer"
+  xyzwh 100.4 69.2 2000 89 59
+note 129591 "E=200OK_B[s=B,d=CL]
+A=200OK_B[s=CL,d=ALO]
+clear timer"
+  xyzwh 572.4 417.3 2000 175 57
+statecanvas 129847 state_ref 128567 // 1
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 282.5 128.5 2000 40 29
+end
+note 130231 "E= INVITE_A [s=SV,d=CL],resend > maxresend
+A= null"
+  xyzwh 699.2 57.5 2000 225 53
+note 130359 "E=TRY_B[s=B,d=CL]
+A=clear timer"
+  xyzwh 531.8 179.5 2000 123 45
+note 130487 "E=RING_B[s=B,d=CL]
+A=RING_A[s=CL,d=SV]
+clear timer"
+  xyzwh 19.1 157.6 2006 181 55
+transitioncanvas 131639 transition_ref 151223 // <transition>
+  decenter_end 625
+  
+  from ref 129079 z 2001 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 132279 transition_ref 151607 // <transition>
+  
+  from ref 129079 z 2001 to ref 128439
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 132919 transition_ref 150967 // <transition>
+  decenter_end 523
+  
+  from ref 129847 z 2001 to ref 129079
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 133175 transition_ref 135351 // <transition>
+  decenter_end 574
+  
+  from ref 128823 z 2001 to ref 129847
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 135223 transition_ref 142391 // <transition>
+  
+  from ref 128183 z 2001 to ref 128695
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 135351 transition_ref 151095 // <transition>
+  
+  from ref 129847 z 2001 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 135479 transition_ref 151351 // <transition>
+  
+  from ref 129847 z 2001 to ref 128439
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 135991 transition_ref 164791 // <transition>
+  
+  from ref 129847 z 2001 to point 211 111
+  line 136119 z 2001 to point 211 164
+  line 136247 z 2001 to ref 129847
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 138295 transition_ref 164919 // <transition>
+  
+  from ref 129847 z 2001 to ref 128695
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 138551 transition_ref 165047 // <transition>
+  
+  from ref 129079 z 2001 to ref 128695
+  write_horizontally default show_definition default drawing_language default
+end
+line 133687 -_-_ decenter_begin 400
+  from ref 128055 z 2002 to ref 133175
+line 135735 -_-_
+  from ref 130359 z 2002 to ref 132919
+line 136375 -_-_
+  from ref 129207 z 2006 to ref 136247
+line 136631 -_-_
+  from ref 130231 z 2002 to ref 135479
+line 136759 -_-_
+  from ref 130487 z 2007 to ref 131639
+line 137143 -_-_
+  from ref 128951 z 2007 to ref 131639
+line 137527 -_-_
+  from ref 129591 z 2002 to ref 135223
+line 138679 -_-_
+  from ref 129591 z 2002 to ref 138551
+line 138807 -_-_
+  from ref 129591 z 2002 to ref 138295
+line 138935 -_-_
+  from ref 130487 z 2007 to ref 135351
+line 139063 -_-_
+  from ref 128951 z 2007 to ref 135351
+end

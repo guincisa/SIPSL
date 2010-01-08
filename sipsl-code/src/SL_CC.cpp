@@ -173,5 +173,64 @@ void SL_CC::parse(MESSAGE* _mess) {
 				call_oset->getSL_CO()->call(_mess);
 		}
 	}
+	//V2
+//	else if (_mess->getGenEntity() == SODE_SMSVPOINT) {
+//
+//		DEBOUT("SL_CC::parse", _mess->getIncBuffer())
+//
+//		CALL_OSET* call_oset = 0x0;
+//
+//		string callidx = _mess->getDialogExtendedCID();
+//
+//		DEBOUT("SL_CC::parse", "*********************************************************")
+//
+//		_mess->getDialogExtendedCID();
+//
+//		DEBOUT("SL_CC::parse CALLOSET ID",callidx)
+//
+//		call_oset = comap->getCALL_OSET_XMain(callidx);
+//
+//		//First try to get client (originating) state machine
+//		if (call_oset != 0x0) {
+//			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
+//			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
+//			DEBASSERT("NOT HERE")
+//
+//			call_oset->getSL_CO()->call(_mess);
+//		}
+//		// Then try to get Client (terminating) state machine
+//		else {
+//			call_oset = comap->getCALL_OSET_YDerived(callidx);
+//			if (call_oset != 0x0){
+//				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
+//				_mess->setEndPoints(SODE_BPOINT, SODE_SMCLPOINT);
+//
+//				call_oset->getSL_CO()->call(_mess);
+//			}
+//		}
+//		// Does not exists on any side
+//		if (call_oset == 0x0) {
+//			//new call Server (originating) side
+//			DEBOUT("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
+//
+//			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
+//
+//			//Start - Initialization block
+//			call_oset = new CALL_OSET(this, _mess);
+//			SL_CO* sl_co = new SL_CO(call_oset);
+//			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this, sl_co);
+//			VALO* alo = new VALO(this);
+//			alo->linkSUDP(getSUDP());
+//			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
+//			comap->setCALL_OSET(callidx, call_oset);
+//			//End
+//
+//			DEBOUT("SL_CC::parse", "CALL_OSET created x side")
+//
+//
+//			sl_co->call(_mess);
+//		}
+//
+//	}
     return;
 }
