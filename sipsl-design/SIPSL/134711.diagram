@@ -2,11 +2,12 @@ format 71
 
 statecanvas 128055 state_ref 135735 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 378.3 364.5 2000 40 29
+  xyzwh 354.3 356.5 2000 40 29
 end
 note 128183 "E=INVITE_A [s=A,d=SV]
-A={TRY_A [s=SV,d=A],
-INVITE_A[s=SV,d=ALO]}
+A={INVITE_A [s=SV,d=ALO],
+TRY_A[s=SV,d=A]
+
 
 destination of invite has to be alo
 since alo creates the invite_b along
@@ -16,40 +17,33 @@ with required headers to create the client sm
 "
   xyzwh 449.1 21.1 2000 257 131
 note 128311 "E=RING_B[s=CL,d=SV]
-A=RING_A[s=SV,d=A]"
-  xyzwh 102.9 128.7 2006 153 43
+A=RING_A[s=ALO,d=A]"
+  xyzwh 66.9 111.7 2006 153 43
 note 128439 "E=200OK_A[s=ALO,d=SV]
 A=200OK_A[s=SV,d=A]"
   xyzwh 572.9 321.7 2000 157 45
 statecanvas 128567 state_ref 135607 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 345.1 255.9 2000 45 29
+  xyzwh 249.1 232.9 2000 43 29
 end
 pseudostatecanvas 128695 pseudostate_ref 134583 // initial
-   xyz 349.3 31.1 2000
+   xyz 362.3 23.1 2000
 end
 statecanvas 128823 state_ref 128183 // 1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 351.3 102.3 2000 40 29
 end
 note 130743 "E=DE_B[s=CL,d=SV]
-A=DE_A[s=SV,d=A]"
-  xyzwh 57.4 218.2 2006 153 43
+A=DE_A[s=ALO,d=A]"
+  xyzwh 52.4 190.2 2006 153 43
 transitioncanvas 128951 transition_ref 150711 // <transition>
   
   from ref 128567 z 2001 to ref 128055
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 129079 transition_ref 150839 // <transition>
-  
-  from ref 128567 z 2001 to point 253.5 236.5
-  line 129207 z 2001 to point 251.5 284.5
-  line 129335 z 2001 to ref 128567
-  write_horizontally default show_definition default drawing_language default
-end
 transitioncanvas 129463 transition_ref 150583 // <transition>
   
-  from ref 128823 z 2001 to point 461.5 235.5
+  from ref 128823 z 2001 to point 461 235
   line 129591 z 2001 to ref 128055
   write_horizontally default show_definition default drawing_language default
 end
@@ -68,18 +62,14 @@ transitioncanvas 130615 transition_ref 143799 // <transition>
   from ref 128567 z 2001 to ref 128055
   write_horizontally default show_definition default drawing_language default
 end
-line 129975 -_-_
-  from ref 128311 z 2007 to ref 129079
 line 130103 -_-_
   from ref 128439 z 2002 to ref 128951
 line 130231 -_-_
   from ref 128183 z 2002 to ref 129719
 line 130359 -_-_
   from ref 128439 z 2004 to ref 129591
-line 130487 -_-_
+line 131895 -_-_
   from ref 128311 z 2007 to ref 129847
-line 130999 -_-_
+line 132151 -_-_
   from ref 130743 z 2007 to ref 129847
-line 131127 -_-_
-  from ref 130743 z 2007 to ref 129207
 end

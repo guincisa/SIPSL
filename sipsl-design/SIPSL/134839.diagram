@@ -19,9 +19,9 @@ pseudostatecanvas 128823 pseudostate_ref 134711 // initial
    xyz 244.6 19.8 2000
 end
 note 128951 "E=DE_B[s=B,d=CL]
-A=DE_A[s=CL,d=SV]
+A=DE_A[s=CL,d=ALO]
 clear timer"
-  xyzwh 19.6 248.1 2006 173 63
+  xyzwh 15.6 264.1 2006 173 63
 statecanvas 129079 state_ref 135095 // 2 TRY
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 594.2 281.9 2000 47 29
@@ -29,7 +29,7 @@ end
 note 129207 "timer
 resend invite
 restart timer"
-  xyzwh 100.4 69.2 2000 89 59
+  xyzwh 76.4 63.2 2000 89 59
 note 129591 "E=200OK_B[s=B,d=CL]
 A=200OK_B[s=CL,d=ALO]
 clear timer"
@@ -45,7 +45,7 @@ note 130359 "E=TRY_B[s=B,d=CL]
 A=clear timer"
   xyzwh 531.8 179.5 2000 123 45
 note 130487 "E=RING_B[s=B,d=CL]
-A=RING_A[s=CL,d=SV]
+A=RING_A[s=CL,d=ALO]
 clear timer"
   xyzwh 19.1 157.6 2006 181 55
 transitioncanvas 131639 transition_ref 151223 // <transition>
