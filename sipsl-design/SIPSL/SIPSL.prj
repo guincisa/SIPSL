@@ -1,6 +1,6 @@
 format 71
 "SIPSL"
-  revision 72
+  revision 73
   modified_by 55 "guic"
 
 
@@ -760,14 +760,12 @@ correct timer interaction with client state machine"
 	  on state_ref 135351 // 4 OK
 	  external 
 	end
-
       end
 
       state 135351 "4 OK"
 	transition 142647 "<transition>"
 	  on state_ref 135351 // 4 OK
 	end
-
       end
 
       state 135863 "6"

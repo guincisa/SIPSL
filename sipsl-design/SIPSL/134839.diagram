@@ -1,8 +1,9 @@
 format 71
 
 note 128055 "E= INVITE_B [s=ALO, d=CL], resend < =maxresend
-A= INVITE_B [s=CL,d=B]"
-  xyzwh 353.7 41 2000 251 49
+A= INVITE_B [s=CL,d=B]
+Timer"
+  xyzwh 353.7 42 2000 255 63
 statecanvas 128183 state_ref 135223 // 3 DE - RING
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 127.4 389.9 2000 75 29

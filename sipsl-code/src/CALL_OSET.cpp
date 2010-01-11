@@ -183,21 +183,21 @@ void SL_CO::call(MESSAGE* _message){
 
 				DEBOUT("SL_CO::reading action stack server, message:", _tmpMessage->getIncBuffer())
 
-				//V2
+				//V3
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMCLPOINT){
 
+					DEBASSERT("should not happen")
 					DEBOUT("SL_CO::call action is send to CL", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 					call_oset->getENGINE()->p_w(_tmpMessage);
 
 				}
-				//V2
-//				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
-//					// send message to ALO
-//
-//					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
-//					call_oset->getALO()->p_w(_tmpMessage);
-//
-//				}
+				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+					// send message to ALO
+
+					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+					call_oset->getALO()->p_w(_tmpMessage);
+
+				}
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_APOINT){
 
 					DEBY
@@ -261,13 +261,13 @@ void SL_CO::call(MESSAGE* _message){
 
 				DEBOUT("SL_CO::reading action stack client, message:", _tmpMessage->getIncBuffer())
 
-				//V2
+				//V3
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 					call_oset->getALO()->p_w(_tmpMessage);
 				}
-				//V2
+				//V3
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_BPOINT){
 
 					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
@@ -278,7 +278,7 @@ void SL_CO::call(MESSAGE* _message){
 					PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
 
 				}
-				//V2
+				//V3
 				else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
 
 					DEBOUT("SL_CO:: TYPE_OP","")
@@ -304,7 +304,7 @@ void SL_CO::call(MESSAGE* _message){
 					}
 
 				}
-				//V2
+				//V3
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
 					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getDialogExtendedCID())
@@ -1218,6 +1218,193 @@ ACTION* act_1_2_sv(SL_SM* _sm, MESSAGE* _message) {
 
 	// Dialog establish must derive from incoming invite
 	// get incoming invite
+	DEBASSERT("stop")
+}
+//V3
+//same for 2->3
+bool pre_1_3_sv(SL_SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_SV pre_1_3_sv","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&& _message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getDestEntity() == SODE_SMSVPOINT
+		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
+			return true;
+			DEBOUT("SM_SV pre_2_3_sv","true")
+		}
+		else {
+			DEBOUT("SM_SV pre_2_3_sv","false")
+			return false;
+		}
+}
+ACTION* act_1_3_sv(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_SV act_2_3_sv","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_APOINT);
+	_message->setGenEntity(SODE_SMSVPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	_sm->State = 3;
+
+	return action;
+
+}
+
+SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
+		SL_SM(_eng, _sl_co),
+		P0_1SV((SL_SM*)this),
+		P1_2SV((SL_SM*)this),
+		P2_2SV((SL_SM*)this),
+		P2_3SV((SL_SM*)this),
+		P1_3SV((SL_SM*)this){
+
+	P0_1SV.action = &act_0_1_sv;
+	P0_1SV.predicate = &pre_0_1_sv;
+
+	P1_2SV.action = &act_1_2_sv;
+	P1_2SV.predicate = &pre_1_2_sv;
+
+	P1_3SV.action = &act_1_3_sv;
+	P1_3SV.predicate = &pre_1_3_sv;
+
+	P2_2SV.action = &act_1_2_sv;
+	P2_2SV.predicate = &pre_1_2_sv;
+
+
+	P2_3SV.action = &act_1_3_sv;
+	P2_3SV.predicate = &pre_1_3_sv;
+
+
+	insert_move(0,&P0_1SV);
+	insert_move(1,&P1_2SV);
+	insert_move(1,&P1_3SV);
+	insert_move(2,&P2_2SV);
+	insert_move(2,&P2_3SV);
+}
+//*****************************************************************
+// client sm
+//*****************************************************************
+bool pre_0_1_cl(SL_SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_CL pre_0_1_cl","")
+	if (_message->getReqRepType() == REQSUPP
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getDestEntity() == SODE_SMCLPOINT
+			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
+		DEBOUT("SM_CL pre_0_1_cl","true")
+		return true;
+	}
+	else {
+		DEBOUT("SM_CL pre_0_1_cl","false")
+		return false;
+	}
+}
+ACTION* act_0_1_cl(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_CL act_0_1_cl","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_BPOINT);
+	_message->setGenEntity(SODE_SMCLPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	//careful with source message.
+	DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
+
+	//This is to be sent later after timer expires
+	//the generating is to be set to ALO
+	//so when sl_cc receives from timer it will resend it to
+	//client state machine which
+	//TODO review states and interaction...
+	__message->setDestEntity(SODE_BPOINT);
+	__message->setGenEntity(SODE_SMCLPOINT);
+
+	SysTime afterT;
+	GETTIME(afterT);
+	//TODO check if mc is overflowed
+	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((SL_SM_CL*)_sm)->resend_invite+1);
+	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((SL_SM_CL*)_sm)->resend_invite+1);
+	__message->setFireTime(afterT);
+	__message->typeOfInternal = TYPE_OP;
+	__message->typeOfOperation = TYPE_OP_TIMER_ON;
+	SingleAction sa_2 = SingleAction(__message);
+
+	action->addSingleAction(sa_2);
+
+	((SL_SM_CL*)_sm)->resend_invite++;
+
+	_sm->State = 1;
+
+	return action;
+
+}
+bool pre_1_2_cl(SL_SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_CL pre_1_2_cl","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&&_message->getHeadSipReply().getReply().getCode() == TRYING_100
+		&& _message->getDestEntity() == SODE_SMCLPOINT
+		&& _message->getGenEntity() ==  SODE_BPOINT) {
+			return true;
+			DEBOUT("SM_CL pre_1_2_cl","true")
+		}
+		else {
+			DEBOUT("SM_CL pre_1_2_cl","false")
+			return false;
+		}
+}
+ACTION* act_1_2_cl(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_CL act_1_2_cl",_message->getHeadSipReply().getReply().getCode())
+
+	// TODO clear timer ad create new timer for the ringing ?
+
+	ACTION* action = new ACTION();
+	_message->typeOfInternal = TYPE_OP;
+	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_1 = SingleAction(_message);
+	action->addSingleAction(sa_1);
+
+	_sm->State = 2;
+	return action;
+}
+//same for 2->3
+bool pre_1_3_cl(SL_SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_CL pre_1_3_cl","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
+				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
+		&& _message->getDestEntity() == SODE_SMCLPOINT
+		&& _message->getGenEntity() ==  SODE_BPOINT) {
+			return true;
+			DEBOUT("SM_CL pre_1_3_cl","true")
+		}
+		else {
+			DEBOUT("SM_CL pre_1_3_cl","false")
+			return false;
+		}
+}
+ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_CL act_1_3_cl","")
+
+	ACTION* action = new ACTION();
+
+
 	MESSAGE* __message = _sm->getSL_CO()->call_oset->getGenMessage();
 	DEBOUT("MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(reply_x, __message, SODE_SMSVPOINT)
@@ -1264,98 +1451,31 @@ ACTION* act_1_2_sv(SL_SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	_sm->State = 2;
+	_sm->State = 3;
 	return action;
-}
-//V3
-//same for 1->3
-bool pre_2_3_sv(SL_SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_SV pre_2_3_sv","")
+
+}
+//ok for 2->4 and 3->4
+bool pre_1_4_cl(SL_SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_CL pre_1_4_cl","")
 
 	if (_message->getReqRepType() == REPSUPP
-		&& _message->getHeadSipReply().getReply().getCode() == OK_200
-		&& _message->getDestEntity() == SODE_SMSVPOINT
-		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
+		&&_message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getDestEntity() == SODE_SMCLPOINT
+		&& _message->getGenEntity() ==  SODE_BPOINT) {
 			return true;
-			DEBOUT("SM_SV pre_2_3_sv","true")
+			DEBOUT("SM_CL pre_1_4_cl","true")
 		}
 		else {
-			DEBOUT("SM_SV pre_2_3_sv","false")
+			DEBOUT("SM_CL pre_1_4_cl","false")
 			return false;
 		}
 }
-ACTION* act_2_3_sv(SL_SM* _sm, MESSAGE* _message) {
+ACTION* act_1_4_cl(SL_SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_SV act_2_3_sv","")
-
-	ACTION* action = new ACTION();
-
-	_message->setDestEntity(SODE_APOINT);
-	_message->setGenEntity(SODE_SMSVPOINT);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
-
-	_sm->State = 3;
-
-	return action;
-
-}
-
-SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
-		SL_SM(_eng, _sl_co),
-		P0_1SV((SL_SM*)this),
-		P1_2SV((SL_SM*)this),
-		P2_2SV((SL_SM*)this),
-		P2_3SV((SL_SM*)this),
-		P1_3SV((SL_SM*)this){
-
-	P0_1SV.action = &act_0_1_sv;
-	P0_1SV.predicate = &pre_0_1_sv;
-
-	P1_2SV.action = &act_1_2_sv;
-	P1_2SV.predicate = &pre_1_2_sv;
-
-	P1_3SV.action = &act_2_3_sv;
-	P1_3SV.predicate = &pre_2_3_sv;
-
-	P2_2SV.action = &act_1_2_sv;
-	P2_2SV.predicate = &pre_1_2_sv;
-
-
-	P2_3SV.action = &act_2_3_sv;
-	P2_3SV.predicate = &pre_2_3_sv;
-
-
-	insert_move(0,&P0_1SV);
-	insert_move(1,&P1_2SV);
-	insert_move(1,&P1_3SV);
-	insert_move(2,&P2_2SV);
-	insert_move(2,&P2_3SV);
-}
-//*****************************************************************
-// client sm
-//*****************************************************************
-bool pre_0_1_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_0_1_cl","")
-	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
-			&& _message->getDestEntity() == SODE_SMCLPOINT
-			&& _message->getGenEntity() ==  SODE_SMSVPOINT) {
-		DEBOUT("SM_CL pre_0_1_cl","true")
-		return true;
-	}
-	else {
-		DEBOUT("SM_CL pre_0_1_cl","false")
-		return false;
-	}
-}
-ACTION* act_0_1_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM_CL act_0_1_cl","")
+	DEBOUT("SM_CL act_1_4_cl","")
 
 	ACTION* action = new ACTION();
 
@@ -1365,187 +1485,6 @@ ACTION* act_0_1_cl(SL_SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
-
-	_sm->State = 1;
-
-	return action;
-
-}
-bool pre_1_2_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_1_2_cl","")
-	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
-			&& _message->getDestEntity() == SODE_SMCLPOINT
-			&& _message->getGenEntity() ==  SODE_ALOPOINT
-		&& ((SL_SM_CL*)_sm)->resend_invite < MAX_INVITE_RESEND) {
-		DEBOUT("SM_CL pre_1_2_cl","true")
-		return true;
-	}
-	else {
-		DEBOUT("SM_CL pre_1_2_cl","false")
-		return false;
-	}
-}
-ACTION* act_1_2_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM_CL act_1_2_cl","")
-
-	ACTION* action = new ACTION();
-
-	_message->setDestEntity(SODE_BPOINT);
-	_message->setGenEntity(SODE_SMCLPOINT);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
-
-	//careful with source message.
-	DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
-
-	//This is to be sent later after timer expires
-	//the generating is to be set to ALO
-	//so when sl_cc receives from timer it will resend it to
-	//client state machine which
-	//TODO review states and interaction...
-	__message->setDestEntity(SODE_BPOINT);
-	__message->setGenEntity(SODE_SMCLPOINT);
-
-	SysTime afterT;
-	GETTIME(afterT);
-	//TODO check if mc is overflowed
-	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((SL_SM_CL*)_sm)->resend_invite+1);
-	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((SL_SM_CL*)_sm)->resend_invite+1);
-	__message->setFireTime(afterT);
-	__message->typeOfInternal = TYPE_OP;
-	__message->typeOfOperation = TYPE_OP_TIMER_ON;
-	SingleAction sa_2 = SingleAction(__message);
-
-	action->addSingleAction(sa_2);
-
-	((SL_SM_CL*)_sm)->resend_invite++;
-
-	_sm->State = 2;
-
-	return action;
-
-}
-bool pre_2_7_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_2_7_cl","")
-	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
-			&& _message->getDestEntity() == SODE_SMCLPOINT
-			&& _message->getGenEntity() ==  SODE_ALOPOINT
-		&& ((SL_SM_CL*)_sm)->resend_invite >= MAX_INVITE_RESEND) {
-		DEBOUT("SM_CL pre_2_7_cl","true")
-		return true;
-	}
-	else {
-		DEBOUT("SM_CL pre_2_7_cl","false")
-		return false;
-	}
-}
-ACTION* act_2_7_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	_sm->State = 7;
-	DEBASSERT("Do something act_2_7_cl")
-	return (ACTION*) 0x0;
-
-
-}
-bool pre_2_3_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_2_3_cl","")
-
-	if (_message->getReqRepType() == REPSUPP
-		&&_message->getHeadSipReply().getReply().getCode() == TRYING_100
-		&& _message->getDestEntity() == SODE_SMCLPOINT
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
-			return true;
-			DEBOUT("SM_CL pre_2_3_cl","true")
-		}
-		else {
-			DEBOUT("SM_CL pre_2_3_cl","false")
-			return false;
-		}
-}
-ACTION* act_2_3_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM_CL act_2_3_cl",_message->getHeadSipReply().getReply().getCode())
-
-	// TODO clear timer ad create new timer for the ringing ?
-
-	ACTION* action = new ACTION();
-	_message->typeOfInternal = TYPE_OP;
-	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	SingleAction sa_1 = SingleAction(_message);
-	action->addSingleAction(sa_1);
-
-	_sm->State = 3;
-	return action;
-}
-//will do also 4->4
-bool pre_3_4_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_2_4_cl","")
-
-	if (_message->getReqRepType() == REPSUPP
-		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
-				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
-		&& _message->getDestEntity() == SODE_SMCLPOINT
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
-			return true;
-			DEBOUT("SM_CL pre_3_4_cl","true")
-		}
-		else {
-			DEBOUT("SM_CL pre_3_4_cl","false")
-			return false;
-		}
-}
-ACTION* act_3_4_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM_CL act_3_4_cl","")
-
-	ACTION* action = new ACTION();
-
-	_message->setDestEntity(SODE_SMSVPOINT);
-	_message->setGenEntity(SODE_SMCLPOINT);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
-
-	_sm->State = 4;
-	return action;
-}
-bool pre_2_4_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_2_4_cl","")
-
-	if (_message->getReqRepType() == REPSUPP
-		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
-				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
-		&& _message->getDestEntity() == SODE_SMCLPOINT
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
-			return true;
-			DEBOUT("SM_CL pre_2_4_cl","true")
-		}
-		else {
-			DEBOUT("SM_CL pre_2_4_cl","false")
-			return false;
-		}
-}
-ACTION* act_2_4_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM_CL act_3_4_cl","")
-
-	ACTION* action = new ACTION();
-
-	_message->setDestEntity(SODE_SMSVPOINT);
-	_message->setGenEntity(SODE_SMCLPOINT);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
 
 	DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
 	__message->typeOfInternal = TYPE_OP;
@@ -1553,130 +1492,19 @@ ACTION* act_2_4_cl(SL_SM* _sm, MESSAGE* _message) {
 	SingleAction sa_2 = SingleAction(_message);
 	action->addSingleAction(sa_2);
 
-
-	action->addSingleAction(sa_1);
-
 	_sm->State = 4;
 	return action;
 }
-bool pre_2_5_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_2_5_cl","")
-
-	if (_message->getReqRepType() == REPSUPP
-		&&_message->getHeadSipReply().getReply().getCode() == OK_200
-		&& _message->getDestEntity() == SODE_SMCLPOINT
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
-			return true;
-			DEBOUT("SM_CL pre_2_5_cl","true")
-		}
-		else {
-			DEBOUT("SM_CL pre_2_5_cl","false")
-			return false;
-		}
-}
-ACTION* act_2_5_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM_CL act_2_5_cl","")
-
-	ACTION* action = new ACTION();
-
-	_message->setDestEntity(SODE_ALOPOINT);
-	_message->setGenEntity(SODE_SMCLPOINT);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
-
-	_sm->State = 5;
-	return action;
-
-	DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
-	__message->typeOfInternal = TYPE_OP;
-	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	SingleAction sa_2 = SingleAction(_message);
-	action->addSingleAction(sa_2);
-
-	_sm->State = 5;
-	return action;
-}
-//same for 4-5
-bool pre_3_5_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_3_5_cl","")
-
-	if (_message->getReqRepType() == REPSUPP
-		&&_message->getHeadSipReply().getReply().getCode() == OK_200
-		&& _message->getDestEntity() == SODE_SMCLPOINT
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
-			return true;
-			DEBOUT("SM_CL pre_3_5_cl","true")
-		}
-		else {
-			DEBOUT("SM_CL pre_3_5_cl","false")
-			return false;
-		}
-}
-ACTION* act_3_5_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM_CL act_3_5_cl","")
-
-	ACTION* action = new ACTION();
-
-	_message->setDestEntity(SODE_ALOPOINT);
-	_message->setGenEntity(SODE_SMCLPOINT);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
-
-	_sm->State = 5;
-	return action;
-}
-bool pre_5_6_cl(SL_SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM_CL pre_5_6_cl","")
-
-	if (_message->getReqRepType() == REPSUPP
-		&&_message->getHeadSipReply().getReply().getCode() == OK_200
-		&& _message->getDestEntity() == SODE_SMCLPOINT
-		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-			return true;
-			DEBOUT("SM_CL pre_4_5_cl","true")
-		}
-		else {
-			DEBOUT("SM_CL pre_4_5_cl","false")
-			return false;
-		}
-}
-ACTION* act_5_6_cl(SL_SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM_CL act_5_6_cl","")
-
-	ACTION* action = new ACTION();
-
-	_message->setDestEntity(SODE_SMSVPOINT);
-	_message->setGenEntity(SODE_SMCLPOINT);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
-
-	_sm->State = 6;
-	return action;
-}
-
 SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 		SL_SM(_eng, _sl_co),
 		P0_1CL((SL_SM*)this),
 		P1_2CL((SL_SM*)this),
-		P2_3CL((SL_SM*)this),
-		P2_4CL((SL_SM*)this),
-		P2_5CL((SL_SM*)this),
+		P1_3CL((SL_SM*)this),
+		P1_4CL((SL_SM*)this),
+		P3_3CL((SL_SM*)this),
 		P3_4CL((SL_SM*)this),
-		P3_5CL((SL_SM*)this),
-		P5_6CL((SL_SM*)this){
-
+		P2_3CL((SL_SM*)this),
+		P2_4CL((SL_SM*)this){
 
 	resend_invite = 0;
 
@@ -1686,41 +1514,37 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 	P1_2CL.action = &act_1_2_cl;
 	P1_2CL.predicate = &pre_1_2_cl;
 
-	P2_3CL.action = &act_2_3_cl;
-	P2_3CL.predicate = &pre_2_3_cl;
+	P1_3CL.action = &act_1_3_cl;
+	P1_3CL.predicate = &pre_1_3_cl;
 
-	P2_4CL.action = &act_2_4_cl;
-	P2_4CL.predicate = &pre_2_4_cl;
+	P1_4CL.action = &act_1_4_cl;
+	P1_4CL.predicate = &pre_1_4_cl;
 
-	P2_5CL.action = &act_2_5_cl;
-	P2_5CL.predicate = &pre_2_5_cl;
+	P3_3CL.action = &act_1_3_cl;
+	P3_3CL.predicate = &pre_1_3_cl;
 
-	P3_4CL.action = &act_3_4_cl;
-	P3_4CL.predicate = &pre_3_4_cl;
+	P3_4CL.action = &act_1_4_cl;
+	P3_4CL.predicate = &pre_1_4_cl;
 
-	P3_5CL.action = &act_3_5_cl;
-	P3_5CL.predicate = &pre_3_5_cl;
+	P2_3CL.action = &act_1_3_cl;
+	P2_3CL.predicate = &pre_1_3_cl;
 
-	P5_6CL.action = &act_5_6_cl;
-	P5_6CL.predicate = &pre_5_6_cl;
+	P2_4CL.action = &act_1_4_cl;
+	P2_4CL.predicate = &pre_1_4_cl;
 
 
 	insert_move(0,&P0_1CL);
 	insert_move(1,&P1_2CL);
+	insert_move(1,&P1_3CL);
+	insert_move(1,&P1_4CL);
+	insert_move(3,&P3_3CL);
+	insert_move(3,&P3_4CL);
 	insert_move(2,&P2_3CL);
 	insert_move(2,&P2_4CL);
-	insert_move(2,&P2_5CL);
 
-	insert_move(3,&P3_4CL);
-	insert_move(3,&P3_5CL);
-
-	insert_move(4,&P3_4CL);
-	insert_move(4,&P3_5CL);
-
-	insert_move(5,&P5_6CL);
 
 }
 
-//end State machine V2
+//end State machine V3
 
 
