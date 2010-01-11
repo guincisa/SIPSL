@@ -1100,6 +1100,7 @@ SL_CO* SL_SM::getSL_CO(void){
 //	insert_move(1,&P1c_SV);
 //
 //}
+//V3
 bool pre_0_1_sv(SL_SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_SV pre_0_1_sv","called")
@@ -1122,7 +1123,7 @@ ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 	ACTION* action = new ACTION();
 
 	//_message changes its dest and gen
-	_message->setDestEntity(SODE_SMCLPOINT);
+	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_SMSVPOINT);
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
@@ -1189,6 +1190,7 @@ ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 	return action;
 
 }
+//V3
 //will do pre_2_2_sv also
 bool pre_1_2_sv(SL_SM* _sm, MESSAGE* _message){
 
@@ -1265,6 +1267,7 @@ ACTION* act_1_2_sv(SL_SM* _sm, MESSAGE* _message) {
 	_sm->State = 2;
 	return action;
 }
+//V3
 //same for 1->3
 bool pre_2_3_sv(SL_SM* _sm, MESSAGE* _message){
 
@@ -1273,7 +1276,7 @@ bool pre_2_3_sv(SL_SM* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_SMSVPOINT
-		&& _message->getGenEntity() ==  SODE_SMCLPOINT) {
+		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
 			return true;
 			DEBOUT("SM_SV pre_2_3_sv","true")
 		}
@@ -1305,6 +1308,7 @@ SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
 		SL_SM(_eng, _sl_co),
 		P0_1SV((SL_SM*)this),
 		P1_2SV((SL_SM*)this),
+		P2_2SV((SL_SM*)this),
 		P2_3SV((SL_SM*)this),
 		P1_3SV((SL_SM*)this){
 
@@ -1317,6 +1321,10 @@ SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
 	P1_3SV.action = &act_2_3_sv;
 	P1_3SV.predicate = &pre_2_3_sv;
 
+	P2_2SV.action = &act_1_2_sv;
+	P2_2SV.predicate = &pre_1_2_sv;
+
+
 	P2_3SV.action = &act_2_3_sv;
 	P2_3SV.predicate = &pre_2_3_sv;
 
@@ -1324,6 +1332,7 @@ SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
 	insert_move(0,&P0_1SV);
 	insert_move(1,&P1_2SV);
 	insert_move(1,&P1_3SV);
+	insert_move(2,&P2_2SV);
 	insert_move(2,&P2_3SV);
 }
 //*****************************************************************

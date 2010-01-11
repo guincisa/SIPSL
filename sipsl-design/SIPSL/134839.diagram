@@ -7,7 +7,7 @@ statecanvas 128183 state_ref 135223 // 3 DE - RING
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 127.4 389.9 2000 75 29
 end
-statecanvas 128439 state_ref 142775 // 7
+statecanvas 128439 state_ref 142775 // 5
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 868 134.5 2000 40 29
 end
