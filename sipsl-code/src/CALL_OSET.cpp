@@ -1214,11 +1214,16 @@ ACTION* act_1_2_sv(SL_SM* _sm, MESSAGE* _message) {
 	DEBOUT("SL_SM_SV::act_1_2_sv",  _message->getHeadSipReply().getReply().getCode() )
 	ACTION* action = new ACTION();
 
-	// TODO clear timer ad create new timer for the ringing
+	_message->setDestEntity(SODE_APOINT);
+	_message->setGenEntity(SODE_SMSVPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
 
-	// Dialog establish must derive from incoming invite
-	// get incoming invite
-	DEBASSERT("stop")
+	action->addSingleAction(sa_1);
+
+	_sm->State = 2;
+
+	return action;
 }
 //V3
 //same for 2->3
@@ -1357,8 +1362,8 @@ bool pre_1_2_cl(SL_SM* _sm, MESSAGE* _message){
 		&&_message->getHeadSipReply().getReply().getCode() == TRYING_100
 		&& _message->getDestEntity() == SODE_SMCLPOINT
 		&& _message->getGenEntity() ==  SODE_BPOINT) {
-			return true;
 			DEBOUT("SM_CL pre_1_2_cl","true")
+			return true;
 		}
 		else {
 			DEBOUT("SM_CL pre_1_2_cl","false")
@@ -1390,8 +1395,8 @@ bool pre_1_3_cl(SL_SM* _sm, MESSAGE* _message){
 				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
 		&& _message->getDestEntity() == SODE_SMCLPOINT
 		&& _message->getGenEntity() ==  SODE_BPOINT) {
-			return true;
 			DEBOUT("SM_CL pre_1_3_cl","true")
+			return true;
 		}
 		else {
 			DEBOUT("SM_CL pre_1_3_cl","false")
@@ -1408,8 +1413,8 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 	MESSAGE* __message = _sm->getSL_CO()->call_oset->getGenMessage();
 	DEBOUT("MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(reply_x, __message, SODE_SMSVPOINT)
-	reply_x->setDestEntity(SODE_APOINT);
-	reply_x->setGenEntity(SODE_SMSVPOINT);
+	reply_x->setDestEntity(SODE_SMSVPOINT);
+	reply_x->setGenEntity(SODE_SMCLPOINT);
 	reply_x->typeOfInternal = TYPE_MESS;
 
 	//TODO qui fare dialoge_x...

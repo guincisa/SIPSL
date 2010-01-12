@@ -1,7 +1,7 @@
 window_sizes 1280 726 263 1011 603 52
 diagrams
   active  statediagram_ref 134839 // CL V3
-    1011 603 100 2 24 0
+    1011 603 100 2 0 0
   statediagram_ref 134711 // SV V3
     808 482 100 2 0 0
 end

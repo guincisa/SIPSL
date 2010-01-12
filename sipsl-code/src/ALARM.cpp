@@ -120,6 +120,7 @@ void ALMGR::alarmer(void){
 
 						//ALMGR shall not care about message or internalop
 						//SL_CC does it but here if for debug purposes
+						DEBASSERT("ALARM, not clear if I manage type of operation. Related SM is missing")
 
 						if ( _tmpMess->typeOfInternal == TYPE_MESS ){
 							DEBY
