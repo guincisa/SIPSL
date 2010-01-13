@@ -120,16 +120,15 @@ void ALMGR::alarmer(void){
 
 						//ALMGR shall not care about message or internalop
 						//SL_CC does it but here if for debug purposes
-						DEBASSERT("ALARM, not clear if I manage type of operation. Related SM is missing")
 
 						if ( _tmpMess->typeOfInternal == TYPE_MESS ){
-							DEBY
+							DEBOUT("ALMGR::alarmer operation TYPE_MESS", _tmpMess)
 							_tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
 							_tmpMess->compileMessage();
 							_tmpMess->dumpVector();
 							sl_cc->p_w(_tmpMess);
 						} else {
-							DEBOUT("ALMGR::alarmer operation", _tmpMess)
+							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)
 							sl_cc->p_w(_tmpMess);
 						}
 					} else {

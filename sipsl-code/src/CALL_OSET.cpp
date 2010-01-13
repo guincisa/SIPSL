@@ -1235,8 +1235,8 @@ bool pre_1_3_sv(SL_SM* _sm, MESSAGE* _message){
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_SMSVPOINT
 		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-			return true;
 			DEBOUT("SM_SV pre_2_3_sv","true")
+			return true;
 		}
 		else {
 			DEBOUT("SM_SV pre_2_3_sv","false")
@@ -1470,8 +1470,8 @@ bool pre_1_4_cl(SL_SM* _sm, MESSAGE* _message){
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_SMCLPOINT
 		&& _message->getGenEntity() ==  SODE_BPOINT) {
-			return true;
 			DEBOUT("SM_CL pre_1_4_cl","true")
+			return true;
 		}
 		else {
 			DEBOUT("SM_CL pre_1_4_cl","false")
