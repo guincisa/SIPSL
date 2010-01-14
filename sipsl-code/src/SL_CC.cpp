@@ -71,6 +71,10 @@
 #ifndef CALL_OSET_H
 #include "CALL_OSET.h"
 #endif
+#ifndef VALO_H
+#include "VALO.h"
+#endif
+
 
 //**********************************************************************************
 //**********************************************************************************
@@ -139,7 +143,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			call_oset = new CALL_OSET(this, _mess);
 			SL_CO* sl_co = new SL_CO(call_oset);
 			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this, sl_co);
-			VALO* alo = new VALO(this);
+			VALO* alo = new VALO(this, call_oset);
 			alo->linkSUDP(getSUDP());
 			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
 			comap->setCALL_OSET(callidx, call_oset);

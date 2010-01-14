@@ -28,13 +28,16 @@
 #ifndef ALO_H
 #include "ALO.h"
 #endif
-
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
 
 class VALO : public ALO {
 	private:
 	int dummy;
 	public:
-	VALO(ENGINE*);
+	VALO(ENGINE*, CALL_OSET*);
 	void onInvite(MESSAGE*);
 	void onAck(MESSAGE*);
+	void on200Ok(MESSAGE*);
 };

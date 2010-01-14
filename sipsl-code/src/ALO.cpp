@@ -30,10 +30,14 @@
 #ifndef ALO_H
 #include "ALO.h"
 #endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
 
-ALO::ALO(ENGINE* _sl_cc):ENGINE(){
+ALO::ALO(ENGINE* _sl_cc, CALL_OSET* _oset):ENGINE(){
 
 	sl_cc = _sl_cc;
+	call_oset = _oset;
 
 }
 void ALO::parse(MESSAGE* _message) {

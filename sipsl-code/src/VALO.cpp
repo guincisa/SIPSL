@@ -32,7 +32,7 @@
 #include "VALO.h"
 #endif
 
-VALO::VALO(ENGINE* _e):ALO(_e){}
+VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
 
 void VALO::onInvite(MESSAGE* _message){
 
@@ -178,6 +178,58 @@ void VALO::onAck(MESSAGE* _message){
 	sl_cc->p_w(message);
 
 	//build ack
+
+}
+void VALO::on200Ok(MESSAGE* _message){
+
+		MESSAGE* __message = call_oset->getGenMessage();
+		DEBOUT("on200Ok MESSAGE GENERATOR", __message)
+		CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
+		ok_x->setDestEntity(SODE_SMSVPOINT);
+		ok_x->typeOfInternal = TYPE_MESS;
+
+		DEBOUT("ok_x","SIP/2.0 200 OK")
+		ok_x->setHeadSipReply("SIP/2.0 200 OK");
+
+		DEBOUT("ok_x","delete User-Agent:")
+		ok_x->dropHeader("User-Agent:");
+		DEBOUT("ok_x","delete Max-Forwards:")
+		ok_x->removeMaxForwards();
+		DEBOUT("ok_x","delete Allow:")
+		ok_x->dropHeader("Allow:");
+		DEBOUT("ok_x","delete Route:")
+		ok_x->dropHeader("Route:");
+		DEBOUT("ok_x","delete Date:")
+		ok_x->dropHeader("Date:");
+
+
+		//via add rport
+		DEBY
+		C_HeadVia* viatmp = (C_HeadVia*) ok_x->getSTKHeadVia().top();
+		//TODO 124??
+		DEBOUT("viatmp->getContent", viatmp->getContent())
+		viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+		ok_x->popSTKHeadVia();
+		ok_x->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
+
+		ok_x->setGenericHeader("Content-Length:","0");
+
+		if (ok_x->getSDPSize() != 0 ){
+			//SDP must copy the SDP from incoming OK and put here
+			vector<string> __sdp = _message->getSDP();
+			ok_x->purgeSDP();
+			DEBOUT("PURGED SDP","")
+			ok_x->dumpVector();
+			ok_x->importSDP(__sdp);
+			ok_x->dumpVector();
+		}
+
+
+		ok_x->compileMessage();
+		ok_x->dumpVector();
+
+		sl_cc->p_w(ok_x);
+
 
 }
 

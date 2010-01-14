@@ -25,9 +25,6 @@
 #ifndef ACTION_H
 #include "ACTION.h"
 #endif
-#ifndef VALO_H
-#include "VALO.h"
-#endif
 /**********************************************************************************
  * CALL_OSET is :
  * 1:1 SL_CO
@@ -39,6 +36,7 @@
 class SL_SM_CL;
 class SL_SM_SV;
 class SL_CO;
+class ALO;
 
 //Umbrella class which hosts states machines and call object
 class CALL_OSET {

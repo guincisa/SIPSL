@@ -25,12 +25,15 @@
 #ifndef ENGINE_H
 #include "ENGINE.h"
 #endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
 
 class ALO : public ENGINE {
 	public:
 
 		//CALL_OSET needed for back reference to umbrella object
-		ALO(ENGINE*);
+		ALO(ENGINE*, CALL_OSET*);
 		int dummy;
 
 		/* parse will get the message and depending on the request will invoke the
@@ -48,5 +51,6 @@ class ALO : public ENGINE {
 	protected:
         //TODO must be private
         ENGINE* sl_cc;
+        CALL_OSET* call_oset;
 
 };
