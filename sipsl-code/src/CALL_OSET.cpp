@@ -1105,7 +1105,8 @@ bool pre_0_1_sv(SL_SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_SV pre_0_1_sv","called")
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+					|| _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_SMSVPOINT
 			&& _message->getGenEntity() ==  SODE_APOINT) {
 		DEBOUT("SM_SV pre_0_1_sv","true")
@@ -1266,6 +1267,28 @@ ACTION* act_1_3_sv(SL_SM* _sm, MESSAGE* _message) {
 	return action;
 
 }
+//predicate use: 0->1
+ACTION* act_3_4_sv(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_SV act_3_4_sv","")
+
+	DEBOUT("SL_SM_SV::event move to state 1", _message->getHeadSipRequest().getContent())
+
+	ACTION* action = new ACTION();
+
+	//_message changes its dest and gen
+	_message->setDestEntity(SODE_ALOPOINT);
+	_message->setGenEntity(SODE_SMSVPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	_sm->State = 4;
+
+	return action;
+
+}
 
 SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
 		SL_SM(_eng, _sl_co),
@@ -1273,7 +1296,8 @@ SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
 		P1_2SV((SL_SM*)this),
 		P2_2SV((SL_SM*)this),
 		P2_3SV((SL_SM*)this),
-		P1_3SV((SL_SM*)this){
+		P1_3SV((SL_SM*)this),
+		P3_4SV((SL_SM*)this){
 
 	P0_1SV.action = &act_0_1_sv;
 	P0_1SV.predicate = &pre_0_1_sv;
@@ -1291,12 +1315,17 @@ SL_SM_SV::SL_SM_SV(ENGINE* _eng, SL_CO* _sl_co):
 	P2_3SV.action = &act_1_3_sv;
 	P2_3SV.predicate = &pre_1_3_sv;
 
+	P3_4SV.action = &act_3_4_sv;
+	P3_4SV.predicate = &pre_0_1_sv;
+
 
 	insert_move(0,&P0_1SV);
 	insert_move(1,&P1_2SV);
 	insert_move(1,&P1_3SV);
 	insert_move(2,&P2_2SV);
 	insert_move(2,&P2_3SV);
+	insert_move(3,&P3_4SV);
+
 }
 //*****************************************************************
 // client sm
@@ -1305,7 +1334,8 @@ bool pre_0_1_cl(SL_SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_CL pre_0_1_cl","")
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+					|| _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_SMCLPOINT
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
 		DEBOUT("SM_CL pre_0_1_cl","true")
@@ -1505,6 +1535,25 @@ ACTION* act_1_4_cl(SL_SM* _sm, MESSAGE* _message) {
 	_sm->State = 4;
 	return action;
 }
+//pre 4->5 is 0->
+ACTION* act_4_5_cl(SL_SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_CL act_4_5_cl","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_BPOINT);
+	_message->setGenEntity(SODE_SMCLPOINT);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	_sm->State = 4;
+
+	return action;
+
+}
 SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 		SL_SM(_eng, _sl_co),
 		P0_1CL((SL_SM*)this),
@@ -1514,7 +1563,8 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 		P3_3CL((SL_SM*)this),
 		P3_4CL((SL_SM*)this),
 		P2_3CL((SL_SM*)this),
-		P2_4CL((SL_SM*)this){
+		P2_4CL((SL_SM*)this),
+		P4_5CL((SL_SM*)this){
 
 	resend_invite = 0;
 
@@ -1542,6 +1592,10 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 	P2_4CL.action = &act_1_4_cl;
 	P2_4CL.predicate = &pre_1_4_cl;
 
+	P4_5CL.action = &act_4_5_cl;
+	P4_5CL.predicate = &pre_0_1_cl;
+
+
 
 	insert_move(0,&P0_1CL);
 	insert_move(1,&P1_2CL);
@@ -1551,6 +1605,8 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 	insert_move(3,&P3_4CL);
 	insert_move(2,&P2_3CL);
 	insert_move(2,&P2_4CL);
+	insert_move(4,&P4_5CL);
+
 
 
 }
