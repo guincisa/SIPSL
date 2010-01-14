@@ -1256,6 +1256,11 @@ ACTION* act_1_3_sv(SL_SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
+	//TODO
+	// start here timer for resend 200OK until ACK
+	// arrives
+
+
 	_sm->State = 3;
 
 	return action;
