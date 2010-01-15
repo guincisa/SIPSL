@@ -78,6 +78,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, MESSAGE* _genMessage){
 
 	engine = _engine;
 	genMessage = _genMessage;
+	b2bInvite = 0x0;
 
 }
 MESSAGE* CALL_OSET::getGenMessage(void){
@@ -1334,8 +1335,7 @@ bool pre_0_1_cl(SL_SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_CL pre_0_1_cl","")
 	if (_message->getReqRepType() == REQSUPP
-			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
-					|| _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_SMCLPOINT
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
 		DEBOUT("SM_CL pre_0_1_cl","true")
@@ -1535,7 +1535,21 @@ ACTION* act_1_4_cl(SL_SM* _sm, MESSAGE* _message) {
 	_sm->State = 4;
 	return action;
 }
-//pre 4->5 is 0->
+bool pre_4_5_cl(SL_SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_CL pre_4_5_cl","")
+	if (_message->getReqRepType() == REQSUPP
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
+			&& _message->getDestEntity() == SODE_SMCLPOINT
+			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
+		DEBOUT("SM_CL pre_4_5_cl","true")
+		return true;
+	}
+	else {
+		DEBOUT("SM_CL pre_4_5_cl","false")
+		return false;
+	}
+}
 ACTION* act_4_5_cl(SL_SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_CL act_4_5_cl","")
@@ -1593,9 +1607,7 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 	P2_4CL.predicate = &pre_1_4_cl;
 
 	P4_5CL.action = &act_4_5_cl;
-	P4_5CL.predicate = &pre_0_1_cl;
-
-
+	P4_5CL.predicate = &pre_4_5_cl;
 
 	insert_move(0,&P0_1CL);
 	insert_move(1,&P1_2CL);
@@ -1606,8 +1618,6 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 	insert_move(2,&P2_3CL);
 	insert_move(2,&P2_4CL);
 	insert_move(4,&P4_5CL);
-
-
 
 }
 

@@ -107,6 +107,8 @@ void VALO::onInvite(MESSAGE* _message){
 
 		message->setDestEntity(SODE_SMCLPOINT);
 
+		DEBASSERT("store this invite in its client machine")
+
 		sl_cc->p_w(message);
 
 }
@@ -137,7 +139,8 @@ void VALO::onAck(MESSAGE* _message){
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 
 	char viatmp[512];
-	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
+	//sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
+	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),call_oset->getGenMessage()->getKey().c_str());
 	string viatmpS(viatmp);
 	message->purgeSTKHeadVia();
 	message->pushHeadVia("Via: " + viatmpS);
@@ -151,7 +154,7 @@ void VALO::onAck(MESSAGE* _message){
 	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
 	// change tag
 	char fromtmp[512];
-	sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),message->getKey().c_str());
+	sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),call_oset->getGenMessage()->getKey().c_str());
 	string fromtmpS(fromtmp);
 	DEBOUT("******** FROM new" , fromtmpS)
 	message->replaceHeadFrom(fromtmpS);

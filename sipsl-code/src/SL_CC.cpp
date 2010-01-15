@@ -138,6 +138,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			DEBOUT("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
 
 			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
+			_mess->lock();
 
 			//Start - Initialization block
 			call_oset = new CALL_OSET(this, _mess);
