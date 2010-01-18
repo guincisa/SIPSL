@@ -56,12 +56,13 @@ typedef struct {
 #define DEBY  {stringstream xx ; xx << "DEBY " << __FILE__ <<" " <<__LINE__<< "\n";cout << xx.str();cout.flush();}
 #define DEBASSERT(m1) cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; assert(0);
 
-#define PURGEMESSAGE(m1,m2)  {string key = m1->getKey();\
+#define PURGEMESSAGE(m1,m2)  {string key = m1->getKey(); \
 	pthread_mutex_lock(&messTableMtx);\
 	DEBOUT(m2,key << " [" <<m1<<"]")\
 	globalMessTable.erase(key);\
 	delete m1;\
-	pthread_mutex_unlock(&messTableMtx);}
+	pthread_mutex_unlock(&messTableMtx); }
+
 
 #define ATRANSMIT(message) \
 	DEBOUT("SL_CO::call action is send APOINT string:", message->getIncBuffer()) \
@@ -71,7 +72,7 @@ typedef struct {
 			sizeof(message->getAddress()));
 
 #define BTRANSMIT(message) { \
-		DEBOUT("SL_CO::call action is send APOINT string:", message->getIncBuffer()) \
+		DEBOUT("SL_CO::call action send string:", message->getIncBuffer()) \
 		struct sockaddr_in si_bpart; \
 		memset((char *) &si_bpart, 0, sizeof(si_bpart)); \
 		si_bpart.sin_family = AF_INET; \

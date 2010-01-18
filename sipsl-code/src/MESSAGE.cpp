@@ -130,6 +130,7 @@ void BASEMESSAGE::fillLineArray(void){
 
     return;
 }
+
 // *****************************************************************************************
 // *****************************************************************************************
 int BASEMESSAGE::getTotLines() {
@@ -227,6 +228,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	sdpVector_p = false;
 	sdpSize = 0;
 
+	lock = false;
+
 	source=0x0;
 
 	isInternal = false;
@@ -258,6 +261,9 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	sdpSize = 0;
 	reqRep = 0;
 	//, headRoute_e;
+
+	lock = false;
+
 
 	return;
 }
@@ -900,3 +906,13 @@ string MESSAGE::getDialogExtendedCID(void){
 	return getHeadCallId().getNormCallId() + getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag");
 
 }
+void MESSAGE::setLock(void){
+	lock = true;
+}
+bool MESSAGE::getLock(void){
+	return lock;
+}
+void MESSAGE::unSetLock(void){
+	lock=false;
+}
+

@@ -78,7 +78,8 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, MESSAGE* _genMessage){
 
 	engine = _engine;
 	genMessage = _genMessage;
-	b2bInvite = 0x0;
+	genMessage_CL_v4 = 0x0;
+	sl_sm_cl_v4 = 0x0;
 
 }
 MESSAGE* CALL_OSET::getGenMessage(void){
@@ -119,19 +120,19 @@ SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
     	return 0x0;
     }
 }
-//v4
-//**********************************************************************************
-//**********************************************************************************
-MESSAGE* CALL_OSET::findGenMess_CL_v4(string _callidy){
-
-	map<string, MESSAGE*>::iterator iter = mm_genMessage_CL_v4.find(_callidy);
-    if( iter != mm_genMessage_CL_v4.end() ) {
-		return iter->second;
-    }
-    else {
-    	return 0x0;
-    }
-}
+////v4
+////**********************************************************************************
+////**********************************************************************************
+//MESSAGE* CALL_OSET::findGenMess_CL_v4(string _callidy){
+//
+//	map<string, MESSAGE*>::iterator iter = mm_genMessage_CL_v4.find(_callidy);
+//    if( iter != mm_genMessage_CL_v4.end() ) {
+//		return iter->second;
+//    }
+//    else {
+//    	return 0x0;
+//    }
+//}
 //**********************************************************************************
 //**********************************************************************************
 void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
@@ -140,15 +141,15 @@ void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
 
 	return;
 }
-//v4
-//**********************************************************************************
-//**********************************************************************************
-void CALL_OSET::addGenMess_CL_v4(string _callId_Y, MESSAGE* _message){
-
-	mm_genMessage_CL_v4.insert(make_pair(_callId_Y,  _message));
-
-	return;
-}
+////v4
+////**********************************************************************************
+////**********************************************************************************
+//void CALL_OSET::addGenMess_CL_v4(string _callId_Y, MESSAGE* _message){
+//
+//	mm_genMessage_CL_v4.insert(make_pair(_callId_Y,  _message));
+//
+//	return;
+//}
 //v4
 //**********************************************************************************
 //**********************************************************************************
@@ -157,9 +158,21 @@ SL_SM_CL* CALL_OSET::getSL_SM_SV_v4(void){
 }
 //v4
 void CALL_OSET::setSL_SM_SV_v4(SL_SM_CL* _sl_sm_cl){
+	DEBOUT("CALL_OSET::setSL_SM_SV_v4 store ", _sl_sm_cl)
 	sl_sm_cl_v4 = _sl_sm_cl;
 }
+//v4
+void CALL_OSET::setCall_IdY_v4(string _cally){
+	DEBOUT("CALL_OSET::setCall_IdY_v4 store ", _cally)
+	callId_Y_v4 = _cally;
+}
+//v4
+string CALL_OSET::getCallId_Y_v4(void){
+	return callId_Y_v4;
+}
+
 void CALL_OSET::setGenMess_CL_v4(MESSAGE* _message){
+	DEBOUT("CALL_OSET::setGenMess_CL_v4 store ", _message)
 	genMessage_CL_v4 = _message;
 }
 //get the final invite
@@ -276,9 +289,10 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("Message to CL machine callidy", callidy)
 
 		//v4
-		SL_SM_CL* sl_sm_cl = getSL_SM_SV_v4();
+		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_SV_v4();
 		//SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
+		//v4
 		if (sl_sm_cl == 0x0){
 
 			//Client state machine does not exists
@@ -287,17 +301,21 @@ void SL_CO::call(MESSAGE* _message){
 			DEBOUT("Creating CL machine callidy", callidy)
 			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), this);
 			//v4
-			call_oset->setSL_SM_SV_v4(sl_sm_cl);
-			//call_oset->addSL_SM_CL(callidy, sl_sm_cl);
-		}
-		//v4
-		if (call_oset->findGenMess_CL_v4(callidy) == 0x0){
-
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
-			call_oset->addGenMess_CL_v4(callidy, _message);
+			call_oset->setSL_SM_SV_v4(sl_sm_cl);
+			call_oset->setCall_IdY_v4(callidy);
+			call_oset->setGenMess_CL_v4(_message);
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 		}
+		//v4
+//		if (call_oset->findGenMess_CL_v4(callidy) == 0x0){
+//
+//			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
+//			call_oset->addGenMess_CL_v4(callidy, _message);
+//			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+//			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
+//		}
 
 		ACTION* action = sl_sm_cl->event(_message);
 
@@ -328,7 +346,18 @@ void SL_CO::call(MESSAGE* _message){
 					BTRANSMIT(_tmpMessage)
 
 					//DELETE INVITE HERE...
-					PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
+					if (!_tmpMessage->getLock()){
+						PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
+					}
+					else {
+						DEBOUT("PURGE INVITE", "locked")
+					}
+
+				}//V3
+				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
+					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
+					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getDialogExtendedCID())
+					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 
 				}
 				//V3
@@ -357,19 +386,7 @@ void SL_CO::call(MESSAGE* _message){
 					}
 
 				}
-				//V3
-				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
-					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
-					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getDialogExtendedCID())
-					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-
-				}
-
-				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
-					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
-					call_oset->getALO()->p_w(_tmpMessage);
-
-				} else {
+				else {
 					//TODO
 					DEBOUT("SL_CO::call action is ???", "")
 				}

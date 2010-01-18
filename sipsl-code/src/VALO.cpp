@@ -107,14 +107,18 @@ void VALO::onInvite(MESSAGE* _message){
 
 		message->setDestEntity(SODE_SMCLPOINT);
 
-		DEBASSERT("store this invite in its client machine")
+		message->setLock();
 
 		sl_cc->p_w(message);
 
 }
 void VALO::onAck(MESSAGE* _message){
 
-	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
+	//v4
+	//get invite sent to b
+	DEBOUT("VALO onAck", call_oset->getGenMessage_CL_V4()->getIncBuffer())
+	CREATEMESSAGE(message, call_oset->getGenMessage_CL_V4(), SODE_ALOPOINT)
+	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 	message->setDestEntity(SODE_SMCLPOINT);
 
 	try {

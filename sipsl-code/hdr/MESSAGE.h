@@ -106,6 +106,7 @@ class BASEMESSAGE {
 
         SysTime getCreationTime(void);
 
+
     protected:
         int genEntity;
         int destEntity;
@@ -127,6 +128,8 @@ class BASEMESSAGE {
         //Timer support
         SysTime fireTime;
 
+        //V4 workaround to avoid deletion of the sent INVITE
+
     private:
     	//used to store in message map
     	string key;
@@ -136,6 +139,7 @@ class BASEMESSAGE {
         bool arrayFilled;
 
         vector<int> linePosition;
+
 
 
 };
@@ -178,6 +182,8 @@ class MESSAGE : public BASEMESSAGE {
     	bool				sdpVector_p;
     	bool				sdpVecrot_e; // exists
     	int					sdpSize;
+
+    	bool 				lock;
 
     	// Used to generate a message from an incoming one
     	// tipically a reply
@@ -282,6 +288,10 @@ class MESSAGE : public BASEMESSAGE {
     	int typeOfInternal; // Message or operation
     	int typeOfOperation; // Type of operation
     	int specialAction; //delete co
+
+    	void setLock(void);
+    	bool getLock(void);
+    	void unSetLock(void);
 
 };
 ///////////////////////////////////////////////////////////////////////////////
