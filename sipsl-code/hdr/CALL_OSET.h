@@ -82,8 +82,12 @@ class CALL_OSET {
 		//New client State Machine v4
 		//add call_y and message to the map
 		void addGenMess_CL_v4(string callIdY, MESSAGE*);
+		//get MESSAGE* from the list using cally
+		MESSAGE* findGenMess_CL_v4(string callIdY);
 		//get the only client state machine
 		SL_SM_CL* getSL_SM_SV_v4(void);
+		//set the only sm
+		void * setSL_SM_SV_v4(SL_SM_CL*);
 		//set the final invite
 		void setGenMess_CL_v4(MESSAGE*);
 		//get the final invite

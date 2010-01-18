@@ -119,6 +119,19 @@ SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
     	return 0x0;
     }
 }
+//v4
+//**********************************************************************************
+//**********************************************************************************
+MESSAGE* CALL_OSET::findGenMess_CL_v4(string _callidy){
+
+	map<string, MESSAGE*>::iterator iter = mm_genMessage_CL_v4.find(_callidy);
+    if( iter != mm_genMessage_CL_v4.end() ) {
+		return iter->second;
+    }
+    else {
+    	return 0x0;
+    }
+}
 //**********************************************************************************
 //**********************************************************************************
 void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
@@ -127,6 +140,37 @@ void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
 
 	return;
 }
+//v4
+//**********************************************************************************
+//**********************************************************************************
+void CALL_OSET::addGenMess_CL_v4(string _callId_Y, MESSAGE* _message){
+
+	mm_genMessage_CL_v4.insert(make_pair(_callId_Y,  _message));
+
+	return;
+}
+//v4
+//**********************************************************************************
+//**********************************************************************************
+SL_SM_CL* CALL_OSET::getSL_SM_SV_v4(void){
+	return sl_sm_cl_v4;
+}
+//v4
+void CALL_OSET::setSL_SM_SV_v4(SL_SM_CL* _sl_sm_cl){
+	sl_sm_cl_v4 = _sl_sm_cl;
+}
+void CALL_OSET::setGenMess_CL_v4(MESSAGE* _message){
+	genMessage_CL_v4 = _message;
+}
+//get the final invite
+MESSAGE* CALL_OSET::getGenMessage_CL_V4(void){
+	return genMessage_CL_v4;
+}
+//clear all the other non confirmed invites
+void CALL_OSET::purgeGenMess_CL_v4(void){
+	DEBASSERT("empty purgeGenMess_CL_v4")
+}
+
 //**********************************************************************************
 //**********************************************************************************
 string CALL_OSET::getCallIdX(void){
@@ -231,7 +275,9 @@ void SL_CO::call(MESSAGE* _message){
 
 		DEBOUT("Message to CL machine callidy", callidy)
 
-		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
+		//v4
+		SL_SM_CL* sl_sm_cl = getSL_SM_SV_v4();
+		//SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
 		if (sl_sm_cl == 0x0){
 
@@ -240,9 +286,15 @@ void SL_CO::call(MESSAGE* _message){
 
 			DEBOUT("Creating CL machine callidy", callidy)
 			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), this);
-			call_oset->addSL_SM_CL(callidy, sl_sm_cl);
+			//v4
+			call_oset->setSL_SM_SV_v4(sl_sm_cl);
+			//call_oset->addSL_SM_CL(callidy, sl_sm_cl);
+		}
+		//v4
+		if (call_oset->findGenMess_CL_v4(callidy) == 0x0){
 
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
+			call_oset->addGenMess_CL_v4(callidy, _message);
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 		}
