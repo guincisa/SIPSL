@@ -119,6 +119,8 @@ void VALO::onAck(MESSAGE* _message){
 	DEBOUT("VALO onAck", call_oset->getGenMessage_CL_V4()->getIncBuffer())
 	CREATEMESSAGE(message, call_oset->getGenMessage_CL_V4(), SODE_ALOPOINT)
 	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
+	//set as source the original ack, needed to identify call_oset_x when back to call control
+	message->setSourceMessage(_message);
 	message->setDestEntity(SODE_SMCLPOINT);
 
 	try {
@@ -140,6 +142,10 @@ void VALO::onAck(MESSAGE* _message){
 	message->replaceHeadCSeq("999 ACK");
 	DEBOUT("VALO","Cseq")
 
+	message->purgeSDP();
+	message->dropHeader("Content-Type:");
+
+
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 
 	char viatmp[512];
@@ -152,26 +158,26 @@ void VALO::onAck(MESSAGE* _message){
 	//From changes
 	// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
 	// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-	DEBOUT("FROM",message->getHeadFrom().getContent())
-	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-	DEBOUT("FROM",message->getHeadFrom().getNameUri())
-	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
-	// change tag
-	char fromtmp[512];
-	sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),call_oset->getGenMessage()->getKey().c_str());
-	string fromtmpS(fromtmp);
-	DEBOUT("******** FROM new" , fromtmpS)
-	message->replaceHeadFrom(fromtmpS);
-	DEBOUT("FROM",message->getHeadFrom().getContent())
-	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-	DEBOUT("FROM",message->getHeadFrom().getNameUri())
-	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getNameUri())
+//	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+//	// change tag
+//	char fromtmp[512];
+//	sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),call_oset->getGenMessage()->getKey().c_str());
+//	string fromtmpS(fromtmp);
+//	DEBOUT("******** FROM new" , fromtmpS)
+//	message->replaceHeadFrom(fromtmpS);
+//	DEBOUT("FROM",message->getHeadFrom().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getNameUri())
+//	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
 
 
-	DEBOUT("CONTACT", message->getHeadContact().getContent())
-
-	message->replaceHeadContact("<sip:sipsl.gugli.com:5060>");
-	DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
+//	DEBOUT("CONTACT", message->getHeadContact().getContent())
+//
+//	message->replaceHeadContact("<sip:sipsl.gugli.com:5060>");
+//	DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
 
 	// Compile the message
 	message->compileMessage();

@@ -504,6 +504,8 @@ void MESSAGE::pushHeadVia(string _content){
 }
 void MESSAGE::purgeSDP(void){
 
+	//TODO
+	DEBOUT("****MESSAGE::purgeSDP****", "incorrect")
 	dropHeader("Content-Length:");
 	dropHeader("Content-Type:");
 
