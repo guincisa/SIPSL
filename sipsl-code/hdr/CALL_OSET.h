@@ -48,7 +48,7 @@ class CALL_OSET {
 		SL_SM_SV* sl_sm_sv;
 
 		//map callId_y and related states machines
-		map<string, SL_SM_CL*> mm_sl_sm_cl;
+		//v4 map<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
 		string callId_X;
 		MESSAGE* genMessage;
@@ -69,11 +69,11 @@ class CALL_OSET {
 		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
 		SL_SM_SV* getSL_SM_SV(void);
-		void addSL_SM_CL(string callId_Y, SL_SM_CL*);
+		//v4 void addSL_SM_CL(string callId_Y, SL_SM_CL*);
 
 		string getCallIdX(void);
 
-		SL_SM_CL* getSL_SM_CL(string callId_Y);
+		//v4 SL_SM_CL* getSL_SM_CL(string callId_Y);
 		ALO* getALO(void);
 		ENGINE* getENGINE(void);
 
@@ -85,9 +85,9 @@ class CALL_OSET {
 		//get MESSAGE* from the list using cally
 		//MESSAGE* findGenMess_CL_v4(string callIdY);
 		//get the only client state machine
-		SL_SM_CL* getSL_SM_SV_v4(void);
+		SL_SM_CL* getSL_SM_CL_v4(void);
 		//set the only sm
-		void setSL_SM_SV_v4(SL_SM_CL*);
+		void setSL_SM_CL_v4(SL_SM_CL*);
 		//set the final invite
 		void setGenMess_CL_v4(MESSAGE*);
 		//get the final invite

@@ -110,16 +110,16 @@ SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
-
-	map<string, SL_SM_CL*>::iterator iter = mm_sl_sm_cl.find(_callidy);
-    if( iter != mm_sl_sm_cl.end() ) {
-		return iter->second;
-    }
-    else {
-    	return 0x0;
-    }
-}
+//v4 SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
+//
+//	map<string, SL_SM_CL*>::iterator iter = mm_sl_sm_cl.find(_callidy);
+//    if( iter != mm_sl_sm_cl.end() ) {
+//		return iter->second;
+//    }
+//    else {
+//    	return 0x0;
+//    }
+//}
 ////v4
 ////**********************************************************************************
 ////**********************************************************************************
@@ -135,12 +135,12 @@ SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
 //}
 //**********************************************************************************
 //**********************************************************************************
-void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
-
-	mm_sl_sm_cl.insert(make_pair(_callId_Y,  _sl_cl));
-
-	return;
-}
+//v4 void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
+//
+//	mm_sl_sm_cl.insert(make_pair(_callId_Y,  _sl_cl));
+//
+//	return;
+//}
 ////v4
 ////**********************************************************************************
 ////**********************************************************************************
@@ -153,11 +153,11 @@ void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
 //v4
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_CL* CALL_OSET::getSL_SM_SV_v4(void){
+SL_SM_CL* CALL_OSET::getSL_SM_CL_v4(void){
 	return sl_sm_cl_v4;
 }
 //v4
-void CALL_OSET::setSL_SM_SV_v4(SL_SM_CL* _sl_sm_cl){
+void CALL_OSET::setSL_SM_CL_v4(SL_SM_CL* _sl_sm_cl){
 	DEBOUT("CALL_OSET::setSL_SM_SV_v4 store ", _sl_sm_cl)
 	sl_sm_cl_v4 = _sl_sm_cl;
 }
@@ -214,17 +214,14 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 //**********************************************************************************
 void SL_CO::call(MESSAGE* _message){
 
-	DEBOUT("SL_CO::call", _message->getHeadSipRequest().getContent())
-    DEBOUT("SL_CO::call", _message->getDialogExtendedCID())
+	DEBOUT("SL_CO::call incoming", _message->getHeadSipRequest().getContent())
 
     ACTION* action = 0x0;
 
 
 
 	if (_message->getDestEntity() == SODE_SMSVPOINT) {
-		DEBOUT("********************************************************************","")
-		DEBOUT("*******************to server state machine**************************","")
-
+	    DEBOUT("SL_CO::call server state machine", _message->getDialogExtendedCID())
 
 		SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
 
@@ -258,8 +255,6 @@ void SL_CO::call(MESSAGE* _message){
 				}
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_APOINT){
 
-					DEBY
-
 					ATRANSMIT(_tmpMessage)
 					//Purge message
 					PURGEMESSAGE(_tmpMessage, "PURGE MESSAGE")
@@ -281,15 +276,12 @@ void SL_CO::call(MESSAGE* _message){
 	}
 	else if (_message->getDestEntity() == SODE_SMCLPOINT){
 
-		DEBOUT("********************************************************************","")
-		DEBOUT("*******************to client state machine**************************","")
-
 		string callidy = _message->getDialogExtendedCID();
 
-		DEBOUT("Message to CL machine callidy", callidy)
+	    DEBOUT("SL_CO::call client state machine", callidy)
 
 		//v4
-		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_SV_v4();
+		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL_v4();
 		//SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
 		//v4
@@ -302,7 +294,7 @@ void SL_CO::call(MESSAGE* _message){
 			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), this);
 			//v4
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
-			call_oset->setSL_SM_SV_v4(sl_sm_cl);
+			call_oset->setSL_SM_CL_v4(sl_sm_cl);
 			call_oset->setCall_IdY_v4(callidy);
 			call_oset->setGenMess_CL_v4(_message);
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
@@ -453,6 +445,7 @@ void SL_SM::insert_move(int _i, PREDICATE_ACTION* _pa){
 }
 SL_SM::SL_SM(ENGINE* _eng, SL_CO* _sl_co){
 
+	DEBOUT("SL_SM::SL_SM", "")
 	sl_cc = _eng;
     sl_co = _sl_co;
 
@@ -1173,7 +1166,7 @@ SL_CO* SL_SM::getSL_CO(void){
 //V3
 bool pre_0_1_sv(SL_SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_SV pre_0_1_sv","called")
+	DEBOUT("SM_SV pre_0_1_sv called","")
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 					|| _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
@@ -1189,7 +1182,7 @@ bool pre_0_1_sv(SL_SM* _sm, MESSAGE* _message){
 }
 ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SL_SM_SV::event move to state 1", _message->getHeadSipRequest().getContent())
+	DEBOUT("SL_SM_SV::act_0_1_sv", _message->getHeadSipRequest().getContent())
 
 	ACTION* action = new ACTION();
 
@@ -1256,6 +1249,7 @@ ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SL_SM_SV::actions set", _message->getHeadSipRequest().getContent())
 
+	DEBOUT("SL_SM_SV::act_0_1_sv move to state 1","")
 	_sm->State = 1;
 
 	return action;
@@ -1265,7 +1259,7 @@ ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 //will do pre_2_2_sv also
 bool pre_1_2_sv(SL_SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_SV pre_1_2_sv","")
+	DEBOUT("SM_SV pre_1_2_sv called","")
 
 	if (_message->getReqRepType() == REPSUPP
 		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
@@ -1292,6 +1286,7 @@ ACTION* act_1_2_sv(SL_SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
+	DEBOUT("SL_SM_SV::act_1_2_sv move to state 2","")
 	_sm->State = 2;
 
 	return action;
@@ -1316,7 +1311,7 @@ bool pre_1_3_sv(SL_SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_3_sv(SL_SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_SV act_2_3_sv","")
+	DEBOUT("SM_SV act_2_3_sv called","")
 
 	ACTION* action = new ACTION();
 
@@ -1332,6 +1327,7 @@ ACTION* act_1_3_sv(SL_SM* _sm, MESSAGE* _message) {
 	// arrives
 
 
+	DEBOUT("SM_SV act_2_3_sv move to state 3","")
 	_sm->State = 3;
 
 	return action;
@@ -1340,7 +1336,7 @@ ACTION* act_1_3_sv(SL_SM* _sm, MESSAGE* _message) {
 //predicate use: 0->1
 ACTION* act_3_4_sv(SL_SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_SV act_3_4_sv","")
+	DEBOUT("SM_SV act_3_4_sv called","")
 
 	DEBOUT("SL_SM_SV::event move to state 1", _message->getHeadSipRequest().getContent())
 
@@ -1354,6 +1350,7 @@ ACTION* act_3_4_sv(SL_SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
+	DEBOUT("SM_SV act_3_4_sv move to state 4","")
 	_sm->State = 4;
 
 	return action;
@@ -1431,11 +1428,8 @@ ACTION* act_0_1_cl(SL_SM* _sm, MESSAGE* _message) {
 	//careful with source message.
 	DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
 
-	//This is to be sent later after timer expires
-	//the generating is to be set to ALO
-	//so when sl_cc receives from timer it will resend it to
-	//client state machine which
-	//TODO review states and interaction...
+	//This is to be sent later, after timer expires
+	//Preconfigure message entity points, the alarm manager cannot do this
 	__message->setDestEntity(SODE_BPOINT);
 	__message->setGenEntity(SODE_SMCLPOINT);
 
@@ -1453,6 +1447,7 @@ ACTION* act_0_1_cl(SL_SM* _sm, MESSAGE* _message) {
 
 	((SL_SM_CL*)_sm)->resend_invite++;
 
+	DEBOUT("SM_CL act_0_1_cl to state 1","")
 	_sm->State = 1;
 
 	return action;

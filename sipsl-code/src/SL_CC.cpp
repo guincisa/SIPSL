@@ -90,24 +90,18 @@ COMAP* SL_CC::getCOMAP(void){
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {
 
-	//TODO ???
-	//rifare tutta perche qui se entro col messaggio destinato alla SV ok
-	//ma se entro con un messaggio destinato alla CL devo prendere ls SV
-	//e creare la CL
+	DEBOUT("SL_CC::parse", _mess->getIncBuffer())
 
 	pthread_mutex_unlock(&(sb.condvarmutex));
 
-	DEBOUT("Incoming message generating entity", _mess->getGenEntity())
 
 	if (_mess->getGenEntity() == SODE_NTWPOINT){
 
-		DEBOUT("SL_CC::parse", _mess->getIncBuffer())
+		DEBOUT("SL_CC::parse incoming message from network ", _mess->getGenEntity())
 
 		CALL_OSET* call_oset = 0x0;
 
 		string callidx = _mess->getDialogExtendedCID();
-
-		DEBOUT("SL_CC::parse", "*********************************************************")
 
 		_mess->getDialogExtendedCID();
 
@@ -149,8 +143,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			comap->setCALL_OSET(callidx, call_oset);
 			//End
 
-			DEBOUT("SL_CC::parse", "CALL_OSET created x side")
-
+			DEBOUT("SL_CC::parse CALL_OSET created x side", callidx << "] [" <<call_oset)
 
 			sl_co->call(_mess);
 		}
@@ -163,7 +156,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		//get generating idx to get the call object
 		string callidx = _mess->getSourceMessage()->getDialogExtendedCID();
 
-		DEBOUT("Message from ALO/SMCL generating call object", callidx)
+		DEBOUT("SL_CC::parse Message from ALO/SMCL generating call object", callidx)
 
 		CALL_OSET* call_oset = 0x0;
 
