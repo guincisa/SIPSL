@@ -1,0 +1,58 @@
+CHANGES
+************************************************************************************
+************************************************************************************
+------------------------------------------------------------------------------------
+7.
+Rport, and other headers required to go to bside must be put in common fro alu
+and client machine, now they are hard coded.
+------------------------------------------------------------------------------------
+1.
+Incorporate SIPENGINE and SL_CC into a single Engine and run SL_CO over a new Engine
+This will allow to have a set of threads working on global data and a set of threads
+working on call (subscriber) data.
+ALO is engine.
+
+------------------------------------------------------------------------------------
+2.
+The ALO cannot create a call, because the message coming from it must have a generator
+The solution can be that ALO defines itself an APOINT so the message will be handled
+like a new call.
+
+------------------------------------------------------------------------------------
+3. FIXED 
+Change the Action and Alarm to support internal operation and message sending
+Now MESSAGE and INTERNALOP are 
+INTERNALOP : public MESSAGE
+then use dynamic_cast to check if the incoming message is operation or not.
+
+Fixed in other manner.
+
+------------------------------------------------------------------------------------
+4. FIXED 2OOok to ALO
+Dialog established, ringing and 200 ok must first go to ALO and then to SMSV
+ALO needs to build the message and send it to SMSV which changes state and
+sends to network side A
+
+------------------------------------------------------------------------------------
+5. FIXED
+Is it needed to have this as multimap???
+callx-cally 1:n
+typedef multimap<string, string> CALL_ID_Y2X;
+changed to map.
+
+------------------------------------------------------------------------------------
+6. OK 
+200 OK (and other replies) from B is sent to client sm and this one creates the new
+reply for A.
+It shoudl sent it to ALO. ALO can or not change it and forward to server sm, which
+sinds it to A.
+
+or:
+200OK arrives from B, is sent to client sm which fwd it to ALO, ALO creates the new
+200 ok (like the INVITE) and fwd to server sm which sends to A.
+
+INVITE arrives to svsm the to ALO, ALO creates the INVITE
+ALO must create the INVITE since it is made following busyness rules...
+
+************************************************************************************
+************************************************************************************

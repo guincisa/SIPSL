@@ -40,7 +40,7 @@ A=DE_A[s=SV,d=A]"
   xyzwh 21.4 119.2 2006 153 43
 note 133175 "they could come from ALO...
 action is the same"
-  xyzwh 19 406 2000 229 59
+  xyzwh 21 374 2000 229 59
 statecanvas 133687 state_ref 155959 // 4 ACK
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 471 559 2000 49 29
@@ -49,6 +49,27 @@ note 133943 "E=ACK_A[s=A,d=SV]
 A=ACK_A[s=SV,d=ALO]
 clear 200ok timer resend"
   xyzwh 581 473 2000 349 71
+statecanvas 134199 state_ref 169015 // 5
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 226 566 2000 40 29
+end
+note 134455 "E=BYE_A[s=A,d=SV]
+A=BYE_A[s=SV,d=ALO]"
+  xyzwh 438 632 2000 223 49
+statecanvas 134839 state_ref 169399 // 6
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 92 727 2000 40 29
+end
+note 135095 "E=200OK_A[s=ALO,d=SV]
+A=200OK_A[s=SV,d=A]"
+  xyzwh 244 699 2000 209 47
+note 135351 "E=BYE_A[s=ALO,d=SV]
+A=BYE_A[s=SV,d=A]
+"
+  xyzwh 81 469 2000 177 49
+note 135607 "E=200OK_A[s=A,d=SV]
+A=200OK_A[s=SV,d=ALO]"
+  xyzwh 21 563 2000 169 45
 transitioncanvas 128951 transition_ref 150711 // <transition>
   
   from ref 128567 z 2001 to ref 128055
@@ -87,6 +108,16 @@ transitioncanvas 133815 transition_ref 178103 // <transition>
   from ref 128055 z 2001 to ref 133687
   write_horizontally default show_definition default drawing_language default
 end
+transitioncanvas 134327 transition_ref 191159 // <transition>
+  
+  from ref 133687 z 2001 to ref 134199
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 134967 transition_ref 191543 // <transition>
+  
+  from ref 134199 z 2001 to ref 134839
+  write_horizontally default show_definition default drawing_language default
+end
 line 130103 -_-_
   from ref 128439 z 2002 to ref 128951
 line 130231 -_-_
@@ -107,4 +138,12 @@ line 133559 -_-_
   from ref 133175 z 2007 to ref 128311
 line 134071 -_-_
   from ref 133943 z 2002 to ref 133815
+line 134583 -_-_
+  from ref 134455 z 2002 to ref 134327
+line 135223 -_-_
+  from ref 135095 z 2002 to ref 134967
+line 135479 -_-_
+  from ref 135351 z 2002 to ref 134327
+line 135735 -_-_
+  from ref 135607 z 2002 to ref 134967
 end

@@ -1,110 +1,13 @@
-19 Nov 2009
-
-INSPECTION
+TODO
 ************************************************************************************
 ************************************************************************************
+Timers of call setup
+-> 0%
+------------------------------------------------------------------------------------
 stato 0-1 client
-
-CHANGES
-************************************************************************************
-************************************************************************************
-------------------------------------------------------------------------------------
-7.
-Rport, and other headers required to go to bside must be put in common fro alu
-and client machine, now they are hard coded.
-------------------------------------------------------------------------------------
-1.
-Incorporate SIPENGINE and SL_CC into a single Engine and run SL_CO over a new Engine
-This will allow to have a set of threads working on global data and a set of threads
-working on call (subscriber) data.
-ALO is engine.
-
-------------------------------------------------------------------------------------
-2.
-The ALO cannot create a call, because the message coming from it must have a generator
-The solution can be that ALO defines itself an APOINT so the message will be handled
-like a new call.
-
-------------------------------------------------------------------------------------
-3. FIXED 
-Change the Action and Alarm to support internal operation and message sending
-Now MESSAGE and INTERNALOP are 
-INTERNALOP : public MESSAGE
-then use dynamic_cast to check if the incoming message is operation or not.
-
-Fixed in other manner.
-
-------------------------------------------------------------------------------------
-4. FIXED 2OOok to ALO
-Dialog established, ringing and 200 ok must first go to ALO and then to SMSV
-ALO needs to build the message and send it to SMSV which changes state and
-sends to network side A
-
-------------------------------------------------------------------------------------
-5. FIXED
-Is it needed to have this as multimap???
-callx-cally 1:n
-typedef multimap<string, string> CALL_ID_Y2X;
-changed to map.
-
-------------------------------------------------------------------------------------
-6. OK 
-200 OK (and other replies) from B is sent to client sm and this one creates the new
-reply for A.
-It shoudl sent it to ALO. ALO can or not change it and forward to server sm, which
-sinds it to A.
-
-or:
-200OK arrives from B, is sent to client sm which fwd it to ALO, ALO creates the new
-200 ok (like the INVITE) and fwd to server sm which sends to A.
-
-INVITE arrives to svsm the to ALO, ALO creates the INVITE
-ALO must create the INVITE since it is made following busyness rules...
-
-************************************************************************************
-************************************************************************************
+-> in progress
 
 
-ISSUES
-************************************************************************************
-************************************************************************************
-------------------------------------------------------------------------------------
-7.
-Still incorrect message with and without SDP
-ACK has two carriages...
-------------------------------------------------------------------------------------
-2. 
-Check if mutex on alarm structures is making sense
-------------------------------------------------------------------------------------
-1. FIXED
-Stop occasionali su allarme, non sempre si verifica.
-
-E' ovvio. il messaggio generator è eliminato... il generator deve essere quello
-che arriva da A invece vedo che è quello che mando a B
----> correggere
-
-FIX: impostato genmessage in SL_CO
-eliminati i messaggi associati alle state machine
-------------------------------------------------------------------------------------
-3. FIXED
-Dialog Established is received at sm_y and sent directly to A but it must be sent
-to sm_x and send by it.
-------------------------------------------------------------------------------------
-4. 
-Dialog established needs state in x and y machines???
-------------------------------------------------------------------------------------
-5. TEST FIX
-27 Nov
-Dialog established is malformed (objects are not initiated correctly) tuplevector
-exception
-
-issue is in Via management
-to test
-------------------------------------------------------------------------------------
-6. FIXED (need to test with new kind or reply)
-DEBOUT ../sipsl-code/src/SIPENGINE.cpp 107 SIPENGINE::parse getHeadSipReply content[]
-terminate called after throwing an instance of 'std::length_error'
-  what():  basic_string::_S_create
 
 
 
