@@ -52,7 +52,7 @@ or:
 200 ok (like the INVITE) and fwd to server sm which sends to A.
 
 INVITE arrives to svsm the to ALO, ALO creates the INVITE
-ALO must create the INVITE since it is made following busyness rules...
+ALO must create the INVITE since it is made following business rules...
 
 ************************************************************************************
 ************************************************************************************

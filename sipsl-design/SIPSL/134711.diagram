@@ -55,21 +55,25 @@ statecanvas 134199 state_ref 169015 // 5
 end
 note 134455 "E=BYE_A[s=A,d=SV]
 A=BYE_A[s=SV,d=ALO]"
-  xyzwh 438 632 2000 223 49
-statecanvas 134839 state_ref 169399 // 6
+  xyzwh 710 590 2000 223 49
+statecanvas 134839 state_ref 169399 // 7
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 92 727 2000 40 29
+  xyzwh 87 780 2000 40 29
 end
 note 135095 "E=200OK_A[s=ALO,d=SV]
 A=200OK_A[s=SV,d=A]"
-  xyzwh 244 699 2000 209 47
+  xyzwh 283 639 2000 209 47
 note 135351 "E=BYE_A[s=ALO,d=SV]
 A=BYE_A[s=SV,d=A]
 "
-  xyzwh 81 469 2000 177 49
+  xyzwh 197 464 2000 177 49
 note 135607 "E=200OK_A[s=A,d=SV]
 A=200OK_A[s=SV,d=ALO]"
   xyzwh 21 563 2000 169 45
+statecanvas 135863 state_ref 175927 // 6
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 587 735 2000 40 29
+end
 transitioncanvas 128951 transition_ref 150711 // <transition>
   
   from ref 128567 z 2001 to ref 128055
@@ -118,6 +122,16 @@ transitioncanvas 134967 transition_ref 191543 // <transition>
   from ref 134199 z 2001 to ref 134839
   write_horizontally default show_definition default drawing_language default
 end
+transitioncanvas 135991 transition_ref 198071 // <transition>
+  
+  from ref 133687 z 2001 to ref 135863
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 136119 transition_ref 198199 // <transition>
+  
+  from ref 135863 z 2001 to ref 134839
+  write_horizontally default show_definition default drawing_language default
+end
 line 130103 -_-_
   from ref 128439 z 2002 to ref 128951
 line 130231 -_-_
@@ -138,12 +152,12 @@ line 133559 -_-_
   from ref 133175 z 2007 to ref 128311
 line 134071 -_-_
   from ref 133943 z 2002 to ref 133815
-line 134583 -_-_
-  from ref 134455 z 2002 to ref 134327
-line 135223 -_-_
-  from ref 135095 z 2002 to ref 134967
 line 135479 -_-_
   from ref 135351 z 2002 to ref 134327
 line 135735 -_-_
   from ref 135607 z 2002 to ref 134967
+line 136247 -_-_
+  from ref 135095 z 2002 to ref 136119
+line 136375 -_-_
+  from ref 134455 z 2002 to ref 135991
 end

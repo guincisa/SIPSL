@@ -56,6 +56,10 @@ void ALO::parse(MESSAGE* _message) {
 			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 			onAck(_message);
 		}
+		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
+			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			onBye(_message);
+		}
 		else {
 			noCallBack(_message);
 		}
@@ -75,6 +79,9 @@ void ALO::onInvite(MESSAGE* m){
 }
 void ALO::onAck(MESSAGE* m){
 	DEBOUT("ALO unoverridded onAck called ", m->getIncBuffer())
+}
+void ALO::onBye(MESSAGE* m){
+	DEBOUT("ALO unoverridded onBye called ", m->getIncBuffer())
 }
 void ALO::on200Ok(MESSAGE* m){
 	DEBOUT("ALO unoverridded on200Ok called ", m->getIncBuffer())

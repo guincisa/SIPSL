@@ -193,6 +193,87 @@ void VALO::onAck(MESSAGE* _message){
 	//build ack
 
 }
+void VALO::onBye(MESSAGE* _message){
+
+	//v4
+	//get invite sent to b
+	DEBOUT("VALO onBye", call_oset->getGenMessage_CL_V4()->getIncBuffer())
+	CREATEMESSAGE(message, call_oset->getGenMessage_CL_V4(), SODE_ALOPOINT)
+	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
+	//set as source the original ack, needed to identify call_oset_x when back to call control
+	message->setSourceMessage(_message);
+	message->setDestEntity(SODE_SMCLPOINT);
+
+	try {
+		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
+		DEBOUT("VALO","remove route")
+		message->removeHeadRoute();
+	}
+	catch(HeaderException e){
+		DEBOUT("Exception ", e.getMessage())
+	}
+
+	//change request
+	// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
+	DEBOUT("VALO ", message->getHeadSipRequest().getContent())
+	message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0");
+
+	//Cseq new to 1
+	message->replaceHeadCSeq("999 BYE");
+	DEBOUT("VALO","Cseq")
+
+	message->purgeSDP();
+	message->dropHeader("Content-Type:");
+
+
+	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
+
+	char viatmp[512];
+	//sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
+	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),call_oset->getGenMessage()->getKey().c_str());
+	string viatmpS(viatmp);
+	message->purgeSTKHeadVia();
+	message->pushHeadVia("Via: " + viatmpS);
+
+	//From changes
+	// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
+	// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
+//	DEBOUT("FROM",message->getHeadFrom().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getNameUri())
+//	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+//	// change tag
+//	char fromtmp[512];
+//	sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),call_oset->getGenMessage()->getKey().c_str());
+//	string fromtmpS(fromtmp);
+//	DEBOUT("******** FROM new" , fromtmpS)
+//	message->replaceHeadFrom(fromtmpS);
+//	DEBOUT("FROM",message->getHeadFrom().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
+//	DEBOUT("FROM",message->getHeadFrom().getNameUri())
+//	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
+
+
+//	DEBOUT("CONTACT", message->getHeadContact().getContent())
+//
+//	message->replaceHeadContact("<sip:sipsl.gugli.com:5060>");
+//	DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
+
+	// Compile the message
+	message->compileMessage();
+	message->dumpVector();
+	DEBOUT("New outgoing b2b message", message->getIncBuffer())
+
+
+	//PURGE ACK
+	//PURGEMESSAGE(_message,"Purging ack from A")
+
+	sl_cc->p_w(message);
+
+	//build ack
+
+}
 void VALO::on200Ok(MESSAGE* _message){
 
 		MESSAGE* __message = call_oset->getGenMessage();
