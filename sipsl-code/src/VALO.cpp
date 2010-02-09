@@ -76,6 +76,12 @@ void VALO::onInvite(MESSAGE* _message){
 		message->purgeSTKHeadVia();
 		message->pushHeadVia("Via: " + viatmpS);
 
+		//Create new call id
+		char callIdtmp[512];
+		sprinf(callIdtmp, "%s@%s", message->getKey().c_str(), getSUDP()->getDomain().c_str());
+		string callIdtmpS(callIdtmp);
+		message->setGenericHeader("Call-ID:", callIdtmpS);
+
 		//From changes
 		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
 		// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
