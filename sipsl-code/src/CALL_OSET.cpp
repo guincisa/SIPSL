@@ -852,10 +852,24 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 
 	MESSAGE* __message = _sm->getSL_CO()->call_oset->getGenMessage();
 	DEBOUT("MESSAGE GENERATOR", __message)
+
+
 	CREATEMESSAGE(reply_x, __message, SODE_SMSVPOINT)
 	reply_x->setDestEntity(SODE_SMSVPOINT);
 	reply_x->setGenEntity(SODE_SMCLPOINT);
 	reply_x->typeOfInternal = TYPE_MESS;
+
+	//Must define here the to tag
+	char totmp[512];
+	sprintf(totmp, "%s %s;tag=%s",__message->getHeadTo().getNameUri().c_str(), __message->getHeadTo().getC_AttSipUri().getContent().c_str(),__message->getKey().c_str());
+	string totmpS(totmp);
+	DEBOUT("******** TO new" , totmpS)
+	reply_x->replaceHeadTo(totmpS);
+	DEBOUT("TO",reply_x->getHeadTo().getContent())
+	DEBOUT("TO",reply_x->getHeadTo().getC_AttSipUri().getContent())
+	DEBOUT("TO",reply_x->getHeadTo().getNameUri())
+	DEBOUT("TO",reply_x->getHeadTo().getC_AttUriParms().getContent())
+
 
 	//TODO qui fare dialoge_x...
 	DEBOUT("reply_x","SIP/2.0 " << _message->getHeadSipReply().getContent())

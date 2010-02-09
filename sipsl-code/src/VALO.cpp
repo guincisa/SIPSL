@@ -78,7 +78,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 		//Create new call id
 		char callIdtmp[512];
-		sprinf(callIdtmp, "%s@%s", message->getKey().c_str(), getSUDP()->getDomain().c_str());
+		sprintf(callIdtmp, "%s@%s", message->getKey().c_str(), getSUDP()->getDomain().c_str());
 		string callIdtmpS(callIdtmp);
 		message->setGenericHeader("Call-ID:", callIdtmpS);
 

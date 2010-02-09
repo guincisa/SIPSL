@@ -263,6 +263,8 @@ class MESSAGE : public BASEMESSAGE {
     	void pushHeadVia(string content);
 
     	void replaceHeadFrom(string content);
+    	void replaceHeadTo(string content);
+
 
     	void replaceHeadContact(string content);
 

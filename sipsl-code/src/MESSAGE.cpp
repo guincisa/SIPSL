@@ -665,6 +665,26 @@ void MESSAGE::replaceHeadFrom(string _content){
 		DEBOUT("MESSAGE::replaceHeadFrom from header is missing","")
 	}
 }
+void MESSAGE::replaceHeadTo(string _content){
+
+	headFrom_p = false;
+	headFrom.setContent(_content);
+
+	// replace in flex_line
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,3).compare("To:")==0){
+			flex_line[i] = "To: " + _content;
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		DEBOUT("MESSAGE::replaceHeadTo from header is missing","")
+	}
+}
+
 /*
  * Call Id
  */
