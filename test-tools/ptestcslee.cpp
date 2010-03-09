@@ -54,7 +54,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <time.h>
 #include <time.h>
 #include <map>
@@ -148,7 +148,7 @@ int t_id[THN];
 // thread status busy/free
 bool readyt[THN];
 // Statistics and timing
-hrtime_t startrun[THN], endrun[THN], cumlat[THN], minlat[THN] , maxlat[THN];
+//hrtime_t startrun[THN], endrun[THN], cumlat[THN], minlat[THN] , maxlat[THN];
 long double avglat[THN];
 long double sum_sqr[THN]; // stdev
 int iters[THN];
@@ -212,7 +212,7 @@ do_search(void* data)
         pthread_mutex_unlock(&condvarmutex);
 
 
-        hrtime_t inittime = gethrtime();
+//        hrtime_t inittime = gethrtime();
 
         sprintf(echoString,"M:INIT\nI:\nR:1\nP:hello");
         //cout << "Sending\n+++\n" << echoString << "\n+++" << endl;
@@ -291,7 +291,7 @@ do_search(void* data)
             cout <<"Inconsistency" << endl;
         }
 
-        hrtime_t endtime = gethrtime();
+//        hrtime_t endtime = gethrtime();
         // NEED TO CHECK if message is OK
         /*
         cout << echoBuffer1 << endl << flush;
@@ -306,7 +306,7 @@ do_search(void* data)
         // end ldap search
 
         //prepare some output
-        hrtime_t difftime = endtime - inittime;
+//        hrtime_t difftime = endtime - inittime;
 #ifdef TESTSYNCH
         sprintf(outputs, "RUN %d Thread %d # %lld # ns # %lld # ns # %lld # ns \n", runn, me, inittime, endtime, difftime);
 #else

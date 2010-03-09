@@ -302,6 +302,12 @@ void VALO::on200Ok(MESSAGE* _message){
 		DEBOUT("ok_x","delete Date:")
 		ok_x->dropHeader("Date:");
 
+		// change tag
+		char totmp[512];
+		sprintf(totmp, "%s %s;tag=%s",ok_x->getHeadTo().getNameUri().c_str(), ok_x->getHeadTo().getC_AttSipUri().getContent().c_str(),__message->getKey().c_str());
+		string totmpS(totmp);
+		DEBOUT("******** 200 OK TO new" , totmpS)
+		//message->replaceHeadFrom(fromtmpS);
 
 		//via add rport
 		DEBY

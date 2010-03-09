@@ -26,6 +26,8 @@ SIPSL->B
 	
 +++ will change to
 	Call-ID: 8ce2830#1265385945486371@sipsl.gugli.com
+	
++++ done +++
 
 	
 	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce2830#1265385945486371;rport
@@ -92,6 +94,10 @@ A<-SIPSL
 	
 +++ incorrect to tag, must be filled +++
 	To: <sip:gugli_linphone@172.21.160.165:5061>
+	
++++ can send the same tag used on the Invite to B (From tag)
+or calculate it from incoming invite and set it +++
++++ which one ???  +++
 	
 	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
 	Call-ID: kvhahmvkjcrkljv@grog
