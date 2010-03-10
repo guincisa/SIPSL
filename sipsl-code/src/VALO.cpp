@@ -142,7 +142,7 @@ void VALO::onAck(MESSAGE* _message){
 	//change request
 	// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 	DEBOUT("VALO ", message->getHeadSipRequest().getContent())
-	message->setHeadSipRequest("ACK sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0");
+	message->setHeadSipRequest("ACK sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
 	//Cseq new to 1
 	message->replaceHeadCSeq("999 ACK");

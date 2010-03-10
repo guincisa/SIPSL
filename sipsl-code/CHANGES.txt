@@ -5,6 +5,7 @@ finish implement the new TO tag into the 200OK A<-SIPSL
 must manage Contact:
 if I put to tag in above the phone A sends the ack to A...???
 the issue seems on Contact: must be managed...
+how contact works in b2bua???
 
 ************************************************************************************
 ************************************************************************************

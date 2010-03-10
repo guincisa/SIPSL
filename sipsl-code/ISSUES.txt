@@ -3,6 +3,9 @@ ISSUES
 ************************************************************************************
 8. identificatori
 
+contact??
+
+
 a->b
 INVITE
 via-branch 	= VBa
