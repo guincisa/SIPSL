@@ -95,9 +95,8 @@ A<-SIPSL
 +++ incorrect to tag, must be filled +++
 	To: <sip:gugli_linphone@172.21.160.165:5061>
 	
-+++ can send the same tag used on the Invite to B (From tag)
-or calculate it from incoming invite and set it +++
-+++ which one ???  +++
++++ if I put a to tag I don't get the ack... +++
+
 	
 	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
 	Call-ID: kvhahmvkjcrkljv@grog

@@ -62,7 +62,7 @@ void VALO::onInvite(MESSAGE* _message){
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
-		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0");
+		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
 		//Cseq new to 1
 		message->replaceHeadCSeq("999 INVITE");
@@ -303,11 +303,12 @@ void VALO::on200Ok(MESSAGE* _message){
 		ok_x->dropHeader("Date:");
 
 		// change tag
-		char totmp[512];
-		sprintf(totmp, "%s %s;tag=%s",ok_x->getHeadTo().getNameUri().c_str(), ok_x->getHeadTo().getC_AttSipUri().getContent().c_str(),__message->getKey().c_str());
-		string totmpS(totmp);
-		DEBOUT("******** 200 OK TO new" , totmpS)
-		//message->replaceHeadFrom(fromtmpS);
+//		char totmp[512];
+//		// check if NameUri is empty
+//		sprintf(totmp, "%s %s;tag=%x",ok_x->getHeadTo().getNameUri().c_str(), ok_x->getHeadTo().getC_AttSipUri().getContent().c_str(),__message);
+//		string totmpS(totmp);
+//		DEBOUT("******** 200 OK TO tag new" , totmpS)
+//		ok_x->replaceHeadTo(totmpS);
 
 		//via add rport
 		DEBY
