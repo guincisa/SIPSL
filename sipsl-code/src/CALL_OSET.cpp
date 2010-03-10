@@ -861,7 +861,7 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 
 	//Must define here the to tag
 	char totmp[512];
-	sprintf(totmp, "%s %s;tag=%s",__message->getHeadTo().getNameUri().c_str(), __message->getHeadTo().getC_AttSipUri().getContent().c_str(),__message->getKey().c_str());
+	sprintf(totmp, "%s %s;tag=%x",__message->getHeadTo().getNameUri().c_str(), __message->getHeadTo().getC_AttSipUri().getContent().c_str(),__message);
 	string totmpS(totmp);
 	DEBOUT("******** TO new" , totmpS)
 	reply_x->replaceHeadTo(totmpS);

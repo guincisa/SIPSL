@@ -7,13 +7,19 @@ if I put to tag in above the phone A sends the ack to A...???
 the issue seems on Contact: must be managed...
 how contact works in b2bua???
 
+see logs
+
 ************************************************************************************
 ************************************************************************************
-8.
+9. (extends bug 7)
+must define a method oon which all the header changes are made in single part of the code
+like SIP factory...
+------------------------------------------------------------------------------------
+8. fixed
 outging INVITE has still the same call ID of the incoming
 ------------------------------------------------------------------------------------
 7.
-Rport, and other headers required to go to bside must be put in common fro alu
+Rport, and other headers required to go to bside must be put in common from alo
 and client machine, now they are hard coded.
 ------------------------------------------------------------------------------------
 1.
