@@ -7,7 +7,7 @@ if I put to tag in above the phone A sends the ack to A...???
 the issue seems on Contact: must be managed...
 how contact works in b2bua???
 
-see logs
+implement SIPUTIL
 
 ************************************************************************************
 ************************************************************************************

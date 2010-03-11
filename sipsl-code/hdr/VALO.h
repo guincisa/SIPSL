@@ -31,6 +31,10 @@
 #ifndef CALL_OSET_H
 #include "CALL_OSET.h"
 #endif
+#ifndef SIPUTIL_H
+#include "SIPUTIL.h"
+#endif
+
 
 class VALO : public ALO {
 	private:

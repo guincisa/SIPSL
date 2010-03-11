@@ -31,6 +31,11 @@
 #ifndef VALO_H
 #include "VALO.h"
 #endif
+#ifndef SIPUTIL_H
+#include "SIPUTIL.h"
+#endif
+
+SIPUTIL SipUtil;
 
 VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
 
@@ -42,11 +47,6 @@ void VALO::onInvite(MESSAGE* _message){
 
 		CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
-		// REQUEST
-		// maybe changed or unchanged
-		// ---- unchanged
-		// Route
-		// remove it
 		try {
 			DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
 			DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
@@ -57,8 +57,6 @@ void VALO::onInvite(MESSAGE* _message){
 			DEBOUT("Exception ", e.getMessage())
 		}
 
-
-
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
@@ -68,46 +66,9 @@ void VALO::onInvite(MESSAGE* _message){
 		message->replaceHeadCSeq("999 INVITE");
 		DEBOUT("VALO","Cseq")
 
-		//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
+		//Standard changes
+		SipUtil.genBInvitefromAInvite(message, _message, getSUDP());
 
-		char viatmp[512];
-		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
-		string viatmpS(viatmp);
-		message->purgeSTKHeadVia();
-		message->pushHeadVia("Via: " + viatmpS);
-
-		//Create new call id
-		char callIdtmp[512];
-		sprintf(callIdtmp, "%s@%s", message->getKey().c_str(), getSUDP()->getDomain().c_str());
-		string callIdtmpS(callIdtmp);
-		message->setGenericHeader("Call-ID:", callIdtmpS);
-
-		//From changes
-		// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
-		// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-		DEBOUT("FROM",message->getHeadFrom().getContent())
-		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-		DEBOUT("FROM",message->getHeadFrom().getNameUri())
-		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
-		// change tag
-		char fromtmp[512];
-		sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),message->getKey().c_str());
-		string fromtmpS(fromtmp);
-		DEBOUT("******** FROM new" , fromtmpS)
-		message->replaceHeadFrom(fromtmpS);
-		DEBOUT("FROM",message->getHeadFrom().getContent())
-		DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-		DEBOUT("FROM",message->getHeadFrom().getNameUri())
-		DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
-
-
-		DEBOUT("CONTACT", message->getHeadContact().getContent())
-
-		message->replaceHeadContact("<sip:sipsl.gugli.com:5060>");
-		DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
-
-		// Compile the message
-		message->compileMessage();
 		message->dumpVector();
 		DEBOUT("New outgoing b2b message", message->getIncBuffer())
 
@@ -151,43 +112,11 @@ void VALO::onAck(MESSAGE* _message){
 	message->purgeSDP();
 	message->dropHeader("Content-Type:");
 
+	//Standard changes
+	SipUtil.genBInvitefromAInvite(call_oset->getGenMessage(), _message, getSUDP());
 
-	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
-
-	char viatmp[512];
-	//sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
-	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),call_oset->getGenMessage()->getKey().c_str());
-	string viatmpS(viatmp);
-	message->purgeSTKHeadVia();
-	message->pushHeadVia("Via: " + viatmpS);
-
-	//From changes
-	// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
-	// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-//	DEBOUT("FROM",message->getHeadFrom().getContent())
-//	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-//	DEBOUT("FROM",message->getHeadFrom().getNameUri())
-//	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
-//	// change tag
-//	char fromtmp[512];
-//	sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),call_oset->getGenMessage()->getKey().c_str());
-//	string fromtmpS(fromtmp);
-//	DEBOUT("******** FROM new" , fromtmpS)
-//	message->replaceHeadFrom(fromtmpS);
-//	DEBOUT("FROM",message->getHeadFrom().getContent())
-//	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-//	DEBOUT("FROM",message->getHeadFrom().getNameUri())
-//	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
-
-
-//	DEBOUT("CONTACT", message->getHeadContact().getContent())
-//
-//	message->replaceHeadContact("<sip:sipsl.gugli.com:5060>");
-//	DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
-
-	// Compile the message
-	message->compileMessage();
 	message->dumpVector();
+
 	DEBOUT("New outgoing b2b message", message->getIncBuffer())
 
 
@@ -231,43 +160,7 @@ void VALO::onBye(MESSAGE* _message){
 
 	message->purgeSDP();
 	message->dropHeader("Content-Type:");
-
-
-	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
-
-	char viatmp[512];
-	//sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
-	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),call_oset->getGenMessage()->getKey().c_str());
-	string viatmpS(viatmp);
-	message->purgeSTKHeadVia();
-	message->pushHeadVia("Via: " + viatmpS);
-
-	//From changes
-	// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
-	// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-//	DEBOUT("FROM",message->getHeadFrom().getContent())
-//	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-//	DEBOUT("FROM",message->getHeadFrom().getNameUri())
-//	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
-//	// change tag
-//	char fromtmp[512];
-//	sprintf(fromtmp, "%s %s;tag=%s",message->getHeadFrom().getNameUri().c_str(), message->getHeadFrom().getC_AttSipUri().getContent().c_str(),call_oset->getGenMessage()->getKey().c_str());
-//	string fromtmpS(fromtmp);
-//	DEBOUT("******** FROM new" , fromtmpS)
-//	message->replaceHeadFrom(fromtmpS);
-//	DEBOUT("FROM",message->getHeadFrom().getContent())
-//	DEBOUT("FROM",message->getHeadFrom().getC_AttSipUri().getContent())
-//	DEBOUT("FROM",message->getHeadFrom().getNameUri())
-//	DEBOUT("FROM",message->getHeadFrom().getC_AttUriParms().getContent())
-
-
-//	DEBOUT("CONTACT", message->getHeadContact().getContent())
-//
-//	message->replaceHeadContact("<sip:sipsl.gugli.com:5060>");
-//	DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
-
-	// Compile the message
-	message->compileMessage();
+	SipUtil.genBInvitefromAInvite(call_oset->getGenMessage(), _message, getSUDP());
 	message->dumpVector();
 	DEBOUT("New outgoing b2b message", message->getIncBuffer())
 
