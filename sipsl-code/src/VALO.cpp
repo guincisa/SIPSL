@@ -67,7 +67,7 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("VALO","Cseq")
 
 		//Standard changes
-		SipUtil.genBInvitefromAInvite(message, _message, getSUDP());
+		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
 
 		message->dumpVector();
 		DEBOUT("New outgoing b2b message", message->getIncBuffer())
@@ -113,7 +113,7 @@ void VALO::onAck(MESSAGE* _message){
 	message->dropHeader("Content-Type:");
 
 	//Standard changes
-	SipUtil.genBInvitefromAInvite(call_oset->getGenMessage(), _message, getSUDP());
+	SipUtil.genBInvitefromAInvite(call_oset->getGenMessage(), message, getSUDP());
 
 	message->dumpVector();
 
@@ -160,7 +160,8 @@ void VALO::onBye(MESSAGE* _message){
 
 	message->purgeSDP();
 	message->dropHeader("Content-Type:");
-	SipUtil.genBInvitefromAInvite(call_oset->getGenMessage(), _message, getSUDP());
+
+	SipUtil.genBInvitefromAInvite(call_oset->getGenMessage(), message, getSUDP());
 	message->dumpVector();
 	DEBOUT("New outgoing b2b message", message->getIncBuffer())
 

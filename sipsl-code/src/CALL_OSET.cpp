@@ -69,6 +69,12 @@
 #ifndef ALARM_H
 #include "ALARM.h"
 #endif
+#ifndef SIPUTIL_H
+#include "SIPUTIL.h"
+#endif
+
+static SIPUTIL SipUtil;
+
 //**********************************************************************************
 //**********************************************************************************
 // CALL_OSET
@@ -496,50 +502,11 @@ ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 	//etry is filled later by SL_CO (see design)
 	CREATEMESSAGE(etry, _message, SODE_SMSVPOINT)
 
-	//TODO qui fare etry...
 	DEBOUT("ETRY","SIP/2.0 100 Trying")
 	etry->setHeadSipReply("SIP/2.0 100 Trying");
-	DEBOUT("ETRY","Purge sdp")
-	etry->purgeSDP();
-	DEBOUT("ETRY","delete User-Agent:")
-	etry->dropHeader("User-Agent:");
-	DEBOUT("ETRY","delete Max-Forwards:")
-	etry->removeMaxForwards();
-	DEBOUT("ETRY","delete Content-Type:")
-	etry->dropHeader("Content-Type:");
-	DEBOUT("ETRY","delete Allow:")
-	etry->dropHeader("Allow:");
-	DEBOUT("ETRY","delete Route:")
-	etry->dropHeader("Route:");
-	DEBOUT("ETRY","delete Date:")
-	etry->dropHeader("Date:");
 
-//				DEBOUT("ETRY","delete Content-Length:")
-//				etry->dropHeader("Content-Length:");
-	etry->setGenericHeader("Content-Length:","0");
-	//crash here...
+	SipUtil.genASideReplyFromRequest(_message, etry);
 
-
-
-	//via add rport
-	C_HeadVia* viatmp = (C_HeadVia*) etry->getSTKHeadVia().top();
-	DEBOUT("via1", viatmp->getC_AttVia().getContent())
-	DEBOUT("via2", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-	//TODO 124??
-	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-	//viatmp->getC_AttVia().getViaParms().compileTupleVector();
-	DEBOUT("via3", viatmp->getC_AttVia().getViaParms().findRvalue("rport"))
-
-	DEBOUT("via4", viatmp->getC_AttVia().getContent())
-	etry->popSTKHeadVia();
-	etry->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
-
-
-
-	DEBOUT("ETRY","setDestEntity")
-	etry->setDestEntity(SODE_APOINT);
-
-	etry->compileMessage();
 	etry->dumpVector();
 	etry->typeOfInternal = TYPE_MESS;
 
@@ -859,49 +826,9 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 	reply_x->setGenEntity(SODE_SMCLPOINT);
 	reply_x->typeOfInternal = TYPE_MESS;
 
-	//Must define here the to tag
-	char totmp[512];
-	sprintf(totmp, "%s %s;tag=%x",__message->getHeadTo().getNameUri().c_str(), __message->getHeadTo().getC_AttSipUri().getContent().c_str(),__message);
-	string totmpS(totmp);
-	DEBOUT("******** TO new" , totmpS)
-	reply_x->replaceHeadTo(totmpS);
-	DEBOUT("TO",reply_x->getHeadTo().getContent())
-	DEBOUT("TO",reply_x->getHeadTo().getC_AttSipUri().getContent())
-	DEBOUT("TO",reply_x->getHeadTo().getNameUri())
-	DEBOUT("TO",reply_x->getHeadTo().getC_AttUriParms().getContent())
 
+	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
 
-	//TODO qui fare dialoge_x...
-	DEBOUT("reply_x","SIP/2.0 " << _message->getHeadSipReply().getContent())
-	reply_x->setHeadSipReply(_message->getHeadSipReply().getContent());
-	DEBOUT("reply_x","Purge sdp")
-	reply_x->purgeSDP();
-	DEBOUT("reply_x","delete User-Agent:")
-	reply_x->dropHeader("User-Agent:");
-	DEBOUT("reply_x","delete Max-Forwards:")
-	reply_x->removeMaxForwards();
-	DEBOUT("reply_x","delete Allow:")
-	reply_x->dropHeader("Allow:");
-	DEBOUT("reply_x","delete Route:")
-	reply_x->dropHeader("Route:");
-	DEBOUT("reply_x","delete Date:")
-	reply_x->dropHeader("Date:");
-	DEBOUT("reply_x","delete Content-Type:")
-	reply_x->dropHeader("Content-Type:");
-
-	reply_x->setGenericHeader("Content-Length:","0");
-	//crash here...
-
-	//via add rport
-	DEBY
-	C_HeadVia* viatmp = (C_HeadVia*) reply_x->getSTKHeadVia().top();
-	//TODO 124??
-	DEBOUT("viatmp->getContent", viatmp->getContent())
-	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-	reply_x->popSTKHeadVia();
-	reply_x->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
-
-	reply_x->compileMessage();
 	reply_x->dumpVector();
 
 	C_HeadVia* viatmp2 = (C_HeadVia*) reply_x->getSTKHeadVia().top();
