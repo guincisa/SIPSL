@@ -17,6 +17,7 @@ A<-SIPSL
 	Via: SIP/2.0/UDP 127.0.0.1:5062;branch=z9hG4bKkhlrojel;rport=124
 
 +++ error remove contact +++
++++ fixed +++
 
 	Contact: <sip:gugli_twinkle@127.0.0.1·5062>
 
@@ -38,6 +39,7 @@ SIPSL->B
 	Contact: <sip:sipsl.gugli.con:5060>
 ++ must be 
 	Contact: <sip:sipsl@grog:5060>
+	fixed +++
 	
 	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce2830#1265385945486371;rport
 **************************************************************************************
@@ -71,8 +73,9 @@ A<-SIPSL
 	To: <sip:gugli_linphone@172.21.160.165:5061>
 +++ fixed using short tag+++
 
-+++ contact must be changed using to ? +++
-	Contact: <sip:gugli:linphone@172.21.160.165:5061>
++++ contact changed to +++
+	Contact: <sip:sipsl.gugli.con:5060>
++++ fixed +++
 	
 	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
 	Call-ID: kvhahmvkjcrkljv@grog
@@ -85,8 +88,9 @@ SIPSL<-B
 	To: <sip:gugli_linphone@172.21.160.165:5061>;tag=1472372426
 	Call-ID: kvhahmvkjcrkljv@grog
 	
-+++ contact has been changed by B using to +++
-	Contact: <sip:gugli:linphone@172.21.160.165:5061>
++++ contact changed to +++
+	Contact: <sip:sipsl.gugli.con:5060>
++++ fixed +++
 	
 **************************************************************************************
 **************************************************************************************
@@ -95,10 +99,11 @@ A<-SIPSL
 	
 +++ incorrect to tag, must be filled +++
 	To: <sip:gugli_linphone@172.21.160.165:5061>
-+++ fixed +++
++++ fixed using short tab+++
 
-+++ contact must be changed using to ? +++
-	Contact: <sip:gugli:linphone@172.21.160.165:5061>
++++ contact changed to +++
+	Contact: <sip:sipsl.gugli.con:5060>
++++ fixed +++
 	
 	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
 	Call-ID: kvhahmvkjcrkljv@grog
@@ -123,8 +128,9 @@ A<-SIPSL
 +++ incorrect to tag, must be filled +++
 	To: <sip:gugli_linphone@172.21.160.165:5061>
 	
-+++ contact must be changed using to ? +++
-	Contact: <sip:gugli:linphone@172.21.160.165:5061>
++++ contact changed to +++
+	Contact: <sip:sipsl.gugli.con:5060>
++++ fixed +++
 	
 	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
 	Call-ID: kvhahmvkjcrkljv@grog
@@ -140,6 +146,9 @@ A->SIPSL
 	Call-ID: kvhahmvkjcrkljv@grog
 **************************************************************************************
 **************************************************************************************
+
+
+
 SIPSL->B
 	ACK sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0
 	To: <sip:gugli_linphone@172.21.160.165:5061>

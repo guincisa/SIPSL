@@ -818,6 +818,8 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 
 	ACTION* action = new ACTION();
 
+	// the message contains the to tag that we must save
+	// or store it in valo during 200ok
 
 	MESSAGE* __message = _sm->getSL_CO()->call_oset->getGenMessage();
 	DEBOUT("MESSAGE GENERATOR", __message)

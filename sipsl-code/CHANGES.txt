@@ -1,17 +1,17 @@
 CHANGES
 
 ----> current
-finish implement the new TO tag into the 200OK A<-SIPSL
-must manage Contact:
-if I put to tag in above the phone A sends the ack to A...???
-the issue seems on Contact: must be managed...
-how contact works in b2bua???
-
-implement SIPUTIL
+fix ACK top B still not recognized by b party still sends 200ok
 
 ************************************************************************************
 ************************************************************************************
-9. (extends bug 7)
+11.
+store to tag from B (sent with DE or 180 RING or 200 OK)
+10. fixed in call setup
+contact 
+------------------------------------------------------------------------------------
+
+9. (extends bug 7) DONE SIPUTIL
 must define a method oon which all the header changes are made in single part of the code
 like SIP factory...
 ------------------------------------------------------------------------------------

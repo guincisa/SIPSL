@@ -112,6 +112,17 @@ void VALO::onAck(MESSAGE* _message){
 	message->purgeSDP();
 	message->dropHeader("Content-Type:");
 
+	char toTmp[512];
+	sprintf(toTmp, "%s %s;tag=%s",message->getHeadTo().getNameUri().c_str(), message->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
+	string toTmpS(toTmp);
+	DEBOUT("******** TO new" , toTmpS)
+	message->replaceHeadTo(toTmpS);
+	DEBOUT("TO",message->getHeadTo().getContent())
+	DEBOUT("TO",message->getHeadTo().getC_AttSipUri().getContent())
+	DEBOUT("TO",message->getHeadTo().getNameUri())
+	DEBOUT("TO",message->getHeadTo().getC_AttUriParms().getContent())
+
+
 	//Standard changes
 	SipUtil.genBRequestfromARequest(call_oset->getGenMessage(), message, getSUDP());
 
@@ -177,6 +188,12 @@ void VALO::onBye(MESSAGE* _message){
 void VALO::on200Ok(MESSAGE* _message){
 
 		MESSAGE* __message = call_oset->getGenMessage();
+
+		DEBOUT("Store TO TAG ",_message->getHeadTo().getC_AttUriParms().getContent())
+		DEBOUT("Store TO TAG value ",_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
+		toTagB = _message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag");
+
+
 		DEBOUT("on200Ok MESSAGE GENERATOR", __message)
 		CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
 		ok_x->setDestEntity(SODE_SMSVPOINT);
