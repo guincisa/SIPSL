@@ -67,7 +67,7 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("VALO","Cseq")
 
 		//Standard changes
-		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
+		SipUtil.genBRequestfromARequest(_message, message, getSUDP());
 
 		message->dumpVector();
 		DEBOUT("New outgoing b2b message", message->getIncBuffer())
@@ -113,7 +113,7 @@ void VALO::onAck(MESSAGE* _message){
 	message->dropHeader("Content-Type:");
 
 	//Standard changes
-	SipUtil.genBInvitefromAInvite(call_oset->getGenMessage(), message, getSUDP());
+	SipUtil.genBRequestfromARequest(call_oset->getGenMessage(), message, getSUDP());
 
 	message->dumpVector();
 
@@ -161,7 +161,7 @@ void VALO::onBye(MESSAGE* _message){
 	message->purgeSDP();
 	message->dropHeader("Content-Type:");
 
-	SipUtil.genBInvitefromAInvite(call_oset->getGenMessage(), message, getSUDP());
+	SipUtil.genBRequestfromARequest(call_oset->getGenMessage(), message, getSUDP());
 	message->dumpVector();
 	DEBOUT("New outgoing b2b message", message->getIncBuffer())
 
@@ -183,35 +183,6 @@ void VALO::on200Ok(MESSAGE* _message){
 		ok_x->typeOfInternal = TYPE_MESS;
 
 		DEBOUT("ok_x","SIP/2.0 200 OK")
-		ok_x->setHeadSipReply("SIP/2.0 200 OK");
-
-		DEBOUT("ok_x","delete User-Agent:")
-		ok_x->dropHeader("User-Agent:");
-		DEBOUT("ok_x","delete Max-Forwards:")
-		ok_x->removeMaxForwards();
-		DEBOUT("ok_x","delete Allow:")
-		ok_x->dropHeader("Allow:");
-		DEBOUT("ok_x","delete Route:")
-		ok_x->dropHeader("Route:");
-		DEBOUT("ok_x","delete Date:")
-		ok_x->dropHeader("Date:");
-
-		// change tag
-//		char totmp[512];
-//		// check if NameUri is empty
-//		sprintf(totmp, "%s %s;tag=%x",ok_x->getHeadTo().getNameUri().c_str(), ok_x->getHeadTo().getC_AttSipUri().getContent().c_str(),__message);
-//		string totmpS(totmp);
-//		DEBOUT("******** 200 OK TO tag new" , totmpS)
-//		ok_x->replaceHeadTo(totmpS);
-
-		//via add rport
-		DEBY
-		C_HeadVia* viatmp = (C_HeadVia*) ok_x->getSTKHeadVia().top();
-		//TODO 124??
-		DEBOUT("viatmp->getContent", viatmp->getContent())
-		viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-		ok_x->popSTKHeadVia();
-		ok_x->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
 
 		ok_x->setGenericHeader("Content-Length:","0");
 
@@ -225,8 +196,10 @@ void VALO::on200Ok(MESSAGE* _message){
 			ok_x->dumpVector();
 		}
 
+		ok_x->replaceHeadContact("<sip:sipsl@grog:5060>");
 
-		ok_x->compileMessage();
+		SipUtil.genASideReplyFromBReply(_message, __message, ok_x);
+
 		ok_x->dumpVector();
 
 		sl_cc->p_w(ok_x);

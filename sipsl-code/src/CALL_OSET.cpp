@@ -505,6 +505,8 @@ ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 	DEBOUT("ETRY","SIP/2.0 100 Trying")
 	etry->setHeadSipReply("SIP/2.0 100 Trying");
 
+	etry->dropHeader("Contact:");
+
 	SipUtil.genASideReplyFromRequest(_message, etry);
 
 	etry->dumpVector();
@@ -827,11 +829,20 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 	reply_x->typeOfInternal = TYPE_MESS;
 
 
+	DEBOUT("CONTACT", reply_x->getHeadContact().getContent())
+
+	reply_x->replaceHeadContact("<sip:sipsl@grog:5060>");
+
+	DEBOUT("NEW CONTACT", reply_x->getHeadContact().getContent())
+
+	DEBOUT("Purge SDP","")
+	reply_x->purgeSDP();
+
 	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
 
 	reply_x->dumpVector();
 
-	C_HeadVia* viatmp2 = (C_HeadVia*) reply_x->getSTKHeadVia().top();
+	//C_HeadVia* viatmp2 = (C_HeadVia*) reply_x->getSTKHeadVia().top();
 
 	SingleAction sa_1 = SingleAction(reply_x);
 

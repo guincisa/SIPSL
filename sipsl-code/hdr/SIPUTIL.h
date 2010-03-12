@@ -40,8 +40,8 @@ class SIPUTIL {
 		// Generate a reply to A from a Reply
 		void genASideReplyFromBReply(MESSAGE* gtor, MESSAGE* _gtor, MESSAGE* gted);
 		void genASideReplyFromRequest(MESSAGE* gtor, MESSAGE* getd);
-		// Generate B Reuest from A Request
+
+		// Generate B Request from A Request
 		void genBRequestfromARequest(MESSAGE* gtor, MESSAGE* getd, SUDP* sudp);
-		void genBInvitefromAInvite(MESSAGE* gtor, MESSAGE* gted, SUDP* sudp);
 
 };

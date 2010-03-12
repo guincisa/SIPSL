@@ -39,9 +39,13 @@
 
 void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted){
 
+	//__gtor is the B reply
+	// _gtor is the A Invite
+	// _getd reply for A
+
 	//Must define here the to tag
 	char totmp[512];
-	sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo().getNameUri().c_str(), _gtor->getHeadTo().getC_AttSipUri().getContent().c_str(),_gtor);
+	sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo().getNameUri().c_str(), __gtor->getHeadTo().getC_AttSipUri().getContent().c_str(),__gtor);
 	string totmpS(totmp);
 	DEBOUT("******** TO new" , totmpS)
 	_gted->replaceHeadTo(totmpS);
@@ -52,10 +56,10 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 
 
 	//TODO qui fare dialoge_x...
-	DEBOUT("_gted","SIP/2.0 " << __gtor->getHeadSipReply().getContent())
-	_gted->setHeadSipReply(__gtor->getHeadSipReply().getContent());
-	DEBOUT("reply_x","Purge sdp")
-	_gted->purgeSDP();
+	DEBOUT("_gted","SIP/2.0 " << _gtor->getHeadSipReply().getContent())
+	_gted->setHeadSipReply(_gtor->getHeadSipReply().getContent());
+//	DEBOUT("reply_x","Purge sdp")
+//	_gted->purgeSDP();
 	DEBOUT("reply_x","delete User-Agent:")
 	_gted->dropHeader("User-Agent:");
 	DEBOUT("reply_x","delete Max-Forwards:")
@@ -66,10 +70,10 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	_gted->dropHeader("Route:");
 	DEBOUT("reply_x","delete Date:")
 	_gted->dropHeader("Date:");
-	DEBOUT("reply_x","delete Content-Type:")
-	_gted->dropHeader("Content-Type:");
+//	DEBOUT("reply_x","delete Content-Type:")
+//	_gted->dropHeader("Content-Type:");
 
-	_gted->setGenericHeader("Content-Length:","0");
+	//_gted->setGenericHeader("Content-Length:","0");
 	//crash here...
 
 	//via add rport
@@ -122,24 +126,24 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 	_gted->compileMessage();
 }
 
+//void SIPUTIL::genBRequestfromARequest(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
+//
+//		//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
+//
+//		char viatmp[512];
+//		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",sudp->getDomain().c_str(),sudp->getPort(),_gtor->getKey().c_str());
+//		string viatmpS(viatmp);
+//		_gted->purgeSTKHeadVia();
+//		_gted->pushHeadVia("Via: " + viatmpS);
+//
+//		_gted->replaceHeadContact("<sip:sipsl@grog:5060>");
+//		DEBOUT("NEW CONTACT", _gted->getHeadContact().getContent())
+//
+//		// Compile the message
+//		_gted->compileMessage();
+//
+//	}
 void SIPUTIL::genBRequestfromARequest(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
-
-		//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
-
-		char viatmp[512];
-		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",sudp->getDomain().c_str(),sudp->getPort(),_gtor->getKey().c_str());
-		string viatmpS(viatmp);
-		_gted->purgeSTKHeadVia();
-		_gted->pushHeadVia("Via: " + viatmpS);
-
-		_gted->replaceHeadContact("<sip:sipsl@grog:5060>");
-		DEBOUT("NEW CONTACT", _gted->getHeadContact().getContent())
-
-		// Compile the message
-		_gted->compileMessage();
-
-	}
-void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 
