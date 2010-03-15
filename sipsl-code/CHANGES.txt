@@ -1,11 +1,12 @@
 CHANGES
 
 ----> current
-fix ACK top B still not recognized by b party still sends 200ok
+ACK fixed 200 ok is not coming
+call setup seems correct
 
 ************************************************************************************
 ************************************************************************************
-11.
+11. fixed: all variable are stored in a map
 store to tag from B (sent with DE or 180 RING or 200 OK)
 10. fixed in call setup
 contact 

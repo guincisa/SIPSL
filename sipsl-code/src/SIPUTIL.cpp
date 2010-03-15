@@ -85,8 +85,6 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	_gted->popSTKHeadVia();
 	_gted->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
 
-	_gted->compileMessage();
-
 
 }
 
@@ -122,8 +120,6 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 
 	DEBOUT("GTED","setDestEntity")
 	_gted->setDestEntity(SODE_APOINT);
-
-	_gted->compileMessage();
 }
 
 //void SIPUTIL::genBRequestfromARequest(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
@@ -143,7 +139,7 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 //		_gted->compileMessage();
 //
 //	}
-void SIPUTIL::genBRequestfromARequest(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
+void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 
@@ -155,7 +151,7 @@ void SIPUTIL::genBRequestfromARequest(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp
 
 	//Create new call id
 	char callIdtmp[512];
-	sprintf(callIdtmp, "%s@%s", _gted->getKey().c_str(), sudp->getDomain().c_str());
+	sprintf(callIdtmp, "%s@%s", _gtor->getKey().c_str(), sudp->getDomain().c_str());
 	string callIdtmpS(callIdtmp);
 	_gted->setGenericHeader("Call-ID:", callIdtmpS);
 
@@ -183,7 +179,5 @@ void SIPUTIL::genBRequestfromARequest(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp
 	_gted->replaceHeadContact("<sip:sipsl@grog:5060>");
 	DEBOUT("NEW CONTACT", _gted->getHeadContact().getContent())
 
-	// Compile the message
-	_gted->compileMessage();
 
 }

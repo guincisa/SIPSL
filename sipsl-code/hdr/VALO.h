@@ -41,7 +41,9 @@ class VALO : public ALO {
 	// the To Tag that B sends back in 200ok
 	// actually it is sent before in DE or 180 Ring but we store it here
 	// since VALO only intercepts the 200 ok
-	string toTagB;
+	map<string, void*> ctxt_store;
+
+
 	int dummy;
 	public:
 	VALO(ENGINE*, CALL_OSET*);

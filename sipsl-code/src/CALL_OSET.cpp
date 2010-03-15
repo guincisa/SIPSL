@@ -508,7 +508,7 @@ ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 	etry->dropHeader("Contact:");
 
 	SipUtil.genASideReplyFromRequest(_message, etry);
-
+	etry->compileMessage();
 	etry->dumpVector();
 	etry->typeOfInternal = TYPE_MESS;
 
@@ -841,7 +841,7 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 	reply_x->purgeSDP();
 
 	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
-
+	reply_x->compileMessage();
 	reply_x->dumpVector();
 
 	//C_HeadVia* viatmp2 = (C_HeadVia*) reply_x->getSTKHeadVia().top();

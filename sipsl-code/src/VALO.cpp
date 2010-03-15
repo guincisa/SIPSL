@@ -67,8 +67,8 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("VALO","Cseq")
 
 		//Standard changes
-		SipUtil.genBRequestfromARequest(_message, message, getSUDP());
-
+		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
+		message->compileMessage();
 		message->dumpVector();
 		DEBOUT("New outgoing b2b message", message->getIncBuffer())
 
@@ -113,6 +113,9 @@ void VALO::onAck(MESSAGE* _message){
 	message->dropHeader("Content-Type:");
 
 	char toTmp[512];
+	map<string, void*> ::iterator p;
+	p = ctxt_store.find("totag");
+	string toTagB = *((string*)p->second);
 	sprintf(toTmp, "%s %s;tag=%s",message->getHeadTo().getNameUri().c_str(), message->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
 	string toTmpS(toTmp);
 	DEBOUT("******** TO new" , toTmpS)
@@ -122,9 +125,18 @@ void VALO::onAck(MESSAGE* _message){
 	DEBOUT("TO",message->getHeadTo().getNameUri())
 	DEBOUT("TO",message->getHeadTo().getC_AttUriParms().getContent())
 
-
 	//Standard changes
-	SipUtil.genBRequestfromARequest(call_oset->getGenMessage(), message, getSUDP());
+	//SipUtil.genBRequestfromARequest(call_oset->getGenMessage(), _message, message, getSUDP());
+
+	DEBOUT("NEW ACK via","")
+	map<string, void*> ::iterator p2;
+	p2 = ctxt_store.find("allvia");
+	string allVia = *((string*)p2->second);
+	message->purgeSTKHeadVia();
+	message->pushHeadVia("Via: " + allVia);
+	DEBOUT("NEW ACK via",allVia.c_str())
+
+	message->compileMessage();
 
 	message->dumpVector();
 
@@ -172,7 +184,7 @@ void VALO::onBye(MESSAGE* _message){
 	message->purgeSDP();
 	message->dropHeader("Content-Type:");
 
-	SipUtil.genBRequestfromARequest(call_oset->getGenMessage(), message, getSUDP());
+	message->compileMessage();
 	message->dumpVector();
 	DEBOUT("New outgoing b2b message", message->getIncBuffer())
 
@@ -191,8 +203,26 @@ void VALO::on200Ok(MESSAGE* _message){
 
 		DEBOUT("Store TO TAG ",_message->getHeadTo().getC_AttUriParms().getContent())
 		DEBOUT("Store TO TAG value ",_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
-		toTagB = _message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag");
 
+		string* totag = new string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
+		ctxt_store.insert(pair<string, void*>("totag", (void*) totag ));
+
+    	stack<C_HeadVia*>	tmpViaS;
+    	tmpViaS = _message->getSTKHeadVia();
+		DEBOUT("200 ok get via rport and others 1", tmpViaS.top()->getContent())
+		DEBOUT("200 ok get via rport and others 2", tmpViaS.top()->getC_AttVia().getContent())
+		string* allvia = new string(tmpViaS.top()->getC_AttVia().getContent());
+		DEBOUT("200 ok get via rport and others 3", *allvia)
+		ctxt_store.insert(pair<string, void*>("allvia", (void*) allvia ));
+//
+//		DEBOUT("200 ok get via rport and others 3", tmpViaS.top()->getC_AttVia().getViaParms().getContent())
+//		DEBOUT("200 ok get via rport and others 4 branch", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("branch"))
+//		DEBOUT("200 ok get via rport and others 4 rport", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("rport"))
+//		string* rport = new string(tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("rport"));
+//		ctxt_store.insert(pair<string, void*>("rport", (void*) totag ));
+//		DEBOUT("200 ok get via rport and others 4 received", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("received"))
+//		string* received = new string(tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("received"));
+//		ctxt_store.insert(pair<string, void*>("received", (void*) totag ));
 
 		DEBOUT("on200Ok MESSAGE GENERATOR", __message)
 		CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
@@ -216,7 +246,7 @@ void VALO::on200Ok(MESSAGE* _message){
 		ok_x->replaceHeadContact("<sip:sipsl@grog:5060>");
 
 		SipUtil.genASideReplyFromBReply(_message, __message, ok_x);
-
+		ok_x->compileMessage();
 		ok_x->dumpVector();
 
 		sl_cc->p_w(ok_x);
