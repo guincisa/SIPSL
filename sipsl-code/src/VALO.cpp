@@ -83,8 +83,8 @@ void VALO::onAck(MESSAGE* _message){
 
 	//v4
 	//get invite sent to b
-	DEBOUT("VALO onAck", call_oset->getGenMessage_CL_V4()->getIncBuffer())
-	CREATEMESSAGE(message, call_oset->getGenMessage_CL_V4(), SODE_ALOPOINT)
+	DEBOUT("VALO onAck", call_oset->getInviteB()->getIncBuffer())
+	CREATEMESSAGE(message, call_oset->getInviteB(), SODE_ALOPOINT)
 	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 	//set as source the original ack, needed to identify call_oset_x when back to call control
 	message->setSourceMessage(_message);
@@ -155,8 +155,8 @@ void VALO::onBye(MESSAGE* _message){
 
 	//v4
 	//get invite sent to b
-	DEBOUT("VALO onBye", call_oset->getGenMessage_CL_V4()->getIncBuffer())
-	CREATEMESSAGE(message, call_oset->getGenMessage_CL_V4(), SODE_ALOPOINT)
+	DEBOUT("VALO onBye", call_oset->getInviteB()->getIncBuffer())
+	CREATEMESSAGE(message, call_oset->getInviteB(), SODE_ALOPOINT)
 	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 	//set as source the original ack, needed to identify call_oset_x when back to call control
 	message->setSourceMessage(_message);
@@ -199,7 +199,7 @@ void VALO::onBye(MESSAGE* _message){
 }
 void VALO::on200Ok(MESSAGE* _message){
 
-		MESSAGE* __message = call_oset->getGenMessage();
+		MESSAGE* __message = call_oset->getInviteA();
 
 		DEBOUT("Store TO TAG ",_message->getHeadTo().getC_AttUriParms().getContent())
 		DEBOUT("Store TO TAG value ",_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));

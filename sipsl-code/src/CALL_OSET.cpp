@@ -83,13 +83,13 @@ static SIPUTIL SipUtil;
 CALL_OSET::CALL_OSET(ENGINE* _engine, MESSAGE* _genMessage){
 
 	engine = _engine;
-	genMessage = _genMessage;
-	genMessage_CL_v4 = 0x0;
+	inviteA = _genMessage;
+	inviteB = 0x0;
 	sl_sm_cl_v4 = 0x0;
 
 }
-MESSAGE* CALL_OSET::getGenMessage(void){
-	return genMessage;
+MESSAGE* CALL_OSET::getInviteA(void){
+	return inviteA;
 }
 
 //**********************************************************************************
@@ -116,49 +116,6 @@ SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
 }
 //**********************************************************************************
 //**********************************************************************************
-//v4 SL_SM_CL* CALL_OSET::getSL_SM_CL(string _callidy){
-//
-//	map<string, SL_SM_CL*>::iterator iter = mm_sl_sm_cl.find(_callidy);
-//    if( iter != mm_sl_sm_cl.end() ) {
-//		return iter->second;
-//    }
-//    else {
-//    	return 0x0;
-//    }
-//}
-////v4
-////**********************************************************************************
-////**********************************************************************************
-//MESSAGE* CALL_OSET::findGenMess_CL_v4(string _callidy){
-//
-//	map<string, MESSAGE*>::iterator iter = mm_genMessage_CL_v4.find(_callidy);
-//    if( iter != mm_genMessage_CL_v4.end() ) {
-//		return iter->second;
-//    }
-//    else {
-//    	return 0x0;
-//    }
-//}
-//**********************************************************************************
-//**********************************************************************************
-//v4 void CALL_OSET::addSL_SM_CL(string _callId_Y, SL_SM_CL* _sl_cl){
-//
-//	mm_sl_sm_cl.insert(make_pair(_callId_Y,  _sl_cl));
-//
-//	return;
-//}
-////v4
-////**********************************************************************************
-////**********************************************************************************
-//void CALL_OSET::addGenMess_CL_v4(string _callId_Y, MESSAGE* _message){
-//
-//	mm_genMessage_CL_v4.insert(make_pair(_callId_Y,  _message));
-//
-//	return;
-//}
-//v4
-//**********************************************************************************
-//**********************************************************************************
 SL_SM_CL* CALL_OSET::getSL_SM_CL_v4(void){
 	return sl_sm_cl_v4;
 }
@@ -177,13 +134,13 @@ string CALL_OSET::getCallId_Y_v4(void){
 	return callId_Y_v4;
 }
 
-void CALL_OSET::setGenMess_CL_v4(MESSAGE* _message){
-	DEBOUT("CALL_OSET::setGenMess_CL_v4 store ", _message)
-	genMessage_CL_v4 = _message;
+void CALL_OSET::setInviteB(MESSAGE* _message){
+	DEBOUT("CALL_OSET::setInviteB store ", _message)
+	inviteB = _message;
 }
 //get the final invite
-MESSAGE* CALL_OSET::getGenMessage_CL_V4(void){
-	return genMessage_CL_v4;
+MESSAGE* CALL_OSET::getInviteB(void){
+	return inviteB;
 }
 //clear all the other non confirmed invites
 void CALL_OSET::purgeGenMess_CL_v4(void){
@@ -302,7 +259,7 @@ void SL_CO::call(MESSAGE* _message){
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
 			call_oset->setSL_SM_CL_v4(sl_sm_cl);
 			call_oset->setCall_IdY_v4(callidy);
-			call_oset->setGenMess_CL_v4(_message);
+			call_oset->setInviteB(_message);
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 		}
@@ -821,7 +778,7 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 	// the message contains the to tag that we must save
 	// or store it in valo during 200ok
 
-	MESSAGE* __message = _sm->getSL_CO()->call_oset->getGenMessage();
+	MESSAGE* __message = _sm->getSL_CO()->call_oset->getInviteA();
 	DEBOUT("MESSAGE GENERATOR", __message)
 
 

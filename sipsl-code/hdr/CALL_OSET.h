@@ -51,7 +51,8 @@ class CALL_OSET {
 		//v4 map<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
 		string callId_X;
-		MESSAGE* genMessage;
+	    //MESSAGE* genMessage;
+	    MESSAGE* inviteA;
 
 		//New client State Machine v4
 		//map of call_y message, first list of outgoing invites
@@ -61,7 +62,8 @@ class CALL_OSET {
 		//The final call_y of the only confirmed invite
 		string callId_Y_v4;
 		//The final confirmed invite
-		MESSAGE* genMessage_CL_v4;
+		MESSAGE* inviteB;
+		//MESSAGE* genMessage_CL_v4;
 
 
 	public:
@@ -77,7 +79,7 @@ class CALL_OSET {
 		ALO* getALO(void);
 		ENGINE* getENGINE(void);
 
-		MESSAGE* getGenMessage(void);
+		MESSAGE* getInviteA(void);
 
 		//New client State Machine v4
 		//add call_y and message to the map
@@ -89,9 +91,9 @@ class CALL_OSET {
 		//set the only sm
 		void setSL_SM_CL_v4(SL_SM_CL*);
 		//set the final invite
-		void setGenMess_CL_v4(MESSAGE*);
+		void setInviteB(MESSAGE*);
 		//get the final invite
-		MESSAGE* getGenMessage_CL_V4(void);
+		MESSAGE* getInviteB(void);
 		//clear all the other non confirmed invites
 		void purgeGenMess_CL_v4(void);
 
