@@ -11,7 +11,6 @@ store to tag from B (sent with DE or 180 RING or 200 OK)
 10. fixed in call setup
 contact 
 ------------------------------------------------------------------------------------
-
 9. (extends bug 7) DONE SIPUTIL
 must define a method oon which all the header changes are made in single part of the code
 like SIP factory...

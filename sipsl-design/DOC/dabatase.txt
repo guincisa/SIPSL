@@ -1,0 +1,75 @@
+Cached DB
+
+1) object creation
+
+1.a load all DB
+all database is loaded during creation of the object, separated thread, access locked until ready.
+No latency during call setup for a new subscriber.
+
+1.b load on demand
+record are loaded once they are needed: faster startup, less cache used, call setup for new subscriber is slower. 
+
+2) provisioning updates
+2.a via object
+the updates (provisioning) is done through the object, the object asynchronously updates the db
+
+2.b via database
+the changes are not visible unless some ack is set to the object, the ack may contain the subscriber key
+to instruct the object to reload the required record.
+
+object external interface
+tcp/ip sockrt to accept mcommands like
+I[[TABLE][1234][a][][][asa]]
+I: insert
+[] is the row [row]
+row = [key][field1][field2][field3]
+empty [] are optional fields not provisioned
+
+reply:
+IA nnn: insert accepted (syntax ok), nnn is the identifier of the task 
+IP nnn: insert processed (semantic ok, like record does not exisit), the new row is available in the object
+IS nnn: insert stored, save to db
+ 
+update:
+
+UI[[1234][a][][][asa]]
+UQ[[1234][a][][][asa]]
+UI: update immediate, means that all calls in progress are affected
+UQ: update queue, the update will be processed only when all calls related to the recoed are closed
+[] is the row [row]
+row = [key][field1][field2][field3]
+empty [] are fields that are set to null, this means that also the old values if they don't need change must be reprovisioned
+
+reply:
+UA nn: update accepted
+UW nn: update waiting (only if UQ was sent)
+UP nn: update processes
+US nn: update stored
+
+DQ[[dddd]] deletion
+DI[[ddd]] immediate
+the deletion is accepted ands the record is marked. The record is phisically deleted inly when all calls in progress
+are closed:
+DI: immediate aborts all calls in progress
+DA nnn: deletion accepted
+DW nnn: deletion waiting
+DP nnn: processed
+DS nnn: processed in db
+
+Logic:
+One dispatcher (ENGINE) receives the comands and dispacthes using the parse command to the correct object which manages the table
+
+command			DBENGINE       DOSIM (ENGINE?)
+				   |			 |
+	-------------->|			 |
+	I[[SIM][12][a] |			 |
+				   |	insert   |
+				   |------------>|
+				   |	p_w(IA)	 |
+				   |<------------|
+				   |	p_w(IP)	 |
+				   |<------------|
+				   
+				   
+procesing immediate or queued
+				   

@@ -1,0 +1,326 @@
+\documentclass[a4paper]{article}
+\title{Subscriber Data Object Manager for SIPSL}
+\author{guic}
+\date{April 2010}
+\begin{document}
+	\small
+	\maketitle
+\section{Overview}
+\subsection{Design}
+The architecure of the system foresees a dispatcher object (ENGINE) and a set of data objects which store the contents of all the tables using hash maps.
+Data objects are ENGINES.
+All updates are sent though p\_w. SIPSL access the data synchronously using methods which simply access the hash map. Rows in hash map have access flags or locks.
+
+\subsection{Object life}
+
+The dispatcher object creates the data objects, there is one defined class for
+every table (in the next release this will be under configuration and not hard coded).
+The data objects then load the data from database in two possible ways:
+
+\begin{itemize}
+   \item Load all DB: all table loaded during creation of the object. Separated
+   thread, access locked until ready.
+    \begin{enumerate}
+            \item no latency during call setup for a new subscriber.
+            \item initialization of the object is slow
+    \end{enumerate}
+   \item Load on demand: the object is empty and filled everytime SIPSL
+   requests a record.
+       \begin{enumerate}
+            \item faster startup
+            \item less cache used
+            \item first call setup for new subscriber is slower
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Object data access from SIPSL}
+SIPSL access data using the find method. The method may be locked due to some
+reason (updated by provisioning or loading).
+{\em How will I set the lock granularity??? }
+
+\subsection{Provisioning}
+
+The provisioning is done though a telnet or through UDP message to the
+dispatcher.
+
+
+{\em tpc needs to manage sessions, udp can work exactly like SUDP}
+
+
+The dispatched does a simple syntax check and de-tokens the command.
+If this step is successfull the command is ``accepted'' or ``queued'' and a reply is
+sent back.
+
+
+The second step is the processing of the comand which can be immediate, 
+queued or forced. Immediate commands update the hash map immediately even if the
+record is used by a call in progress.
+
+{\em maybe we can simplify and use only the queue}
+
+
+Immediate commands are subject to validation rules coded in the object (in the
+future they will be coded in the configuration file). The reason of validation
+is because a change can influence the call and generate inconsistency.
+
+
+
+Queued commands are stored until the record is not used by any call in progress.
+In that case the system replies with the ``queued'' message.
+
+Forced commands will abort the call in progress if the related data is used.
+
+Forced and queued command have also validation rules but are different from the
+immediate validation. For example: a forced/queued validation rule may be that
+the credit cannot be negative. An immediate validation rule can be that the
+credit cannot be lowered because it affects the call in progress.
+The priority is that first the queued/forced is tested and the the immediated
+is tested.
+
+If the immediate command updates the data successfully the system replies with
+the message ``processed''.
+The queued command replies ``processed'' also only when the data has been
+stored into the object.
+
+In a separate thread the object will update the database and replies with
+``stored'' message.
+
+All replies are identified by a couple \ll key,counter\gg. 
+
+
+
+
+
+\subsubsection{Provisioning insert new immediate}
+
+Immediate means that the change is applied immediately to the object. New record
+insert are always immediate since they are not used by calls in progress.
+
+\begin{itemize}
+	\item {\tt II[[tablename][key][field1]\ldots[fieldn]]}
+\end{itemize}
+
+
+The reply will be ``accepted'', this means that the dispatcher is sending the
+command to the object, syntax is ok. The counter identifies the command.
+
+\begin{itemize}
+	\item {\tt IIA[[tablename][key][counter]]}
+\end{itemize}
+
+The reply will be ``not accepted'', this means that the dispatcher is not
+sending the command to the object, syntax is not ok. There will be no other
+replies after that.
+
+\begin{itemize}
+	\item {\tt IINA[[tablename][key][Syntax error]]}
+\end{itemize}
+
+
+After ``accepted" the reply will be ``processed'': this means that the
+object has stored the value in hash table (the counter will be the same as above):
+
+\begin{itemize}
+	\item {\tt IIP[[tablename][key][counter]]}
+\end{itemize}
+
+After ``accepted" the reply can be ``not processed'': this means that the
+object has rejected the value due to queued/forced or immediate validation rule
+failed. The error message is related to the failed validation rule and is
+stored in the class. No other messages are sent. 
+
+\begin{itemize}
+	\item {\tt IINP[[tablename][key][error message]]}
+\end{itemize}
+
+After ``processed" the reply will be ``stored'': this means that the
+object has stored the value in database (the counter will be the same as above):
+
+\begin{itemize}
+	\item {\tt IIS[[tablename][key][counter]]}
+\end{itemize}
+
+After ``processed" the reply will be ``not stored'': this means that the
+object has enountered an error in the database, the object will not retry.
+
+\begin{itemize}
+	\item {\tt IINS[[tablename][key][counter][DB error]]}
+\end{itemize}
+
+All fields and related values must be specified so [] means insert null value or
+0 or empty string.
+
+
+
+
+
+
+
+\subsection{Provisioning update}
+
+\subsubsection{Provisioning update immediate}
+
+Immediate means that the change is applied immediately to the object. The
+update is applied even if the record is used by the SIPSL.
+The Object will first run the force/queued validations rules and then the
+immediate validations rules.
+
+\begin{itemize}
+	\item {\tt UI[[tablename][key][field1]\ldots[fieldn]]}
+\end{itemize}
+
+
+The reply will be ``accepted'', this means that the dispatcher is sending the
+command to the object, syntax is ok. The counter identifies the command.
+
+\begin{itemize}
+	\item {\tt UIA[[tablename][key][counter]]}
+\end{itemize}
+
+The reply will be ``not accepted'', this means that the dispatcher is not
+sending the command to the object, syntax is not ok. There will be no other
+replies after that.
+
+\begin{itemize}
+	\item {\tt UINA[[tablename][key][Syntax error]]}
+\end{itemize}
+
+
+After ``accepted" the reply will be ``processed'': this means that the
+object has stored the value in hash table (the counter will be the same as above):
+
+\begin{itemize}
+	\item {\tt UIP[[tablename][key][counter]]}
+\end{itemize}
+
+After ``accepted" the reply can be ``not processed'': this means that the
+object has rejected the value due to queued/forced or immediate validation rule
+failed. The error message is related to the failed validation rule and is
+stored in the class. No other messages are sent. 
+
+\begin{itemize}
+	\item {\tt UINP[[tablename][key][error message]]}
+\end{itemize}
+
+After ``processed" the reply will be ``stored'': this means that the
+object has stored the value in database (the counter will be the same as above):
+
+\begin{itemize}
+	\item {\tt UIS[[tablename][key][counter]]}
+\end{itemize}
+
+After ``processed" the reply will be ``not stored'': this means that the
+object has enountered an error in the database, the object will not retry.
+
+\begin{itemize}
+	\item {\tt UINS[[tablename][key][counter][DB error]]}
+\end{itemize}
+
+All fields and related values must be specified so [] means insert null value or
+0 or empty string.
+
+\subsubsection{Provisioning update queued}
+
+Queued means that the change is applied only after the record is released by
+SIPSL.
+
+{\em How to know if the record is busy???}
+
+
+\begin{itemize}
+	\item {\tt UQ[[tablename][key][field1]\ldots[fieldn]]}
+\end{itemize}
+
+
+The reply will be ``accepted'', this means that ten dispatcher is sending the
+command to the object, syntax is ok. 
+
+\begin{itemize}
+	\item {\tt UQA[[tablename][key][counter]]}
+\end{itemize}
+
+The reply will be ``not accepted'', this means that ten dispatcher is not
+sending the command to the object, syntax is not ok. There will be no other
+replies aftert that.
+
+\begin{itemize}
+	\item {\tt UQNA[[tablename][key][Syntax error]]}
+\end{itemize}
+
+
+After ``accepted" the reply will be ``queued'': this meann that the
+object has queued the row and will apply it as soon as the record is freed.
+
+\begin{itemize}
+	\item {\tt UQQ[[tablename][key][counter]]}
+\end{itemize}
+
+After ``accepted" the reply can be ``not queued'': this means that the
+object has rejected the value due to queued/forced validation rule
+failed (no immediate validation rule is applied). The error message is related
+to the failed validation rule and is stored in the class. No other messages are sent. 
+Error is sent also if the record does not exists.
+
+\begin{itemize}
+	\item {\tt UQNQ[[tablename][key][error message]]}
+\end{itemize}
+
+After ``queued" the reply will be ``processed'': this means that the
+object has stored the value in hash table (the counter will be the same as above):
+
+\begin{itemize}
+	\item {\tt UQP[[tablename][key][counter]]}
+\end{itemize}
+
+After ``queeud" the reply can be ``not processed'': this means that the
+object has rejected the value due unexpected error (validation have been
+successfull in the step before).
+
+\begin{itemize}
+	\item {\tt UQNP[[tablename][key][error message]]}
+\end{itemize}
+
+After ``processed" the reply will be ``stored'': this means that the
+object has stored the value in database (the counter will be the same as above):
+
+\begin{itemize}
+	\item {\tt UQS[[tablename][key][counter]]}
+\end{itemize}
+
+
+After ``processed" the reply will be ``not stored'': this means that the
+object has enountered an error in the database, the object will not retry.
+
+\begin{itemize}
+	\item {\tt UQNS[[tablename][key][counter][DB error]]}
+\end{itemize}
+
+All fields and related values must be specified so [] means inset null value or
+0 or empty string.
+
+\subsubsection{Provisioning update forced}
+
+Forced means that the change is applied even if the record is used by
+SIPSL, immediate validations are not checked and call is aborted.
+
+\subsection{Retrieve data}
+Logic:
+One dispatcher (ENGINE) receives the comands and dispacthes using the parse command to the correct object which manages the table
+
+\subsection{Logic}
+
+The dispatcher is an ENGINE, all table object are ENGINE.
+dispatcher and table objects can also be used internally bu the ALO to update
+the data.
+
+
+In case the update is sent by SIPSL immediate validations must be skipped,
+since the ALO must lower the credit of a SIM and lowering the credit is against
+the immediate validation rule.
+Eventually it may set to negative value, breaking the forced/queued validations
+rules.
+
+
+
+
+				   \end{document}
