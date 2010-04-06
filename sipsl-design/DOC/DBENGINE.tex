@@ -6,10 +6,17 @@
 	\small
 	\maketitle
 \section{Overview}
+
+\subsection{comments}
+Not easy to say if one record is used by call in progress. I need to have a
+flag on it.
+In case is not possible there will be only immediate updates with forced/queued
+rules.
+
 \subsection{Design}
 The architecure of the system foresees a dispatcher object (ENGINE) and a set of data objects which store the contents of all the tables using hash maps.
 Data objects are ENGINES.
-All updates are sent though p\_w. SIPSL access the data synchronously using methods which simply access the hash map. Rows in hash map have access flags or locks.
+All updates are sent though p\_w. SIPSL access the data synchronously using methods which simply access the hash map. 
 
 \subsection{Object life}
 
@@ -34,13 +41,12 @@ The data objects then load the data from database in two possible ways:
 \end{itemize}
 
 \subsection{Object data access from SIPSL}
-SIPSL access data using the find method. The method may be locked due to some
-reason (updated by provisioning or loading).
+SIPSL access data using the find method. 
 {\em How will I set the lock granularity??? }
 
 \subsection{Provisioning}
 
-The provisioning is done though a telnet or through UDP message to the
+The provisioning is done through a telnet or through UDP message to the
 dispatcher.
 
 
@@ -53,22 +59,23 @@ sent back.
 
 
 The second step is the processing of the comand which can be immediate, 
-queued or forced. Immediate commands update the hash map immediately even if the
-record is used by a call in progress.
+queued or forced. 
 
 {\em maybe we can simplify and use only the queue}
 
 
-Immediate commands are subject to validation rules coded in the object (in the
-future they will be coded in the configuration file). The reason of validation
-is because a change can influence the call and generate inconsistency.
-
-
+\paragraph{Queued command}
 
 Queued commands are stored until the record is not used by any call in progress.
-In that case the system replies with the ``queued'' message.
+The data is checked againts validations rules (queued/force rule)
 
-Forced commands will abort the call in progress if the related data is used.
+\paragraph{Forced command}
+
+Forced commands may abort the call in progress. Data is checked against
+the forced/queued rule and if it fails it is rejected.
+Then the data is checked against the immediate rule, if the rule is
+broken the call is aborted otherwise the command has the same effect of
+the immediate update.
 
 Forced and queued command have also validation rules but are different from the
 immediate validation. For example: a forced/queued validation rule may be that
@@ -77,38 +84,80 @@ credit cannot be lowered because it affects the call in progress.
 The priority is that first the queued/forced is tested and the the immediated
 is tested.
 
-If the immediate command updates the data successfully the system replies with
-the message ``processed''.
-The queued command replies ``processed'' also only when the data has been
-stored into the object.
+\paragraph{Immediate command}
+Immediate command executes the update regardless of the fact that there can be
+a call in progress with the record.
+Immediate commands are subject to two validation rules (forced/queued
+rule and immediate rule) coded in the object (in the future they will be coded
+in the configuration file). The reason of validation is because a change can influence
+ the call and generate inconsistency.
 
-In a separate thread the object will update the database and replies with
+
+\paragraph{Message flow}
+
+
+If the immediate and the forced are accepted the system replies with
+``accepted" message. If the command updates the data successfully the system
+replies with the message ``processed''.
+
+The queued command replies ``queued" when the system has accepted
+and queued the command. The system replyes ``processed'' also only when the
+data has been stored into the object.
+
+When the object updates the database it replies with
 ``stored'' message.
+
+All replyes are asynchronous.
 
 All replies are identified by a couple \ll key,counter\gg. 
 
+\subsubsection{Recap of provisioning}
+
+
+\begin{itemize}
+   \item Immediate: will execute the update even if the call is in progress but
+   they don't generate inconsistencies, they use special validations rules:
+   immediate rules and forced/queued validation rules.
+   \item Queued: will execute the update after the call has ended. It will use
+   the queued/forced validation rules.
+   \item Forced: will execute the update even if the call is in progress. If 
+  the immediate rule fails the call is aborted otherwise the command behaves 
+ like the immediate command.
+\end{itemize}
+
+The forced/queued rules are always executed first. The immediate rule is
+executed later.
+
+\begin{itemize}
+   \item Immediate validation rules: example: cannot change the credit during
+   the call in progress
+   \item Queued/forced validation rules: basic validation rules, credit cannot
+   ben negative
+\end{itemize}
 
 
 
 
+\subsection{Provisioning insert new}
 \subsubsection{Provisioning insert new immediate}
 
 Immediate means that the change is applied immediately to the object. New record
 insert are always immediate since they are not used by calls in progress.
+The object only executes the forced/queued validation rules.
 
 \begin{itemize}
 	\item {\tt II[[tablename][key][field1]\ldots[fieldn]]}
 \end{itemize}
 
 
-The reply will be ``accepted'', this means that the dispatcher is sending the
+The reply will be {\bf accepted}, this means that the dispatcher is sending the
 command to the object, syntax is ok. The counter identifies the command.
 
 \begin{itemize}
 	\item {\tt IIA[[tablename][key][counter]]}
 \end{itemize}
 
-The reply will be ``not accepted'', this means that the dispatcher is not
+The reply will be {\bf not accepted}, this means that the dispatcher is not
 sending the command to the object, syntax is not ok. There will be no other
 replies after that.
 
@@ -117,14 +166,14 @@ replies after that.
 \end{itemize}
 
 
-After ``accepted" the reply will be ``processed'': this means that the
+After {\bf accepted} the reply will be {\bf processed}: this means that the
 object has stored the value in hash table (the counter will be the same as above):
 
 \begin{itemize}
 	\item {\tt IIP[[tablename][key][counter]]}
 \end{itemize}
 
-After ``accepted" the reply can be ``not processed'': this means that the
+After {\bf accepted} the reply can be {\bf not processed}: this means that the
 object has rejected the value due to queued/forced or immediate validation rule
 failed. The error message is related to the failed validation rule and is
 stored in the class. No other messages are sent. 
@@ -133,14 +182,14 @@ stored in the class. No other messages are sent.
 	\item {\tt IINP[[tablename][key][error message]]}
 \end{itemize}
 
-After ``processed" the reply will be ``stored'': this means that the
+After {\bf processed} the reply will be {\bf stored}: this means that the
 object has stored the value in database (the counter will be the same as above):
 
 \begin{itemize}
 	\item {\tt IIS[[tablename][key][counter]]}
 \end{itemize}
 
-After ``processed" the reply will be ``not stored'': this means that the
+After {\bf processed} the reply will be {\bf not stored}: this means that the
 object has enountered an error in the database, the object will not retry.
 
 \begin{itemize}
@@ -170,14 +219,14 @@ immediate validations rules.
 \end{itemize}
 
 
-The reply will be ``accepted'', this means that the dispatcher is sending the
+The reply will {\bf accepted}, this means that the dispatcher is sending the
 command to the object, syntax is ok. The counter identifies the command.
 
 \begin{itemize}
 	\item {\tt UIA[[tablename][key][counter]]}
 \end{itemize}
 
-The reply will be ``not accepted'', this means that the dispatcher is not
+The reply will be {\bf not accepted}, this means that the dispatcher is not
 sending the command to the object, syntax is not ok. There will be no other
 replies after that.
 
@@ -186,14 +235,14 @@ replies after that.
 \end{itemize}
 
 
-After ``accepted" the reply will be ``processed'': this means that the
+After {\bf accepted} the reply will be {\bf processed}: this means that the
 object has stored the value in hash table (the counter will be the same as above):
 
 \begin{itemize}
 	\item {\tt UIP[[tablename][key][counter]]}
 \end{itemize}
 
-After ``accepted" the reply can be ``not processed'': this means that the
+After {\bf accepted} the reply can be {\bf not processed}: this means that the
 object has rejected the value due to queued/forced or immediate validation rule
 failed. The error message is related to the failed validation rule and is
 stored in the class. No other messages are sent. 
@@ -202,14 +251,14 @@ stored in the class. No other messages are sent.
 	\item {\tt UINP[[tablename][key][error message]]}
 \end{itemize}
 
-After ``processed" the reply will be ``stored'': this means that the
+After {\bf processed} the reply will be {\bf stored}: this means that the
 object has stored the value in database (the counter will be the same as above):
 
 \begin{itemize}
 	\item {\tt UIS[[tablename][key][counter]]}
 \end{itemize}
 
-After ``processed" the reply will be ``not stored'': this means that the
+After {\bf processed} the reply will be {\bf not stored}: this means that the
 object has enountered an error in the database, the object will not retry.
 
 \begin{itemize}
@@ -224,22 +273,20 @@ All fields and related values must be specified so [] means insert null value or
 Queued means that the change is applied only after the record is released by
 SIPSL.
 
-{\em How to know if the record is busy???}
-
 
 \begin{itemize}
 	\item {\tt UQ[[tablename][key][field1]\ldots[fieldn]]}
 \end{itemize}
 
 
-The reply will be ``accepted'', this means that ten dispatcher is sending the
+The reply will be {\bf accepted}, this means that ten dispatcher is sending the
 command to the object, syntax is ok. 
 
 \begin{itemize}
 	\item {\tt UQA[[tablename][key][counter]]}
 \end{itemize}
 
-The reply will be ``not accepted'', this means that ten dispatcher is not
+The reply will be {\bf not accepted}, this means that ten dispatcher is not
 sending the command to the object, syntax is not ok. There will be no other
 replies aftert that.
 
@@ -248,14 +295,14 @@ replies aftert that.
 \end{itemize}
 
 
-After ``accepted" the reply will be ``queued'': this meann that the
+After {\bf accepted} the reply will be {\bf queued}: this meann that the
 object has queued the row and will apply it as soon as the record is freed.
 
 \begin{itemize}
 	\item {\tt UQQ[[tablename][key][counter]]}
 \end{itemize}
 
-After ``accepted" the reply can be ``not queued'': this means that the
+After {\bf accepted} the reply can be {\bf not queued}: this means that the
 object has rejected the value due to queued/forced validation rule
 failed (no immediate validation rule is applied). The error message is related
 to the failed validation rule and is stored in the class. No other messages are sent. 
@@ -265,14 +312,14 @@ Error is sent also if the record does not exists.
 	\item {\tt UQNQ[[tablename][key][error message]]}
 \end{itemize}
 
-After ``queued" the reply will be ``processed'': this means that the
+After {\bf queued} the reply will be  {\bf processed}: this means that the
 object has stored the value in hash table (the counter will be the same as above):
 
 \begin{itemize}
 	\item {\tt UQP[[tablename][key][counter]]}
 \end{itemize}
 
-After ``queeud" the reply can be ``not processed'': this means that the
+After {\bf queeud} the reply can be {\bf not processed}: this means that the
 object has rejected the value due unexpected error (validation have been
 successfull in the step before).
 
@@ -280,7 +327,7 @@ successfull in the step before).
 	\item {\tt UQNP[[tablename][key][error message]]}
 \end{itemize}
 
-After ``processed" the reply will be ``stored'': this means that the
+After {\bf processed} the reply will be {\bf stored}: this means that the
 object has stored the value in database (the counter will be the same as above):
 
 \begin{itemize}
@@ -288,7 +335,7 @@ object has stored the value in database (the counter will be the same as above):
 \end{itemize}
 
 
-After ``processed" the reply will be ``not stored'': this means that the
+After {\bf processed} the reply will be {\bf not stored}: this means that the
 object has enountered an error in the database, the object will not retry.
 
 \begin{itemize}
@@ -320,7 +367,72 @@ the immediate validation rule.
 Eventually it may set to negative value, breaking the forced/queued validations
 rules.
 
+\section{Low level design}
+We will distinguish version V1 which will have the minimal
+simplified functionality.
+\subsection{Data Table Object - V1}
+Inherits from ENGINE, this inheritance is needed to dispatch write request.
+Read request are immediate (synchronous) and are running in the originator
+thread.
 
+The class is a representation of the table, wth a single key (integer or
+string) and other fields (integers or strings).
 
+\subsubsection{Access}
+\begin{itemize}
+	\item {Single read/write lock: option discarded}
+	\item {Single write and read check lock: inconsistencies}
+	\item {Row or Row Group lock}
+\end{itemize}
 
-				   \end{document}
+\paragraph{Single write and read check lock}
+Write operation will use lock in this way:
+
+\begin{verbatim}
+DTO_1::Write(Tuple _tuple){
+    lock(write_lock_DTO_1);
+    hash_map_DTO_1.update(_tuple);
+    unlock(write_lock_DTO_1);
+\end{verbatim}
+
+Read operations are:
+
+\begin{verbatim}
+Tuple DTO_1::Read(Key _key){
+    if locked(write_lock_DTO_1){
+        lock(read_check_lock_DTO_1);
+    }
+    else {
+        return hash_map_DTO_1.find(_key);
+    }
+    Tuple tuple_tmp = hash_map_DTO_1.find(_key);
+    unlock(read_check_lock_DTO_1);
+    return(tuple_tmp);
+\end{verbatim}
+
+There can be inconsistencies during the ``else'' since the write could update
+the row in thsi moment and the find method will get a inconsistent record.
+
+\paragraph{Row or Row Group lock}
+A set of locks is created and every read and write will use the lock depending
+on the value of the modulo of the key.
+
+Example with ten locks: lock\_0 will lock the rows with key \% 10 = 0.
+
+\subsubsection{Parsing}
+The read or write command sent by the console is a string. The Data Dispatcher
+Object will do the syntax check and send the request to the correct DTO.
+\paragraph{Immediate update command}
+The DTO will run the forced/queued validation rules then the immediate
+validation rules.
+The DTO will lock the request into the DTO queue lock if the
+request is send with queue command. If the request is 
+
+\subsection{Data Dispatcher Object}
+
+Inherits from ENGINE. 
+\subsubsection{Creation}
+The DDO connects to database or whatever we have decided to support persistent
+data. Then it creates all the Data Table Objects.
+
+\end{document}

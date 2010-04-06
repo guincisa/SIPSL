@@ -4,6 +4,9 @@ CHANGES
 
 fixe genMEssage v4??? is needede
 I need to store INVITE A and INVITE B
+
+database: not possible to implement forced/queued update
+
 ************************************************************************************
 ************************************************************************************
 11. fixed: all variable are stored in a map
