@@ -8,10 +8,9 @@
 \section{Overview}
 
 \subsection{comments}
-Not easy to say if one record is used by call in progress. I need to have a
-flag on it.
-In case is not possible there will be only immediate updates with forced/queued
-rules.
+Use the call in progress record to store the key used and allow implementation
+of i/f/q (immediate/forced/queued).
+Also can be used to store the number of call in progress.
 
 \subsection{Design}
 The architecure of the system foresees a dispatcher object (ENGINE) and a set of data objects which store the contents of all the tables using hash maps.
