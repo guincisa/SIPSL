@@ -366,51 +366,104 @@ the immediate validation rule.
 Eventually it may set to negative value, breaking the forced/queued validations
 rules.
 
-\section{Low level design}
+\section{Low level design - V1}
 We will distinguish version V1 which will have the minimal
-simplified functionality.
-\subsection{Data Table Object - V1}
-Inherits from ENGINE, this inheritance is needed to dispatch write request.
-Read request are immediate (synchronous) and are running in the originator
-thread.
-
-The class is a representation of the table, wth a single key (integer or
-string) and other fields (integers or strings).
-
-\subsubsection{Access}
+simplified functionality: 
 \begin{itemize}
-	\item {Single read/write lock: option discarded}
-	\item {Single write and read check lock: inconsistencies}
-	\item {Row or Row Group lock}
+	\item {Configuration hard coded}
+	\item {Validations hard coded}
+	\item {Single key}
+	\item {Fields are integer or string}
 \end{itemize}
 
-\paragraph{Single write and read check lock}
-Write operation will use lock in this way:
+
+\subsection{Data Table Object}
+Data Table Object inherits from ENGINE, this inheritance is needed to dispatch
+write request. Read and write request from SIPSL are immediate (synchronous) and
+are running in the originator thread.
+Access requests (read/write) from the console are done through p\_w.
+
+The class is a representation of the table, so there will be a class for
+every table.
+The table has single key (integer or string) and other fields (integers or
+strings).
+
+\subsubsection{Access}
+There can be more than one possible ways to access data, still to be decided.
+\begin{itemize}
+	\item {Double lock}
+	\item {Write in progress condvar}
+	\item {Row or Row Group lock: explained below}
+\end{itemize}
+
+\subsubsection{Double lock: seems to work}
+The write locks on the write lock and on the read lock. But the read lock is
+used only in certains conditions: when a write is in progress.
 
 \begin{verbatim}
-DTO_1::Write(Tuple _tuple){
+DTO_1::WRITE(Tuple _tuple){
+
+    //get the write lock
     lock(write_lock_DTO_1);
+    
+    //block all the reads by locking read lock
+    lock(read_lock_DTO_1);
+    
+    //update table
     hash_map_DTO_1.update(_tuple);
-    unlock(write_lock_DTO_1);
+    
+    //unlock 
+    unlock(read_lock_DTO_1);
+    unlock(write_lock_DTO_1); 
+    return;
+}
 \end{verbatim}
 
-Read operations are:
+The reads must not be mutexed.
+The read operation checks if the write lock is used. If the write lock is used
+it will lock on read lock and release it as soon it gets it.
+If the write is open it will perform the read directly
 
 \begin{verbatim}
-Tuple DTO_1::Read(Key _key){
+Tuple DTO_1::READ(Key _key){
+
+    //check if there is a write in progress
     if locked(write_lock_DTO_1){
-        lock(read_check_lock_DTO_1);
-    }
-    else {
+        //lock on read
+        lock(read_lock_DTO_1);     
+        
+        //Write has finished   
+        //unlock read lock
+        unlock(read_check_lock_DTO_1);
+       
+        //return the data
         return hash_map_DTO_1.find(_key);
     }
-    Tuple tuple_tmp = hash_map_DTO_1.find(_key);
-    unlock(read_check_lock_DTO_1);
-    return(tuple_tmp);
+    else {
+        //the write lock is open just of the read
+        return hash_map_DTO_1.find(_key);
+    }
+}
 \end{verbatim}
 
-There can be inconsistencies during the ``else'' since the write could update
-the row in thsi moment and the find method will get a inconsistent record.
+
+\subsubsection{Write in progress cond var}
+The write commands will set to true a condvar. The read process will check the
+condvar and lock if true.
+Once the write is done condvar is false, the read can be done in parallel.
+
+\begin{verbatim}
+DTO_1::WRITE(Tuple _tuple){
+    pthread_mutex_lock(condvarmutex);
+    hash_map_DTO_1.update(_tuple);
+    pthread_cond_signal(condvar);
+    pthread_mutex_unlock(&(sb.condvarmutex));
+\end{verbatim}
+
+\begin{verbatim}
+DTO_1::READ(Key _key){
+
+\end{verbatim}
 
 \paragraph{Row or Row Group lock}
 A set of locks is created and every read and write will use the lock depending
@@ -433,5 +486,77 @@ Inherits from ENGINE.
 \subsubsection{Creation}
 The DDO connects to database or whatever we have decided to support persistent
 data. Then it creates all the Data Table Objects.
+
+
+\section{backup}
+
+\subsubsection{Write lock optional in read}
+There is one lock, used only by write request and used by read only if locked.
+Write operation will use the lock in this way:
+
+\begin{verbatim}
+DTO_1::WRITE(Tuple _tuple){
+    //get the lock
+    lock(write_lock_DTO_1);
+    lock(read_lock_DTO_1);
+    hash_map_DTO_1.update(_tuple);
+    unlock(read_lock_DTO_1);
+    unlock(write_lock_DTO_1); 
+    return;
+}
+\end{verbatim}
+
+Read operation checks if the lock is used and locks on it only if it is
+blocked.
+
+\begin{verbatim}
+Tuple DTO_1::READ(Key _key){
+    if locked(write_lock_DTO_1){
+        lock(read_lock_DTO_1);        
+        Tuple tuple_tmp = hash_map_DTO_1.find(_key);
+        unlock(read_check_lock_DTO_1);
+        return(tuple_tmp);
+    }
+    else {
+        return hash_map_DTO_1.find(_key);
+    }
+}
+\end{verbatim}
+
+There can be inconsistencies during the ``else'' since the write could update
+the row in thsi moment and the find method will get a inconsistent record.
+
+\subsubsection{Single write and read check lock}
+There are two locks, one for read and one for write. Write operation will use
+the locks in this way:
+
+\begin{verbatim}
+DTO_1::WRITE(Tuple _tuple){
+    //get the write lock
+    lock(write_lock_DTO_1);
+    hash_map_DTO_1.update(_tuple);
+    unlock(write_lock_DTO_1);
+    return;
+}
+\end{verbatim}
+
+Read operation checks if the write lock is used and locks in read lock.
+
+\begin{verbatim}
+Tuple DTO_1::READ(Key _key){
+    if locked(write_lock_DTO_1){
+        lock(read_check_lock_DTO_1);
+    }
+    else {
+        return hash_map_DTO_1.find(_key);
+    }
+    Tuple tuple_tmp = hash_map_DTO_1.find(_key);
+    unlock(read_check_lock_DTO_1);
+    return(tuple_tmp);
+\end{verbatim}
+
+There can be inconsistencies during the ``else'' since the write could update
+the row in thsi moment and the find method will get a inconsistent record.
+
 
 \end{document}
