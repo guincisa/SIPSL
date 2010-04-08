@@ -81,19 +81,18 @@ void* read_d1(void*){
 	while(true){
 		pthread_mutex_lock(&m1);
 
-
-
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH start read 1" << endl;
+
+		pthread_mutex_lock(&convarmutex);
+		readinprogress ++;
+		pthread_mutex_unlock(&convarmutex);
 
 		pthread_mutex_lock(&muread);
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH got read lock read 1" << endl;
 		pthread_mutex_unlock(&muread);
 
-		pthread_mutex_lock(&convarmutex);
-		readinprogress ++;
-		pthread_mutex_unlock(&convarmutex);
 
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH reading on 1" << endl;
@@ -129,14 +128,14 @@ void* read_d2(void*){
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH start read 2" << endl;
 
+		pthread_mutex_lock(&convarmutex);
+		readinprogress ++;
+		pthread_mutex_unlock(&convarmutex);
+
 		pthread_mutex_lock(&muread);
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH got read lock read 2" << endl;
 		pthread_mutex_unlock(&muread);
-
-		pthread_mutex_lock(&convarmutex);
-		readinprogress ++;
-		pthread_mutex_unlock(&convarmutex);
 
 
 		gettimeofday(&mytime.tv, &mytime.tz);
@@ -173,14 +172,15 @@ void* read_d3(void*){
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH start read 3" << endl;
 
+		pthread_mutex_lock(&convarmutex);
+		readinprogress ++;
+		pthread_mutex_unlock(&convarmutex);
+
 		pthread_mutex_lock(&muread);
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH got read lock read 3" << endl;
 		pthread_mutex_unlock(&muread);
 
-		pthread_mutex_lock(&convarmutex);
-		readinprogress ++;
-		pthread_mutex_unlock(&convarmutex);
 
 
 		gettimeofday(&mytime.tv, &mytime.tz);
@@ -216,15 +216,14 @@ void* read_d4(void*){
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH start read 4" << endl;
 
-		pthread_mutex_lock(&muread);
-		gettimeofday(&mytime.tv, &mytime.tz);
-		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH got read lock read 4" << endl;
-		pthread_mutex_unlock(&muread);
-
 		pthread_mutex_lock(&convarmutex);
 		readinprogress ++;
 		pthread_mutex_unlock(&convarmutex);
 
+		pthread_mutex_lock(&muread);
+		gettimeofday(&mytime.tv, &mytime.tz);
+		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH got read lock read 4" << endl;
+		pthread_mutex_unlock(&muread);
 
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH reading on 4" << endl;
@@ -265,15 +264,16 @@ void *write_d1(void*){
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH got write lock write 1" << endl;
 
-		pthread_mutex_lock(&muread);
-		gettimeofday(&mytime.tv, &mytime.tz);
-		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH writing on 1" << endl;
 
 		pthread_mutex_lock(&convarmutex);
 		if (readinprogress > 0){
 			pthread_cond_wait(&readinp,&convarmutex);
 		}
 		pthread_mutex_unlock(&convarmutex);
+
+		pthread_mutex_lock(&muread);
+		gettimeofday(&mytime.tv, &mytime.tz);
+		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH writing on 1" << endl;
 
 
 		nanosleep(&sleep_time,NULL);
@@ -309,15 +309,15 @@ void *write_d2(void*){
 		gettimeofday(&mytime.tv, &mytime.tz);
 		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH got write lock write 2" << endl;
 
-		pthread_mutex_lock(&muread);
-		gettimeofday(&mytime.tv, &mytime.tz);
-		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH writing on 2" << endl;
 
 		pthread_mutex_lock(&convarmutex);
 		if (readinprogress > 0){
 			pthread_cond_wait(&readinp,&convarmutex);
 		}
 		pthread_mutex_unlock(&convarmutex);
+		pthread_mutex_lock(&muread);
+		gettimeofday(&mytime.tv, &mytime.tz);
+		cout << (unsigned long)(mytime.tv.tv_sec*1000 - progtime.tv.tv_sec*1000) << " TH writing on 2" << endl;
 
 
 		nanosleep(&sleep_time,NULL);
