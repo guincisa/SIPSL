@@ -419,10 +419,7 @@ DTO_1::WRITE(Tuple _tuple){
 }
 \end{verbatim}
 
-The reads must not be mutexed.
-The read operation checks if the write lock is used. If the write lock is used
-it will lock on read lock and release it as soon it gets it.
-If the write is open it will perform the read directly
+
 
 \begin{verbatim}
 Tuple DTO_1::READ(Key _key){
