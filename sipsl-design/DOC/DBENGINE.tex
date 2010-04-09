@@ -389,80 +389,24 @@ The table has single key (integer or string) and other fields (integers or
 strings).
 
 \subsubsection{Access}
-There can be more than one possible ways to access data, still to be decided.
-\begin{itemize}
-	\item {Double lock}
-	\item {Write in progress condvar}
-	\item {Row or Row Group lock: explained below}
-\end{itemize}
 
-\subsubsection{Double lock: seems to work}
-The write locks on the write lock and on the read lock. But the read lock is
-used only in certains conditions: when a write is in progress.
+\begin{enumerate}
+        \item Read-write locks 
+        \item Row or Row group lock
+        \item Read concurrent Write exclusive
+\end{enumerate}
 
-\begin{verbatim}
-DTO_1::WRITE(Tuple _tuple){
+\paragraph Read-write locks
+Rw locks may not respect the order of the operations but provide the possibility
+to allow concurrent reads and exclusive write.
 
-    //get the write lock
-    lock(write_lock_DTO_1);
-    
-    //block all the reads by locking read lock
-    lock(read_lock_DTO_1);
-    
-    //update table
-    hash_map_DTO_1.update(_tuple);
-    
-    //unlock 
-    unlock(read_lock_DTO_1);
-    unlock(write_lock_DTO_1); 
-    return;
-}
-\end{verbatim}
+\paragraph Row or Row group lock
+Guarantees the order of the operations but does not allow concurrent access.
+
+\paragraph Read concurrent Write exclusive
+Does not have a solution.
 
 
-
-\begin{verbatim}
-Tuple DTO_1::READ(Key _key){
-
-    //check if there is a write in progress
-    if locked(write_lock_DTO_1){
-        //lock on read
-        lock(read_lock_DTO_1);     
-        
-        //Write has finished   
-        //unlock read lock
-        unlock(read_check_lock_DTO_1);
-       
-        //return the data
-        return hash_map_DTO_1.find(_key);
-    }
-    else {
-        //the write lock is open just of the read
-        return hash_map_DTO_1.find(_key);
-    }
-}
-\end{verbatim}
-
-
-\subsubsection{Write in progress cond var}
-The write commands will set to true a condvar. The read process will check the
-condvar and lock if true.
-Once the write is done condvar is false, the read can be done in parallel.
-
-\begin{verbatim}
-DTO_1::WRITE(Tuple _tuple){
-    pthread_mutex_lock(condvarmutex);
-    hash_map_DTO_1.update(_tuple);
-    pthread_cond_signal(condvar);
-    pthread_mutex_unlock(&(sb.condvarmutex));
-\end{verbatim}
-
-\begin{verbatim}
-DTO_1::READ(Key _key){
-
-\end{verbatim}
-
-\paragraph{Row or Row Group lock}
 A set of locks is created and every read and write will use the lock depending
 on the value of the modulo of the key.
 
