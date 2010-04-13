@@ -396,9 +396,11 @@ strings).
         \item Read concurrent Write exclusive
 \end{enumerate}
 
-\paragraph Read-write locks
+\paragraph {Read-write locks, read fair}
 Rw locks may not respect the order of the operations but provide the possibility
 to allow concurrent reads and exclusive write.
+
+
 
 \paragraph Row or Row group lock
 Guarantees the order of the operations but does not allow concurrent access.
@@ -497,7 +499,7 @@ Tuple DTO_1::READ(Key _key){
 \end{verbatim}
 
 There can be inconsistencies during the ``else'' since the write could update
-the row in thsi moment and the find method will get a inconsistent record.
+the row in this moment and the find method will get a inconsistent record.
 
 
 \end{document}
