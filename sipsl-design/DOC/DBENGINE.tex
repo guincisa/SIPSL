@@ -1,11 +1,11 @@
 \documentclass[a4paper]{article}
-\title{Subscriber Data Object Manager for SIPSL}
+\title{Subscriber Data Object Manager for SIPSL - Multi-tier SIPSL}
 \author{guic}
 \date{April 2010}
 \begin{document}
 	\small
 	\maketitle
-\section{Overview}
+\section{Subscriber Data Object Manager for SIPSL - Overview}
 
 \subsection{comments}
 Use the call in progress record to store the key used and allow implementation
@@ -17,7 +17,7 @@ The architecure of the system foresees a dispatcher object (ENGINE) and a set of
 Data objects are ENGINES.
 All updates are sent though p\_w. SIPSL access the data synchronously using methods which simply access the hash map. 
 
-\subsection{Object life}
+\subsubsection{Object life}
 
 The dispatcher object creates the data objects, there is one defined class for
 every table (in the next release this will be under configuration and not hard coded).
@@ -39,11 +39,11 @@ The data objects then load the data from database in two possible ways:
     \end{enumerate}
 \end{itemize}
 
-\subsection{Object data access from SIPSL}
+\subsubsection{Object data access from SIPSL}
 SIPSL access data using the find method. 
 {\em How will I set the lock granularity??? }
 
-\subsection{Provisioning}
+\subsubsection{Provisioning}
 
 The provisioning is done through a telnet or through UDP message to the
 dispatcher.
@@ -108,7 +108,7 @@ When the object updates the database it replies with
 
 All replyes are asynchronous.
 
-All replies are identified by a couple \ll key,counter\gg. 
+All replies are identified by a couple (key,counter). 
 
 \subsubsection{Recap of provisioning}
 
@@ -137,7 +137,7 @@ executed later.
 
 
 
-\subsection{Provisioning insert new}
+\subsubsection{Provisioning insert new}
 \subsubsection{Provisioning insert new immediate}
 
 Immediate means that the change is applied immediately to the object. New record
@@ -204,7 +204,7 @@ All fields and related values must be specified so [] means insert null value or
 
 
 
-\subsection{Provisioning update}
+\subsubsection{Provisioning update}
 
 \subsubsection{Provisioning update immediate}
 
@@ -349,11 +349,11 @@ All fields and related values must be specified so [] means inset null value or
 Forced means that the change is applied even if the record is used by
 SIPSL, immediate validations are not checked and call is aborted.
 
-\subsection{Retrieve data}
+\subsubsection{Retrieve data}
 Logic:
 One dispatcher (ENGINE) receives the comands and dispacthes using the parse command to the correct object which manages the table
 
-\subsection{Logic}
+\subsubsection{Logic}
 
 The dispatcher is an ENGINE, all table object are ENGINE.
 dispatcher and table objects can also be used internally bu the ALO to update
@@ -377,7 +377,7 @@ simplified functionality:
 \end{itemize}
 
 
-\subsection{Data Table Object}
+\subsubsection{Data Table Object}
 Data Table Object inherits from ENGINE, this inheritance is needed to dispatch
 write request. Read and write request from SIPSL are immediate (synchronous) and
 are running in the originator thread.
@@ -396,16 +396,17 @@ strings).
         \item Read concurrent Write exclusive
 \end{enumerate}
 
-\paragraph {Read-write locks, read fair}
+\paragraph {Read-write locks}
 Rw locks may not respect the order of the operations but provide the possibility
 to allow concurrent reads and exclusive write.
+The priority is to the write command.
 
 
 
-\paragraph Row or Row group lock
+\paragraph{Row or Row group lock}
 Guarantees the order of the operations but does not allow concurrent access.
 
-\paragraph Read concurrent Write exclusive
+\paragraph {Read concurrent Write exclusive}
 Does not have a solution.
 
 
@@ -423,13 +424,43 @@ validation rules.
 The DTO will lock the request into the DTO queue lock if the
 request is send with queue command. If the request is 
 
-\subsection{Data Dispatcher Object}
+\subsubsection{Data Dispatcher Object}
 
 Inherits from ENGINE. 
 \subsubsection{Creation}
 The DDO connects to database or whatever we have decided to support persistent
 data. Then it creates all the Data Table Objects.
 
+\section{Multi-tier SIPSL - Overview}
+
+\subsection{comments}
+Split the SIPSL between SUDP and SIPENGINE (or between SIPENGINE and SL\_CC) to
+have one frontend tier to receive calls and more backend tiers to handle the
+logic. The backend tiers can be spread on different nodes or colocated.
+I need to decide how messages are sent to the backtier, shared memory or tcp.
+
+\subsection{Design}
+The fronend tier supportst the SUDP and the SIPENGINE. The sip message creted by
+the SIPENGINE is encapsulated into the MESSAGE. The message must be passed to
+one backend tier.
+
+The frontend tier must decide to which backend tier to send the message. If the
+message is new then it will choose following some criteria. If the transaction
+is in progress the fronend must send the message to the correct backend.
+Frontend must keep a map of CALL-ID and backend id.
+
+Moving the message:
+
+\begin{enumerate}
+        \item Corba 
+        \item Shared Memory
+\end{enumerate}
+
+\subsection{MESSAGE structure using Corba}
+
+The current MESSAGE class is very big and may be incovenient to transfer using
+CORBA. Also only a subset of fields are used in SIPENGINE and they are needed to
+define the backend tier.
 
 \section{backup}
 
