@@ -168,6 +168,8 @@ A->SIPSL
 **************************************************************************************
 SIPSL->B
 	BYE sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0
+	
++++ to tag missing +++ 
 	To: <sip:gugli_linphone@172.21.160.165:5061>
 	From:  <sip:gugli_twinkle@guglicorp.com>;tag=8ce2830#1265385945486371
 	Call-ID: kvhahmvkjcrkljv@grog

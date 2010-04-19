@@ -845,7 +845,7 @@ ACTION* act_1_4_cl(SL_SM* _sm, MESSAGE* _message) {
 	DUPLICATEMESSAGE(__message, _message, SODE_SMCLPOINT)
 	__message->typeOfInternal = TYPE_OP;
 	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	SingleAction sa_2 = SingleAction(_message);
+	SingleAction sa_2 = SingleAction(__message);
 	action->addSingleAction(sa_2);
 
 	_sm->State = 4;

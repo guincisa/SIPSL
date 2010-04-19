@@ -1,11 +1,18 @@
 CHANGES
 
-----> current
+----> current 19 Aprile 2010
+A->SIPSL : BYE
+SIPSL->B BYE
+BYE for B still does not work, the phone does not recognize it and does not close the call
 
+
+----> before
+following is ???
 fixe genMEssage v4??? is needede
 I need to store INVITE A and INVITE B
 
-
+************************************************************************************
+************************************************************************************
 ************************************************************************************
 ************************************************************************************
 11. fixed: all variable are stored in a map

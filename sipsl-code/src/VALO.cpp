@@ -181,6 +181,25 @@ void VALO::onBye(MESSAGE* _message){
 	message->replaceHeadCSeq("999 BYE");
 	DEBOUT("VALO","Cseq")
 
+	//TOTAG
+	char toTmp[512];
+	map<string, void*> ::iterator p;
+	p = ctxt_store.find("totag");
+	string toTagB = *((string*)p->second);
+	sprintf(toTmp, "%s %s;tag=%s",message->getHeadTo().getNameUri().c_str(), message->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
+	string toTmpS(toTmp);
+	DEBOUT("******** TO new" , toTmpS)
+	message->replaceHeadTo(toTmpS);
+
+	//VIA new branch
+	char viabranch[512];
+	p = ctxt_store.find("allvia");
+	C_AttVia tmpvia(*((string*)p->second));
+	sprintf(viabranch, "z9hG4bK%s",_message->getKey().c_str());
+	tmpvia.getChangeViaParms().replaceRvalue("branch", viabranch);
+	message->purgeSTKHeadVia();
+	message->pushHeadVia("Via: " + tmpvia.getContent());
+
 	message->purgeSDP();
 	message->dropHeader("Content-Type:");
 
