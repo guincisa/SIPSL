@@ -195,10 +195,13 @@ void VALO::onBye(MESSAGE* _message){
 	char viabranch[512];
 	p = ctxt_store.find("allvia");
 	C_AttVia tmpvia(*((string*)p->second));
-	sprintf(viabranch, "z9hG4bK%s",_message->getKey().c_str());
+	DEBOUT("Old BYE via", *((string*)p->second))
+	sprintf(viabranch, "z9hG4bK%s",message->getKey().c_str());
 	tmpvia.getChangeViaParms().replaceRvalue("branch", viabranch);
 	message->purgeSTKHeadVia();
 	message->pushHeadVia("Via: " + tmpvia.getContent());
+	DEBOUT("New BYE Via",tmpvia.getContent())
+	DEBOUT("New BYE branch",viabranch)
 
 	message->purgeSDP();
 	message->dropHeader("Content-Type:");
