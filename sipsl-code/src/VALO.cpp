@@ -63,11 +63,20 @@ void VALO::onInvite(MESSAGE* _message){
 		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
 		//Cseq new to 1
-		message->replaceHeadCSeq("999 INVITE");
+		message->replaceHeadCSeq("1 INVITE");
 		DEBOUT("VALO","Cseq")
 
 		//Standard changes
 		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
+
+		if (_message->getSDPSize() != 0 ){
+			//SDP must copy the SDP from incoming OK and put here
+			vector<string> __sdp = _message->getSDP();
+			message->purgeSDP();
+			DEBOUT("PURGED SDP","")
+			message->importSDP(__sdp);
+		}
+
 		message->compileMessage();
 		message->dumpVector();
 		DEBOUT("New outgoing b2b message", message->getIncBuffer())
@@ -106,7 +115,7 @@ void VALO::onAck(MESSAGE* _message){
 	message->setHeadSipRequest("ACK sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
 	//Cseq new to 1
-	message->replaceHeadCSeq("999 ACK");
+	message->replaceHeadCSeq("1 ACK");
 	DEBOUT("VALO","Cseq")
 
 	message->purgeSDP();
@@ -178,7 +187,7 @@ void VALO::onBye(MESSAGE* _message){
 	message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0");
 
 	//Cseq new to 1
-	message->replaceHeadCSeq("999 BYE");
+	message->replaceHeadCSeq("2 BYE");
 	DEBOUT("VALO","Cseq")
 
 	//TOTAG
