@@ -160,7 +160,7 @@ void VALO::onAck(MESSAGE* _message){
 	//build ack
 
 }
-void VALO::onBye(MESSAGE* _message){
+void VALO::onBye(MESSAGE* _message, int _dir){
 
 	//v4
 	//get invite sent to b
@@ -169,7 +169,25 @@ void VALO::onBye(MESSAGE* _message){
 	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 	//set as source the original ack, needed to identify call_oset_x when back to call control
 	message->setSourceMessage(_message);
-	message->setDestEntity(SODE_SMCLPOINT);
+
+	if (_dir == 1 ) {
+		message->setDestEntity(SODE_SMCLPOINT);
+
+		//Cseq new to 1
+		int i = call_oset->getSL_SM_CL()->getControlSequence();
+		DEBOUT("VALO Cseq currn", i)
+		i++;
+		call_oset->getSL_SM_CL()->setControlSequence(i);
+
+		message->replaceHeadCSeq(i, "BYE");
+		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
+
+
+	} else if (_dir == -1){
+		//PROBABLY WILL BE SENT TO ALO again
+		message->setDestEntity(SODE_SMSVPOINT);
+		DEBOUT("PROBABLY WILL BE SENT TO ALO again","")
+	}
 
 	try {
 		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
@@ -186,9 +204,6 @@ void VALO::onBye(MESSAGE* _message){
 	DEBOUT("VALO ", message->getHeadSipRequest().getContent())
 	message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0");
 
-	//Cseq new to 1
-	message->replaceHeadCSeq("2 BYE");
-	DEBOUT("VALO","Cseq")
 
 	//TOTAG
 	char toTmp[512];

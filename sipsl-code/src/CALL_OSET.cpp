@@ -85,7 +85,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, MESSAGE* _genMessage){
 	engine = _engine;
 	inviteA = _genMessage;
 	inviteB = 0x0;
-	sl_sm_cl_v4 = 0x0;
+	sl_sm_cl = 0x0;
 
 }
 MESSAGE* CALL_OSET::getInviteA(void){
@@ -116,13 +116,13 @@ SL_SM_SV* CALL_OSET::getSL_SM_SV(void){
 }
 //**********************************************************************************
 //**********************************************************************************
-SL_SM_CL* CALL_OSET::getSL_SM_CL_v4(void){
-	return sl_sm_cl_v4;
+SL_SM_CL* CALL_OSET::getSL_SM_CL(void){
+	return sl_sm_cl;
 }
 //v4
-void CALL_OSET::setSL_SM_CL_v4(SL_SM_CL* _sl_sm_cl){
+void CALL_OSET::setSL_SM_CL(SL_SM_CL* _sl_sm_cl){
 	DEBOUT("CALL_OSET::setSL_SM_SV_v4 store ", _sl_sm_cl)
-	sl_sm_cl_v4 = _sl_sm_cl;
+	sl_sm_cl = _sl_sm_cl;
 }
 //v4
 void CALL_OSET::setCall_IdY_v4(string _cally){
@@ -244,7 +244,7 @@ void SL_CO::call(MESSAGE* _message){
 	    DEBOUT("SL_CO::call client state machine", callidy)
 
 		//v4
-		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL_v4();
+		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL();
 		//SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL(callidy);
 
 		//v4
@@ -257,7 +257,7 @@ void SL_CO::call(MESSAGE* _message){
 			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), this);
 			//v4
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
-			call_oset->setSL_SM_CL_v4(sl_sm_cl);
+			call_oset->setSL_SM_CL(sl_sm_cl);
 			call_oset->setCall_IdY_v4(callidy);
 			call_oset->setInviteB(_message);
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
@@ -414,6 +414,8 @@ SL_SM::SL_SM(ENGINE* _eng, SL_CO* _sl_co){
 
     pthread_mutex_init(&mutex, NULL);
 	State = 0;
+
+	controlSequence = 1;
 }
 ENGINE* SL_SM::getSL_CC(void){
 	return sl_cc;
@@ -421,6 +423,13 @@ ENGINE* SL_SM::getSL_CC(void){
 SL_CO* SL_SM::getSL_CO(void){
 	return sl_co;
 }
+void SL_SM::setControlSequence(int _s){
+	controlSequence = _s;
+}
+int SL_SM::getControlSequence(void){
+	return controlSequence;
+}
+
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
@@ -447,6 +456,11 @@ bool pre_0_1_sv(SL_SM* _sm, MESSAGE* _message){
 ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SL_SM_SV::act_0_1_sv", _message->getHeadSipRequest().getContent())
+
+	DEBOUT("SL_SM_SV::act_0_1_sv CSeq", _message->getHeadCSeq().getContent())
+	DEBOUT("SL_SM_SV::act_0_1_sv CSeq", _message->getHeadCSeq().getSequence())
+
+    _sm->setControlSequence(_message->getHeadCSeq().getSequence());
 
 	ACTION* action = new ACTION();
 

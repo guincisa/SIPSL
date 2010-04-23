@@ -2095,8 +2095,9 @@ void C_HeadCSeq::doParse(void){
 		return;
 
 	Tuple s = brkin2(content, " ");
-	sequence = atoi(s.Lvalue.c_str());
-	method.setContent(s.Rvalue);
+	Tuple ss = brkin2(s.Rvalue, " ");
+	sequence = atoi(ss.Lvalue.c_str());
+	method.setContent(ss.Rvalue);
 
 	parsed = true;
 

@@ -58,7 +58,7 @@ class CALL_OSET {
 		//map of call_y message, first list of outgoing invites
 		//map<string, MESSAGE*> mm_genMessage_CL_v4;
 		//The unique state machine client
-		SL_SM_CL* sl_sm_cl_v4;
+		SL_SM_CL* sl_sm_cl;
 		//The final call_y of the only confirmed invite
 		string callId_Y_v4;
 		//The final confirmed invite
@@ -87,9 +87,9 @@ class CALL_OSET {
 		//get MESSAGE* from the list using cally
 		//MESSAGE* findGenMess_CL_v4(string callIdY);
 		//get the only client state machine
-		SL_SM_CL* getSL_SM_CL_v4(void);
+		SL_SM_CL* getSL_SM_CL(void);
 		//set the only sm
-		void setSL_SM_CL_v4(SL_SM_CL*);
+		void setSL_SM_CL(SL_SM_CL*);
 		//set the final invite
 		void setInviteB(MESSAGE*);
 		//get the final invite
@@ -182,7 +182,17 @@ class SL_SM {
 	ENGINE* sl_cc;
     SL_CO* sl_co;
 
+    //Transaction control
+    //CSeq
+    //In case of server it is copied from the incoming Invite
+    //In case of client it is set to 1
+	int controlSequence;
+
+
 	public:
+
+	int getControlSequence(void);
+	void setControlSequence(int);
 
 	ENGINE* getSL_CC(void);
 	//MESSAGE* getGenerator(void);

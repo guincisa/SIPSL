@@ -119,11 +119,29 @@ void BASEMESSAGE::fillLineArray(void){
 
     Tuple s = brkin2(incMessBuff,"\n");
     string t = s.Rvalue;
+
     flex_line.push_back(trimCR(s.Lvalue));
     while (t.compare("")!=0){
+
+    	// if space or tab is the first char then the line must be merged into the previous one
+    	// header: aa
+    	// <sp>bb
+    	// <tb>cc
+    	// will be filled in this way
+    	// header: aa<sp>bb<sp>cc
+
     	s = brkin2(t,"\n");
     	t = s.Rvalue;
-        flex_line.push_back(trimCR(s.Lvalue));
+
+    	if (s.Lvalue.substr(0,1).compare(" ") == 0 || s.Lvalue.substr(0,1).compare("\t") == 0){
+    		string tt = flex_line.back();
+    		string ttt = tt + trimCR(s.Lvalue);
+    		flex_line.pop_back();
+            flex_line.push_back(ttt);
+            DEBOUT("COMPACTING", ttt)
+    	} else{
+            flex_line.push_back(trimCR(s.Lvalue));
+    	}
     }
 
     arrayFilled = true;
@@ -737,6 +755,27 @@ void MESSAGE::replaceHeadCSeq(string _content){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
 			flex_line[i] = "CSeq: " + _content;
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		DEBASSERT("MESSAGE::replaceHeadCSeq from header is missing")
+	}
+}
+void MESSAGE::replaceHeadCSeq(int _cseq, string _method){
+
+	char tt[128];
+	sprintf(tt, "%d %s", _cseq, _method.c_str());
+	headCSeq_p = false;
+	headCSeq.setContent(tt);
+
+	// replace in flex_line
+	unsigned int i;
+	bool found = false;
+	for(i = 1; i < flex_line.size(); i ++){
+		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
+			flex_line[i] = "CSeq: " + (string)(tt);
 			found = true;
 			break;
 		}

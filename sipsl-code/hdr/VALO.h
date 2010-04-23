@@ -49,6 +49,6 @@ class VALO : public ALO {
 	VALO(ENGINE*, CALL_OSET*);
 	void onInvite(MESSAGE*);
 	void onAck(MESSAGE*);
-	void onBye(MESSAGE*);
+	void onBye(MESSAGE*, int);
 	void on200Ok(MESSAGE*);
 };

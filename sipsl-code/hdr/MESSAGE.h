@@ -250,6 +250,8 @@ class MESSAGE : public BASEMESSAGE {
     	void setHeadSipReply(string content);
 
     	void replaceHeadCSeq(string content);
+    	void replaceHeadCSeq(int cseq, string method);
+
 
     	//SDP management
     	void purgeSDP(void);
