@@ -1,9 +1,7 @@
-window_sizes 1280 726 263 1011 603 52
+window_sizes 1920 1056 263 1651 933 52
 diagrams
-  active  statediagram_ref 134839 // CL V3
-    1011 603 100 2 420 0
-  statediagram_ref 134711 // SV V3
-    1011 603 100 2 351 0
+  active  statediagram_ref 134711 // SV V3
+    1651 933 100 2 351 0
 end
 show_stereotypes
 marked

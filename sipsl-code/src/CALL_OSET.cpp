@@ -942,7 +942,8 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 		P2_3CL((SL_SM*)this),
 		P2_4CL((SL_SM*)this),
 		P4_5CL((SL_SM*)this),
-		P5_7CL((SL_SM*)this){
+		P5_7CL((SL_SM*)this),
+		P7_8CL((SL_SM*)this){
 
 	resend_invite = 0;
 
@@ -976,6 +977,8 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 	P5_7CL.action = &act_5_7_cl;
 	P5_7CL.predicate = &pre_5_7_cl;
 
+	P7_8CL.action = &act_1_4_cl;
+	P7_8CL.predicate = &pre_1_4_cl;
 
 	insert_move(0,&P0_1CL);
 	insert_move(1,&P1_2CL);
@@ -987,6 +990,7 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 	insert_move(2,&P2_4CL);
 	insert_move(4,&P4_5CL);
 	insert_move(5,&P5_7CL);
+	insert_move(7,&P7_8CL);
 
 
 }

@@ -1,9 +1,12 @@
 CHANGES
 
-----> current 19 Aprile 2010
-A->SIPSL : BYE
-SIPSL->B BYE
-BYE for B still does not work, the phone does not recognize it and does not close the call
+
+28 Aprile
+
+bye ancora non completo 
+
+il messaggio matrice deve essere quello della transazione. quindi per esempio 
+il 200OK generatore dalla valo deriva dall'invite oppure dal bye.
 
 
 ----> before
