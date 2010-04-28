@@ -37,6 +37,7 @@ class SL_SM_CL;
 class SL_SM_SV;
 class SL_CO;
 class ALO;
+class TRNSCT;
 
 //Umbrella class which hosts states machines and call object
 class CALL_OSET {
@@ -51,22 +52,32 @@ class CALL_OSET {
 		//v4 map<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
 		string callId_X;
-	    //MESSAGE* genMessage;
-	    MESSAGE* inviteA;
+
+		//The final call_y of the only confirmed invite
+		string callId_Y_v4;
+
+		map<int, TRNSCT*> transactionMapX;
+		map<int, TRNSCT*> transactionMapY;
 
 		//New client State Machine v4
 		//map of call_y message, first list of outgoing invites
 		//map<string, MESSAGE*> mm_genMessage_CL_v4;
 		//The unique state machine client
 		SL_SM_CL* sl_sm_cl;
-		//The final call_y of the only confirmed invite
-		string callId_Y_v4;
-		//The final confirmed invite
-		MESSAGE* inviteB;
-		//MESSAGE* genMessage_CL_v4;
+
+
 
 
 	public:
+
+		TRNSCT* getTransactionX(int);
+		TRNSCT* getTransactionY(int);
+
+
+		void createTransactionX(MESSAGE*);
+		void createTransactionY(MESSAGE*);
+
+
 		CALL_OSET(ENGINE*, MESSAGE*);
 		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
@@ -75,12 +86,11 @@ class CALL_OSET {
 
 		string getCallIdX(void);
 
-		//v4 SL_SM_CL* getSL_SM_CL(string callId_Y);
-		ALO* getALO(void);
 		ENGINE* getENGINE(void);
 
-		MESSAGE* getInviteA(void);
 
+		//v4 SL_SM_CL* getSL_SM_CL(string callId_Y);
+		ALO* getALO(void);
 		//New client State Machine v4
 		//add call_y and message to the map
 		//void addGenMess_CL_v4(string callIdY, MESSAGE*);
@@ -90,10 +100,6 @@ class CALL_OSET {
 		SL_SM_CL* getSL_SM_CL(void);
 		//set the only sm
 		void setSL_SM_CL(SL_SM_CL*);
-		//set the final invite
-		void setInviteB(MESSAGE*);
-		//get the final invite
-		MESSAGE* getInviteB(void);
 		//clear all the other non confirmed invites
 		void purgeGenMess_CL_v4(void);
 
@@ -119,41 +125,30 @@ class SL_CO {
 };
 //**********************************************************************************
 //**********************************************************************************
-// State machine
+// Transaction object
 //**********************************************************************************
 //**********************************************************************************
-//class SL_SM2 {
-//
-//	public:
-//		//SL_SM(ENGINE* sl_cc, SL_CO* sl_co, MESSAGE* generator);
-//		SL_SM2(ENGINE* sl_cc, SL_CO* sl_co);
-//
-//		ENGINE* getSL_CC(void);
-//		//MESSAGE* getGenerator(void);
-//		SL_CO* getSL_CO(void);
-//
-//#ifdef TESTING
-//		virtual ACTION* event(MESSAGE*);
-//#else
-//		virtual ACTION* event(MESSAGE*) = 0;
-//#endif
-//    protected:
-//
-//		//The Request message that has triggered the creation of the state machine
-//		//MESSAGE* messageGenerator;
-//
-//        int State;
-//		ENGINE* sl_cc;
-//        SL_CO* sl_co;
-//
-//        //Mutex the state machine
-//        //First option when every SM has its own mutex.
-//        pthread_mutex_t mutex;
-//};
-//**********************************************************************************
-//**********************************************************************************
-//**********************************************************************************
-//**********************************************************************************
+class TRNSCT {
+
+	private:
+
+		//Transaction control
+		//CSeq
+		//In case of server it is copied from the incoming Invite
+		//In case of client it is set to 1
+		int controlSequence;
+
+		MESSAGE* Matrix;
+
+	public:
+
+		int getControlSequence(void);
+		void setControlSequence(int);
+
+		void setMatrixMessage(MESSAGE*);
+		MESSAGE* getMatrixMessage(void);
+
+};
 // New State machine
 //**********************************************************************************
 //**********************************************************************************
@@ -182,17 +177,10 @@ class SL_SM {
 	ENGINE* sl_cc;
     SL_CO* sl_co;
 
-    //Transaction control
-    //CSeq
-    //In case of server it is copied from the incoming Invite
-    //In case of client it is set to 1
-	int controlSequence;
 
 
 	public:
 
-	int getControlSequence(void);
-	void setControlSequence(int);
 
 	ENGINE* getSL_CC(void);
 	//MESSAGE* getGenerator(void);

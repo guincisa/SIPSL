@@ -83,14 +83,20 @@ static SIPUTIL SipUtil;
 CALL_OSET::CALL_OSET(ENGINE* _engine, MESSAGE* _genMessage){
 
 	engine = _engine;
-	inviteA = _genMessage;
-	inviteB = 0x0;
+
+	//_genMessage must be put into transactionX
+	TRNSCT* tmp = new TRNSCT();
+	int cs = _genMessage->getHeadCSeq().getSequence();
+	tmp->setMatrixMessage(_genMessage);
+	tmp->setControlSequence(cs);
+	transactionMapX.insert(pair<int, TRNSCT*>(cs, tmp));
+
 	sl_sm_cl = 0x0;
 
 }
-MESSAGE* CALL_OSET::getInviteA(void){
-	return inviteA;
-}
+//MESSAGE* CALL_OSET::getInviteA(void){
+//	return inviteA;
+//}
 
 //**********************************************************************************
 //**********************************************************************************
@@ -134,14 +140,14 @@ string CALL_OSET::getCallId_Y_v4(void){
 	return callId_Y_v4;
 }
 
-void CALL_OSET::setInviteB(MESSAGE* _message){
-	DEBOUT("CALL_OSET::setInviteB store ", _message)
-	inviteB = _message;
-}
-//get the final invite
-MESSAGE* CALL_OSET::getInviteB(void){
-	return inviteB;
-}
+//void CALL_OSET::setInviteB(MESSAGE* _message){
+//	DEBOUT("CALL_OSET::setInviteB store ", _message)
+//	inviteB = _message;
+//}
+////get the final invite
+//MESSAGE* CALL_OSET::getInviteB(void){
+//	return inviteB;
+//}
 //clear all the other non confirmed invites
 void CALL_OSET::purgeGenMess_CL_v4(void){
 	DEBASSERT("empty purgeGenMess_CL_v4")
@@ -259,7 +265,7 @@ void SL_CO::call(MESSAGE* _message){
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
 			call_oset->setSL_SM_CL(sl_sm_cl);
 			call_oset->setCall_IdY_v4(callidy);
-			call_oset->setInviteB(_message);
+			call_oset->createTransactionY(_message);
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 		}
@@ -363,6 +369,25 @@ void SL_CO::call(MESSAGE* _message){
 }
 //**********************************************************************************
 //**********************************************************************************
+int TRNSCT::getControlSequence(void){
+	return controlSequence;
+}
+void TRNSCT::setControlSequence(int _s){
+	controlSequence = _s;
+}
+
+void TRNSCT::setMatrixMessage(MESSAGE* _message){
+
+	Matrix = _message;
+}
+
+MESSAGE* TRNSCT::getMatrixMessage(void){
+
+	return Matrix;
+
+}
+//**********************************************************************************
+//**********************************************************************************
 PREDICATE_ACTION::PREDICATE_ACTION(SL_SM* _sm){
 	machine = _sm;
 }
@@ -415,7 +440,7 @@ SL_SM::SL_SM(ENGINE* _eng, SL_CO* _sl_co){
     pthread_mutex_init(&mutex, NULL);
 	State = 0;
 
-	controlSequence = 1;
+//	controlSequence = 1;
 }
 ENGINE* SL_SM::getSL_CC(void){
 	return sl_cc;
@@ -423,12 +448,12 @@ ENGINE* SL_SM::getSL_CC(void){
 SL_CO* SL_SM::getSL_CO(void){
 	return sl_co;
 }
-void SL_SM::setControlSequence(int _s){
-	controlSequence = _s;
-}
-int SL_SM::getControlSequence(void){
-	return controlSequence;
-}
+//void SL_SM::setControlSequence(int _s){
+//	controlSequence = _s;
+//}
+//int SL_SM::getControlSequence(void){
+//	return controlSequence;
+//}
 
 //**********************************************************************************
 //**********************************************************************************
@@ -460,7 +485,7 @@ ACTION* act_0_1_sv(SL_SM* _sm, MESSAGE* _message) {
 	DEBOUT("SL_SM_SV::act_0_1_sv CSeq", _message->getHeadCSeq().getContent())
 	DEBOUT("SL_SM_SV::act_0_1_sv CSeq", _message->getHeadCSeq().getSequence())
 
-    _sm->setControlSequence(_message->getHeadCSeq().getSequence());
+    //_sm->setControlSequence(_message->getHeadCSeq().getSequence());
 
 	ACTION* action = new ACTION();
 
@@ -792,7 +817,9 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 	// the message contains the to tag that we must save
 	// or store it in valo during 200ok
 
-	MESSAGE* __message = _sm->getSL_CO()->call_oset->getInviteA();
+//	MESSAGE* __message = _sm->getSL_CO()->call_oset->getInviteA();
+	MESSAGE* __message = _sm->getSL_CO()->call_oset->getTransactionY(_message->getHeadCSeq().getSequence())->getMatrixMessage();
+
 	DEBOUT("MESSAGE GENERATOR", __message)
 
 
