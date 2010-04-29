@@ -65,7 +65,11 @@ class CALL_OSET {
 		//The unique state machine client
 		SL_SM_CL* sl_sm_cl;
 
-
+		//This map store all the current sequence numbers per message:
+		// "INVITE",1
+		// if there is no entry the number will be 1 and inserted into the mas
+		// it's always no y side
+		map<string, int> counterSequenceMap;
 
 
 	public:
@@ -76,6 +80,9 @@ class CALL_OSET {
 
 		void createTransactionX(MESSAGE*);
 		void createTransactionY(MESSAGE*);
+
+		int getCounterSequence(string request);
+		int getNextCounterSequence(string request);
 
 
 		CALL_OSET(ENGINE*, MESSAGE*);

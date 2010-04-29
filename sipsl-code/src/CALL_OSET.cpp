@@ -158,7 +158,37 @@ void CALL_OSET::purgeGenMess_CL_v4(void){
 string CALL_OSET::getCallIdX(void){
 	return callId_X;
 }
+//**********************************************************************************
+//**********************************************************************************
+int CALL_OSET::getCounterSequence(string _request){
 
+	//counterSequenceMap.insert(pair<int, TRNSCT*>(cs, tmp));
+
+	map<string,int>::iterator tt;
+	tt = counterSequenceMap.find(_request);
+
+	if ( tt == counterSequenceMap.end() )
+		return -1;
+	else
+		return tt->second;
+}
+//**********************************************************************************
+//**********************************************************************************
+int CALL_OSET::getNextCounterSequence(string _request){
+
+	map<string,int>::iterator tt;
+	tt = counterSequenceMap.find(_request);
+
+	if ( tt == counterSequenceMap.end() ){
+		counterSequenceMap.insert(pair<string,int>(_request, 1));
+		return 1;
+	}
+	else {
+		int i = tt->second ++;
+		counterSequenceMap.insert(pair<string,int>(_request, i));
+		return i;
+	}
+}
 //**********************************************************************************
 //**********************************************************************************
 ALO* CALL_OSET::getALO(void){

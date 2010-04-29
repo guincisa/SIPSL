@@ -62,9 +62,13 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
 		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
-		//Cseq new to 1
-		message->replaceHeadCSeq("1 INVITE");
-		DEBOUT("VALO","Cseq")
+		//
+
+		int i = call_oset->getNextCounterSequence("INVITE");
+		char tmp[64];
+		sprintf(tmp,"%d INVITE", i);
+		message->replaceHeadCSeq(tmp);
+		DEBOUT("VALO Cseq",tmp)
 
 		//Standard changes
 		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
@@ -80,6 +84,8 @@ void VALO::onInvite(MESSAGE* _message){
 		message->compileMessage();
 		message->dumpVector();
 		DEBOUT("New outgoing b2b message", message->getIncBuffer())
+		//create the transaction
+		call_oset->createTransactionY(message);
 
 		message->setDestEntity(SODE_SMCLPOINT);
 

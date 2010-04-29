@@ -140,6 +140,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			VALO* alo = new VALO(this, call_oset);
 			alo->linkSUDP(getSUDP());
 			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
+			call_oset->createTransactionX(_mess);
 			comap->setCALL_OSET(callidx, call_oset);
 			//End
 
