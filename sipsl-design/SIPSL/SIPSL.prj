@@ -1,6 +1,6 @@
 format 71
 "SIPSL"
-  revision 77
+  revision 78
   modified_by 55 "guic"
 
 
@@ -139,7 +139,7 @@ format 71
         end
     end
 
-    class 128518 "SL_SM_SV"
+    class 128518 "SM_SV"
       visibility package 
       cpp_decl ""
       java_decl ""
@@ -151,7 +151,7 @@ format 71
     end
 
     classinstance 128646 "smsv_x"
-      type class_ref 128518 // SL_SM_SV
+      type class_ref 128518 // SM_SV
       attributes
         end
       relations
@@ -858,6 +858,51 @@ correct timer interaction with client state machine"
 	  external 
 	end
       end
+    end
+
+    sequencediagram 141367 "TRANSACT_V5"
+      show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default
+      comment "26Nov:
+dialog E must traverse the x state machine
+
+Oct 26- 2009
+correct timer interaction with client state machine"
+      overlapping_bars size A0
+    end
+
+    classinstance 128055 "t_i_x:TRAN_INV_SV"
+      type class_ref 128339 // SIPENGINE
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 128055 "TRNSCT_INV__SM_SV"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 128183 "t_i_x"
+      type class_ref 128055 // TRNSCT_INV__SM_SV
+      attributes
+        end
+      relations
+        end
+    end
+
+    classinstance 128311 "sm_sv_x"
+      type class_ref 128518 // SM_SV
+      attributes
+        end
+      relations
+        end
     end
   end
 end
