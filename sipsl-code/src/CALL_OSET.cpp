@@ -85,11 +85,11 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, MESSAGE* _genMessage){
 	engine = _engine;
 
 	//_genMessage must be put into transactionX
-	TRNSCT* tmp = new TRNSCT();
+//	TRNSCT* tmp = new TRNSCT();
 	int cs = _genMessage->getHeadCSeq().getSequence();
-	tmp->setMatrixMessage(_genMessage);
-	tmp->setControlSequence(cs);
-	transactionMapX.insert(pair<int, TRNSCT*>(cs, tmp));
+//	tmp->setMatrixMessage(_genMessage);
+//	tmp->setControlSequence(cs);
+//	transactionMapX.insert(pair<int, TRNSCT*>(cs, tmp));
 
 	sl_sm_cl = 0x0;
 
@@ -158,39 +158,39 @@ void CALL_OSET::purgeGenMess_CL_v4(void){
 string CALL_OSET::getCallIdX(void){
 	return callId_X;
 }
-//**********************************************************************************
-//**********************************************************************************
-int CALL_OSET::getCounterSequence(string _request){
-
-	//counterSequenceMap.insert(pair<int, TRNSCT*>(cs, tmp));
-
-	map<string,int>::iterator tt;
-	tt = counterSequenceMap.find(_request);
-
-	if ( tt == counterSequenceMap.end() )
-		return -1;
-	else
-		return tt->second;
-}
-//**********************************************************************************
-//**********************************************************************************
-int CALL_OSET::getNextCounterSequence(string _request){
-
-	map<string,int>::iterator tt;
-	tt = counterSequenceMap.find(_request);
-
-	if ( tt == counterSequenceMap.end() ){
-		counterSequenceMap.insert(pair<string,int>(_request, 1));
-		return 1;
-	}
-	else {
-		int i = tt->second ++;
-		counterSequenceMap.insert(pair<string,int>(_request, i));
-		return i;
-	}
-}
-//**********************************************************************************
-//**********************************************************************************
+////**********************************************************************************
+////**********************************************************************************
+//int CALL_OSET::getCounterSequence(string _request){
+//
+//	//counterSequenceMap.insert(pair<int, TRNSCT*>(cs, tmp));
+//
+//	map<string,int>::iterator tt;
+//	tt = counterSequenceMap.find(_request);
+//
+//	if ( tt == counterSequenceMap.end() )
+//		return -1;
+//	else
+//		return tt->second;
+//}
+////**********************************************************************************
+////**********************************************************************************
+//int CALL_OSET::getNextCounterSequence(string _request){
+//
+//	map<string,int>::iterator tt;
+//	tt = counterSequenceMap.find(_request);
+//
+//	if ( tt == counterSequenceMap.end() ){
+//		counterSequenceMap.insert(pair<string,int>(_request, 1));
+//		return 1;
+//	}
+//	else {
+//		int i = tt->second ++;
+//		counterSequenceMap.insert(pair<string,int>(_request, i));
+//		return i;
+//	}
+//}
+////**********************************************************************************
+////**********************************************************************************
 ALO* CALL_OSET::getALO(void){
 
 	return alo;
@@ -295,7 +295,7 @@ void SL_CO::call(MESSAGE* _message){
 			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
 			call_oset->setSL_SM_CL(sl_sm_cl);
 			call_oset->setCall_IdY_v4(callidy);
-			call_oset->createTransactionY(_message);
+//			call_oset->createTransactionY(_message);
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 		}
@@ -397,25 +397,25 @@ void SL_CO::call(MESSAGE* _message){
 		delete action;
 	}
 }
-//**********************************************************************************
-//**********************************************************************************
-int TRNSCT::getControlSequence(void){
-	return controlSequence;
-}
-void TRNSCT::setControlSequence(int _s){
-	controlSequence = _s;
-}
-
-void TRNSCT::setMatrixMessage(MESSAGE* _message){
-
-	Matrix = _message;
-}
-
-MESSAGE* TRNSCT::getMatrixMessage(void){
-
-	return Matrix;
-
-}
+////**********************************************************************************
+////**********************************************************************************
+//int TRNSCT::getControlSequence(void){
+//	return controlSequence;
+//}
+//void TRNSCT::setControlSequence(int _s){
+//	controlSequence = _s;
+//}
+//
+//void TRNSCT::setMatrixMessage(MESSAGE* _message){
+//
+//	Matrix = _message;
+//}
+//
+//MESSAGE* TRNSCT::getMatrixMessage(void){
+//
+//	return Matrix;
+//
+//}
 //**********************************************************************************
 //**********************************************************************************
 PREDICATE_ACTION::PREDICATE_ACTION(SL_SM* _sm){
@@ -848,7 +848,7 @@ ACTION* act_1_3_cl(SL_SM* _sm, MESSAGE* _message) {
 	// or store it in valo during 200ok
 
 //	MESSAGE* __message = _sm->getSL_CO()->call_oset->getInviteA();
-	MESSAGE* __message = _sm->getSL_CO()->call_oset->getTransactionY(_message->getHeadCSeq().getSequence())->getMatrixMessage();
+//	MESSAGE* __message = _sm->getSL_CO()->call_oset->getTransactionY(_message->getHeadCSeq().getSequence())->getMatrixMessage();
 
 	DEBOUT("MESSAGE GENERATOR", __message)
 
@@ -1052,6 +1052,66 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 
 }
 
-//end State machine V3
+//V5
+//**********************************************************************************
+//**********************************************************************************
+ACTION* SM_V5::event(MESSAGE* _event){
 
+	PREDICATE_ACTION_V5* tmp;
 
+	ACTION* act=0x0;
+
+	DEBOUT("SM_SL::event Look for state", State)
+
+	pair<multimap<int,PREDICATE_ACTION_V5*>::iterator,multimap<int,PREDICATE_ACTION_V5*>::iterator> ret;
+
+	multimap<int,PREDICATE_ACTION_V5*>::iterator iter;
+
+	ret = move_sm.equal_range(State);
+
+	pthread_mutex_lock(&mutex);
+
+    for (iter=ret.first; iter!=ret.second; ++iter){
+		tmp  = iter->second;
+
+		if (tmp->predicate(this, _event)){
+			act = tmp->action(this, _event);
+			pthread_mutex_unlock(&mutex);
+			return act;
+		}
+	}
+	pthread_mutex_unlock(&mutex);
+	return(act);
+
+	DEBOUT("SM_SL::exec_it unexpected event", _event)
+}
+//**********************************************************************************
+//**********************************************************************************
+void SM_V5::insert_move(int _i, PREDICATE_ACTION_V5* _pa){
+
+	DEBOUT("SL_SM_V5::insert_move", _i << " " << _pa )
+	move_sm.insert(pair<int, PREDICATE_ACTION_V5*>(_i, _pa));
+
+}
+SM_V5::SM_V5(ENGINE* _eng, SL_CO* _sl_co){
+
+	DEBOUT("SM_V5::SM_V5", "")
+	sl_cc = _eng;
+    sl_co = _sl_co;
+
+    pthread_mutex_init(&mutex, NULL);
+	State = 0;
+
+//	controlSequence = 1;
+}
+ENGINE* SM_V5::getSL_CC(void){
+	return sl_cc;
+}
+SL_CO* SM_V5::getSL_CO(void){
+	return sl_co;
+}
+//**********************************************************************************
+//**********************************************************************************
+PREDICATE_ACTION_V5::PREDICATE_ACTION_V5(SM_V5* _sm){
+	machine = _sm;
+}
