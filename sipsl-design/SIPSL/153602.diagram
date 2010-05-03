@@ -1,7 +1,7 @@
 format 71
 
-note 128055 "includes (idx)"
-  xyzwh 1878.1 438 2000 126 44
+note 128055 "The INVITEy has a pointer to INVITEx to get the callid_x"
+  xyzwh 2075.1 603 2000 161 51
 classinstancecanvas 128083 classinstance_ref 128134 // A
   xyz 19.7 4 2005 life_line_z 2000
 end
@@ -207,7 +207,7 @@ end
 durationcanvas 141729 classinstance_ref 128723 // _cc:SL_CC
   xyzwh 524 2557 2010 11 54
 end
-durationcanvas 142275 classinstance_ref 128979 // smsv_x:SL_SM_SV
+durationcanvas 142275 classinstance_ref 128979 // smsv_x:SM_SV
   xyzwh 1241 398 2010 11 78
 end
 durationcanvas 142369 classinstance_ref 129235 // _callmap:COMAP
@@ -225,7 +225,7 @@ end
 durationcanvas 148641 classinstance_ref 128851 // co_x:SL_CO
   xyzwh 999 2694 2000 11 151
 end
-durationcanvas 148897 classinstance_ref 128979 // smsv_x:SL_SM_SV
+durationcanvas 148897 classinstance_ref 128979 // smsv_x:SM_SV
   xyzwh 1241 2710 2010 11 54
 end
 durationcanvas 149409 classinstance_ref 128467 // _sudp:SUDP
@@ -259,7 +259,7 @@ durationcanvas 156674 classinstance_ref 129107 // smcl_y:SL_SM_CL
   xyzwh 1460 958 2010 11 78
 end
 durationcanvas 157826 classinstance_ref 143043 // sipping:SIPFCTRY
-  xyzwh 2018 611 2010 11 40
+  xyzwh 2018 626 2010 11 27
 end
 durationcanvas 158082 classinstance_ref 143043 // sipping:SIPFCTRY
   xyzwh 2018 2774 2010 11 40
@@ -324,10 +324,10 @@ end
 durationcanvas 166530 classinstance_ref 128851 // co_x:SL_CO
   xyzwh 999 3009 2000 11 144
 end
-durationcanvas 167170 classinstance_ref 128979 // smsv_x:SL_SM_SV
+durationcanvas 167170 classinstance_ref 128979 // smsv_x:SM_SV
   xyzwh 1241 3006 2010 11 49
 end
-durationcanvas 167938 classinstance_ref 128979 // smsv_x:SL_SM_SV
+durationcanvas 167938 classinstance_ref 128979 // smsv_x:SM_SV
   xyzwh 1241 2008 2010 11 58
 end
 durationcanvas 168322 classinstance_ref 143043 // sipping:SIPFCTRY
@@ -342,7 +342,7 @@ end
 durationcanvas 170498 classinstance_ref 134257 // B:PHONE
   xyzwh 2321 3169 2010 11 24
 end
-durationcanvas 170882 classinstance_ref 128979 // smsv_x:SL_SM_SV
+durationcanvas 170882 classinstance_ref 128979 // smsv_x:SM_SV
   xyzwh 1241 244 2010 11 26
 end
 durationcanvas 171138 classinstance_ref 129491 // alo_x:ALO
@@ -734,9 +734,9 @@ msg 157314 return
 msg 157954 synchronous
   from durationcanvas_ref 141251
   to durationcanvas_ref 157826
-  yz 624 3005 explicitmsg "generate_message_100TRY(INVITEx, empty100TRYx)"
+  yz 626 3005 explicitmsg "generate_message_100TRY(INVITEx, empty100TRYx)"
   show_full_operations_definition default drawing_language default
-  label_xy 1292 612
+  label_xy 1292 614
 msg 158210 synchronous
   from durationcanvas_ref 148641
   to durationcanvas_ref 158082

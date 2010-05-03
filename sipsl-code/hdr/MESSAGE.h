@@ -48,11 +48,14 @@ using namespace std;
 #define SODE_STOPPOINT 9999
 #define SODE_APOINT 1
 #define SODE_BPOINT 2
-#define SODE_NTWPOINT 7 //udefined a or b
 #define SODE_ALOPOINT 3
 #define SODE_SMCLPOINT 4
 #define SODE_SMSVPOINT 5
 #define SODE_TIMERPOINT 6
+#define SODE_NTWPOINT 7 //udefined a or b
+#define SODE_SMSVCALLPOINT 8
+#define SODE_SMCLCALLPOINT 9
+
 
 #define MAXLINES 50
 

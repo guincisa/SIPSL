@@ -1,15 +1,13 @@
-window_sizes 1920 1058 263 1651 935 52
+window_sizes 1280 728 148 1126 607 52
 diagrams
   active  sequencediagram_ref 141367 // TRANSACT_V5
-    1651 935 100 0 0 0
-  sequencediagram_ref 153602 // F7 TIMER
-    1320 748 100 0 0 694
+    1126 607 100 0 0 0
 end
 show_stereotypes
 marked
   statediagram_ref 128183 // CL V2
 end
-selected class_ref 128518 // SM_SV
+selected sequencediagram_ref 153602 // F7 TIMER
 open
   state_ref 149431 // SM_CL_V3
 end
