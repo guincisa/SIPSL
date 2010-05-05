@@ -1,7 +1,7 @@
 format 73
 "SIPSL"
-  revision 80
-  modified_by 44 "guic"
+  revision 82
+  modified_by 55 "guic"
 
 
   
@@ -870,14 +870,6 @@ correct timer interaction with client state machine"
       overlapping_bars size A0
     end
 
-    classinstance 128055 "t_i_x:TRAN_INV_SV"
-      type class_ref 128339 // SIPENGINE
-      attributes
-        end
-      relations
-        end
-    end
-
     class 128055 "TRNSCT_INV__SM_SV"
       visibility package 
       cpp_decl ""
@@ -899,6 +891,25 @@ correct timer interaction with client state machine"
 
     classinstance 128311 "sm_sv_x"
       type class_ref 128518 // SM_SV
+      attributes
+        end
+      relations
+        end
+    end
+
+    class 134583 "TRNSCT_INV__SM_CL"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    classinstance 134839 "t_i_y"
+      type class_ref 134583 // TRNSCT_INV__SM_CL
       attributes
         end
       relations

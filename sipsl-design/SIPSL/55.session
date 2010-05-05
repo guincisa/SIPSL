@@ -1,14 +1,7 @@
-window_sizes 1280 728 148 1126 607 52
-diagrams
-  active  sequencediagram_ref 141367 // TRANSACT_V5
-    1126 607 100 0 0 0
-end
+window_sizes 1920 1058 256 1658 867 120
 show_stereotypes
-marked
-  statediagram_ref 128183 // CL V2
-end
-selected sequencediagram_ref 153602 // F7 TIMER
+selected sequencediagram_ref 141367 // TRANSACT_V5
 open
-  state_ref 149431 // SM_CL_V3
+  usecaseview_ref 128134 // VANILLA_CALL
 end
 end
