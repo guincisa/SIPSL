@@ -1,4 +1,8 @@
 window_sizes 1920 1058 256 1658 867 120
+diagrams
+  active  sequencediagram_ref 141367 // TRANSACT_V5
+    1658 867 100 0 0 332
+end
 show_stereotypes
 selected sequencediagram_ref 141367 // TRANSACT_V5
 open
