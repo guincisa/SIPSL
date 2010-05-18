@@ -80,18 +80,9 @@ static SIPUTIL SipUtil;
 // CALL_OSET
 //**********************************************************************************
 //**********************************************************************************
-CALL_OSET::CALL_OSET(ENGINE* _engine, MESSAGE* _genMessage){
+CALL_OSET::CALL_OSET(ENGINE* _engine){
 
 	engine = _engine;
-
-	//_genMessage must be put into transactionX
-//	TRNSCT* tmp = new TRNSCT();
-	int cs = _genMessage->getHeadCSeq().getSequence();
-//	tmp->setMatrixMessage(_genMessage);
-//	tmp->setControlSequence(cs);
-//	transactionMapX.insert(pair<int, TRNSCT*>(cs, tmp));
-
-	sl_sm_cl = 0x0;
 
 }
 //MESSAGE* CALL_OSET::getInviteA(void){

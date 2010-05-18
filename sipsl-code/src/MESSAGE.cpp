@@ -962,10 +962,9 @@ string MESSAGE::getTransactionExtendedCID(void){
 
 }
 string MESSAGE::getDialogExtendedCID(void){
-
-	DEBOUT("MESSAGE::getDialogExtendedCID(void)", getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag"))
+	//Call id and FromTag
+	DEBOUT_UTIL("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag"))
 	return getHeadCallId().getNormCallId() + getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag");
-
 }
 void MESSAGE::setLock(void){
 	lock = true;

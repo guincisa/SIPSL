@@ -144,7 +144,7 @@ void SPINB::put(MESSAGE* m) {
     //
     //cout << "         PUT writebuff " << writebuff << " mess " << m.id << endl;
 
-    int nextbuff = (writebuff +1 ) ;
+    int nextbuff = (writebuff +1);
     nextbuff = nextbuff % 3;
 
     pthread_mutex_lock(&writemu);

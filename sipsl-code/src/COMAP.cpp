@@ -71,16 +71,16 @@ COMAP::~COMAP(void){
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
 
-	DEBOUT("COMAP::getCALL_OSET_XMain retrieving using main call id", _callId_X)
+	DEBOUT_UTIL("COMAP::getCALL_OSET_XMain retrieving using extended call id", _callId_X)
 
 	CALL_OSET* tmp = 0x0;
 	map<string, CALL_OSET*>::iterator p;
 	p = comap_mm.find(_callId_X);
 	if (p != comap_mm.end()){
 			tmp = (CALL_OSET*)p->second;
-			DEBOUT("COMAP::getCALL_OSET found ", tmp)
+			DEBOUT_UTIL("COMAP::getCALL_OSET found ", tmp)
 	}else {
-		DEBOUT("COMAP::getCALL_OSET not found", "")
+		DEBOUT_UTIL("COMAP::getCALL_OSET not found", "")
 	}
 	//else return 0x0
 	return tmp;

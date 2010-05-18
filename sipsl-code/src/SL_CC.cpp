@@ -105,22 +105,25 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		_mess->getDialogExtendedCID();
 
-		DEBOUT("SL_CC::parse CALLOSET ID",callidx)
+		DEBOUT("SL_CC::parse CALLOSET extended ID",callidx)
 
 		call_oset = comap->getCALL_OSET_XMain(callidx);
 
-		//First try to get Server (originating) state machine
+		//First try to get the Call object using x side parameters
 		if (call_oset != 0x0) {
 			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
+
+			//Refine the source and destination
 			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
 
 			call_oset->getSL_CO()->call(_mess);
 		}
-		// Then try to get Client (terminating) state machine
+		// Then try to get call object using y side params
 		else {
 			call_oset = comap->getCALL_OSET_YDerived(callidx);
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
+				//Refine the source and destination
 				_mess->setEndPoints(SODE_BPOINT, SODE_SMCLPOINT);
 
 				call_oset->getSL_CO()->call(_mess);
@@ -131,20 +134,29 @@ void SL_CC::parse(MESSAGE* _mess) {
 			//new call Server (originating) side
 			DEBOUT("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
 
+			//If new than it is always SODE_APOINT
 			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
 
+			//////////////////////////////
 			//Start - Initialization block
-			call_oset = new CALL_OSET(this, _mess);
+			call_oset = new CALL_OSET(this);
 			SL_CO* sl_co = new SL_CO(call_oset);
-			SL_SM_SV* sl_sm_sv = new SL_SM_SV(this, sl_co);
+
 			VALO* alo = new VALO(this, call_oset);
 			alo->linkSUDP(getSUDP());
-			call_oset->setSL_X(callidx, sl_co, sl_sm_sv, alo);
-			call_oset->createTransactionX(_mess);
+
+			// now create the transaction state machine A
+			TRNSCT_SM* trnsctSM = new TRNSCT_SM(_mess->getHeadSipRequest().getS_AttMethod().getMethodID(), _mess, this, sl_co);
+			char t_key[32];
+			spritf(t_key, "%d#A#%d", _mess->getHeadSipRequest().getS_AttMethod().getMethodID(), _mess->getHeadCSeq().getSequence());
+			call_oset->addTrnsctSm(t_key, trnsctSM);
+
 			comap->setCALL_OSET(callidx, call_oset);
 			//End
+			//////////////////////////////
 
-			DEBOUT("SL_CC::parse CALL_OSET created x side", callidx << "] [" <<call_oset)
+
+			DEBOUT("SL_CC::parse CALL_OSET created by x side", callidx << "] [" <<call_oset)
 
 			sl_co->call(_mess);
 		}

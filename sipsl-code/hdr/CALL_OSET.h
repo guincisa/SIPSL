@@ -45,7 +45,8 @@ class CALL_OSET {
 
 		SL_CO* sl_co;
 		ALO* alo;
-		SL_SM_SV* sl_sm_sv;
+
+		//SL_SM_SV* sl_sm_sv;
 
 		//map callId_y and related states machines
 		//v4 map<string, SL_SM_CL*> mm_sl_sm_cl;
@@ -55,22 +56,37 @@ class CALL_OSET {
 		//The final call_y of the only confirmed invite
 		string callId_Y_v4;
 
-		//New client State Machine v4
-		//map of call_y message, first list of outgoing invites
-		//map<string, MESSAGE*> mm_genMessage_CL_v4;
-		//The unique state machine client
-		SL_SM_CL* sl_sm_cl;
+		// New client State Machine v4
+		// map of call_y message, first list of outgoing invites
+		// map<string, MESSAGE*> mm_genMessage_CL_v4;
+		// The unique state machine client
+		//SL_SM_CL* sl_sm_cl;
 
-		//This map store all the current sequence numbers per message:
-		// "INVITE",1
-		// if there is no entry the number will be 1 and inserted into the mas
-		// it's always no y side
-		map<string, int> counterSequenceMap;
+		// TRANSACTION MANAGEMENT
+		// there are server and client side state machines
+		// a machine for every new request even inside the same call
+		// KEY is like this
+		// <REQUESTTYPE>#<SIDE>#<SEQUENCE>
+		// example 1#A#1
+		map<string, TRNSCT_SM*> trnsctSmMap;
 
+		// Sequence map
+		// used to store used sequences and return new unused sequences
+		map<string, int> sequenceMap;
+		// current sequence, shared among all request
+		int currentSequence;
+
+		// Get new transaction state machine
+		TRNSCT_SM* newTrnsct(string method, string side)
 
 	public:
 
-		CALL_OSET(ENGINE*, MESSAGE*);
+		// TRANSACTION MANAGEMENT
+		CALL_OSET(ENGINE*);
+
+		// add transaction state machine
+		void addTrnsctSm(string key, TRNSCT_SM* trnsctSm);
+
 		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
 		SL_SM_SV* getSL_SM_SV(void);
@@ -264,17 +280,22 @@ class TRNSCT_SM  : SM_V5{
 
 	private:
 
-		int controlSequence;
-		string request;
+		int requestType;
 		MESSAGE* Matrix;
 
 	public:
 
-		int getControlSequence(void);
-		void setControlSequence(int);
-
 		void setMatrixMessage(MESSAGE*);
 		MESSAGE* getMatrixMessage(void);
+
+		//#define REGISTER_REQUEST 1
+		//#define INVITE_REQUEST 2
+		//#define ACK_REQUEST 3
+		//#define BYE_REQUEST 4
+		//#define CANCEL_REQUEST 5
+
+		//Depending on the request the SM will be different
+		TRNSCT_SM(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 
 };
 //**********************************************************************************

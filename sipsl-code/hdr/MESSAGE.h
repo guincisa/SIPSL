@@ -53,8 +53,8 @@ using namespace std;
 #define SODE_SMSVPOINT 5
 #define SODE_TIMERPOINT 6
 #define SODE_NTWPOINT 7 //udefined a or b
-#define SODE_SMSVCALLPOINT 8
-#define SODE_SMCLCALLPOINT 9
+//#define SODE_SMSVCALLPOINT 8
+//#define SODE_SMCLCALLPOINT 9
 
 
 #define MAXLINES 50
