@@ -145,16 +145,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 			VALO* alo = new VALO(this, call_oset);
 			alo->linkSUDP(getSUDP());
 
-			// now create the transaction state machine A
-			TRNSCT_SM* trnsctSM = new TRNSCT_SM(_mess->getHeadSipRequest().getS_AttMethod().getMethodID(), _mess, this, sl_co);
-			char t_key[32];
-			spritf(t_key, "%d#A#%d", _mess->getHeadSipRequest().getS_AttMethod().getMethodID(), _mess->getHeadCSeq().getSequence());
-			call_oset->addTrnsctSm(t_key, trnsctSM);
-
 			comap->setCALL_OSET(callidx, call_oset);
 			//End
 			//////////////////////////////
-
 
 			DEBOUT("SL_CC::parse CALL_OSET created by x side", callidx << "] [" <<call_oset)
 

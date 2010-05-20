@@ -23,6 +23,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <map>
 #include <string.h>
@@ -208,14 +209,27 @@ void SL_CO::call(MESSAGE* _message){
 
     ACTION* action = 0x0;
 
+//	// now create the transaction state machine A
+//	TRNSCT_SM* trnsctSM = new TRNSCT_SM(_mess->getHeadSipRequest().getS_AttMethod().getMethodID(), _mess, this, sl_co);
+//	char t_key[32];
+//	spritf(t_key, "%d#A#%d", _mess->getHeadSipRequest().getS_AttMethod().getMethodID(), _mess->getHeadCSeq().getSequence());
+//	call_oset->addTrnsctSm(t_key, trnsctSM);
 
 
 	if (_message->getDestEntity() == SODE_SMSVPOINT) {
-	    DEBOUT("SL_CO::call server state machine", _message->getDialogExtendedCID())
 
-		SL_SM_SV* sl_sm_sv = call_oset->getSL_SM_SV();
+	    DEBOUT("SL_CO::search for transaction state machine", _message->getDialogExtendedCID())
 
-		action = sl_sm_sv->event(_message);
+		char t_key[32];
+		sprintf(t_key, "%d#A#%d", _message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message->getHeadCSeq().getSequence());
+		TRNSCT_SM* trnsctSM = call_oset->addTrnsctSm(t_key);
+
+		if (trnsctSM == 0x0){
+			TRNSCT_SM* trnsctSM = new TRNSCT_SM(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+			call_oset->addTrnsctSm(t_key);
+		}
+
+		action = trnsctSM->event(_message);
 
 		if (action != 0x0){
 

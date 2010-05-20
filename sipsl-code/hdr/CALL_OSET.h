@@ -38,6 +38,8 @@ class SL_SM_SV;
 class SL_CO;
 class ALO;
 
+class TRNSCT_SM;
+
 //Umbrella class which hosts states machines and call object
 class CALL_OSET {
 
@@ -77,7 +79,7 @@ class CALL_OSET {
 		int currentSequence;
 
 		// Get new transaction state machine
-		TRNSCT_SM* newTrnsct(string method, string side)
+		TRNSCT_SM* newTrnsct(string method, string side);
 
 	public:
 
@@ -86,6 +88,14 @@ class CALL_OSET {
 
 		// add transaction state machine
 		void addTrnsctSm(string key, TRNSCT_SM* trnsctSm);
+		// get transaction state machine
+		TRNSCT_SM* addTrnsctSm(string key);
+
+
+
+
+
+
 
 		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
