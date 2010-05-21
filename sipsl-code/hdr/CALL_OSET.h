@@ -25,19 +25,12 @@
 #ifndef ACTION_H
 #include "ACTION.h"
 #endif
-/**********************************************************************************
- * CALL_OSET is :
- * 1:1 SL_CO
- * 1:1 SL_SM_SV
- * 0:N SL_SM_CL (N is because it may have more associated call legs, it's a multimap
- * with key = callid
- *
- **********************************************************************************/
+
 class SL_SM_CL;
 class SL_SM_SV;
 class SL_CO;
 class ALO;
-
+class SL_SM;
 class TRNSCT_SM;
 
 //Umbrella class which hosts states machines and call object
@@ -47,22 +40,8 @@ class CALL_OSET {
 
 		SL_CO* sl_co;
 		ALO* alo;
-
-		//SL_SM_SV* sl_sm_sv;
-
-		//map callId_y and related states machines
-		//v4 map<string, SL_SM_CL*> mm_sl_sm_cl;
 		ENGINE* engine;
-		string callId_X;
 
-		//The final call_y of the only confirmed invite
-		string callId_Y_v4;
-
-		// New client State Machine v4
-		// map of call_y message, first list of outgoing invites
-		// map<string, MESSAGE*> mm_genMessage_CL_v4;
-		// The unique state machine client
-		//SL_SM_CL* sl_sm_cl;
 
 		// TRANSACTION MANAGEMENT
 		// there are server and client side state machines
@@ -81,6 +60,28 @@ class CALL_OSET {
 		// Get new transaction state machine
 		TRNSCT_SM* newTrnsct(string method, string side);
 
+
+
+
+
+
+
+
+		//SL_SM_SV* sl_sm_sv;
+
+		//map callId_y and related states machines
+		//v4 map<string, SL_SM_CL*> mm_sl_sm_cl;
+		string callId_X;
+
+		//The final call_y of the only confirmed invite
+		string callId_Y_v4;
+
+		// New client State Machine v4
+		// map of call_y message, first list of outgoing invites
+		// map<string, MESSAGE*> mm_genMessage_CL_v4;
+		// The unique state machine client
+		//SL_SM_CL* sl_sm_cl;
+
 	public:
 
 		// TRANSACTION MANAGEMENT
@@ -90,6 +91,7 @@ class CALL_OSET {
 		void addTrnsctSm(string key, TRNSCT_SM* trnsctSm);
 		// get transaction state machine
 		TRNSCT_SM* addTrnsctSm(string key);
+
 
 
 
@@ -141,10 +143,105 @@ class SL_CO {
 		void call(MESSAGE*);
 
 };
-// New State machine
+
 //**********************************************************************************
 //**********************************************************************************
-class SL_SM;
+// Transaction State machines
+//**********************************************************************************
+//**********************************************************************************
+class PREDICATE_ACTION_V5;
+class SM_V5 {
+
+	private:
+		pthread_mutex_t mutex;
+		multimap< int, PREDICATE_ACTION_V5*> move_sm;
+
+		ENGINE* sl_cc;
+	    SL_CO* sl_co;
+
+	public:
+	    int State; // initial 0, final -1
+		void insert_move(int, PREDICATE_ACTION_V5*);
+		ACTION* event(MESSAGE*);
+
+		ENGINE* getSL_CC(void);
+		SL_CO* getSL_CO(void);
+		SM_V5(ENGINE* sl_cc, SL_CO* sl_co);
+
+};
+class TRNSCT_SM  :  public SM_V5{
+
+	private:
+
+		int requestType;
+		MESSAGE* Matrix;
+
+	public:
+
+		void setMatrixMessage(MESSAGE*);
+		MESSAGE* getMatrixMessage(void);
+
+		//#define REGISTER_REQUEST 1
+		//#define INVITE_REQUEST 2
+		//#define ACK_REQUEST 3
+		//#define BYE_REQUEST 4
+		//#define CANCEL_REQUEST 5
+
+		//Depending on the request the SM will be different
+		TRNSCT_SM(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
+
+};
+
+class PREDICATE_ACTION_V5 {
+
+	private:
+	SM_V5* machine;
+
+	public:
+
+	bool (*predicate)(SM_V5*, MESSAGE*);
+	ACTION* (*action)(SM_V5*, MESSAGE*);
+
+	PREDICATE_ACTION_V5(SM_V5*);
+
+};
+class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
+
+	public:
+
+		PREDICATE_ACTION_V5 P0_1CL;
+		PREDICATE_ACTION_V5 P1_2CL;
+		PREDICATE_ACTION_V5 P1_3CL;
+		PREDICATE_ACTION_V5 P1_4CL;
+		PREDICATE_ACTION_V5 P3_3CL;
+		PREDICATE_ACTION_V5 P3_4CL;
+		PREDICATE_ACTION_V5 P2_3CL;
+		PREDICATE_ACTION_V5 P2_4CL;
+		PREDICATE_ACTION_V5 P4_5CL;
+		PREDICATE_ACTION_V5 P5_7CL;
+		PREDICATE_ACTION_V5 P7_8CL;
+
+		TRNSCT_SM_INVITE(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
+
+};
+
+//**********************************************************************************
+//**********************************************************************************
+// Call/Dialog state machine
+//**********************************************************************************
+//**********************************************************************************
+class CALL_SM  : SM_V5{
+
+	private:
+
+	vector<TRNSCT_SM*> trnsct_sm_array;
+
+	public:
+
+};
+
+//**********************************************************************************
+//**********************************************************************************
 class PREDICATE_ACTION {
 
 	private:
@@ -236,90 +333,3 @@ class SL_SM_SV : public SL_SM {
 		SL_SM_SV(ENGINE*, SL_CO*);
 
 };
-//**********************************************************************************
-//**********************************************************************************
-//**********************************************************************************
-//**********************************************************************************
-//**********************************************************************************
-//**********************************************************************************
-// V5
-// new state machine top class
-// transaction state machine
-// call state machine
-//**********************************************************************************
-//**********************************************************************************
-class PREDICATE_ACTION_V5;
-class SM_V5 {
-
-	private:
-		pthread_mutex_t mutex;
-		multimap< int, PREDICATE_ACTION_V5*> move_sm;
-
-		ENGINE* sl_cc;
-	    SL_CO* sl_co;
-
-	public:
-	    int State; // initial 0, final -1
-		void insert_move(int, PREDICATE_ACTION_V5*);
-		ACTION* event(MESSAGE*);
-
-		ENGINE* getSL_CC(void);
-		SL_CO* getSL_CO(void);
-		SM_V5(ENGINE* sl_cc, SL_CO* sl_co);
-
-};
-class PREDICATE_ACTION_V5 {
-
-	private:
-	SM_V5* machine;
-
-	public:
-
-	bool (*predicate)(SM_V5*, MESSAGE*);
-	ACTION* (*action)(SM_V5*, MESSAGE*);
-
-	PREDICATE_ACTION_V5(SM_V5*);
-
-};
-//**********************************************************************************
-//**********************************************************************************
-// Transaction state machine
-//**********************************************************************************
-//**********************************************************************************
-class TRNSCT_SM  : SM_V5{
-
-	private:
-
-		int requestType;
-		MESSAGE* Matrix;
-
-	public:
-
-		void setMatrixMessage(MESSAGE*);
-		MESSAGE* getMatrixMessage(void);
-
-		//#define REGISTER_REQUEST 1
-		//#define INVITE_REQUEST 2
-		//#define ACK_REQUEST 3
-		//#define BYE_REQUEST 4
-		//#define CANCEL_REQUEST 5
-
-		//Depending on the request the SM will be different
-		TRNSCT_SM(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
-
-};
-//**********************************************************************************
-//**********************************************************************************
-// Call/Dialog state machine
-//**********************************************************************************
-//**********************************************************************************
-class CALL_SM  : SM_V5{
-
-	private:
-
-	vector<TRNSCT_SM*> trnsct_sm_array;
-
-	public:
-
-};
-

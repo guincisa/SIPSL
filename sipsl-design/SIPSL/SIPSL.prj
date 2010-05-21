@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 85
+  revision 86
   modified_by 55 "guic"
 
 
@@ -444,10 +444,20 @@ s
 	  on state_ref 128161 // 1
 	  external 
 	end
+
+	transition 204983 "<transition>"
+	  on state_ref 128161 // 1
+	  external 
+	end
+
+	transition 205111 "event<INVITEx,s=A,d=trnsct_x>"
+	  on state_ref 128161 // 1
+	  external 
+	end
       end
 
       state 128161 "1"
-	transition 128545 "event<INVITEx, s=A, d=sv_x>"
+	transition 128545 "event<INVITEx, s=A, d=trnsct_x>"
 	  on state_ref 128161 // 1
 	end
 
@@ -456,7 +466,7 @@ s
 	  external 
 	end
 
-	transition 142210 "event<DIAGE,s=sm_y, d=sm_x>"
+	transition 142210 "event<DIAGE,s=trnsct_y, d=sm_x>"
 	  on state_ref 128161 // 1
 	end
       end
@@ -914,6 +924,15 @@ correct timer interaction with client state machine"
         end
       relations
         end
+    end
+
+    state 182583 "TRNSCT_SM_INVITE_SV"
+      stereotype "machine"
+      statediagram 147895 "statediagram"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
     end
   end
 end

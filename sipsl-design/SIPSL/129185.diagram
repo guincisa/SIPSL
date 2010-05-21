@@ -1,4 +1,4 @@
-format 70
+format 73
 
 pseudostatecanvas 128033 pseudostate_ref 128033 // entry_point
    xyz 71 122 3005 label_xy 74 141
@@ -16,7 +16,7 @@ note 128898 "qui
 "
   xyzwh 988 264 2000 71 43
 note 129154 "RINGING IS NOT REPEATED"
-  xyzwh 293.5 64.5 2000 381 187
+  xyzwh -0.5 280.5 2000 97 63
 note 129569 "action:
 [TYPE_MESS, INVITEx, s=sm_x, d=alo]
 [TYPE_MESS, 100TRYx, s=sm_x, d=A] "

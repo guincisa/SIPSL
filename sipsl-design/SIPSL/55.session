@@ -1,7 +1,14 @@
-window_sizes 1280 728 192 1082 659 0
+window_sizes 1280 728 255 1019 659 0
+diagrams
+  active  statediagram_ref 147895 // statediagram
+    1019 659 100 2 60 141
+  sequencediagram_ref 141367 // TRANSACT_V5
+    815 527 100 0 0 556
+end
 show_stereotypes
-selected sequencediagram_ref 153602 // F7 TIMER
+selected statediagram_ref 147895 // statediagram
 open
-  usecaseview_ref 128134 // VANILLA_CALL
+  state_ref 128033 // SL_SM_SV
+  state_ref 182583 // TRNSCT_SM_INVITE_SV
 end
 end

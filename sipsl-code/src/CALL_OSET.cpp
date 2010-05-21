@@ -222,10 +222,17 @@ void SL_CO::call(MESSAGE* _message){
 
 		char t_key[32];
 		sprintf(t_key, "%d#A#%d", _message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message->getHeadCSeq().getSequence());
-		TRNSCT_SM* trnsctSM = call_oset->addTrnsctSm(t_key);
+		TRNSCT_SM* trnsctSM = 0x0;
+		trnsctSM = call_oset->addTrnsctSm(t_key);
+//		if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+//			//cast to correct SM
+//			TRNSCT_SM_INVITE* trnsctSM_I = (TRNSCT_SM_INVITE*)trnsctSM;
+//		}
 
 		if (trnsctSM == 0x0){
-			TRNSCT_SM* trnsctSM = new TRNSCT_SM(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+				trnsctSM = new TRNSCT_SM_INVITE(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+			}
 			call_oset->addTrnsctSm(t_key);
 		}
 
