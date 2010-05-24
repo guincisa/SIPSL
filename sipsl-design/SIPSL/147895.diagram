@@ -1,92 +1,92 @@
 format 73
 
-statecanvas 128055 state_ref 128161 // 1
+statecanvas 128055 state_ref 128161 // ISV_1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 638.1 251.1 2000 40 37
+  xyzwh 638.1 251.1 2000 45 37
 end
 note 128183 "action:
-[TYPE_MESS, 180RINGx, s=sm_x, d=A]"
-  xyzwh 682.1 432.2 2000 251 57
+[TYPE_MESS, 180RINGx, s=trnsct_inv_x, d=A]
+[TYPE_MESS, 100TRYx, s=trnsct_inv_x, d=A] 
+[TYPE_TRANSACTION_STATE,invite_earlyd_x,s=trnsct_inv_x,d=CALL_SM] "
+  xyzwh 672.1 406.2 2000 365 75
 note 128311 "action:
-[TYPE_MESS, 200OKx, s=sm_x, d=A]"
-  xyzwh 398.9 427.7 2000 203 49
+[TYPE_MESS, 200OKx, s=trnsct_inv_x, d=A]
+[TYPE_TRANSACTION_STATE,invite_confirmd_x,s=trnsct_inv_x,d=CALL_SM] "
+  xyzwh 203.9 433.7 2000 393 63
 note 128439 "action:
-[TYPE_MESS, 100TRYx, s=trnsct_x, d=A]"
+[TYPE_MESS, 100TRYx, s=trnsct_inv_x, d=A]"
   xyzwh 662.5 85.8 2000 201 47
 note 128695 "action:
-[TYPE_MESS, INVITEx, s=trnsct_x, d=alo]
-[TYPE_MESS, 100TRYx, s=trnsct_x, d=A] 
-[TYPE_TRANSACTION_STATE,invite_sv_open_x,s=trnsct_x,d=SM_SV] "
-  xyzwh 253.9 295.3 2000 307 95
+[TYPE_MESS, INVITEx, s=trnsct_inv_x, d=alo]
+[TYPE_MESS, 100TRYx, s=trnsct_inv_x, d=A] 
+[TYPE_TRANSACTION_STATE,invite_open_x,s=trnsct_inv_x,d=CALL_SM] "
+  xyzwh 253.9 294.3 2000 337 75
 note 128951 "state machine created"
   xyzwh 126.8 203.8 2000 136 35
 note 129079 "action:
-[TYPE_MESS, 180RINGx, s=sm_x, d=A]
+[TYPE_MESS, 180RINGx, s=trnsct_inv_x, d=A]
 
 "
   xyzwh 790 587.1 2000 233 53
 note 129335 "action:
-[TYPE_MESS,DIAGE,s=trnsct_x, d=a]"
-  xyzwh 960 227.8 2000 197 51
+[TYPE_MESS,DIAGE,s=trnsct_inv_x, d=a]"
+  xyzwh 866 241.8 2000 225 49
 note 129463 "action:
-[TYPE_MESS, 200OKx, s=sm_x, d=A]"
-  xyzwh 533.1 675.2 2000 249 51
-statecanvas 129591 state_ref 128289 // 2
+[TYPE_MESS, 200OKx, s=trnsct_inv_x, d=A]"
+  xyzwh 539.1 692.2 2000 249 51
+statecanvas 129591 state_ref 128289 // ISV_2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 638.1 558.8 2000 40 37
+  xyzwh 638.1 558.8 2000 45 37
 end
 pseudostatecanvas 129719 pseudostate_ref 128033 // entry_point
    xyz 184.7 260.7 3005 label_xy 189 278
 end
-statecanvas 129847 state_ref 128417 // 3
+statecanvas 129847 state_ref 128417 // ISV_3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 264.3 575.5 2000 40 37
+  xyzwh 249.3 580.5 2000 45 37
 end
-note 129975 "qui
-"
-  xyzwh 1169.8 400.7 2000 71 43
-transitioncanvas 130103 transition_ref 128929 // event<200OKx, s=alo, d=sm_x>
+transitioncanvas 130103 transition_ref 128929 // event<200OKx, s=alo, d=trnsct_inv_x>
   decenter_begin 272
   
-  from ref 129591 z 1999 label "event<200OKx, s=alo, d=sm_x>" xyz 322 496 1999 to point 472.8 511.5
+  from ref 129591 z 1999 label "event<200OKx, s=alo, d=trnsct_inv_x>" xyz 311 538 1999 to point 470 552
   line 130231 z 1999 to ref 129847
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 130359 transition_ref 128801 // event<180RINGy, s=sm_y, d=sm_x>
+transitioncanvas 130359 transition_ref 128801 // event<180RINGy, s=trnsct_inv_y, d=trnsct_x>
   
-  from ref 129591 z 1999 label "event<180RINGy, s=sm_y, d=sm_x>" xyz 793 542 1999 to point 771.7 598.2
-  line 130487 z 1999 to point 771.3 548.2
+  from ref 129591 z 1999 label "event<180RINGy, s=trnsct_inv_y, d=trnsct_x>" xyz 771 515 1999 to point 771 598
+  line 130487 z 1999 to point 771 548
   line 130615 z 1999 to ref 129591
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 130743 transition_ref 128673 // event<180RINGy, s=sm_y, d=sm_x>
+transitioncanvas 130743 transition_ref 128673 // event<180RINGy, s=trnsct_inv_y, d=trnsct_inv_x>
   
-  from ref 128055 z 1999 label "event<180RINGy, s=sm_y, d=sm_x>" xyz 679 399 1999 to ref 129591
+  from ref 128055 z 1999 label "event<180RINGy, s=trnsct_inv_y, d=trnsct_inv_x>" xyz 678 379 1999 to ref 129591
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 130871 transition_ref 142210 // event<DIAGE,s=trnsct_y, d=sm_x>
+transitioncanvas 130871 transition_ref 142210 // event<DIAGE,s=trnsct_inv_y, d=trnsct_x>
   
-  from ref 128055 z 2001 label "event<DIAGE,s=trnsct_y, d=sm_x>" xyz 903 164 2001 to point 877.9 161.5
-  line 130999 z 2001 to point 932.8 214.8
+  from ref 128055 z 2001 label "event<DIAGE,s=trnsct_inv_y, d=trnsct_x>" xyz 898 136 2001 to point 877 161
+  line 130999 z 2001 to point 932 214
   line 131127 z 2001 to ref 128055
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131255 transition_ref 128545 // event<INVITEx, s=A, d=trnsct_x>
   
-  from ref 128055 z 1999 label "event<INVITEx, s=A, d=trnsct_x>" xyz 448 161 1999 to point 582.7 137.2
-  line 131383 z 1999 to point 638 130.8
+  from ref 128055 z 1999 label "event<INVITEx, s=A, d=trnsct_x>" xyz 449 161 1999 to point 582 137
+  line 131383 z 1999 to point 638 130
   line 131511 z 1999 to ref 128055
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 131639 transition_ref 129057 // event<200OKy, s=cl_y, d=sv_x> (alternative)
+transitioncanvas 131639 transition_ref 129057 // event<200OKy, s=trnsct_inv_y, d=trnsct_inv_x> (alternative)
   
-  from ref 129591 z 1999 label "event<200OKy, s=cl_y, d=sv_x> (alternative)" xyz 489 651 1999 to point 469.5 642.6
+  from ref 129591 z 1999 label "event<200OKy, s=trnsct_inv_y, d=trnsct_inv_x> (alternative)" xyz 427 615 1999 to point 469 658
   line 131767 z 1999 to ref 129847
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 134583 transition_ref 205111 // event<INVITEx,s=A,d=trnsct_x>
+transitioncanvas 134583 transition_ref 205111 // event<INVITEx,s=A,d=trnsct_inv_x>
   
-  from ref 129719 z 3006 label "event<INVITEx,s=A,d=trnsct_x>" xyz 352 248 3006 to ref 128055
+  from ref 129719 z 3006 label "event<INVITEx,s=A,d=trnsct_inv_x>" xyz 340 249 3006 to ref 128055
   write_horizontally default show_definition default drawing_language default
 end
 line 132279 -_-_
@@ -97,8 +97,6 @@ line 132535 -_-_
   from ref 128951 z 1999 to ref 129719
 line 132663 -_-_
   from ref 128183 z 1998 to ref 130743
-line 132791 -_-_
-  from ref 129975 z 2001 to ref 130743
 line 132919 -_-_
   from ref 129463 z 2001 to ref 131639
 line 133047 -_-_

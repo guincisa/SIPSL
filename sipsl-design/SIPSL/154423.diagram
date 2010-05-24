@@ -1,0 +1,22 @@
+format 73
+
+note 128055 "action:
+[TYPE_MESS, ACKx, s=trnsct_ack_x, d=trnsct_ack_y]
+[TYPE_TRANSACTION_STATE,ack_x,s=trnsct_ack_x,d=CALL_SM] "
+  xyzwh 377 165 2000 311 59
+statecanvas 128183 state_ref 128545 // A_2
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 151 267 2000 40 37
+end
+statecanvas 129719 state_ref 189111 // A_1
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 183 66 2000 40 29
+end
+transitioncanvas 129847 transition_ref 211639 // event<ACKx, s=A, d=trnsct_ack_x>
+  
+  from ref 129719 z 2001 label "event<ACKx, s=A, d=trnsct_ack_x>" xyz 222 124.5 3000 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+line 129975 -_-_
+  from ref 128055 z 2002 to ref 129847
+end

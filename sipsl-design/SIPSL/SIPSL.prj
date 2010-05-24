@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 86
+  revision 87
   modified_by 55 "guic"
 
 
@@ -411,7 +411,7 @@ e' l'invite che viene ritrasmesso
 
       pseudostate 128033 entry_point "init"
 	transition 128033 "<transition>"
-	  on state_ref 128161 // 1
+	  on state_ref 128161 // ISV_1
 	  ncouples 2
 	  key "s" value "sss"
 	  key "b" value "bbb"
@@ -419,13 +419,13 @@ e' l'invite che viene ritrasmesso
 	end
 
 	transition 128161 "<transition>"
-	  on state_ref 128161 // 1
+	  on state_ref 128161 // ISV_1
 	  external 
 	end
 
 	transition 128289 "<transition>eeee"
 	  stereotype "eeee"
-	  on state_ref 128161 // 1
+	  on state_ref 128161 // ISV_1
 	  comment "asasasa
 a
 sa
@@ -441,33 +441,38 @@ s
 	end
 
 	transition 128417 "event<INVITEx, s=A, d=sv_x>"
-	  on state_ref 128161 // 1
+	  on state_ref 128161 // ISV_1
 	  external 
 	end
 
 	transition 204983 "<transition>"
-	  on state_ref 128161 // 1
+	  on state_ref 128161 // ISV_1
 	  external 
 	end
 
-	transition 205111 "event<INVITEx,s=A,d=trnsct_x>"
-	  on state_ref 128161 // 1
+	transition 205111 "event<INVITEx,s=A,d=trnsct_inv_x>"
+	  on state_ref 128161 // ISV_1
+	  external 
+	end
+
+	transition 211767 "<transition>"
+	  on state_ref 189239 // ICL_1
 	  external 
 	end
       end
 
-      state 128161 "1"
+      state 128161 "ISV_1"
 	transition 128545 "event<INVITEx, s=A, d=trnsct_x>"
-	  on state_ref 128161 // 1
+	  on state_ref 128161 // ISV_1
 	end
 
-	transition 128673 "event<180RINGy, s=sm_y, d=sm_x>"
-	  on state_ref 128289 // 2
+	transition 128673 "event<180RINGy, s=trnsct_inv_y, d=trnsct_inv_x>"
+	  on state_ref 128289 // ISV_2
 	  external 
 	end
 
-	transition 142210 "event<DIAGE,s=trnsct_y, d=sm_x>"
-	  on state_ref 128161 // 1
+	transition 142210 "event<DIAGE,s=trnsct_inv_y, d=trnsct_x>"
+	  on state_ref 128161 // ISV_1
 	end
       end
 
@@ -483,30 +488,32 @@ s
       stateaction 128033
       end
 
-      state 128289 "2"
-	transition 128801 "event<180RINGy, s=sm_y, d=sm_x>"
-	  on state_ref 128289 // 2
+      state 128289 "ISV_2"
+	transition 128801 "event<180RINGy, s=trnsct_inv_y, d=trnsct_x>"
+	  on state_ref 128289 // ISV_2
 	end
 
-	transition 128929 "event<200OKx, s=alo, d=sm_x>"
-	  on state_ref 128417 // 3
+	transition 128929 "event<200OKx, s=alo, d=trnsct_inv_x>"
+	  on state_ref 128417 // ISV_3
 	  external 
 	end
 
-	transition 129057 "event<200OKy, s=cl_y, d=sv_x> (alternative)"
-	  on state_ref 128417 // 3
-	  external 
-	end
-      end
-
-      state 128417 "3"
-	transition 129185 "event<ACKx, s=A, d=sm_x>"
-	  on state_ref 128545 // 4
+	transition 129057 "event<200OKy, s=trnsct_inv_y, d=trnsct_inv_x> (alternative)"
+	  on state_ref 128417 // ISV_3
+	  comment "
+"
 	  external 
 	end
       end
 
-      state 128545 "4"
+      state 128417 "ISV_3"
+	transition 129185 "event<ACKx, s=A, d=trnsct_ack_x>"
+	  on state_ref 128545 // A_2
+	  external 
+	end
+      end
+
+      state 128545 "A_2"
       end
     end
 
@@ -526,20 +533,20 @@ s
       end
 
       pseudostate 128002 entry_point "init"
-	transition 128002 "event<INVITEy, s=alo, d=sm_y>"
-	  on state_ref 128130 // 1
+	transition 128002 "event<INVITEy, s=alo, d=trnsct_inv_y>"
+	  on state_ref 128130 // ICL_1
 	  external 
 	end
       end
 
-      state 128130 "1"
-	transition 128258 "event<TRYy, s=b, d=sm_y>"
-	  on state_ref 128258 // 2
+      state 128130 "ICL_1"
+	transition 128258 "event<TRYy, s=b, d=trnsct_inv_y>"
+	  on state_ref 128258 // ICL_2
 	  external 
 	end
 
 	transition 128386 "event<INVITEy, s=alo, d=B>"
-	  on state_ref 128130 // 1
+	  on state_ref 128130 // ICL_1
 	end
 
 	transition 128055 "max resend of INVITE reached"
@@ -552,19 +559,19 @@ s
 	stereotype "dssaddf"
       end
 
-      state 128258 "2"
+      state 128258 "ICL_2"
 	transition 128514 "event<timer ring>"
 	  on state_ref 128386 // 3
 	  external 
 	end
 
-	transition 128642 "event<RINGy, s=b, d=sm_y>"
-	  on state_ref 128514 // 4
+	transition 128642 "event<RINGy, s=b, d=trnsct_inv_y>"
+	  on state_ref 128514 // ICL_3
 	  external 
 	end
 
-	transition 135682 "event<DialogEst, s=b d=sm_y>"
-	  on state_ref 128258 // 2
+	transition 135682 "event<DIALOGEST_y, s=B, d=trnsct_inv_y>"
+	  on state_ref 128258 // ICL_2
 	end
 
 	transition 128183 "event<TYPE_ABORT_CO state2>"
@@ -576,18 +583,18 @@ s
       state 128386 "3"
       end
 
-      state 128514 "4"
+      state 128514 "ICL_3"
 	transition 128770 "event<timer ring>"
 	  on state_ref 128386 // 3
 	  external 
 	end
 
-	transition 128898 "event<RINGy, s=b, d=smcly>"
-	  on state_ref 128514 // 4
+	transition 128898 "event<RINGy, s=b, d=trnsct_inv_y>"
+	  on state_ref 128514 // ICL_3
 	end
 
-	transition 129026 "event<OKy, s=b, d=smcly>"
-	  on state_ref 128642 // 5
+	transition 129026 "event<200OKy, s=b, d=trnsct_inv_y>"
+	  on state_ref 128642 // ICL_4
 	  external 
 	end
 
@@ -602,18 +609,19 @@ s
 	end
       end
 
-      state 128642 "5"
+      state 128642 "ICL_4"
 	transition 129154 "event<ACKy, s=alo, d=smcly>"
-	  on state_ref 128770 // 6
+	  on state_ref 128770 // ICL_5
 	  external 
 	end
       end
 
-      state 128770 "6"
+      state 128770 "ICL_5"
       end
 
       pseudostate 128055 exit_point "TIMEOUT CLEAR MACHINE"
       end
+
     end
 
     sequencediagram 153602 "F7 TIMER"
@@ -926,12 +934,34 @@ correct timer interaction with client state machine"
         end
     end
 
-    state 182583 "TRNSCT_SM_INVITE_SV"
+    state 182583 "SM_V5"
       stereotype "machine"
-      statediagram 147895 "statediagram"
+      statediagram 147895 "statediagram_invite_x"
 	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
 	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
 	size A2
+      end
+
+      statediagram 154423 "statediagram_ack_x"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+
+      state 189111 "A_1"
+	transition 211639 "event<ACKx, s=A, d=trnsct_ack_x>"
+	  on state_ref 128545 // A_2
+	  external 
+	end
+      end
+
+      statediagram 154551 "statediagram_invite_y"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+
+      state 189239 "ICL_1"
       end
     end
   end

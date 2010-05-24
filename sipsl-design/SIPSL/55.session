@@ -1,14 +1,13 @@
-window_sizes 1280 728 255 1019 659 0
+window_sizes 1280 728 219 1055 657 0
 diagrams
-  active  statediagram_ref 147895 // statediagram
-    1019 659 100 2 60 141
-  sequencediagram_ref 141367 // TRANSACT_V5
-    815 527 100 0 0 556
+  active  statediagram_ref 147895 // statediagram_invite_x
+    1055 657 100 2 0 0
 end
 show_stereotypes
-selected statediagram_ref 147895 // statediagram
+selected statediagram_ref 154551 // statediagram_invite_y
 open
   state_ref 128033 // SL_SM_SV
-  state_ref 182583 // TRNSCT_SM_INVITE_SV
+  state_ref 128002 // SM_SL_CL
+  state_ref 182583 // SM_V5
 end
 end
