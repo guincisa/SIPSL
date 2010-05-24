@@ -53,6 +53,11 @@ using namespace std;
 #define SODE_SMSVPOINT 5
 #define SODE_TIMERPOINT 6
 #define SODE_NTWPOINT 7 //udefined a or b
+//V5
+#define SODE_TRNSCT_CL 4
+#define SODE_TRNSCT_SV 5
+#define SODE_CALL_SM 8
+
 //#define SODE_SMSVCALLPOINT 8
 //#define SODE_SMCLCALLPOINT 9
 

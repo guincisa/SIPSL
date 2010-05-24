@@ -209,12 +209,6 @@ void SL_CO::call(MESSAGE* _message){
 
     ACTION* action = 0x0;
 
-//	// now create the transaction state machine A
-//	TRNSCT_SM* trnsctSM = new TRNSCT_SM(_mess->getHeadSipRequest().getS_AttMethod().getMethodID(), _mess, this, sl_co);
-//	char t_key[32];
-//	spritf(t_key, "%d#A#%d", _mess->getHeadSipRequest().getS_AttMethod().getMethodID(), _mess->getHeadCSeq().getSequence());
-//	call_oset->addTrnsctSm(t_key, trnsctSM);
-
 
 	if (_message->getDestEntity() == SODE_SMSVPOINT) {
 
@@ -224,10 +218,6 @@ void SL_CO::call(MESSAGE* _message){
 		sprintf(t_key, "%d#A#%d", _message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message->getHeadCSeq().getSequence());
 		TRNSCT_SM* trnsctSM = 0x0;
 		trnsctSM = call_oset->addTrnsctSm(t_key);
-//		if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
-//			//cast to correct SM
-//			TRNSCT_SM_INVITE* trnsctSM_I = (TRNSCT_SM_INVITE*)trnsctSM;
-//		}
 
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
@@ -409,6 +399,157 @@ void SL_CO::call(MESSAGE* _message){
 		delete action;
 	}
 }
+//V5
+//**********************************************************************************
+//**********************************************************************************
+ACTION* SM_V5::event(MESSAGE* _event){
+
+	PREDICATE_ACTION_V5* tmp;
+
+	ACTION* act=0x0;
+
+	DEBOUT("SM_SL::event Look for state", State)
+
+	pair<multimap<int,PREDICATE_ACTION_V5*>::iterator,multimap<int,PREDICATE_ACTION_V5*>::iterator> ret;
+
+	multimap<int,PREDICATE_ACTION_V5*>::iterator iter;
+
+	ret = move_sm.equal_range(State);
+
+	pthread_mutex_lock(&mutex);
+
+    for (iter=ret.first; iter!=ret.second; ++iter){
+		tmp  = iter->second;
+
+		if (tmp->predicate(this, _event)){
+			act = tmp->action(this, _event);
+			pthread_mutex_unlock(&mutex);
+			return act;
+		}
+	}
+	pthread_mutex_unlock(&mutex);
+	return(act);
+
+	DEBOUT("SM_SL::exec_it unexpected event", _event)
+}
+//**********************************************************************************
+//**********************************************************************************
+void SM_V5::insert_move(int _i, PREDICATE_ACTION_V5* _pa){
+
+	DEBOUT("SL_SM_V5::insert_move", _i << " " << _pa )
+	move_sm.insert(pair<int, PREDICATE_ACTION_V5*>(_i, _pa));
+
+}
+SM_V5::SM_V5(ENGINE* _eng, SL_CO* _sl_co){
+
+	DEBOUT("SM_V5::SM_V5", "")
+	sl_cc = _eng;
+    sl_co = _sl_co;
+
+    pthread_mutex_init(&mutex, NULL);
+	State = 0;
+
+//	controlSequence = 1;
+}
+ENGINE* SM_V5::getSL_CC(void){
+	return sl_cc;
+}
+SL_CO* SM_V5::getSL_CO(void){
+	return sl_co;
+}
+//**********************************************************************************
+//**********************************************************************************
+//**********************************************************************************
+//**********************************************************************************
+PREDICATE_ACTION_V5::PREDICATE_ACTION_V5(SM_V5* _sm){
+	machine = _sm;
+}
+//**********************************************************************************
+//**********************************************************************************
+//V5
+bool pre_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("TRNSCT_INV_SV pre_0_1_inv_sv called","")
+	if (_message->getReqRepType() == REQSUPP
+			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
+			&& _message->getDestEntity() == SODE_TRNSCT_SV
+			&& _message->getGenEntity() ==  SODE_APOINT) {
+		DEBOUT("TRNSCT_INV_SV pre_0_1_inv_sv","true")
+		return true;
+	}
+	else {
+		DEBOUT("TRNSCT_INV_SV pre_0_1_inv_sv","false")
+		return false;
+	}
+}
+ACTION* act_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv", _message->getHeadSipRequest().getContent())
+
+	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv CSeq", _message->getHeadCSeq().getContent())
+	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv CSeq", _message->getHeadCSeq().getSequence())
+
+    //_sm->setControlSequence(_message->getHeadCSeq().getSequence());
+
+	ACTION* action = new ACTION();
+
+	//_message changes its dest and gen
+	_message->setDestEntity(SODE_ALOPOINT);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	//etry is filled later by SL_CO (see design)
+	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV)
+
+	DEBOUT("ETRY","SIP/2.0 100 Trying")
+	etry->setHeadSipReply("SIP/2.0 100 Trying");
+
+	etry->dropHeader("Contact:");
+
+	SipUtil.genASideReplyFromRequest(_message, etry);
+	etry->compileMessage();
+	etry->dumpVector();
+	etry->typeOfInternal = TYPE_MESS;
+
+	SingleAction sa_2 = SingleAction(etry);
+
+	action->addSingleAction(sa_1);
+	action->addSingleAction(sa_2);
+
+	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv set", _message->getHeadSipRequest().getContent())
+
+	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv move to state 1","")
+	_sm->State = 1;
+
+	return action;
+
+}
+//**********************************************************************************
+TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
+		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
+		PA_INV_0_1SV((SM_V5*)this){
+
+	PA_INV_0_1SV.action = &act_0_1_inv_sv;
+	PA_INV_0_1SV.predicate = &pre_0_1_inv_sv;
+
+	insert_move(0,&PA_INV_0_1SV);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ////**********************************************************************************
 ////**********************************************************************************
 //int TRNSCT::getControlSequence(void){
@@ -1064,66 +1205,3 @@ SL_SM_CL::SL_SM_CL(ENGINE* _eng, SL_CO* _sl_co):
 
 }
 
-//V5
-//**********************************************************************************
-//**********************************************************************************
-ACTION* SM_V5::event(MESSAGE* _event){
-
-	PREDICATE_ACTION_V5* tmp;
-
-	ACTION* act=0x0;
-
-	DEBOUT("SM_SL::event Look for state", State)
-
-	pair<multimap<int,PREDICATE_ACTION_V5*>::iterator,multimap<int,PREDICATE_ACTION_V5*>::iterator> ret;
-
-	multimap<int,PREDICATE_ACTION_V5*>::iterator iter;
-
-	ret = move_sm.equal_range(State);
-
-	pthread_mutex_lock(&mutex);
-
-    for (iter=ret.first; iter!=ret.second; ++iter){
-		tmp  = iter->second;
-
-		if (tmp->predicate(this, _event)){
-			act = tmp->action(this, _event);
-			pthread_mutex_unlock(&mutex);
-			return act;
-		}
-	}
-	pthread_mutex_unlock(&mutex);
-	return(act);
-
-	DEBOUT("SM_SL::exec_it unexpected event", _event)
-}
-//**********************************************************************************
-//**********************************************************************************
-void SM_V5::insert_move(int _i, PREDICATE_ACTION_V5* _pa){
-
-	DEBOUT("SL_SM_V5::insert_move", _i << " " << _pa )
-	move_sm.insert(pair<int, PREDICATE_ACTION_V5*>(_i, _pa));
-
-}
-SM_V5::SM_V5(ENGINE* _eng, SL_CO* _sl_co){
-
-	DEBOUT("SM_V5::SM_V5", "")
-	sl_cc = _eng;
-    sl_co = _sl_co;
-
-    pthread_mutex_init(&mutex, NULL);
-	State = 0;
-
-//	controlSequence = 1;
-}
-ENGINE* SM_V5::getSL_CC(void){
-	return sl_cc;
-}
-SL_CO* SM_V5::getSL_CO(void){
-	return sl_co;
-}
-//**********************************************************************************
-//**********************************************************************************
-PREDICATE_ACTION_V5::PREDICATE_ACTION_V5(SM_V5* _sm){
-	machine = _sm;
-}

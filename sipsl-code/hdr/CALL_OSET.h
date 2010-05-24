@@ -42,45 +42,20 @@ class CALL_OSET {
 		ALO* alo;
 		ENGINE* engine;
 
-
 		// TRANSACTION MANAGEMENT
-		// there are server and client side state machines
-		// a machine for every new request even inside the same call
 		// KEY is like this
 		// <REQUESTTYPE>#<SIDE>#<SEQUENCE>
 		// example 1#A#1
 		map<string, TRNSCT_SM*> trnsctSmMap;
+
+		// Get new transaction state machine
+		TRNSCT_SM* newTrnsct(string method, string side);
 
 		// Sequence map
 		// used to store used sequences and return new unused sequences
 		map<string, int> sequenceMap;
 		// current sequence, shared among all request
 		int currentSequence;
-
-		// Get new transaction state machine
-		TRNSCT_SM* newTrnsct(string method, string side);
-
-
-
-
-
-
-
-
-		//SL_SM_SV* sl_sm_sv;
-
-		//map callId_y and related states machines
-		//v4 map<string, SL_SM_CL*> mm_sl_sm_cl;
-		string callId_X;
-
-		//The final call_y of the only confirmed invite
-		string callId_Y_v4;
-
-		// New client State Machine v4
-		// map of call_y message, first list of outgoing invites
-		// map<string, MESSAGE*> mm_genMessage_CL_v4;
-		// The unique state machine client
-		//SL_SM_CL* sl_sm_cl;
 
 	public:
 
@@ -146,7 +121,7 @@ class SL_CO {
 
 //**********************************************************************************
 //**********************************************************************************
-// Transaction State machines
+// V5 Transaction State machines
 //**********************************************************************************
 //**********************************************************************************
 class PREDICATE_ACTION_V5;
@@ -169,6 +144,7 @@ class SM_V5 {
 		SM_V5(ENGINE* sl_cc, SL_CO* sl_co);
 
 };
+//**********************************************************************************
 class TRNSCT_SM  :  public SM_V5{
 
 	private:
@@ -191,7 +167,7 @@ class TRNSCT_SM  :  public SM_V5{
 		TRNSCT_SM(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 
 };
-
+//**********************************************************************************
 class PREDICATE_ACTION_V5 {
 
 	private:
@@ -205,23 +181,16 @@ class PREDICATE_ACTION_V5 {
 	PREDICATE_ACTION_V5(SM_V5*);
 
 };
+//**********************************************************************************
+// TRANSACTION STATE MACHINE INVITE SERVER
+//**********************************************************************************
 class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION_V5 P0_1CL;
-		PREDICATE_ACTION_V5 P1_2CL;
-		PREDICATE_ACTION_V5 P1_3CL;
-		PREDICATE_ACTION_V5 P1_4CL;
-		PREDICATE_ACTION_V5 P3_3CL;
-		PREDICATE_ACTION_V5 P3_4CL;
-		PREDICATE_ACTION_V5 P2_3CL;
-		PREDICATE_ACTION_V5 P2_4CL;
-		PREDICATE_ACTION_V5 P4_5CL;
-		PREDICATE_ACTION_V5 P5_7CL;
-		PREDICATE_ACTION_V5 P7_8CL;
+		PREDICATE_ACTION_V5 PA_INV_0_1SV;
 
-		TRNSCT_SM_INVITE(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
+		TRNSCT_SM_INVITE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 
 };
 
