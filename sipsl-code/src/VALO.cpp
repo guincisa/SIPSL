@@ -64,7 +64,8 @@ void VALO::onInvite(MESSAGE* _message){
 
 		//
 
-		int i = call_oset->getNextCounterSequence("INVITE");
+		//v5 int i = call_oset->getNextCounterSequence("INVITE");
+		int i = 77;
 		char tmp[64];
 		sprintf(tmp,"%d INVITE", i);
 		message->replaceHeadCSeq(tmp);
@@ -85,7 +86,7 @@ void VALO::onInvite(MESSAGE* _message){
 		message->dumpVector();
 		DEBOUT("New outgoing b2b message", message->getIncBuffer())
 		//create the transaction
-		call_oset->createTransactionY(message);
+		//v5 call_oset->createTransactionY(message);
 
 		message->setDestEntity(SODE_SMCLPOINT);
 

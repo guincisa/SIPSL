@@ -65,41 +65,15 @@ class CALL_OSET {
 		// add transaction state machine
 		void addTrnsctSm(string key, TRNSCT_SM* trnsctSm);
 		// get transaction state machine
-		TRNSCT_SM* addTrnsctSm(string key);
+		TRNSCT_SM* getTrnsctSm(string key);
 
-
-
-
-
-
-
-
-		void setSL_X(string callId_X, SL_CO*, SL_SM_SV*, ALO*);
 		SL_CO* getSL_CO(void);
-		SL_SM_SV* getSL_SM_SV(void);
-		//v4 void addSL_SM_CL(string callId_Y, SL_SM_CL*);
-
-		string getCallIdX(void);
 
 		ENGINE* getENGINE(void);
 
-
-		//v4 SL_SM_CL* getSL_SM_CL(string callId_Y);
 		ALO* getALO(void);
-		//New client State Machine v4
-		//add call_y and message to the map
-		//void addGenMess_CL_v4(string callIdY, MESSAGE*);
-		//get MESSAGE* from the list using cally
-		//MESSAGE* findGenMess_CL_v4(string callIdY);
-		//get the only client state machine
-		SL_SM_CL* getSL_SM_CL(void);
-		//set the only sm
-		void setSL_SM_CL(SL_SM_CL*);
-		//clear all the other non confirmed invites
-		void purgeGenMess_CL_v4(void);
+		void setALO(ALO*);
 
-		void setCall_IdY_v4(string _cally);
-		string getCallId_Y_v4(void);
 };
 //**********************************************************************************
 //**********************************************************************************

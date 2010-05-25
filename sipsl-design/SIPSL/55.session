@@ -1,7 +1,7 @@
-window_sizes 1280 728 219 1055 657 0
+window_sizes 1280 728 219 1055 659 0
 diagrams
   active  statediagram_ref 147895 // statediagram_invite_x
-    1055 657 100 2 12 142
+    1055 657 100 2 84 142
 end
 show_stereotypes
 selected statediagram_ref 147895 // statediagram_invite_x

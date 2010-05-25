@@ -112,7 +112,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 		//First try to get the Call object using x side parameters
 		if (call_oset != 0x0) {
 			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
-
 			//Refine the source and destination
 			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
 
@@ -134,8 +133,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 			//new call Server (originating) side
 			DEBOUT("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
 
-			//If new than it is always SODE_APOINT
-			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
+			//If new then it is always SODE_APOINT
+			_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_SV);
 
 			//////////////////////////////
 			//Start - Initialization block
@@ -144,7 +143,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			VALO* alo = new VALO(this, call_oset);
 			alo->linkSUDP(getSUDP());
-
+			call_oset->setALO(alo);
 			comap->setCALL_OSET(callidx, call_oset);
 			//End
 			//////////////////////////////
