@@ -102,15 +102,16 @@ SL_CO* CALL_OSET::getSL_CO(void){
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, int _sequence){
 
-	char t_key[32];
+	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", _method <<" "<<_sode << " " <<_sequence)
+	char t_key[64];
 	if (_sode == SODE_TRNSCT_CL)
-		sprintf(t_key, "%d#SODE_TRNSCT_CL#%d", _method, _sequence);
+		sprintf(t_key, "%s#SODE_TRNSCT_CL#%d", _method.c_str(), _sequence);
 	else if (_sode == SODE_TRNSCT_SV)
-		sprintf(t_key, "%d#SODE_TRNSCT_SV#%d", _method, _sequence);
+		sprintf(t_key, "%s#SODE_TRNSCT_SV#%d", _method.c_str(), _sequence);
 
 	map<string, TRNSCT_SM*> ::iterator p;
 	p = trnsctSmMap.find(t_key);
-	if (p != callid_alm_map.end()){
+	if (p != trnsctSmMap.end()){
 		return ((TRNSCT_SM*)p->second);
 	}else {
 		return 0x0;
@@ -119,19 +120,20 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, int _sequence){
 
 }
 //**********************************************************************************
-void CALL_OSET::addTrnsctSm(string _method, int _sode, int _sequence, TRNSCT_SM* trnsctSm){
+void CALL_OSET::addTrnsctSm(string _method, int _sode, int _sequence, TRNSCT_SM* _trnsctSm){
 
+	DEBOUT_UTIL("CALL_OSET::addTrnsctSm", _method <<" "<<_sode << " " <<_sequence)
 	char t_key[64];
 	if (_sode == SODE_TRNSCT_CL)
-		sprintf(t_key, "%d#SODE_TRNSCT_CL#%d", _method, _sequence);
+		sprintf(t_key, "%s#SODE_TRNSCT_CL#%d", _method.c_str(), _sequence);
 	else if (_sode == SODE_TRNSCT_SV)
-		sprintf(t_key, "%d#SODE_TRNSCT_SV#%d", _method, _sequence);
+		sprintf(t_key, "%s#SODE_TRNSCT_SV#%d", _method.c_str(), _sequence);
 	else {
 		DEBOUT("CALL_OSET::addTrnsctSm NOT INSERTED", _method << _sode << _sequence)
 		return;
 	}
 
-	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(t_key, trnsctSm));
+	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(t_key, _trnsctSm));
 
 	//sequenceMap.insert()
 
@@ -156,13 +158,13 @@ void SL_CO::call(MESSAGE* _message){
 	    DEBOUT("SL_CO::search for transaction state machine", _message->getDialogExtendedCID())
 
 		TRNSCT_SM* trnsctSM = 0x0;
-		trnsctSM = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
+		trnsctSM = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
 
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
 				trnsctSM = new TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
 			}
-			call_oset->addTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence(), trnsctSM);
+			call_oset->addTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence(), trnsctSM);
 		}
 
 		action = trnsctSM->event(_message);
@@ -335,6 +337,18 @@ void SL_CO::call(MESSAGE* _message){
 //V5
 //**********************************************************************************
 //**********************************************************************************
+//**********************************************************************************
+TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
+	SM_V5(_sl_cc, _sl_co){
+
+	requestType = _requestType;
+	Matrix = _matrixMess;
+}
+MESSAGE* TRNSCT_SM::getMatrixMessage(void){
+	return Matrix;
+}
+//**********************************************************************************
+
 ACTION* SM_V5::event(MESSAGE* _event){
 
 	PREDICATE_ACTION_V5* tmp;

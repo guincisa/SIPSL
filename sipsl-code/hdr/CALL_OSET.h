@@ -63,9 +63,9 @@ class CALL_OSET {
 		CALL_OSET(ENGINE*);
 
 		// add transaction state machine
-		void addTrnsctSm(string key, TRNSCT_SM* trnsctSm);
+		void addTrnsctSm(string method, int sode, int sequence, TRNSCT_SM* trnsctSm);
 		// get transaction state machine
-		TRNSCT_SM* getTrnsctSm(string key);
+		TRNSCT_SM* getTrnsctSm(string method, int sode, int sequence);
 
 		SL_CO* getSL_CO(void);
 
@@ -128,7 +128,6 @@ class TRNSCT_SM  :  public SM_V5{
 
 	public:
 
-		void setMatrixMessage(MESSAGE*);
 		MESSAGE* getMatrixMessage(void);
 
 		//#define REGISTER_REQUEST 1
