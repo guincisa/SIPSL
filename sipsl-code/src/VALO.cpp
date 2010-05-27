@@ -62,12 +62,8 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
 		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
-		//
-
-		//v5 int i = call_oset->getNextCounterSequence("INVITE");
-		int i = 77;
-		char tmp[64];
-		sprintf(tmp,"%d INVITE", i);
+		//New transaction
+		string tmp = "1 INVITE";
 		message->replaceHeadCSeq(tmp);
 		DEBOUT("VALO Cseq",tmp)
 
@@ -88,7 +84,7 @@ void VALO::onInvite(MESSAGE* _message){
 		//create the transaction
 		//v5 call_oset->createTransactionY(message);
 
-		message->setDestEntity(SODE_SMCLPOINT);
+		message->setDestEntity(SODE_TRNSCT_CL);
 
 		message->setLock();
 

@@ -99,6 +99,31 @@ void CALL_OSET::setALO(ALO* _alo){
 SL_CO* CALL_OSET::getSL_CO(void){
 	return sl_co;
 }
+void CALL_OSET::setSL_CO(SL_CO* _sl_co){
+	sl_co = _sl_co;
+}
+//**********************************************************************************
+//v4
+void CALL_OSET::setCallId_Y(string _cally){
+	DEBOUT("CALL_OSET::setCall_IdY store ", _cally)
+	callId_Y = _cally;
+}
+//**********************************************************************************
+//v4
+string CALL_OSET::getCallId_Y(void){
+	return callId_Y;
+}
+//**********************************************************************************
+//v4
+void CALL_OSET::setCallId_X(string _callId_X){
+
+	callId_X = _callId_X;
+}
+//**********************************************************************************
+//v4
+string CALL_OSET::getCallId_X(void){
+	return callId_X;
+}
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, int _sequence){
 
@@ -210,42 +235,42 @@ void SL_CO::call(MESSAGE* _message){
 			//return;
 		}
 	}
-	else if (_message->getDestEntity() == SODE_SMCLPOINT){
+	else if (_message->getDestEntity() == SODE_TRNSCT_CL){
 
 		string callidy = _message->getDialogExtendedCID();
 
 	    DEBOUT("SL_CO::call client state machine", callidy)
 
-//v5
-		//v4
-//		SL_SM_CL* sl_sm_cl = call_oset->getSL_SM_CL();
-//
-//		//v4
-//		if (sl_sm_cl == 0x0){
-//
-//			//Client state machine does not exists
-//			//create and put in comap
-//
-//			DEBOUT("Creating CL machine callidy", callidy)
-//			sl_sm_cl = new SL_SM_CL(call_oset->getENGINE(), this);
-//			//v4
-//			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
-//			call_oset->setSL_SM_CL(sl_sm_cl);
-//			call_oset->setCall_IdY_v4(callidy);
-////			call_oset->createTransactionY(_message);
-//			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-//			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
-//		}
-		//v4
+		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+
+		if (trnsct_cl == 0x0){
+
+			//Trnsct client state machine does not exists
+			//create and put in comap
+
+			DEBOUT("Creating Trnsct Client machine callidy", callidy)
+			trnsct_cl = new TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+
+			//V5 ??? DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
+			//V5 ??? call_oset->setSL_SM_CL(sl_sm_cl);
+			//V5 ??? call_oset->setCall_IdY_v4(callidy);
+
+			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallId_X());
+
+			//v5 QUI
+
+		}
+//V5 ???		//v4
 //		if (call_oset->findGenMess_CL_v4(callidy) == 0x0){
 //
 //			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
-//			call_oset->addGenMess_CL_v4(callidy, _message);
+//			//V5 ??? call_oset->addGenMess_CL_v4(callidy, _message);
 //			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 //			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 //		}
 
-//v5		ACTION* action = sl_sm_cl->event(_message);
+		ACTION* action = sl_sm_cl->event(_message);
 
 		if (action != 0x0){
 

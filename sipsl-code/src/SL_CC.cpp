@@ -144,6 +144,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 			VALO* alo = new VALO(this, call_oset);
 			alo->linkSUDP(getSUDP());
 			call_oset->setALO(alo);
+			call_oset->setSL_CO(sl_co);
+
+			call_oset->setSL_X(callidx);
+
+
 			comap->setCALL_OSET(callidx, call_oset);
 			//End
 			//////////////////////////////
@@ -154,14 +159,15 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 	}
 	// Message comes from ALO
-	else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_SMCLPOINT){
+	//v5 else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_SMCLPOINT){
+	else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_TRNSCT_CL){
 
-		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_SMCLPOINT (4)", _mess->getGenEntity() )
+		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_TRNSCT_CL (4)", _mess->getGenEntity() )
 
 		//get generating idx to get the call object
 		string callidx = _mess->getSourceMessage()->getDialogExtendedCID();
 
-		DEBOUT("SL_CC::parse Message from ALO/SMCL generating call object", callidx)
+		DEBOUT("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callidx)
 
 		CALL_OSET* call_oset = 0x0;
 

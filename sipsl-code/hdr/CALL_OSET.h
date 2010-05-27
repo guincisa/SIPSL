@@ -57,6 +57,12 @@ class CALL_OSET {
 		// current sequence, shared among all request
 		int currentSequence;
 
+		//From V4
+		string callId_X;
+		string callId_Y;
+
+
+
 	public:
 
 		// TRANSACTION MANAGEMENT
@@ -67,12 +73,22 @@ class CALL_OSET {
 		// get transaction state machine
 		TRNSCT_SM* getTrnsctSm(string method, int sode, int sequence);
 
+		void setSL_CO(SL_CO*);
 		SL_CO* getSL_CO(void);
 
 		ENGINE* getENGINE(void);
 
 		ALO* getALO(void);
 		void setALO(ALO*);
+
+		//From V4
+		void setCallId_Y(string _cally);
+		string getCallId_Y(void);
+		void setCallId_X(string callId_X);
+		string getCallId_X(void);
+
+
+
 
 };
 //**********************************************************************************
