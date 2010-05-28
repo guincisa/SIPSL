@@ -26,8 +26,6 @@
 #include "ACTION.h"
 #endif
 
-class SL_SM_CL;
-class SL_SM_SV;
 class SL_CO;
 class ALO;
 class SL_SM;
@@ -182,6 +180,20 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 		TRNSCT_SM_INVITE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 
 };
+//**********************************************************************************
+// TRANSACTION STATE MACHINE INVITE CLIENT
+//**********************************************************************************
+class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
+
+	public:
+
+		PREDICATE_ACTION_V5 PA_INV_0_1CL;
+
+		int resend_invite;
+
+		TRNSCT_SM_INVITE_CL(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
+
+};
 
 //**********************************************************************************
 //**********************************************************************************
@@ -240,54 +252,54 @@ class SL_SM {
 
 };
 
-//**********************************************************************************
-//**********************************************************************************
-// State machine client (b side)
-//**********************************************************************************
-//**********************************************************************************
-class SL_SM_CL : public SL_SM {
-
-	public:
-		int placeholder;
-
-		int resend_invite;
-
-		PREDICATE_ACTION P0_1CL;
-		PREDICATE_ACTION P1_2CL;
-		PREDICATE_ACTION P1_3CL;
-		PREDICATE_ACTION P1_4CL;
-		PREDICATE_ACTION P3_3CL;
-		PREDICATE_ACTION P3_4CL;
-		PREDICATE_ACTION P2_3CL;
-		PREDICATE_ACTION P2_4CL;
-		PREDICATE_ACTION P4_5CL;
-		PREDICATE_ACTION P5_7CL;
-		PREDICATE_ACTION P7_8CL;
-
-
-
-		SL_SM_CL(ENGINE*, SL_CO*);
-
-};
-//**********************************************************************************
-//**********************************************************************************
-// State machine server (a side)
-//**********************************************************************************
-//**********************************************************************************
-class SL_SM_SV : public SL_SM {
-
-	public:
-		int placeholder;
-
-		PREDICATE_ACTION P0_1SV;
-		PREDICATE_ACTION P1_2SV;
-		PREDICATE_ACTION P2_2SV;
-		PREDICATE_ACTION P2_3SV;
-		PREDICATE_ACTION P1_3SV;
-		PREDICATE_ACTION P3_4SV;
-		PREDICATE_ACTION P4_6SV;
-
-
-		SL_SM_SV(ENGINE*, SL_CO*);
-
-};
+////**********************************************************************************
+////**********************************************************************************
+//// State machine client (b side)
+////**********************************************************************************
+////**********************************************************************************
+//class SL_SM_CL : public SL_SM {
+//
+//	public:
+//		int placeholder;
+//
+//		int resend_invite;
+//
+//		PREDICATE_ACTION P0_1CL;
+//		PREDICATE_ACTION P1_2CL;
+//		PREDICATE_ACTION P1_3CL;
+//		PREDICATE_ACTION P1_4CL;
+//		PREDICATE_ACTION P3_3CL;
+//		PREDICATE_ACTION P3_4CL;
+//		PREDICATE_ACTION P2_3CL;
+//		PREDICATE_ACTION P2_4CL;
+//		PREDICATE_ACTION P4_5CL;
+//		PREDICATE_ACTION P5_7CL;
+//		PREDICATE_ACTION P7_8CL;
+//
+//
+//
+//		SL_SM_CL(ENGINE*, SL_CO*);
+//
+//};
+////**********************************************************************************
+////**********************************************************************************
+//// State machine server (a side)
+////**********************************************************************************
+////**********************************************************************************
+//class SL_SM_SV : public SL_SM {
+//
+//	public:
+//		int placeholder;
+//
+//		PREDICATE_ACTION P0_1SV;
+//		PREDICATE_ACTION P1_2SV;
+//		PREDICATE_ACTION P2_2SV;
+//		PREDICATE_ACTION P2_3SV;
+//		PREDICATE_ACTION P1_3SV;
+//		PREDICATE_ACTION P3_4SV;
+//		PREDICATE_ACTION P4_6SV;
+//
+//
+//		SL_SM_SV(ENGINE*, SL_CO*);
+//
+//};

@@ -191,6 +191,7 @@ class MESSAGE : public BASEMESSAGE {
     	bool				sdpVecrot_e; // exists
     	int					sdpSize;
 
+    	//Allows to purge retranmissions
     	bool 				lock;
 
     	// Used to generate a message from an incoming one

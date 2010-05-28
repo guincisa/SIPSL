@@ -146,7 +146,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			call_oset->setALO(alo);
 			call_oset->setSL_CO(sl_co);
 
-			call_oset->setSL_X(callidx);
+			call_oset->setCallId_X(callidx);
 
 
 			comap->setCALL_OSET(callidx, call_oset);
