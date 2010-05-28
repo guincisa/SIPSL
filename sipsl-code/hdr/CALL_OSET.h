@@ -188,6 +188,8 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 	public:
 
 		PREDICATE_ACTION_V5 PA_INV_0_1CL;
+		PREDICATE_ACTION_V5 PA_INV_1_1CL; //resend invite
+
 
 		int resend_invite;
 

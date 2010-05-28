@@ -1,5 +1,12 @@
 CHANGES
 
+V5 28 MAGGIO
+
+fix alarm! must pause!
+fix state machine design when invite has to be retransmitted!!!
+
+
+--------------------------------------------------------------
 
 28 Aprile
 
