@@ -1,13 +1,13 @@
 window_sizes 1280 728 219 1055 659 0
 diagrams
-  active  statediagram_ref 147895 // statediagram_invite_x
-    1055 657 100 2 84 142
+  active  statediagram_ref 154551 // statediagram_invite_y
+    1055 659 100 2 180 363
 end
 show_stereotypes
-selected statediagram_ref 147895 // statediagram_invite_x
+selected statediagram_ref 154551 // statediagram_invite_y
 open
   state_ref 128033 // SL_SM_SV
   state_ref 128002 // SM_SL_CL
-  state_ref 182583 // SM_V5
+  state_ref 189111 // A_1
 end
 end

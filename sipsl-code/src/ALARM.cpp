@@ -22,6 +22,8 @@
 
 #include <pthread.h>
 #include <assert.h>
+#include <stdio.h>
+
 
 
 #ifndef ENGINE_H
@@ -30,6 +32,10 @@
 #ifndef ALARM_H
 #include "ALARM.h"
 #endif
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
+
 
 //**********************************************************************************
 typedef struct tuple2 {
@@ -91,7 +97,14 @@ void ALMGR::alarmer(void){
 //		if (counter == 0)
 //			DEBOUT("ALMGR::alarmer", "sleep 1000")
 
+		SysTime aaa;
+		SysTime bbb;
+		GETTIME(aaa)
 		nanosleep(&sleep_time,NULL);
+		GETTIME(bbb)
+		PRINTTIME(aaa,bbb)
+
+
 
 		//extract from priority queue
 		SysTime mytime;
@@ -100,6 +113,9 @@ void ALMGR::alarmer(void){
 		long long int tcu = 0;
 		if (!alarm_pq.empty()) {
 			tcu = alarm_pq.top();
+
+			{char bu[1024];sprintf(bu, "curr %lld tcu %lld",curr, tcu);DEBOUT("ALARM CHECK INTERVAL", bu )}
+
 			while (!alarm_pq.empty() && curr >= tcu){
 
 				alarm_pq.pop();
@@ -129,6 +145,9 @@ void ALMGR::alarmer(void){
 							sl_cc->p_w(_tmpMess);
 						} else {
 							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)
+							SysTime ccc;
+							GETTIME(ccc)
+							PRINTTIMESHORT("ALMGR::alarmer",ccc)
 							sl_cc->p_w(_tmpMess);
 						}
 					} else {

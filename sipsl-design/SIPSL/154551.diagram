@@ -10,13 +10,13 @@ note 143543 "action
   xyzwh 310.7 220.5 2000 421 86
 note 143671 "action
 [TYPE_MESS, INVITEy, s=trnsct_inv_y, d=B]
-[TYPE_OP, TYPE_TIMERON, INVITEy, s=trnsct_inv_y, d=B, time=t]
+[TYPE_OP, TYPE_TIMERON, INVITEy, s=trnsct_inv_y, d=trnsct_inv_y, time=t]
 
 if MAX INVITE resend reached
 action:
 [clear SL_CO]
 "
-  xyzwh 910.4 109.5 3005 391 164
+  xyzwh 936.4 121.5 3005 391 164
 note 143799 "action
 [TYPE_MESS, DIAGE, s=sm_y, d=sm_x]
 "
@@ -73,7 +73,7 @@ end
 transitioncanvas 145591 transition_ref 128439 // event<TYPE_ABORT_CO state4>
   decenter_end 532
   
-  from ref 145207 z 3006 label "event<TYPE_ABORT_CO state4>" xyz 1079 852 3006 to point 1138.7 808.7
+  from ref 145207 z 3006 label "event<TYPE_ABORT_CO state4>" xyz 1079 852 3006 to point 1138 808
   line 145719 z 3006 to ref 143415
   write_horizontally default show_definition default drawing_language default
 end
@@ -84,7 +84,7 @@ transitioncanvas 145847 transition_ref 128183 // event<TYPE_ABORT_CO state2>
 end
 transitioncanvas 145975 transition_ref 128258 // event<TRYy, s=b, d=trnsct_inv_y>
   
-  from ref 145079 z 2001 label "event<TRYy, s=b, d=trnsct_inv_y>" xyz 758 333.5 2001 to ref 144695
+  from ref 145079 z 2001 label "event<TRYy, s=b, d=trnsct_inv_y>" xyz 758 333 2001 to ref 144695
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 146103 transition_ref 129026 // event<200OKy, s=b, d=trnsct_inv_y>
@@ -95,8 +95,8 @@ end
 transitioncanvas 146231 transition_ref 128898 // event<RINGy, s=b, d=trnsct_inv_y>
   decenter_end 483
   
-  from ref 145207 z 2001 label "event<RINGy, s=b, d=trnsct_inv_y>" xyz 466 909 2001 to point 631.6 981.8
-  line 146359 z 2001 to point 595.6 931.6
+  from ref 145207 z 2001 label "event<RINGy, s=b, d=trnsct_inv_y>" xyz 466 909 2001 to point 631 981
+  line 146359 z 2001 to point 595 931
   line 146487 z 2001 to ref 145207
   write_horizontally default show_definition default drawing_language default
 end
@@ -105,17 +105,17 @@ transitioncanvas 146615 transition_ref 128055 // max resend of INVITE reached
   from ref 145079 z 3006 label "max resend of INVITE reached" xyz 988 335 3006 to ref 143415
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 146743 transition_ref 128386 // event<INVITEy, s=alo, d=B>
+transitioncanvas 146743 transition_ref 128386 // (ALARM) event<INVITEy, s=trnsct_inv_y, d=trnsct_inv_y>
   
-  from ref 145079 z 2001 label "event<INVITEy, s=alo, d=B>" xyz 819 62.5 2001 to point 855.6 131
-  line 146871 z 2001 to point 795.6 81
+  from ref 145079 z 2001 label "(ALARM) event<INVITEy, s=trnsct_inv_y, d=trnsct_inv_y>" xyz 706 55 2001 to point 855 131
+  line 146871 z 2001 to point 795 81
   line 146999 z 2001 to ref 145079
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 147127 transition_ref 135682 // event<DIALOGEST_y, s=B, d=trnsct_inv_y>
   
-  from ref 144695 z 2001 label "event<DIALOGEST_y, s=B, d=trnsct_inv_y>" xyz 409.5 530.5 2001 to point 554 562.6
-  line 147255 z 2001 to point 574 583.8
+  from ref 144695 z 2001 label "event<DIALOGEST_y, s=B, d=trnsct_inv_y>" xyz 409 530 2001 to point 554 562
+  line 147255 z 2001 to point 574 583
   line 147383 z 2001 to ref 144695
   write_horizontally default show_definition default drawing_language default
 end

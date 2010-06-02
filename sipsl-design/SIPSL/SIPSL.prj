@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 87
+  revision 88
   modified_by 55 "guic"
 
 
@@ -545,7 +545,7 @@ s
 	  external 
 	end
 
-	transition 128386 "event<INVITEy, s=alo, d=B>"
+	transition 128386 "(ALARM) event<INVITEy, s=trnsct_inv_y, d=trnsct_inv_y>"
 	  on state_ref 128130 // ICL_1
 	end
 
@@ -621,7 +621,6 @@ s
 
       pseudostate 128055 exit_point "TIMEOUT CLEAR MACHINE"
       end
-
     end
 
     sequencediagram 153602 "F7 TIMER"

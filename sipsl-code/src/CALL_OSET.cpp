@@ -322,11 +322,7 @@ void SL_CO::call(MESSAGE* _message){
 					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
 						DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 						SysTime st1 = _tmpMessage->getFireTime();
-						SysTime st2;
-						st2.tv.tv_sec = 0;
-						st2.tv.tv_usec = 0;
-						_tmpMessage->setFireTime(st2);
-						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st2);
+						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
 
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
@@ -544,26 +540,29 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//careful with source message.
-	DUPLICATEMESSAGE(__message, _message, SODE_TRNSCT_CL)
+	DUPLICATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
 
 	//This is to be sent later, after timer expires
 	//Preconfigure message entity points, the alarm manager cannot do this
 
 	//V5?????
 	//???????
-	__message->setDestEntity(SODE_TRNSCT_CL);
-	__message->setGenEntity(SODE_TRNSCT_CL);
+	__timedmessage->setDestEntity(SODE_TRNSCT_CL);
+	__timedmessage->setGenEntity(SODE_TRNSCT_CL);
 
 	SysTime afterT;
 	GETTIME(afterT);
 	//TODO check if mc is overflowed
 	//V5 non funziona!!!
+	DEBOUT("current time ", afterT.tv.tv_sec << "] [" <<afterT.tv.tv_usec)
 	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
 	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
-	__message->setFireTime(afterT);
-	__message->typeOfInternal = TYPE_OP;
-	__message->typeOfOperation = TYPE_OP_TIMER_ON;
-	SingleAction sa_2 = SingleAction(__message);
+	PRINTTIMESHORT("afterT",afterT)
+
+	__timedmessage->setFireTime(afterT);
+	__timedmessage->typeOfInternal = TYPE_OP;
+	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
+	SingleAction sa_2 = SingleAction(__timedmessage);
 
 	action->addSingleAction(sa_2);
 
@@ -582,7 +581,8 @@ bool pre_1_1_inv_cl(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
-			&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
+			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
+			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite <= MAX_INVITE_RESEND) {
 		DEBOUT("TRNSCT_INV_CL pre_1_1_inv_cl","true")
 		return true;
 	}
@@ -591,12 +591,39 @@ bool pre_1_1_inv_cl(SM_V5* _sm, MESSAGE* _message){
 		return false;
 	}
 }
+bool pre_1_99_inv_cl(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("TRNSCT_INV_CL pre_1_99_inv_cl","")
+	if (_message->getReqRepType() == REQSUPP
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getDestEntity() == SODE_TRNSCT_CL
+			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
+			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite > MAX_INVITE_RESEND) {
+		DEBOUT("TRNSCT_INV_CL pre_1_99_inv_cl","true")
+		return true;
+	}
+	else {
+		DEBOUT("TRNSCT_INV_CL pre_1_99_inv_cl","false")
+		return false;
+	}
+}
+ACTION* act_1_99_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBASSERT("TRNSCT_INV_CL act_1_99_inv_cl please do something")
+
+	_sm->State = 99;
+
+	return 0x0;
+
+}
+
 
 //**********************************************************************************
 TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
 		PA_INV_0_1CL((SM_V5*)this),
-		PA_INV_1_1CL((SM_V5*)this){
+		PA_INV_1_1CL((SM_V5*)this),
+		PA_INV_1_99CL((SM_V5*)this){
 
 	PA_INV_0_1CL.action = &act_0_1_inv_cl;
 	PA_INV_0_1CL.predicate = &pre_0_1_inv_cl;
@@ -604,10 +631,16 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_1CL.action = &act_0_1_inv_cl;
 	PA_INV_1_1CL.predicate = &pre_1_1_inv_cl;
 
+	PA_INV_1_99CL.action = &act_1_99_inv_cl;
+	PA_INV_1_99CL.predicate = &pre_1_99_inv_cl;
+
+
 	resend_invite = 0;
 
 	insert_move(0,&PA_INV_0_1CL);
 	insert_move(1,&PA_INV_1_1CL);
+	insert_move(1,&PA_INV_1_99CL);
+
 
 }
 

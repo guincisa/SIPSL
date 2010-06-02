@@ -59,7 +59,7 @@ int main(void) {
 
 	//Alarm setup
 	//sec , nsec
-	ALMGR alarm(&sl_cc, 0, 100000);
+	ALMGR alarm(&sl_cc, 0, 10000000);
 	alarm.initAlarm();
 
 	mystack.init(5060, &gg, "sipsl.gugli.com", &alarm);

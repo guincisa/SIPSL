@@ -1,5 +1,12 @@
 CHANGES
 
+
+V5 June 2
+
+alarm issues 
+
+-------------------------------------------------------------
+
 V5 28 MAGGIO
 
 fix alarm! must pause!
