@@ -47,6 +47,8 @@ void VALO::onInvite(MESSAGE* _message){
 
 		CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
+		message->setSourceMessage(_message);
+
 		try {
 			DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
 			DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())

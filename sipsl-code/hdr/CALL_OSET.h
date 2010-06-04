@@ -189,9 +189,9 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 
 		PREDICATE_ACTION_V5 PA_INV_0_1CL;
 		PREDICATE_ACTION_V5 PA_INV_1_1CL; //resend invite
+		PREDICATE_ACTION_V5 PA_INV_1_2CL; //100 try incoming
+		PREDICATE_ACTION_V5 PA_INV_1_3CL; //100 try not arriving, 180 ring or Diag Estab instead
 		PREDICATE_ACTION_V5 PA_INV_1_99CL; //resend invite max reached
-
-
 
 		int resend_invite;
 

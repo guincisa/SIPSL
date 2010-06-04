@@ -1,5 +1,12 @@
 CHANGES
 
+V5 June 4
+alarm fixed.
+To do: the server state machine received the 180ringing from the client machine.
+
+change: 
+		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+
 
 V5 June 2
 

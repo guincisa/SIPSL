@@ -97,12 +97,12 @@ void ALMGR::alarmer(void){
 //		if (counter == 0)
 //			DEBOUT("ALMGR::alarmer", "sleep 1000")
 
-		SysTime aaa;
-		SysTime bbb;
-		GETTIME(aaa)
+//		SysTime aaa;
+//		SysTime bbb;
+//		GETTIME(aaa)
 		nanosleep(&sleep_time,NULL);
-		GETTIME(bbb)
-		PRINTTIME(aaa,bbb)
+//		GETTIME(bbb)
+//		PRINTTIME(aaa,bbb)
 
 
 
@@ -114,7 +114,7 @@ void ALMGR::alarmer(void){
 		if (!alarm_pq.empty()) {
 			tcu = alarm_pq.top();
 
-			{char bu[1024];sprintf(bu, "curr %lld tcu %lld",curr, tcu);DEBOUT("ALARM CHECK INTERVAL", bu )}
+			//{char bu[1024];sprintf(bu, "curr %lld tcu %lld",curr, tcu);DEBOUT("ALARM CHECK INTERVAL", bu )}
 
 			while (!alarm_pq.empty() && curr >= tcu){
 
@@ -145,9 +145,9 @@ void ALMGR::alarmer(void){
 							sl_cc->p_w(_tmpMess);
 						} else {
 							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)
-							SysTime ccc;
-							GETTIME(ccc)
-							PRINTTIMESHORT("ALMGR::alarmer",ccc)
+							//SysTime ccc;
+							//GETTIME(ccc)
+							//PRINTTIMESHORT("ALMGR::alarmer",ccc)
 							sl_cc->p_w(_tmpMess);
 						}
 					} else {

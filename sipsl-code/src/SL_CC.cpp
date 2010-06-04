@@ -123,7 +123,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
 				//Refine the source and destination
-				_mess->setEndPoints(SODE_BPOINT, SODE_SMCLPOINT);
+				_mess->setEndPoints(SODE_BPOINT, SODE_TRNSCT_CL);
 
 				call_oset->getSL_CO()->call(_mess);
 			}

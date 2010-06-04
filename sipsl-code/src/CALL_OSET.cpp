@@ -183,6 +183,7 @@ void SL_CO::call(MESSAGE* _message){
 	    DEBOUT("SL_CO::search for transaction state machine", _message->getDialogExtendedCID())
 
 		TRNSCT_SM* trnsctSM = 0x0;
+change here
 		trnsctSM = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
 
 		if (trnsctSM == 0x0){
@@ -241,7 +242,9 @@ void SL_CO::call(MESSAGE* _message){
 
 	    DEBOUT("SL_CO::call client state machine", callidy)
 
-		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+		//TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+
 
 		if (trnsct_cl == 0x0){
 
@@ -554,10 +557,10 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	GETTIME(afterT);
 	//TODO check if mc is overflowed
 	//V5 non funziona!!!
-	DEBOUT("current time ", afterT.tv.tv_sec << "] [" <<afterT.tv.tv_usec)
+	//DEBOUT("current time ", afterT.tv.tv_sec << "] [" <<afterT.tv.tv_usec)
 	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
 	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
-	PRINTTIMESHORT("afterT",afterT)
+	//PRINTTIMESHORT("afterT",afterT)
 
 	__timedmessage->setFireTime(afterT);
 	__timedmessage->typeOfInternal = TYPE_OP;
@@ -616,13 +619,110 @@ ACTION* act_1_99_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	return 0x0;
 
 }
+bool pre_1_2_inv_cl(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("TRNSCT_INV_CL pre_1_2_inv_cl","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&&_message->getHeadSipReply().getReply().getCode() == TRYING_100
+		&& _message->getDestEntity() == SODE_TRNSCT_CL
+		&& _message->getGenEntity() ==  SODE_BPOINT) {
+			DEBOUT("TRNSCT_INV_CL pre_1_2_inv_cl","true")
+			return true;
+		}
+		else {
+			DEBOUT("TRNSCT_INV_CL pre_1_2_inv_cl","false")
+			return false;
+		}
+}
+ACTION* act_1_2_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRNSCT_INV_CL act_1_2_inv_cl",_message->getHeadSipReply().getReply().getCode())
+
+	// TODO clear timer ad create new timer for the ringing ?
+
+	ACTION* action = new ACTION();
+	_message->typeOfInternal = TYPE_OP;
+	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_1 = SingleAction(_message);
+	action->addSingleAction(sa_1);
+
+	_sm->State = 2;
+	return action;
+}
+bool pre_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("TRNSCT_INV_CL pre_1_3_inv_cl","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
+				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
+		&& _message->getDestEntity() == SODE_TRNSCT_CL
+		&& _message->getGenEntity() ==  SODE_BPOINT) {
+			DEBOUT("TRNSCT_INV_CL pre_1_3_inv_cl","true")
+			return true;
+		}
+		else {
+			DEBOUT("TRNSCT_INV_CL pre_1_3_inv_cl","false")
+			return false;
+		}
+}
+ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRNSCT_INV_CL act_1_3_inv_cl","")
+
+	ACTION* action = new ACTION();
+
+	// the message contains the to tag that we must save
+	// or store it in valo during 200ok
+
+	//This is the invite from A which has been used to create the Invite to B
+	//we need because we must create the reply to A
+	MESSAGE* __message = _message->getSourceMessage();
+
+	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_SV)
+	reply_x->setDestEntity(SODE_TRNSCT_SV);
+	reply_x->setGenEntity(SODE_TRNSCT_CL);
+	reply_x->typeOfInternal = TYPE_MESS;
+
+	CREATEMESSAGE(_stoptimer, __message, SODE_TRNSCT_SV)
+	_stoptimer->setDestEntity(SODE_TRNSCT_SV);
+	_stoptimer->setGenEntity(SODE_TRNSCT_CL);
+	_stoptimer->typeOfInternal = TYPE_OP;
+	_stoptimer->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_1 = SingleAction(_stoptimer);
+	action->addSingleAction(sa_1);
 
 
+	DEBOUT("CONTACT", reply_x->getHeadContact().getContent())
+
+	reply_x->replaceHeadContact("<sip:sipsl@grog:5060>");
+
+	DEBOUT("NEW CONTACT", reply_x->getHeadContact().getContent())
+
+	DEBOUT("Purge SDP","")
+	reply_x->purgeSDP();
+
+	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
+	reply_x->compileMessage();
+	reply_x->dumpVector();
+
+	SingleAction sa_2 = SingleAction(reply_x);
+
+	action->addSingleAction(sa_2);
+
+	_sm->State = 3;
+	return action;
+
+
+}
 //**********************************************************************************
 TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
 		PA_INV_0_1CL((SM_V5*)this),
 		PA_INV_1_1CL((SM_V5*)this),
+		PA_INV_1_2CL((SM_V5*)this),
+		PA_INV_1_3CL((SM_V5*)this),
 		PA_INV_1_99CL((SM_V5*)this){
 
 	PA_INV_0_1CL.action = &act_0_1_inv_cl;
@@ -634,11 +734,19 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_99CL.action = &act_1_99_inv_cl;
 	PA_INV_1_99CL.predicate = &pre_1_99_inv_cl;
 
+	PA_INV_1_2CL.action = &act_1_2_inv_cl;
+	PA_INV_1_2CL.predicate = &pre_1_2_inv_cl;
+
+	PA_INV_1_3CL.action = &act_1_3_inv_cl;
+	PA_INV_1_3CL.predicate = &pre_1_3_inv_cl;
+
 
 	resend_invite = 0;
 
 	insert_move(0,&PA_INV_0_1CL);
 	insert_move(1,&PA_INV_1_1CL);
+	insert_move(1,&PA_INV_1_2CL);
+	insert_move(1,&PA_INV_1_3CL);
 	insert_move(1,&PA_INV_1_99CL);
 
 

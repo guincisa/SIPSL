@@ -86,10 +86,10 @@ typedef struct {
 							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart, \
 							sizeof(si_bpart));}
 
-#define CREATEMESSAGE(m1, m2, m3) char bu[512];\
+#define CREATEMESSAGE(m1, m2, m3) MESSAGE* m1=0x0; {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
-				MESSAGE* m1 = new MESSAGE(m2, m3, inTime);\
+				m1 = new MESSAGE(m2, m3, inTime);\
 				DEBOUT("NEW MESSAGE"," " << m1->getTotLines());\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",m1,num);\
@@ -97,7 +97,7 @@ typedef struct {
 				m1->setKey(key);\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<string, MESSAGE*>(m1->getKey(), m1));\
-				pthread_mutex_unlock(&messTableMtx);
+				pthread_mutex_unlock(&messTableMtx);}
 
 #define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) char bu[512];\
 				SysTime inTime;\
