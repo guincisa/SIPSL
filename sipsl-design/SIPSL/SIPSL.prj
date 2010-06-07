@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 88
+  revision 89
   modified_by 55 "guic"
 
 
@@ -553,6 +553,20 @@ s
 	  on pseudostate_ref 128055 // exit_point
 	  external 
 	end
+
+	transition 218295 "event<TRYy, s=b, d=trnsct_inv_y>b"
+	  on state_ref 128130 // ICL_1
+	end
+
+	transition 218423 "event<DIALOGEST_y, s=B, d=trnsct_inv_y>"
+	  on state_ref 128258 // ICL_2
+	  external 
+	end
+
+	transition 218551 "event<RINGy, s=b, d=trnsct_inv_y>"
+	  on state_ref 128258 // ICL_2
+	  external 
+	end
       end
 
       stateaction 128002
@@ -576,6 +590,15 @@ s
 
 	transition 128183 "event<TYPE_ABORT_CO state2>"
 	  on pseudostate_ref 128055 // exit_point
+	  external 
+	end
+
+	transition 218679 "event<RINGy, s=b, d=trnsct_inv_y>2"
+	  on state_ref 128258 // ICL_2
+	end
+
+	transition 218807 "event<200OKy, s=b, d=trnsct_inv_y>"
+	  on state_ref 128514 // ICL_3
 	  external 
 	end
       end

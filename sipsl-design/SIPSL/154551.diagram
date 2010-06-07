@@ -7,7 +7,7 @@ note 143543 "action
 [TYPE_MESS, INVITEy, s=trnsct_inv_y, d=B]
 [TYPE_OP, TYPE_TIMERON, INVITEy, s=alo, d=B, time=t]
 [TYPE_TRANSACTION_STATE,invite_open_y,s=trnsct_inv_y,d=CALL_SM] "
-  xyzwh 310.7 220.5 2000 421 86
+  xyzwh 362.7 43.5 2000 421 86
 note 143671 "action
 [TYPE_MESS, INVITEy, s=trnsct_inv_y, d=B]
 [TYPE_OP, TYPE_TIMERON, INVITEy, s=trnsct_inv_y, d=trnsct_inv_y, time=t]
@@ -16,17 +16,16 @@ if MAX INVITE resend reached
 action:
 [clear SL_CO]
 "
-  xyzwh 936.4 121.5 3005 391 164
+  xyzwh 1062.4 114.5 3005 391 164
 note 143799 "action
 [TYPE_MESS, DIAGE, s=sm_y, d=sm_x]
+[TYPE_OP, TYPE_TIMEROFF INVITEy]
 "
-  xyzwh 196.5 571.9 2000 304 71
+  xyzwh 415.5 440.9 2000 304 71
 note 143927 "action
 [OKy, s=trnsct_inv_y,d=alo]
 [TYPE_TRANSACTION_STATE,invite_confirmd_x,s=trnsct_inv_x,d=CALL_SM] "
-  xyzwh 739.7 1073.8 2000 481 65
-note 144055 "RINGING IS NOT REPEATED"
-  xyzwh 683.7 480.3 0 381 187
+  xyzwh 402.7 937.8 2000 481 65
 note 144183 "action
 [TYPE_OP, TYPE_TIMEROFF INVITEy]
 [TYPE_OP, TYPE_TIMERON, TYPE_ABORT_CO State=2, time=t2] 
@@ -35,7 +34,7 @@ The result of the event is to clear SM_X, SM_Y and CO.
 
 
 "
-  xyzwh 225.5 366.6 2000 371 129
+  xyzwh 337.5 269.6 2000 371 129
 statecanvas 144311 state_ref 128642 // ICL_4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 630.6 1075.3 2000 47 37
@@ -44,7 +43,7 @@ note 144567 "clear machine CO"
   xyzwh 1319.8 486.4 2000 176 44
 statecanvas 144695 state_ref 128258 // ICL_2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 725.5 525.9 2000 47 39
+  xyzwh 777.5 589.9 2000 47 39
 end
 note 144823 "action
 [TYPE_MESS, RINGy, s=trnsct_inv_y, d=alo]
@@ -52,10 +51,10 @@ note 144823 "action
 [TYPE_OP, TYPE_TIMERON, TYPE_ABORT_CO, state=3]
 [TYPE_TRANSACTION_STATE,invite_earlyd_y,s=trnsct_inv_x,d=CALL_SM] 
 "
-  xyzwh 258.9 697 2000 471 116
+  xyzwh 289.9 607 2000 471 116
 statecanvas 145079 state_ref 128130 // ICL_1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 720.9 168 2000 47 39
+  xyzwh 846.9 161 2000 47 39
 end
 statecanvas 145207 state_ref 128514 // ICL_3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
@@ -67,7 +66,7 @@ end
 transitioncanvas 145463 transition_ref 128002 // event<INVITEy, s=alo, d=trnsct_inv_y>
   decenter_begin 472
   
-  from ref 145335 z 3006 label "event<INVITEy, s=alo, d=trnsct_inv_y>" xyz 479 163 3006 to ref 145079
+  from ref 145335 z 3006 label "event<INVITEy, s=alo, d=trnsct_inv_y>" xyz 638 163 3006 to ref 145079
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 145591 transition_ref 128439 // event<TYPE_ABORT_CO state4>
@@ -79,53 +78,54 @@ transitioncanvas 145591 transition_ref 128439 // event<TYPE_ABORT_CO state4>
 end
 transitioncanvas 145847 transition_ref 128183 // event<TYPE_ABORT_CO state2>
   
-  from ref 144695 z 3006 label "event<TYPE_ABORT_CO state2>" xyz 819 521 3006 to ref 143415
-  write_horizontally default show_definition default drawing_language default
-end
-transitioncanvas 145975 transition_ref 128258 // event<TRYy, s=b, d=trnsct_inv_y>
-  
-  from ref 145079 z 2001 label "event<TRYy, s=b, d=trnsct_inv_y>" xyz 758 333 2001 to ref 144695
-  write_horizontally default show_definition default drawing_language default
-end
-transitioncanvas 146103 transition_ref 129026 // event<200OKy, s=b, d=trnsct_inv_y>
-  
-  from ref 145207 z 2001 label "event<200OKy, s=b, d=trnsct_inv_y>" xyz 636 995 2001 to ref 144311
-  write_horizontally default show_definition default drawing_language default
-end
-transitioncanvas 146231 transition_ref 128898 // event<RINGy, s=b, d=trnsct_inv_y>
-  decenter_end 483
-  
-  from ref 145207 z 2001 label "event<RINGy, s=b, d=trnsct_inv_y>" xyz 466 909 2001 to point 631 981
-  line 146359 z 2001 to point 595 931
-  line 146487 z 2001 to ref 145207
+  from ref 144695 z 3006 label "event<TYPE_ABORT_CO state2>" xyz 953 615 3006 to ref 143415
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 146615 transition_ref 128055 // max resend of INVITE reached
+  decenter_begin 768
   
-  from ref 145079 z 3006 label "max resend of INVITE reached" xyz 988 335 3006 to ref 143415
+  from ref 145079 z 3006 label "max resend of INVITE reached" xyz 1046 331.5 3006 to ref 143415
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 146743 transition_ref 128386 // (ALARM) event<INVITEy, s=trnsct_inv_y, d=trnsct_inv_y>
   
-  from ref 145079 z 2001 label "(ALARM) event<INVITEy, s=trnsct_inv_y, d=trnsct_inv_y>" xyz 706 55 2001 to point 855 131
-  line 146871 z 2001 to point 795 81
+  from ref 145079 z 2001 label "(ALARM) event<INVITEy, s=trnsct_inv_y, d=trnsct_inv_y>" xyz 847 51 2001 to point 981 124
+  line 146871 z 2001 to point 921 74
   line 146999 z 2001 to ref 145079
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 147127 transition_ref 135682 // event<DIALOGEST_y, s=B, d=trnsct_inv_y>
+transitioncanvas 149303 transition_ref 218295 // event<TRYy, s=b, d=trnsct_inv_y>b
+  decenter_begin 190
   
-  from ref 144695 z 2001 label "event<DIALOGEST_y, s=B, d=trnsct_inv_y>" xyz 409 530 2001 to point 554 562
-  line 147255 z 2001 to point 574 583
-  line 147383 z 2001 to ref 144695
+  from ref 145079 z 3012 label "event<TRYy, s=b, d=trnsct_inv_y>b" xyz 548 227 3000 to point 739 262
+  line 149431 z 3012 to point 706 222
+  line 150583 z 3012 to ref 145079
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 147511 transition_ref 128642 // event<RINGy, s=b, d=trnsct_inv_y>
+transitioncanvas 149943 transition_ref 218423 // event<DIALOGEST_y, s=B, d=trnsct_inv_y>
   
-  from ref 144695 z 2001 label "event<RINGy, s=b, d=trnsct_inv_y>" xyz 779 713 2001 to ref 145207
+  from ref 145079 z 2001 label "event<DIALOGEST_y, s=B, d=trnsct_inv_y>" xyz 859.5 487 3000 to point 774 476
+  line 150455 z 2001 to ref 144695
   write_horizontally default show_definition default drawing_language default
 end
-line 147767 -_-_ decenter_end 321
-  from ref 144183 z 2002 to ref 145975
+transitioncanvas 150711 transition_ref 218551 // event<RINGy, s=b, d=trnsct_inv_y>
+  
+  from ref 145079 z 2001 label "event<RINGy, s=b, d=trnsct_inv_y>" xyz 632 424 3000 to point 897 372
+  line 150839 z 2001 to ref 144695
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 151095 transition_ref 218679 // event<RINGy, s=b, d=trnsct_inv_y>2
+  
+  from ref 144695 z 2001 label "event<RINGy, s=b, d=trnsct_inv_y>2" xyz 897 681 3000 to point 876 787
+  line 151607 z 2001 to point 950 779
+  line 151351 z 2001 to ref 144695
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 151735 transition_ref 218807 // event<200OKy, s=b, d=trnsct_inv_y>
+  
+  from ref 144695 z 2001 label "event<200OKy, s=b, d=trnsct_inv_y>" xyz 598 849 3000 to ref 145207
+  write_horizontally default show_definition default drawing_language default
+end
 line 147895 -_-_
   from ref 144567 z 3007 to ref 145847
 line 148023 -_-_
@@ -134,14 +134,14 @@ line 148151 -_-_
   from ref 143671 z 3006 to ref 146743
 line 148279 -_-_
   from ref 144567 z 3007 to ref 145591
-line 148407 -_-_
-  from ref 144823 z 2002 to ref 147511
-line 148535 -_-_
-  from ref 143927 z 2002 to ref 146103
 line 148919 -_-_
   from ref 145463 z 3007 to ref 143543
-line 149047 -_-_
-  from ref 144823 z 2004 to ref 146487
-line 149175 -_-_
-  from ref 143799 z 2002 to ref 147255
+line 149815 -_-_
+  from ref 149431 z 2002 to ref 144183
+line 150071 -_-_
+  from ref 143799 z 2002 to ref 149943
+line 150967 -_-_
+  from ref 144823 z 2004 to ref 150839
+line 151863 -_-_
+  from ref 151735 z 2002 to ref 143927
 end
