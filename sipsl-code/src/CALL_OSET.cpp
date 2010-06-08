@@ -539,11 +539,53 @@ ACTION* act_1_2_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	return action;
 }
+bool pre_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_V5 pre_1_3_inv_sv","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&& _message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getDestEntity() == SODE_TRNSCT_SV
+		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
+			DEBOUT("SM_V5 pre_1_3_inv_sv","true")
+			return true;
+		}
+		else {
+			DEBOUT("SM_V5 pre_1_3_inv_sv","false")
+			return false;
+		}
+}
+ACTION* act_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_V5 act_1_3_inv_sv called","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_APOINT);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	//TODO
+	// start here timer for resend 200OK until ACK
+	// arrives
+
+
+	DEBOUT("SM_V5 act_1_3_inv_sv move to state 3","")
+	_sm->State = 3;
+
+	return action;
+
+}
+
 //**********************************************************************************
 TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
 		PA_INV_0_1SV((SM_V5*)this),
-		PA_INV_1_2SV((SM_V5*)this){
+		PA_INV_1_2SV((SM_V5*)this),
+		PA_INV_1_3SV((SM_V5*)this){
 
 	PA_INV_0_1SV.action = &act_0_1_inv_sv;
 	PA_INV_0_1SV.predicate = &pre_0_1_inv_sv;
@@ -551,9 +593,15 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_2SV.action = &act_1_2_inv_sv;
 	PA_INV_1_2SV.predicate = &pre_1_2_inv_sv;
 
+	PA_INV_1_3SV.action = &act_1_3_inv_sv;
+	PA_INV_1_3SV.predicate = &pre_1_3_inv_sv;
+
 
 	insert_move(0,&PA_INV_0_1SV);
 	insert_move(1,&PA_INV_1_2SV);
+	insert_move(1,&PA_INV_1_3SV);
+	insert_move(2,&PA_INV_1_3SV);
+
 
 }
 //*****************************************************************
@@ -703,7 +751,7 @@ bool pre_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REPSUPP
 		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
 				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
-		&& _message->getDestEntity() == SODE_SMCLPOINT
+		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_BPOINT) {
 			DEBOUT("SM_CL pre_1_3_inv_cl","true")
 			return true;
@@ -726,9 +774,9 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	DEBOUT("MESSAGE GENERATOR", __message)
 
 
-	CREATEMESSAGE(reply_x, __message, SODE_SMSVPOINT)
-	reply_x->setDestEntity(SODE_SMSVPOINT);
-	reply_x->setGenEntity(SODE_SMCLPOINT);
+	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_SV)
+	reply_x->setDestEntity(SODE_TRNSCT_SV);
+	reply_x->setGenEntity(SODE_TRNSCT_CL);
 	reply_x->typeOfInternal = TYPE_MESS;
 
 
@@ -756,57 +804,44 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 
 }
-//bool pre_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message){
-//
-//	DEBOUT("TRNSCT_INV_CL pre_1_3_inv_cl","")
-//
-//	if (_message->getReqRepType() == REPSUPP
-//		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
-//				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
-//		&& _message->getDestEntity() == SODE_TRNSCT_CL
-//		&& _message->getGenEntity() ==  SODE_BPOINT) {
-//			DEBOUT("TRNSCT_INV_CL pre_1_3_inv_cl","true")
-//			return true;
-//		}
-//		else {
-//			DEBOUT("TRNSCT_INV_CL pre_1_3_inv_cl","false")
-//			return false;
-//		}
-//}
-//ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
-//
-//	DEBOUT("TRNSCT_INV_CL act_1_3_inv_cl","")
-//
-//	//Reply must be created here otherwise when the related action
-//	//will go to SL_CO it will not find the Call X
-//
-//	ACTION* action = new ACTION();
-//
-//	CREATEMESSAGE(reply_x, _message, SODE_TRNSCT_SV)
-//	reply_x->setDestEntity(SODE_TRNSCT_SV);
-//	reply_x->setGenEntity(SODE_TRNSCT_CL);
-//	//This is a fake message, it must be ccompiled by the other SM
-//
-//
-//	reply_x->typeOfInternal = TYPE_MESS_EMPTY;
-//
-//	SingleAction sa_1 = SingleAction(reply_x);
-//
-//	action->addSingleAction(sa_1);
-//
-//	CREATEMESSAGE(timeroff, _message, SODE_TRNSCT_SV)
-//
-//	timeroff->typeOfInternal = TYPE_OP;
-//	timeroff->typeOfOperation = TYPE_OP_TIMER_OFF;
-//	SingleAction sa_2 = SingleAction(timeroff);
-//	action->addSingleAction(sa_2);
-//
-//
-//	_sm->State = 3;
-//	return action;
-//
-//
-//}
+bool pre_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_V5 pre_3_4_inv_cl","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&&_message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getDestEntity() == SODE_TRNSCT_CL
+		&& _message->getGenEntity() ==  SODE_BPOINT) {
+			DEBOUT("SM_V5 pre_3_4_inv_cl","true")
+			return true;
+		}
+		else {
+			DEBOUT("SM_V5 pre_3_4_inv_cl","false")
+			return false;
+		}
+}
+ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_V5 act_3_4_inv_cl","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_ALOPOINT);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	DUPLICATEMESSAGE(__message, _message, SODE_TRNSCT_CL)
+	__message->typeOfInternal = TYPE_OP;
+	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_2 = SingleAction(__message);
+	action->addSingleAction(sa_2);
+
+	_sm->State = 4;
+	return action;
+}
 //**********************************************************************************
 TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
@@ -814,6 +849,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 		PA_INV_1_1CL((SM_V5*)this),
 		PA_INV_1_1bCL((SM_V5*)this),
 		PA_INV_1_3CL((SM_V5*)this),
+		PA_INV_1_4CL((SM_V5*)this),
 		PA_INV_1_99CL((SM_V5*)this){
 
 	A_Matrix = _A_Matrix;
@@ -833,6 +869,8 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_3CL.action = &act_1_3_inv_cl;
 	PA_INV_1_3CL.predicate = &pre_1_3_inv_cl;
 
+	PA_INV_1_4CL.action = &act_1_4_inv_cl;
+	PA_INV_1_4CL.predicate = &pre_1_4_inv_cl;
 
 	resend_invite = 0;
 
@@ -840,6 +878,9 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	insert_move(1,&PA_INV_1_1CL);
 	insert_move(1,&PA_INV_1_1bCL);
 	insert_move(1,&PA_INV_1_3CL);
+	insert_move(1,&PA_INV_1_4CL);
+	insert_move(3,&PA_INV_1_4CL);
+
 	insert_move(1,&PA_INV_1_99CL);
 
 

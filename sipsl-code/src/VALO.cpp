@@ -249,59 +249,60 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 //
 }
 void VALO::on200Ok(MESSAGE* _message){
+
+	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+
+	MESSAGE* __message = ((TRNSCT_SM_INVITE_CL*)trnsct_cl)->getA_Matrix();
+
+	DEBOUT("Store TO TAG ",_message->getHeadTo().getC_AttUriParms().getContent())
+	DEBOUT("Store TO TAG value ",_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
+
+	string* totag = new string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
+	ctxt_store.insert(pair<string, void*>("totag", (void*) totag ));
+
+	stack<C_HeadVia*>	tmpViaS;
+	tmpViaS = _message->getSTKHeadVia();
+	DEBOUT("200 ok get via rport and others 1", tmpViaS.top()->getContent())
+	DEBOUT("200 ok get via rport and others 2", tmpViaS.top()->getC_AttVia().getContent())
+	string* allvia = new string(tmpViaS.top()->getC_AttVia().getContent());
+	DEBOUT("200 ok get via rport and others 3", *allvia)
+	ctxt_store.insert(pair<string, void*>("allvia", (void*) allvia ));
 //
-//		MESSAGE* __message = call_oset->getInviteA();
-//
-//		DEBOUT("Store TO TAG ",_message->getHeadTo().getC_AttUriParms().getContent())
-//		DEBOUT("Store TO TAG value ",_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
-//
-//		string* totag = new string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
-//		ctxt_store.insert(pair<string, void*>("totag", (void*) totag ));
-//
-//    	stack<C_HeadVia*>	tmpViaS;
-//    	tmpViaS = _message->getSTKHeadVia();
-//		DEBOUT("200 ok get via rport and others 1", tmpViaS.top()->getContent())
-//		DEBOUT("200 ok get via rport and others 2", tmpViaS.top()->getC_AttVia().getContent())
-//		string* allvia = new string(tmpViaS.top()->getC_AttVia().getContent());
-//		DEBOUT("200 ok get via rport and others 3", *allvia)
-//		ctxt_store.insert(pair<string, void*>("allvia", (void*) allvia ));
-////
-////		DEBOUT("200 ok get via rport and others 3", tmpViaS.top()->getC_AttVia().getViaParms().getContent())
-////		DEBOUT("200 ok get via rport and others 4 branch", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("branch"))
-////		DEBOUT("200 ok get via rport and others 4 rport", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("rport"))
-////		string* rport = new string(tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("rport"));
-////		ctxt_store.insert(pair<string, void*>("rport", (void*) totag ));
-////		DEBOUT("200 ok get via rport and others 4 received", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("received"))
-////		string* received = new string(tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("received"));
-////		ctxt_store.insert(pair<string, void*>("received", (void*) totag ));
-//
-//		DEBOUT("on200Ok MESSAGE GENERATOR", __message)
-//		CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
-//		ok_x->setDestEntity(SODE_SMSVPOINT);
-//		ok_x->typeOfInternal = TYPE_MESS;
-//
-//		DEBOUT("ok_x","SIP/2.0 200 OK")
-//
-//		ok_x->setGenericHeader("Content-Length:","0");
-//
-//		if (ok_x->getSDPSize() != 0 ){
-//			//SDP must copy the SDP from incoming OK and put here
-//			vector<string> __sdp = _message->getSDP();
-//			ok_x->purgeSDP();
-//			DEBOUT("PURGED SDP","")
-//			ok_x->dumpVector();
-//			ok_x->importSDP(__sdp);
-//			ok_x->dumpVector();
-//		}
-//
-//		ok_x->replaceHeadContact("<sip:sipsl@grog:5060>");
-//
-//		SipUtil.genASideReplyFromBReply(_message, __message, ok_x);
-//		ok_x->compileMessage();
-//		ok_x->dumpVector();
-//
-//		sl_cc->p_w(ok_x);
-//
-//
+//		DEBOUT("200 ok get via rport and others 3", tmpViaS.top()->getC_AttVia().getViaParms().getContent())
+//		DEBOUT("200 ok get via rport and others 4 branch", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("branch"))
+//		DEBOUT("200 ok get via rport and others 4 rport", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("rport"))
+//		string* rport = new string(tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("rport"));
+//		ctxt_store.insert(pair<string, void*>("rport", (void*) totag ));
+//		DEBOUT("200 ok get via rport and others 4 received", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("received"))
+//		string* received = new string(tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("received"));
+//		ctxt_store.insert(pair<string, void*>("received", (void*) totag ));
+
+	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
+	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
+	ok_x->setDestEntity(SODE_TRNSCT_SV);
+	ok_x->typeOfInternal = TYPE_MESS;
+
+	DEBOUT("ok_x","SIP/2.0 200 OK")
+
+	ok_x->setGenericHeader("Content-Length:","0");
+
+	if (ok_x->getSDPSize() != 0 ){
+		//SDP must copy the SDP from incoming OK and put here
+		vector<string> __sdp = _message->getSDP();
+		ok_x->purgeSDP();
+		DEBOUT("PURGED SDP","")
+		ok_x->dumpVector();
+		ok_x->importSDP(__sdp);
+		ok_x->dumpVector();
+	}
+
+	ok_x->replaceHeadContact("<sip:sipsl@grog:5060>");
+
+	SipUtil.genASideReplyFromBReply(_message, __message, ok_x);
+	ok_x->compileMessage();
+	ok_x->dumpVector();
+
+	sl_cc->p_w(ok_x);
+
 }
 
