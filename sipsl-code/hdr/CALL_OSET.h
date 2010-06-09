@@ -85,7 +85,7 @@ class CALL_OSET {
 		void setCallId_X(string callId_X);
 		string getCallId_X(void);
 
-
+		int getNextSequence(string method);
 
 
 };

@@ -82,6 +82,22 @@ static SIPUTIL SipUtil;
 //**********************************************************************************
 CALL_OSET::CALL_OSET(ENGINE* _engine){
 	engine = _engine;
+	sequenceMap.insert(pair<string, int>("ACK",1));
+	sequenceMap.insert(pair<string, int>("INVITE",1));
+	sequenceMap.insert(pair<string, int>("BYE",1));
+}
+int CALL_OSET::getNextSequence(string _method){
+
+	map<string, int> ::iterator p;
+	p = sequenceMap.find(_method);
+	if (p != sequenceMap.end()){
+		int i = (int)p->second + 1;
+		sequenceMap.insert(pair<string, int>(_method,i));
+		return (i);
+	}else {
+		sequenceMap.insert(pair<string, int>(_method,1));
+		return 1;
+	}
 }
 //**********************************************************************************
 ENGINE* CALL_OSET::getENGINE(void){

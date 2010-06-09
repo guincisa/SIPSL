@@ -95,48 +95,56 @@ void VALO::onInvite(MESSAGE* _message){
 }
 void VALO::onAck(MESSAGE* _message){
 
+	//V4
 	//get invite sent to b
 //	DEBOUT("VALO onAck", call_oset->getInviteB()->getIncBuffer())
 //	CREATEMESSAGE(message, call_oset->getInviteB(), SODE_ALOPOINT)
 //	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
-//	//set as source the original ack, needed to identify call_oset_x when back to call control
-//	message->setSourceMessage(_message);
-//	message->setDestEntity(SODE_SMCLPOINT);
+
+	//V5 trying to build the ACK using the ACK_A instead of INVITE b
+	CREATEMESSAGE(newack, _message, SODE_ALOPOINT)
+	//set as source the original ack, needed to identify call_oset_x when back to call control
+	newack->setSourceMessage(_message);
+	newack->setDestEntity(SODE_SMCLPOINT);
+
+	//Remove route
+	try {
+		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute().getRoute().getHostName())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute().getRoute().getPort())
+		DEBOUT("VALO","remove route")
+		newack->removeHeadRoute();
+	}
+	catch(HeaderException e){
+		DEBOUT("Exception ", e.getMessage())
+	}
+
+	//change request
+	DEBOUT("VALO ", newack->getHeadSipRequest().getContent())
+	newack->setHeadSipRequest("ACK sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
+
+	//Change CSEQ
+	char buff[64];
+	sprintf(buff, "%d ACK", call_oset->getNextSequence("ACK"));
+	newack->replaceHeadCSeq(buff);
+	DEBOUT("VALO","Cseq")
+
+	//Purge SDP
+	newack->purgeSDP();
+	newack->dropHeader("Content-Type:");
 //
-//	try {
-//		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
-//		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
-//		DEBOUT("VALO","remove route")
-//		message->removeHeadRoute();
-//	}
-//	catch(HeaderException e){
-//		DEBOUT("Exception ", e.getMessage())
-//	}
-//
-//	//change request
-//	// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
-//	DEBOUT("VALO ", message->getHeadSipRequest().getContent())
-//	message->setHeadSipRequest("ACK sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
-//
-//	//Cseq new to 1
-//	message->replaceHeadCSeq("1 ACK");
-//	DEBOUT("VALO","Cseq")
-//
-//	message->purgeSDP();
-//	message->dropHeader("Content-Type:");
-//
-//	char toTmp[512];
-//	map<string, void*> ::iterator p;
-//	p = ctxt_store.find("totag");
-//	string toTagB = *((string*)p->second);
-//	sprintf(toTmp, "%s %s;tag=%s",message->getHeadTo().getNameUri().c_str(), message->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
-//	string toTmpS(toTmp);
-//	DEBOUT("******** TO new" , toTmpS)
-//	message->replaceHeadTo(toTmpS);
-//	DEBOUT("TO",message->getHeadTo().getContent())
-//	DEBOUT("TO",message->getHeadTo().getC_AttSipUri().getContent())
-//	DEBOUT("TO",message->getHeadTo().getNameUri())
-//	DEBOUT("TO",message->getHeadTo().getC_AttUriParms().getContent())
+	//TOTAG
+	char toTmp[512];
+	map<string, void*> ::iterator p;
+	p = ctxt_store.find("totag");
+	string toTagB = *((string*)p->second);
+	sprintf(toTmp, "%s %s;tag=%s",newack->getHeadTo().getNameUri().c_str(), newack->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
+	string toTmpS(toTmp);
+	DEBOUT("******** TO new" , toTmpS)
+	newack->replaceHeadTo(toTmpS);
+	DEBOUT("TO",newack->getHeadTo().getContent())
+	DEBOUT("TO",newack->getHeadTo().getC_AttSipUri().getContent())
+	DEBOUT("TO",newack->getHeadTo().getNameUri())
+	DEBOUT("TO",newack->getHeadTo().getC_AttUriParms().getContent())
 //
 //	//Standard changes
 //	//SipUtil.genBRequestfromARequest(call_oset->getGenMessage(), _message, message, getSUDP());
@@ -149,19 +157,12 @@ void VALO::onAck(MESSAGE* _message){
 //	message->pushHeadVia("Via: " + allVia);
 //	DEBOUT("NEW ACK via",allVia.c_str())
 //
-//	message->compileMessage();
+	newack->compileMessage();
+	newack->dumpVector();
+
+	DEBOUT("New outgoing b2b message", newack->getIncBuffer())
+	sl_cc->p_w(newack);
 //
-//	message->dumpVector();
-//
-//	DEBOUT("New outgoing b2b message", message->getIncBuffer())
-//
-//
-//	//PURGE ACK
-//	//PURGEMESSAGE(_message,"Purging ack from A")
-//
-//	sl_cc->p_w(message);
-//
-//	//build ack
 //
 }
 void VALO::onBye(MESSAGE* _message, int _dir){
