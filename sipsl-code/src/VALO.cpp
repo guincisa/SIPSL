@@ -94,9 +94,8 @@ void VALO::onInvite(MESSAGE* _message){
 
 }
 void VALO::onAck(MESSAGE* _message){
-//
-//	//v4
-//	//get invite sent to b
+
+	//get invite sent to b
 //	DEBOUT("VALO onAck", call_oset->getInviteB()->getIncBuffer())
 //	CREATEMESSAGE(message, call_oset->getInviteB(), SODE_ALOPOINT)
 //	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)

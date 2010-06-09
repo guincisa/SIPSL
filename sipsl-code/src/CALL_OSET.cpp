@@ -192,8 +192,12 @@ void SL_CO::call(MESSAGE* _message){
 				trnsctSM = new TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
 
 			}
+			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
+				trnsctSM = new TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+			}
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << _message->getHeadCSeq().getSequence())
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence(), trnsctSM);
+			DEBOUT("call_oset->addTrnsctSm","done")
 		}
 
 		action = trnsctSM->event(_message);
@@ -256,9 +260,12 @@ void SL_CO::call(MESSAGE* _message){
 
 			DEBOUT("Creating Trnsct Client machine callidy", callidy)
 
-			//trnsct_cl = new TRNSCT_SM_INVITE_CL(_message->getHeadCSeq().getMethod().getContent(), _message, call_oset->getENGINE(), this);
-			trnsct_cl = new TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this);
-
+			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+				trnsct_cl = new TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this);
+			}
+			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
+				trnsct_cl = new TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this);
+			}
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence(), trnsct_cl);
 
 
@@ -887,7 +894,104 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 }
 MESSAGE* TRNSCT_SM_INVITE_CL::getA_Matrix(void){
 	return A_Matrix;
-}////**********************************************************************************
+}
+bool pre_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_V5 pre_0_1_ack_sv called","")
+	if (_message->getReqRepType() == REQSUPP
+			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
+			&& _message->getDestEntity() == SODE_TRNSCT_SV
+			&& _message->getGenEntity() ==  SODE_APOINT) {
+		DEBOUT("SM_V5 pre_0_1_ack_sv","true")
+		return true;
+	}
+	else {
+		DEBOUT("SM_V5 pre_0_1_ack_sv","false")
+		return false;
+	}
+}
+ACTION* act_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_V5 act_0_1_ack_sv called","")
+
+	DEBOUT("SM_V5::event move to state 1", _message->getHeadSipRequest().getContent())
+
+	ACTION* action = new ACTION();
+
+	//_message changes its dest and gen
+	_message->setDestEntity(SODE_ALOPOINT);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	DEBOUT("SM_V5 act_0_1_ack_sv move to state 4","")
+	_sm->State = 1;
+
+	return action;
+
+}
+//**********************************************************************************
+TRNSCT_SM_ACK_SV::TRNSCT_SM_ACK_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
+		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
+		PA_ACK_0_1SV((SM_V5*)this){
+
+	PA_ACK_0_1SV.action = &act_0_1_ack_sv;
+	PA_ACK_0_1SV.predicate = &pre_0_1_ack_sv;
+
+	insert_move(0,&PA_ACK_0_1SV);
+}
+bool pre_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_V5 pre_0_1_ack_cl","")
+	if (_message->getReqRepType() == REQSUPP
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
+			&& _message->getDestEntity() == SODE_TRNSCT_CL
+			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
+		DEBOUT("SM_V5 pre_0_1_ack_cl","true")
+		return true;
+	}
+	else {
+		DEBOUT("SM_V5 pre_0_1_ack_cl","false")
+		return false;
+	}
+}
+ACTION* act_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_V5 act_4_5_cl","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_BPOINT);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	_sm->State = 1;
+
+	return action;
+
+}
+//**********************************************************************************
+TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
+		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
+		PA_ACK_0_1CL((SM_V5*)this){
+
+	A_Matrix = _A_Matrix;
+
+	PA_ACK_0_1CL.action = &act_0_1_ack_cl;
+	PA_ACK_0_1CL.predicate = &pre_0_1_ack_cl;
+
+	insert_move(0,&PA_ACK_0_1CL);
+}
+MESSAGE* TRNSCT_SM_ACK_CL::getA_Matrix(void){
+	return A_Matrix;
+}
+
+////**********************************************************************************
 ////**********************************************************************************
 //int TRNSCT::getControlSequence(void){
 //	return controlSequence;
