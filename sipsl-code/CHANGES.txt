@@ -1,5 +1,15 @@
 CHANGES
 
+June 10
+
+ACK almost done,
+need to fix this:
+
+To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
+From: From: <sip:gugli_twinkle@guglicorp.com>;tag=9d448d81276175425117411
+
+-------------------------------------------------------
+
 V5 June 4
 alarm fixed.
 To do: the server state machine received the 180ringing from the client machine.

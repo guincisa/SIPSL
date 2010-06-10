@@ -90,6 +90,9 @@ void VALO::onInvite(MESSAGE* _message){
 
 		message->setLock();
 
+		DEBOUT("STORING now call id", message->getHeadCallId().getContent())
+		call_oset->setCallId_Y(message->getHeadCallId().getContent());
+
 		sl_cc->p_w(message);
 
 }
@@ -145,20 +148,45 @@ void VALO::onAck(MESSAGE* _message){
 	DEBOUT("TO",newack->getHeadTo().getC_AttSipUri().getContent())
 	DEBOUT("TO",newack->getHeadTo().getNameUri())
 	DEBOUT("TO",newack->getHeadTo().getC_AttUriParms().getContent())
-//
-//	//Standard changes
-//	//SipUtil.genBRequestfromARequest(call_oset->getGenMessage(), _message, message, getSUDP());
-//
-//	DEBOUT("NEW ACK via","")
-//	map<string, void*> ::iterator p2;
-//	p2 = ctxt_store.find("allvia");
-//	string allVia = *((string*)p2->second);
-//	message->purgeSTKHeadVia();
-//	message->pushHeadVia("Via: " + allVia);
-//	DEBOUT("NEW ACK via",allVia.c_str())
-//
+
+	DEBOUT("NEW ACK via","")
+	map<string, void*> ::iterator p2;
+	p2 = ctxt_store.find("allvia");
+	string allVia = *((string*)p2->second);
+	newack->purgeSTKHeadVia();
+	newack->pushHeadVia("Via: " + allVia);
+	DEBOUT("NEW ACK via",allVia.c_str())
+
 	newack->compileMessage();
 	newack->dumpVector();
+
+	// THIS ACK needs the B_INVITE call id and
+	// 200 ok from B from and to headers!!!
+	DEBOUT("CHECK THIS CALLID +++++++++++", call_oset->getCallId_Y());
+
+	p = ctxt_store.find("tohead_200ok_b");
+	string tohead_200ok_b = *((string*)p->second);
+	p = ctxt_store.find("fromhead_200ok_b");
+	string fromhead_200ok_b = *((string*)p->second);
+	p = ctxt_store.find("callid_200ok_b");
+	string callid_200ok_b = *((string*)p->second);
+
+	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
+	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
+	DEBOUT("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
+	DEBOUT("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
+
+	!!!!
+	To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
+	From: From: <sip:gugli_twinkle@guglicorp.com>;tag=9d448d81276175425117411
+
+	newack->replaceHeadTo(tohead_200ok_b);
+	newack->replaceHeadFrom(fromhead_200ok_b);
+	newack->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
+
+	newack->compileMessage();
+	newack->dumpVector();
+
 
 	DEBOUT("New outgoing b2b message", newack->getIncBuffer())
 	sl_cc->p_w(newack);
@@ -267,6 +295,22 @@ void VALO::on200Ok(MESSAGE* _message){
 	string* allvia = new string(tmpViaS.top()->getC_AttVia().getContent());
 	DEBOUT("200 ok get via rport and others 3", *allvia)
 	ctxt_store.insert(pair<string, void*>("allvia", (void*) allvia ));
+
+	// Need to store the FROM and TO
+	// To create the ACK
+	DEBOUT("STORE TO HEAD ok 200 ok from B", _message->getHeadTo().getContent())
+	string* tohead = new string(_message->getHeadTo().getContent());
+	ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead ));
+	DEBOUT("STORE FROM HEAD of 200 ok", _message->getHeadTo().getContent())
+	string* fromhead = new string(_message->getHeadFrom().getContent());
+	ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead ));
+
+	//this shoudl go into call_oset call_idy
+	DEBOUT("STORE CALL ID of 200 ok", _message->getHeadCallId().getContent())
+	string* callid_200ok_b = new string(_message->getHeadCallId().getContent());
+	ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b ));
+
+
 //
 //		DEBOUT("200 ok get via rport and others 3", tmpViaS.top()->getC_AttVia().getViaParms().getContent())
 //		DEBOUT("200 ok get via rport and others 4 branch", tmpViaS.top()->getC_AttVia().getViaParms().findRvalue("branch"))
