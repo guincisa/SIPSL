@@ -1,5 +1,16 @@
 CHANGES
 
+
+21 june
+Ack still not working
+7r/n ???
+From and to are ok.
+
+Decidere se il content di un header deve avere l'header o no!!!!
+
+-------------------------------------------------------
+
+
 June 10
 
 ACK almost done,

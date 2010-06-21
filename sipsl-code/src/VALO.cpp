@@ -171,17 +171,17 @@ void VALO::onAck(MESSAGE* _message){
 	p = ctxt_store.find("callid_200ok_b");
 	string callid_200ok_b = *((string*)p->second);
 
-	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
-	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
+	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b.substr(3));
+	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b.substr(5));
 	DEBOUT("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
 	DEBOUT("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
 
-	!!!!
-	To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
-	From: From: <sip:gugli_twinkle@guglicorp.com>;tag=9d448d81276175425117411
+//	!!!!
+//	To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
+//	From: From: <sip:gugli_twinkle@guglicorp.com>;tag=9d448d81276175425117411
 
-	newack->replaceHeadTo(tohead_200ok_b);
-	newack->replaceHeadFrom(fromhead_200ok_b);
+	newack->replaceHeadTo(tohead_200ok_b.substr(3));
+	newack->replaceHeadFrom(fromhead_200ok_b.substr(5));
 	newack->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
 
 	newack->compileMessage();
