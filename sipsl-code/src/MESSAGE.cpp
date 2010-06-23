@@ -440,7 +440,7 @@ stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,4).compare("Via:") == 0){
-			C_HeadVia* s = new C_HeadVia(flex_line[i]);
+			C_HeadVia* s = new C_HeadVia(flex_line[i].substr(5));
 			s_headVia.push(s);
 		}
 	}
@@ -522,8 +522,9 @@ void MESSAGE::pushHeadVia(string _content){
 }
 void MESSAGE::purgeSDP(void){
 
-	//TODO
-	DEBOUT("****MESSAGE::purgeSDP****", "incorrect")
+	DEBOUT("MESSAGE::purgeSDP","" )
+
+	//setGenericHeader("Content-Length:","0");
 	dropHeader("Content-Length:");
 	dropHeader("Content-Type:");
 
@@ -637,7 +638,7 @@ C_HeadTo &MESSAGE::getHeadTo(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,3).compare("To:")==0){
-			headTo.setContent(flex_line[i]);
+			headTo.setContent(flex_line[i].substr(4));
 			break;
 		}
 	}
@@ -657,7 +658,7 @@ C_HeadFrom &MESSAGE::getHeadFrom(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("From:")==0){
-			headFrom.setContent(flex_line[i]);
+			headFrom.setContent(flex_line[i].substr(6));
 			break;
 		}
 	}
@@ -737,7 +738,7 @@ C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
-			headCSeq.setContent(flex_line[i]);
+			headCSeq.setContent(flex_line[i].substr(6));
 			break;
 		}
 	}
@@ -841,7 +842,7 @@ C_HeadContact &MESSAGE::getHeadContact(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Contact:")==0){
-			headContact.setContent(flex_line[i]);
+			headContact.setContent(flex_line[i].substr(9));
 			break;
 		}
 	}
@@ -945,6 +946,9 @@ string MESSAGE::getGenericHeader(string _header){
 
 void MESSAGE::addGenericHeader(string _header, string _content){
 
+	DEBOUT("MESSAGE::addGenericHeader",_header << " " << _content)
+
+	flex_line.push_back(_header + " " + _content);
 
 }
 
@@ -963,6 +967,7 @@ string MESSAGE::getTransactionExtendedCID(void){
 }
 string MESSAGE::getDialogExtendedCID(void){
 	//Call id and FromTag
+	DEBY
 	DEBOUT_UTIL("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag"))
 	return getHeadCallId().getNormCallId() + getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag");
 }

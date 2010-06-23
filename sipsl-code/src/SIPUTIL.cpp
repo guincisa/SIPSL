@@ -107,12 +107,13 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 	_gted->dropHeader("Date:");
 
 	_gted->setGenericHeader("Content-Length:","0");
-	//crash here...
 
 	//via add rport
 	C_HeadVia* viatmp = (C_HeadVia*) _gted->getSTKHeadVia().top();
+	DEBY
 	//TODO 124??
 	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+	DEBY
 
 	DEBOUT("GTED via", viatmp->getC_AttVia().getContent())
 	_gted->popSTKHeadVia();

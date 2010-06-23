@@ -133,7 +133,8 @@ void VALO::onAck(MESSAGE* _message){
 
 	//Purge SDP
 	newack->purgeSDP();
-	newack->dropHeader("Content-Type:");
+	newack->addGenericHeader("Content-Length:","0");
+
 //
 	//TOTAG
 	char toTmp[512];
@@ -171,8 +172,8 @@ void VALO::onAck(MESSAGE* _message){
 	p = ctxt_store.find("callid_200ok_b");
 	string callid_200ok_b = *((string*)p->second);
 
-	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b.substr(3));
-	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b.substr(5));
+	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
+	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
 	DEBOUT("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
 	DEBOUT("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
 
@@ -180,8 +181,8 @@ void VALO::onAck(MESSAGE* _message){
 //	To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
 //	From: From: <sip:gugli_twinkle@guglicorp.com>;tag=9d448d81276175425117411
 
-	newack->replaceHeadTo(tohead_200ok_b.substr(3));
-	newack->replaceHeadFrom(fromhead_200ok_b.substr(5));
+	newack->replaceHeadTo(tohead_200ok_b);
+	newack->replaceHeadFrom(fromhead_200ok_b);
 	newack->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
 
 	newack->compileMessage();
@@ -328,12 +329,12 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	DEBOUT("ok_x","SIP/2.0 200 OK")
 
-	ok_x->setGenericHeader("Content-Length:","0");
-
 	if (ok_x->getSDPSize() != 0 ){
 		//SDP must copy the SDP from incoming OK and put here
 		vector<string> __sdp = _message->getSDP();
 		ok_x->purgeSDP();
+		ok_x->dropHeader("Content-Length:");
+
 		DEBOUT("PURGED SDP","")
 		ok_x->dumpVector();
 		ok_x->importSDP(__sdp);

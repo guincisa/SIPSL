@@ -1586,11 +1586,19 @@ C_HeadVia::C_HeadVia(string _content) :
 }
 void C_HeadVia::doParse(void) {
 
+	DEBOUT("C_HeadVia::doParse", content)
+
     if(parsed)
         return;
 
-    Tuple s1 = brkin2(content, " ");
-    via.setContent(s1.Rvalue);
+//    Tuple s1 = brkin2(content, " ");
+//    string s_tmp;
+//    if (s1.Rvalue.length()==0)
+//    	s_tmp = s1.Lvalue;
+//    else
+//    	s_tmp = s1.Rvalue;
+
+    via.setContent(content);
 
     parsed = true;
 }
@@ -1786,9 +1794,7 @@ void C_HeadTo::doParse(void){
 
     DEBOUT("C_HeadTo::doParse",content)
 
-	Tuple s = brkin2(content, " ");
-
-    string newCo = s.Rvalue;
+    string newCo = content;
     string line;
     int q = hasQuote(newCo);
     if (q >=0){
@@ -1912,12 +1918,18 @@ C_HeadFrom::C_HeadFrom(string _content) :
 //}
 void C_HeadFrom::doParse(void){
 
+    DEBOUT("C_HeadFrom::doParse", content)
+
     if(parsed)
         return;
 
 	Tuple s = brkin2(content, " ");
+	string newCo;
+	if (s.Rvalue.length() == 0)
+		newCo = s.Lvalue;
+	else
+		newCo = s.Rvalue;
 
-    string newCo = s.Rvalue;
     string line;
     int q = hasQuote(newCo);
     if (q >=0){
@@ -2091,11 +2103,13 @@ C_HeadCSeq::C_HeadCSeq(string _content):
 }
 void C_HeadCSeq::doParse(void){
 
+	DEBOUT("C_HeadCSeq::doParse", content)
+
 	if(parsed)
 		return;
 
-	Tuple s = brkin2(content, " ");
-	Tuple ss = brkin2(s.Rvalue, " ");
+	//Tuple s = brkin2(content, " ");
+	Tuple ss = brkin2(content, " ");
 	sequence = atoi(ss.Lvalue.c_str());
 	method.setContent(ss.Rvalue);
 

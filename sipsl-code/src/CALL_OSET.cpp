@@ -328,6 +328,8 @@ void SL_CO::call(MESSAGE* _message){
 
 					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 
+					DEBOUT("*** si_bpart.sin_port", _tmpMessage->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort())
+
 					BTRANSMIT(_tmpMessage)
 
 					//DELETE INVITE HERE...

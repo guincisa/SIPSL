@@ -1,5 +1,27 @@
 CHANGES
 
+23 giugno
+correzione gestione headers
+
+C_HeadCallId ok
+
+C_HeadFrom fixed
+C_HeadCSeq fixed
+C_HeadContact fixed
+C_HeadTo fixed
+C_HeadVia fixed
+
+sip-communicator doe not find the invite INVITE transaction
+
+deve essere:
+40 INVITE -> SIP
+SIP -> 50 INVITE
+40 ACK -> SIP
+SIP -> 50 ACK
+
+ma allora le transazioni???
+
+-------------------------------------------------------
 
 21 june
 Ack still not working

@@ -79,7 +79,8 @@ typedef struct {
 			message->getIncBuffer().length() , 0, (struct sockaddr *) &(message->getAddress()), \
 			sizeof(message->getAddress()));
 
-#define BTRANSMIT(message) { \
+//WRONG???
+#define BTRANSMIT2(message) { \
 		DEBOUT("SL_CO::call action send string:", message->getIncBuffer()) \
 		struct sockaddr_in si_bpart; \
 		memset((char *) &si_bpart, 0, sizeof(si_bpart)); \
@@ -90,6 +91,19 @@ typedef struct {
 							actionList.top().getMessage()->getIncBuffer().c_str(), \
 							actionList.top().getMessage()->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart, \
 							sizeof(si_bpart));}
+
+#define BTRANSMIT(message) { \
+		DEBOUT("SL_CO::call action send string:", message->getIncBuffer()) \
+		struct sockaddr_in si_bpart; \
+		memset((char *) &si_bpart, 0, sizeof(si_bpart)); \
+		si_bpart.sin_family = AF_INET; \
+		si_bpart.sin_port = htons(message->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort()); \
+		DEBOUT("SL_CO::call action is send BPOINT string:", message->getIncBuffer()) \
+		sendto(message->getSock(), \
+				message->getIncBuffer().c_str(), \
+				message->getIncBuffer().length() , 0, (struct sockaddr *)  &si_bpart, \
+							sizeof(si_bpart));}
+
 
 #define CREATEMESSAGE(m1, m2, m3) MESSAGE* m1=0x0; {char bu[512];\
 				SysTime inTime;\
