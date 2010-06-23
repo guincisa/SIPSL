@@ -35,6 +35,11 @@
 
 using namespace std;
 
+#define WINDOWS
+#ifdef WINDOWS
+typedef time_t __time_t;
+#endif
+
 typedef long long int lli;
 
 typedef struct {

@@ -103,8 +103,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		string callidx = _mess->getDialogExtendedCID();
 
-		_mess->getDialogExtendedCID();
-
 		DEBOUT("SL_CC::parse CALLOSET extended ID",callidx)
 
 		call_oset = comap->getCALL_OSET_XMain(callidx);
