@@ -51,4 +51,6 @@ class VALO : public ALO {
 	void onAck(MESSAGE*);
 	void onBye(MESSAGE*, int);
 	void on200Ok(MESSAGE*);
+    void onAckNoTrnsct(MESSAGE*);
+
 };

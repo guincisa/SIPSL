@@ -97,6 +97,9 @@ void VALO::onInvite(MESSAGE* _message){
 
 }
 void VALO::onAck(MESSAGE* _message){
+	DEBASSERT("VALO::onAck")
+}
+void VALO::onAckNoTrnsct(MESSAGE* _message){
 
 	//V4
 	//get invite sent to b
@@ -125,11 +128,11 @@ void VALO::onAck(MESSAGE* _message){
 	DEBOUT("VALO ", newack->getHeadSipRequest().getContent())
 	newack->setHeadSipRequest("ACK sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
-	//Change CSEQ
-	char buff[64];
-	sprintf(buff, "%d ACK", call_oset->getNextSequence("ACK"));
-	newack->replaceHeadCSeq(buff);
-	DEBOUT("VALO","Cseq")
+	//don't change CSEQ
+//	char buff[64];
+//	sprintf(buff, "%d ACK", call_oset->getNextSequence("ACK"));
+//	newack->replaceHeadCSeq(buff);
+//	DEBOUT("VALO","Cseq")
 
 	//Purge SDP
 	newack->purgeSDP();

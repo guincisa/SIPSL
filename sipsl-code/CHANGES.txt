@@ -1,6 +1,19 @@
 CHANGES
 
 23 giugno
+
+non transactional ack:
+se lo mando alla ALO non so che tipo di ack è 
+
+quindi potrei:
+l'ack lato B viene mandato con un nuovo tipo TYPE_NOTIF
+la alo chiama  una call back diversa: onAckNoTrnsct()
+
+TESTARE!!!
+-------------------------------------------------------
+
+
+23 giugno
 correzione gestione headers
 
 C_HeadCallId ok

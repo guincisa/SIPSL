@@ -178,6 +178,7 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 		PREDICATE_ACTION_V5 PA_INV_0_1SV;
 		PREDICATE_ACTION_V5 PA_INV_1_2SV;
 		PREDICATE_ACTION_V5 PA_INV_1_3SV;
+		PREDICATE_ACTION_V5 PA_INV_3_4SV;
 
 
 		TRNSCT_SM_INVITE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
@@ -200,6 +201,8 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 		PREDICATE_ACTION_V5 PA_INV_1_3CL; //100 try not arriving, 180 ring or Diag Estab instead
 		PREDICATE_ACTION_V5 PA_INV_1_99CL; //resend invite max reached
 		PREDICATE_ACTION_V5 PA_INV_1_4CL; //200OK
+		PREDICATE_ACTION_V5 PA_INV_4_5CL; //Non transactional ACK
+
 
 		int resend_invite;
 

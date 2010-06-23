@@ -58,6 +58,10 @@ using namespace std;
 #define SODE_TRNSCT_SV 5
 #define SODE_CALL_SM 8
 
+#define TYPE_TRNSCT 0 // reserved for ack
+#define TYPE_NNTRNSCT 1
+
+
 //#define SODE_SMSVCALLPOINT 8
 //#define SODE_SMCLCALLPOINT 9
 
@@ -301,6 +305,7 @@ class MESSAGE : public BASEMESSAGE {
     	int typeOfInternal; // Message or operation
     	int typeOfOperation; // Type of operation
     	int specialAction; //delete co
+    	int type_trnsct;
 
     	void setLock(void);
     	bool getLock(void);

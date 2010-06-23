@@ -199,8 +199,24 @@ void SL_CO::call(MESSAGE* _message){
 	    DEBOUT("SL_CO::search for transaction state machine", _message->getDialogExtendedCID())
 
 		TRNSCT_SM* trnsctSM = 0x0;
-		//trnsctSM = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
-		trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
+
+	    //ACK treatment:
+	    //if the Request is an ACK then check the CSEQ and look for "CSEQ INVITE" state machine
+	    //if the state machine is in a 2xx reply state then the ACK is acknowledging the INVITE
+	    //so the message must go to the INVITE state machine
+	    if (_message->getHeadCSeq().getMethod().getMethodID() == ACK_REQUEST) {
+			trnsctSM = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
+			if (trnsctSM != 0x0 && trnsctSM->State == 3){
+				//run into the INVITE state machine
+			}
+			//else the ACK is a new transaction
+			else {
+				DEBASSERT("ACK is a new transaction not supported now")
+			}
+	    }
+	    else {
+	    	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
+	    }
 
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
@@ -604,13 +620,53 @@ ACTION* act_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 	return action;
 
 }
+bool pre_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_V5 pre_3_4_inv_sv called","")
+	if (_message->getReqRepType() == REQSUPP
+			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
+			&& _message->getDestEntity() == SODE_TRNSCT_SV
+			&& _message->getGenEntity() ==  SODE_APOINT) {
+		DEBOUT("SM_V5 pre_3_4_inv_sv","true")
+		return true;
+	}
+	else {
+		DEBOUT("SM_V5 pre_3_4_inv_sv","false")
+		return false;
+	}
+}
+
+ACTION* act_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_V5 act_3_4_inv_sv called","")
+
+	DEBOUT("SM_V5::event move to state 4", _message->getHeadSipRequest().getContent())
+
+	ACTION* action = new ACTION();
+
+	//_message changes its dest and gen
+	_message->setDestEntity(SODE_ALOPOINT);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	_message->typeOfInternal = TYPE_MESS;
+	_message->type_trnsct = TYPE_NNTRNSCT;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	DEBOUT("SM_V5 act_3_4_inv_sv move to state 4","")
+	_sm->State = 4;
+
+	return action;
+
+}
 
 //**********************************************************************************
 TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
 		PA_INV_0_1SV((SM_V5*)this),
 		PA_INV_1_2SV((SM_V5*)this),
-		PA_INV_1_3SV((SM_V5*)this){
+		PA_INV_1_3SV((SM_V5*)this),
+		PA_INV_3_4SV((SM_V5*)this){
 
 	PA_INV_0_1SV.action = &act_0_1_inv_sv;
 	PA_INV_0_1SV.predicate = &pre_0_1_inv_sv;
@@ -621,11 +677,16 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_3SV.action = &act_1_3_inv_sv;
 	PA_INV_1_3SV.predicate = &pre_1_3_inv_sv;
 
+	PA_INV_3_4SV.action = &act_3_4_inv_sv;
+	PA_INV_3_4SV.predicate = &pre_3_4_inv_sv;
+
 
 	insert_move(0,&PA_INV_0_1SV);
 	insert_move(1,&PA_INV_1_2SV);
 	insert_move(1,&PA_INV_1_3SV);
 	insert_move(2,&PA_INV_1_3SV);
+	insert_move(3,&PA_INV_3_4SV);
+
 
 
 }
@@ -867,6 +928,39 @@ ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	_sm->State = 4;
 	return action;
 }
+bool pre_4_5_inv_cl(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("SM_V5 pre_4_5_inv_cl","")
+	if (_message->getReqRepType() == REQSUPP
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
+			&& _message->getDestEntity() == SODE_TRNSCT_CL
+			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
+		DEBOUT("SM_V5 pre_4_5_inv_cl","true")
+		return true;
+	}
+	else {
+		DEBOUT("SM_V5 pre_4_5_inv_cl","false")
+		return false;
+	}
+}
+ACTION* act_4_5_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM_V5 act_4_5_inv_cl","")
+
+	ACTION* action = new ACTION();
+
+	_message->setDestEntity(SODE_BPOINT);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	_sm->State = 5;
+
+	return action;
+
+}
 //**********************************************************************************
 TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
@@ -875,6 +969,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 		PA_INV_1_1bCL((SM_V5*)this),
 		PA_INV_1_3CL((SM_V5*)this),
 		PA_INV_1_4CL((SM_V5*)this),
+		PA_INV_4_5CL((SM_V5*)this),
 		PA_INV_1_99CL((SM_V5*)this){
 
 	A_Matrix = _A_Matrix;
@@ -897,6 +992,10 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_4CL.action = &act_1_4_inv_cl;
 	PA_INV_1_4CL.predicate = &pre_1_4_inv_cl;
 
+	PA_INV_4_5CL.action = &act_4_5_inv_cl;
+	PA_INV_4_5CL.predicate = &pre_4_5_inv_cl;
+
+
 	resend_invite = 0;
 
 	insert_move(0,&PA_INV_0_1CL);
@@ -905,6 +1004,8 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	insert_move(1,&PA_INV_1_3CL);
 	insert_move(1,&PA_INV_1_4CL);
 	insert_move(3,&PA_INV_1_4CL);
+	insert_move(4,&PA_INV_4_5CL);
+
 
 	insert_move(1,&PA_INV_1_99CL);
 
