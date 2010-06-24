@@ -88,6 +88,11 @@ void VALO::onInvite(MESSAGE* _message){
 
 		message->setDestEntity(SODE_TRNSCT_CL);
 
+		DEBOUT("STORE CSeq for ack", message->getGenericHeader("CSeq:"))
+		string* CSeqB2BINIVTE = new string(message->getGenericHeader("CSeq:"));
+		ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
+
+
 		message->setLock();
 
 		DEBOUT("STORING now call id", message->getHeadCallId().getContent())
@@ -100,6 +105,9 @@ void VALO::onAck(MESSAGE* _message){
 	DEBASSERT("VALO::onAck")
 }
 void VALO::onAckNoTrnsct(MESSAGE* _message){
+
+	DEBOUT("VALO::onAckNoTrnsct",_message->getHeadSipRequest().getContent())
+
 
 	//V4
 	//get invite sent to b
@@ -174,9 +182,13 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 	string fromhead_200ok_b = *((string*)p->second);
 	p = ctxt_store.find("callid_200ok_b");
 	string callid_200ok_b = *((string*)p->second);
+	p = ctxt_store.find("CSeqB2BINIVTE");
+	string CSeqB2BINIVTE = *((string*)p->second);
 
 	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
 	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
+	DEBOUT("CHECK THIS CSeq  +++++++++++", CSeqB2BINIVTE);
+
 	DEBOUT("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
 	DEBOUT("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
 
@@ -187,6 +199,7 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 	newack->replaceHeadTo(tohead_200ok_b);
 	newack->replaceHeadFrom(fromhead_200ok_b);
 	newack->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
+	newack->setGenericHeader("CSeq:", CSeqB2BINIVTE);
 
 	newack->compileMessage();
 	newack->dumpVector();

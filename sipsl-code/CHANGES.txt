@@ -1,5 +1,16 @@
 CHANGES
 
+
+24 giugno
+
+fixed ACK con due call back a seconda del tipo di ack
+il tipo di ACK è riconsiuto nel call_oset guardando se cè un invite con lo stesso CSeq e se è gia arrivato un 2xx
+(questo lo fa guardando lo stato della macchina dell'invite)
+
+chiamata connessa!
+
+-------------------------------------------------------
+
 23 giugno
 
 non transactional ack:
