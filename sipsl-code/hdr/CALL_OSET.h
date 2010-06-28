@@ -243,6 +243,38 @@ class TRNSCT_SM_ACK_CL : public TRNSCT_SM {
 
 };
 //**********************************************************************************
+// TRANSACTION STATE MACHINE BYE SERVER
+//**********************************************************************************
+class TRNSCT_SM_BYE_SV : public TRNSCT_SM {
+
+	public:
+
+		PREDICATE_ACTION_V5 PA_BYE_0_1SV;
+
+
+		TRNSCT_SM_BYE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
+
+};
+//**********************************************************************************
+// TRANSACTION STATE MACHINE BYE CLIENT
+//**********************************************************************************
+class TRNSCT_SM_BYE_CL : public TRNSCT_SM {
+
+	private:
+		//TODO move this to upper class
+		MESSAGE* A_Matrix;
+
+	public:
+
+		PREDICATE_ACTION_V5 PA_BYE_0_1CL;
+
+		MESSAGE* getA_Matrix(void);
+
+		TRNSCT_SM_BYE_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
+
+};
+
+//**********************************************************************************
 //**********************************************************************************
 // Call/Dialog state machine
 //**********************************************************************************

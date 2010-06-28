@@ -82,9 +82,9 @@ static SIPUTIL SipUtil;
 //**********************************************************************************
 CALL_OSET::CALL_OSET(ENGINE* _engine){
 	engine = _engine;
-	sequenceMap.insert(pair<string, int>("ACK",1));
-	sequenceMap.insert(pair<string, int>("INVITE",1));
-	sequenceMap.insert(pair<string, int>("BYE",1));
+	sequenceMap.insert(pair<string, int>("ACK",0));
+	sequenceMap.insert(pair<string, int>("INVITE",0));
+	sequenceMap.insert(pair<string, int>("BYE",0));
 }
 int CALL_OSET::getNextSequence(string _method){
 
@@ -220,12 +220,13 @@ void SL_CO::call(MESSAGE* _message){
 
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
-				//trnsctSM = new TRNSCT_SM_INVITE_SV(_message->getHeadCSeq().getMethod().getContent(), _message, call_oset->getENGINE(), this);
 				trnsctSM = new TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
-
 			}
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
 				trnsctSM = new TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+			}
+			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
+				trnsctSM = new TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
 			}
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << _message->getHeadCSeq().getSequence())
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence(), trnsctSM);
@@ -1108,6 +1109,82 @@ TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 }
 MESSAGE* TRNSCT_SM_ACK_CL::getA_Matrix(void){
 	return A_Matrix;
+}
+//**********************************************************************************
+//**********************************************************************************
+//**********************************************************************************
+//**********************************************************************************
+bool pre_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message){
+
+	DEBOUT("TRNSCT_INV_SV pre_0_1_bye_sv called","")
+	if (_message->getReqRepType() == REQSUPP
+			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST)
+			&& _message->getDestEntity() == SODE_TRNSCT_SV
+			&& _message->getGenEntity() ==  SODE_APOINT) {
+		DEBOUT("TRNSCT_INV_SV pre_0_1_bye_sv","true")
+		return true;
+	}
+	else {
+		DEBOUT("TRNSCT_INV_SV pre_0_1_bye_sv","false")
+		return false;
+	}
+}
+ACTION* act_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv", _message->getHeadSipRequest().getContent())
+
+	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv CSeq", _message->getHeadCSeq().getContent())
+	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv CSeq", _message->getHeadCSeq().getSequence())
+
+    //_sm->setControlSequence(_message->getHeadCSeq().getSequence());
+
+	ACTION* action = new ACTION();
+
+	//_message changes its dest and gen
+	_message->setDestEntity(SODE_ALOPOINT);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv set", _message->getHeadSipRequest().getContent())
+
+	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv move to state 1","")
+	_sm->State = 1;
+
+	return action;
+
+}
+//**********************************************************************************
+TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
+		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
+		PA_BYE_0_1SV((SM_V5*)this){
+
+	PA_BYE_0_1SV.action = &act_0_1_bye_sv;
+	PA_BYE_0_1SV.predicate = &pre_0_1_bye_sv;
+
+	insert_move(0,&PA_BYE_0_1SV);
+}
+bool pre_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message){
+
+}
+ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
+
+}
+
+//**********************************************************************************
+TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
+		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
+		PA_BYE_0_1CL((SM_V5*)this){
+
+	PA_BYE_0_1CL.action = &act_0_1_bye_cl;
+	PA_BYE_0_1CL.predicate = &pre_0_1_bye_cl;
+
+	A_Matrix = _A_Matrix;
+
+
+	insert_move(0,&PA_BYE_0_1CL);
 }
 
 ////**********************************************************************************

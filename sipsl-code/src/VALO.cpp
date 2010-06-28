@@ -98,6 +98,9 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("STORING now call id", message->getHeadCallId().getContent())
 		call_oset->setCallId_Y(message->getHeadCallId().getContent());
 
+		//store this invite
+		ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
+
 		sl_cc->p_w(message);
 
 }
@@ -211,30 +214,29 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 //
 }
 void VALO::onBye(MESSAGE* _message, int _dir){
-//
-//	//v4
-//	//get invite sent to b
-//	DEBOUT("VALO onBye", call_oset->getInviteB()->getIncBuffer())
-//	CREATEMESSAGE(message, call_oset->getInviteB(), SODE_ALOPOINT)
-//	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
-//	//set as source the original ack, needed to identify call_oset_x when back to call control
-//	message->setSourceMessage(_message);
-//
-//	if (_dir == 1 ) {
-//		message->setDestEntity(SODE_SMCLPOINT);
-//
-//		//Cseq new to 1
-//		int i = call_oset->getSL_SM_CL()->getControlSequence();
-//		DEBOUT("VALO Cseq currn", i)
-//		i++;
-//		call_oset->getSL_SM_CL()->setControlSequence(i);
-//
-//		message->replaceHeadCSeq(i, "BYE");
-//		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
+
+	DEBOUT("VALO::onBye", _message->getIncBuffer())
+
+	map<string, void*> ::iterator p;
+	p = ctxt_store.find("invite_b");
+	MESSAGE* invite_b = ((MESSAGE*)p->second);
+
+	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
+
+
+	if (_dir == 1 ) {
+		message->setDestEntity(SODE_SMCLPOINT);
+
+		message->replaceHeadCSeq(call_oset->getNextSequence("BYE"), "BYE");
+		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
+		message->compileMessage();
+		message->dumpVector();
+
+	}
 //
 //
 //	} else if (_dir == -1){
-//		//PROBABLY WILL BE SENT TO ALO again
+//		//PROBABLY WILL BE SENT TO ALO againive/Competitions/worldcup/matchday=18/day=1/match=300111113/index.html
 //		message->setDestEntity(SODE_SMSVPOINT);
 //		DEBOUT("PROBABLY WILL BE SENT TO ALO again","")
 //	}

@@ -1,6 +1,11 @@
 CHANGES
 
 
+matrix message: confusione!
+finire bye
+
+-------------------------------------------------------
+
 24 giugno
 
 fixed ACK con due call back a seconda del tipo di ack
