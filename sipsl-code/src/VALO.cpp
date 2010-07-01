@@ -227,6 +227,11 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 	if (_dir == 1 ) {
 		message->setDestEntity(SODE_SMCLPOINT);
 
+		message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
+
+		message->purgeSDP();
+
+
 		message->replaceHeadCSeq(call_oset->getNextSequence("BYE"), "BYE");
 		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
 		message->compileMessage();
