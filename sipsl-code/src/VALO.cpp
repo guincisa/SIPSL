@@ -23,6 +23,8 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
+
 
 
 #ifndef MESSAGE_H
@@ -65,9 +67,7 @@ void VALO::onInvite(MESSAGE* _message){
 		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
 		//New transaction
-		string tmp = "1 INVITE";
-		message->replaceHeadCSeq(tmp);
-		DEBOUT("VALO Cseq",tmp)
+		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE"), "INVITE");
 
 		//Standard changes
 		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
@@ -217,27 +217,75 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 
 	DEBOUT("VALO::onBye", _message->getIncBuffer())
 
-	map<string, void*> ::iterator p;
-	p = ctxt_store.find("invite_b");
-	MESSAGE* invite_b = ((MESSAGE*)p->second);
+//	map<string, void*> ::iterator p;
+//	p = ctxt_store.find("invite_b");
+//	MESSAGE* invite_b = ((MESSAGE*)p->second);
+//
+//	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
 
-	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
-
+	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
 	if (_dir == 1 ) {
 		message->setDestEntity(SODE_SMCLPOINT);
 
 		message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
-		message->purgeSDP();
+		char viatmp[512];
+		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
+		string viatmpS(viatmp);
+		message->purgeSTKHeadVia();
+		message->pushHeadVia("Via: " + viatmpS);
 
-
-		message->replaceHeadCSeq(call_oset->getNextSequence("BYE"), "BYE");
+		//TODO FIX THIS!
+		//must understadn here which dialog I am closing
+		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE"), "BYE");
 		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
+
+		map<string, void*> ::iterator p;
+		p = ctxt_store.find("tohead_200ok_b");
+		string tohead_200ok_b = *((string*)p->second);
+		p = ctxt_store.find("fromhead_200ok_b");
+		string fromhead_200ok_b = *((string*)p->second);
+		p = ctxt_store.find("callid_200ok_b");
+		string callid_200ok_b = *((string*)p->second);
+		message->replaceHeadTo(tohead_200ok_b);
+		message->replaceHeadFrom(fromhead_200ok_b);
+		message->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
+
+
 		message->compileMessage();
 		message->dumpVector();
 
+		BTRANSMIT(message)
+
+		//sl_cc->p_w(message);
+
 	}
+
+//	if (_dir == 1 ) {
+//		message->setDestEntity(SODE_SMCLPOINT);
+//
+//		message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
+//
+//		message->purgeSDP();
+//
+//		char viatmp[512];
+//		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),_message->getKey().c_str());
+//		string viatmpS(viatmp);
+//		message->purgeSTKHeadVia();
+//		message->pushHeadVia("Via: " + viatmpS);
+//
+//
+//		message->replaceHeadCSeq(call_oset->getNextSequence("BYE"), "BYE");
+//		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
+//		message->compileMessage();
+//		message->dumpVector();
+//
+//		BTRANSMIT(message)
+//
+//		//sl_cc->p_w(message);
+//
+//	}
 //
 //
 //	} else if (_dir == -1){

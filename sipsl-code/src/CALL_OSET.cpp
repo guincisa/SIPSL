@@ -92,6 +92,7 @@ int CALL_OSET::getNextSequence(string _method){
 	p = sequenceMap.find(_method);
 	if (p != sequenceMap.end()){
 		int i = (int)p->second + 1;
+		sequenceMap.erase(p);
 		sequenceMap.insert(pair<string, int>(_method,i));
 		return (i);
 	}else {

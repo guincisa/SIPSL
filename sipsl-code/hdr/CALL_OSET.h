@@ -85,6 +85,7 @@ class CALL_OSET {
 		void setCallId_X(string callId_X);
 		string getCallId_X(void);
 
+		//TODO is wrong
 		int getNextSequence(string method);
 
 

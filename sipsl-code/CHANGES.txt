@@ -1,5 +1,19 @@
 CHANGES
 
+July 2
+
+bye ok ma
+getsequence va modificato perche il BYE viene mandato con il seq dell'invite +1
+ora pero il bye che manda la sipsl deve essere basato sul bye di a:
+se a manda un bye per un certo invite allora sipsl deve fare lo stesso
+(perche potrei avere piu dialoghi aperti e il bye chiude un solo)
+il sip sl deve capire quale invite si chiude e cercare il dialogo corretto.
+
+finire bye
+
+matrix e altrii messaggi memorizzati:
+uare la mappa o un campo nel call_oset?
+-------------------------------------------------------------------------------
 
 matrix message: confusione!
 finire bye
