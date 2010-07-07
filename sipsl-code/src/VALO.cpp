@@ -226,7 +226,7 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
 	if (_dir == 1 ) {
-		message->setDestEntity(SODE_SMCLPOINT);
+		message->setDestEntity(SODE_TRNSCT_CL);
 
 		message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
@@ -255,10 +255,7 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 
 		message->compileMessage();
 		message->dumpVector();
-
-		BTRANSMIT(message)
-
-		//sl_cc->p_w(message);
+		sl_cc->p_w(message);
 
 	}
 

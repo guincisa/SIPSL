@@ -44,15 +44,19 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	// _getd reply for A
 
 	//Must define here the to tag
-	char totmp[512];
-	sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo().getNameUri().c_str(), __gtor->getHeadTo().getC_AttSipUri().getContent().c_str(),__gtor);
-	string totmpS(totmp);
-	DEBOUT("******** TO new" , totmpS)
-	_gted->replaceHeadTo(totmpS);
-	DEBOUT("TO",_gted->getHeadTo().getContent())
-	DEBOUT("TO",_gted->getHeadTo().getC_AttSipUri().getContent())
-	DEBOUT("TO",_gted->getHeadTo().getNameUri())
-	DEBOUT("TO",_gted->getHeadTo().getC_AttUriParms().getContent())
+	//only if empty...
+	if ( _gted->getHeadTo().getC_AttUriParms().getContent().length() == 0){
+		DEBOUT("_gted->getHeadTo().getC_AttUriParms()).getContent()",_gted->getHeadTo().getC_AttUriParms().getContent())
+		char totmp[512];
+		sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo().getNameUri().c_str(), __gtor->getHeadTo().getC_AttSipUri().getContent().c_str(),__gtor);
+		string totmpS(totmp);
+		DEBOUT("******** TO new" , totmpS)
+		_gted->replaceHeadTo(totmpS);
+		DEBOUT("TO",_gted->getHeadTo().getContent())
+		DEBOUT("TO",_gted->getHeadTo().getC_AttSipUri().getContent())
+		DEBOUT("TO",_gted->getHeadTo().getNameUri())
+		DEBOUT("TO",_gted->getHeadTo().getC_AttUriParms().getContent())
+	}
 
 
 	//TODO qui fare dialoge_x...

@@ -46,14 +46,16 @@ class CALL_OSET {
 		// example 1#A#1
 		map<string, TRNSCT_SM*> trnsctSmMap;
 
-		// Get new transaction state machine
-		TRNSCT_SM* newTrnsct(string method, string side);
-
 		// Sequence map
 		// used to store used sequences and return new unused sequences
 		map<string, int> sequenceMap;
 		// current sequence, shared among all request
 		int currentSequence;
+
+
+		// Get new transaction state machine
+		TRNSCT_SM* newTrnsct(string method, string side);
+
 
 		//From V4
 		string callId_X;
@@ -140,10 +142,14 @@ class TRNSCT_SM  :  public SM_V5{
 
 		int requestType;
 		MESSAGE* Matrix;
+		MESSAGE* A_Matrix;
 
 	public:
 
 		MESSAGE* getMatrixMessage(void);
+
+		MESSAGE* getA_Matrix(void);
+
 
 		//#define REGISTER_REQUEST 1
 		//#define INVITE_REQUEST 2
@@ -153,6 +159,8 @@ class TRNSCT_SM  :  public SM_V5{
 
 		//Depending on the request the SM will be different
 		TRNSCT_SM(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
+		TRNSCT_SM(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
+
 
 };
 //**********************************************************************************
@@ -181,7 +189,6 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 		PREDICATE_ACTION_V5 PA_INV_1_3SV;
 		PREDICATE_ACTION_V5 PA_INV_3_4SV;
 
-
 		TRNSCT_SM_INVITE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 
 };
@@ -206,8 +213,6 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 
 
 		int resend_invite;
-
-		MESSAGE* getA_Matrix(void);
 
 		TRNSCT_SM_INVITE_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 
@@ -238,7 +243,6 @@ class TRNSCT_SM_ACK_CL : public TRNSCT_SM {
 
 		PREDICATE_ACTION_V5 PA_ACK_0_1CL;
 
-		MESSAGE* getA_Matrix(void);
 
 		TRNSCT_SM_ACK_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 
@@ -251,6 +255,7 @@ class TRNSCT_SM_BYE_SV : public TRNSCT_SM {
 	public:
 
 		PREDICATE_ACTION_V5 PA_BYE_0_1SV;
+		PREDICATE_ACTION_V5 PA_BYE_1_2SV;
 
 
 		TRNSCT_SM_BYE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
@@ -267,9 +272,11 @@ class TRNSCT_SM_BYE_CL : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION_V5 PA_BYE_0_1CL;
+		int resend_bye;
 
-		MESSAGE* getA_Matrix(void);
+		PREDICATE_ACTION_V5 PA_BYE_0_1CL;
+		PREDICATE_ACTION_V5 PA_BYE_1_1CL; //resend bye
+		PREDICATE_ACTION_V5 PA_BYE_1_2CL; //200OK
 
 		TRNSCT_SM_BYE_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 

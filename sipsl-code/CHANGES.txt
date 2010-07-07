@@ -1,5 +1,14 @@
 CHANGES
 
+Bye
+la chiusura si fa con i vari tag e non con il sequence (?)
+
+ok bye funziona
+
+manca bye da lato B.
+
+fare cleaning codice e 
+-------------------------------------------------------------------------------
 July 2
 
 bye ok ma
