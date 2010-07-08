@@ -1,5 +1,10 @@
 CHANGES
 
+Finire bye from B.
+test
+consolidare l'identificatore al call_oset con il call id semplice e non quello
+esteso (cid+fromtag)
+-------------------------------------------------------------------------------
 Bye
 la chiusura si fa con i vari tag e non con il sequence (?)
 

@@ -183,6 +183,12 @@ int BASEMESSAGE::getGenEntity(void){
 void BASEMESSAGE::setGenEntity(int _genEntity){
 	genEntity = _genEntity;
 }
+int BASEMESSAGE::getInitialGenEntity(void){
+	return initialGenEntity;
+}
+void BASEMESSAGE::setInitialGenEntity(int _genEntity){
+	initialGenEntity = _genEntity;
+}
 int BASEMESSAGE::getDestEntity(void){
 	return destEntity;
 }

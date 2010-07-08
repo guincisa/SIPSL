@@ -101,27 +101,44 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		CALL_OSET* call_oset = 0x0;
 
-		string callidx = _mess->getDialogExtendedCID();
+		//string callidx = _mess->getDialogExtendedCID();
+		string callids = _mess->getHeadCallId().getContent();
 
-		DEBOUT("SL_CC::parse CALLOSET extended ID",callidx)
+		//DEBOUT("SL_CC::parse CALLOSET extended ID",callidx)
+		DEBOUT("SL_CC::parse CALLOSET normal ID",callids)
 
-		call_oset = comap->getCALL_OSET_XMain(callidx);
+		//call_oset = comap->getCALL_OSET_XMain(callidx);
+		call_oset = comap->getCALL_OSET_XMain(callids);
+
 
 		//First try to get the Call object using x side parameters
 		if (call_oset != 0x0) {
 			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
-			//Refine the source and destination
-			_mess->setEndPoints(SODE_APOINT, SODE_SMSVPOINT);
+
+			//to SV if Request to CL if Reply
+			if (_mess->getReqRepType() == REQSUPP) {
+				_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_SV);
+			}
+			else if (_mess->getReqRepType() == REPSUPP){
+				_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_CL);
+			}
 
 			call_oset->getSL_CO()->call(_mess);
 		}
 		// Then try to get call object using y side params
 		else {
-			call_oset = comap->getCALL_OSET_YDerived(callidx);
+			//call_oset = comap->getCALL_OSET_YDerived(callidx);
+			call_oset = comap->getCALL_OSET_YDerived(callids);
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
-				//Refine the source and destination
-				_mess->setEndPoints(SODE_BPOINT, SODE_TRNSCT_CL);
+
+				//to SV if Request to CL if Reply
+				if (_mess->getReqRepType() == REQSUPP) {
+					_mess->setEndPoints(SODE_BPOINT, SODE_TRNSCT_SV);
+				}
+				else if (_mess->getReqRepType() == REPSUPP){
+					_mess->setEndPoints(SODE_BPOINT, SODE_TRNSCT_CL);
+				}
 
 				call_oset->getSL_CO()->call(_mess);
 			}
@@ -144,14 +161,16 @@ void SL_CC::parse(MESSAGE* _mess) {
 			call_oset->setALO(alo);
 			call_oset->setSL_CO(sl_co);
 
-			call_oset->setCallId_X(callidx);
+			//call_oset->setCallId_X(callidx);
+			call_oset->setCallId_X(callids);
 
-
-			comap->setCALL_OSET(callidx, call_oset);
+			//comap->setCALL_OSET(callidx, call_oset);
+			comap->setCALL_OSET(callids, call_oset);
 			//End
 			//////////////////////////////
 
-			DEBOUT("SL_CC::parse CALL_OSET created by x side", callidx << "] [" <<call_oset)
+			//DEBOUT("SL_CC::parse CALL_OSET created by x side", callidx << "] [" <<call_oset)
+			DEBOUT("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
 
 			sl_co->call(_mess);
 		}
@@ -163,13 +182,16 @@ void SL_CC::parse(MESSAGE* _mess) {
 		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_TRNSCT_CL (4)", _mess->getGenEntity() )
 
 		//get generating idx to get the call object
-		string callidx = _mess->getSourceMessage()->getDialogExtendedCID();
+		//string callidx = _mess->getSourceMessage()->getDialogExtendedCID();
+		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
 
-		DEBOUT("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callidx)
+		//DEBOUT("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callidx)
+		DEBOUT("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callids)
 
 		CALL_OSET* call_oset = 0x0;
 
-		call_oset = comap->getCALL_OSET_XMain(callidx);
+		//call_oset = comap->getCALL_OSET_XMain(callidx);
+		call_oset = comap->getCALL_OSET_XMain(callids);
 
 		if (call_oset == 0x0) {
 			DEBOUT("SL_CC::parse","Orphan Invite")

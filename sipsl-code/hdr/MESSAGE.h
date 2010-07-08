@@ -104,6 +104,9 @@ class BASEMESSAGE {
         int getGenEntity(void);
         void setGenEntity(int);
 
+        int getInitialGenEntity(void);
+        void setInitialGenEntity(int);
+
         void setDestEntity(int);
         int getDestEntity(void);
 
@@ -122,6 +125,7 @@ class BASEMESSAGE {
     protected:
         int genEntity;
         int destEntity;
+        int initialGenEntity;
         vector<string> flex_line;
         SysTime inc_ts;
 

@@ -62,11 +62,11 @@ void ALO::parse(MESSAGE* _message) {
 		}
 		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
 			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
-			if (_message->getGenEntity() == SODE_SMCLPOINT){
+			if (_message->getInitialGenEntity() == SODE_BPOINT){
 				DEBOUT("Backward BYE","")
 				onBye(_message, -1);
 			}
-			if(_message->getGenEntity() == SODE_SMSVPOINT){
+			if(_message->getInitialGenEntity() == SODE_APOINT){
 				DEBOUT("Forward BYE","")
 				onBye(_message, 1);
 			}

@@ -197,7 +197,8 @@ void SL_CO::call(MESSAGE* _message){
 
 	if (_message->getDestEntity() == SODE_TRNSCT_SV) {
 
-	    DEBOUT("SL_CO::search for transaction state machine", _message->getDialogExtendedCID())
+	    //DEBOUT("SL_CO::search for transaction state machine", _message->getDialogExtendedCID())
+		DEBOUT("SL_CO::search for transaction state machine", _message->getHeadCallId().getContent())
 
 		TRNSCT_SM* trnsctSM = 0x0;
 
@@ -279,9 +280,10 @@ void SL_CO::call(MESSAGE* _message){
 	}
 	else if (_message->getDestEntity() == SODE_TRNSCT_CL){
 
-		string callidy = _message->getDialogExtendedCID();
-
-	    DEBOUT("SL_CO::call client state machine", callidy)
+		//string callidy = _message->getDialogExtendedCID();
+		string callidys = _message->getHeadCallId().getContent();
+	    //DEBOUT("SL_CO::call client state machine", callidy)
+	    DEBOUT("SL_CO::call client state machine", callidys)
 
 		//TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
 		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
@@ -292,7 +294,8 @@ void SL_CO::call(MESSAGE* _message){
 			//Trnsct client state machine does not exists
 			//create and put in comap
 
-			DEBOUT("Creating Trnsct Client machine callidy", callidy)
+			//DEBOUT("Creating Trnsct Client machine callidy", callidy)
+			DEBOUT("Creating Trnsct Client machine callidy", callidys)
 
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
 				trnsct_cl = new TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this);
@@ -321,7 +324,8 @@ void SL_CO::call(MESSAGE* _message){
 			//			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
 
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallId_X());
+			//tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallId_X());
+			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X());
 		}
 
 		ACTION* action = trnsct_cl->event(_message);
@@ -342,13 +346,15 @@ void SL_CO::call(MESSAGE* _message){
 				//V3
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
-					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+					//DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 					call_oset->getALO()->p_w(_tmpMessage);
 				}
 				//V3
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_BPOINT){
 
-					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+					//DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 
 					DEBOUT("*** si_bpart.sin_port", _tmpMessage->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort())
 
@@ -365,7 +371,8 @@ void SL_CO::call(MESSAGE* _message){
 				}//V3
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
-					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getDialogExtendedCID())
+					//DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getDialogExtendedCID())
+					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 
 				}
@@ -375,16 +382,21 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("SL_CO:: TYPE_OP","")
 
 					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
-						DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+						//DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+						DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 						SysTime st1 = _tmpMessage->getFireTime();
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
 
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
-						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
-						string callid = _tmpMessage->getDialogExtendedCID();
-						DEBOUT("SL_CO::cancel alarm, callid", callid)
-						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid);
+						//DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+						//string callid = _tmpMessage->getDialogExtendedCID();
+						string callids = _tmpMessage->getHeadCallId().getContent();
+						DEBOUT("SL_CO::cancel alarm, callid", callids)
+						//call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid);
+						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callids);
+
 					}
 					else {
 						DEBASSERT("SL_CO client side inconsistency")
@@ -1125,7 +1137,7 @@ bool pre_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
-			&& _message->getGenEntity() ==  SODE_APOINT) {
+			&& ( _message->getGenEntity() ==  SODE_APOINT || _message->getGenEntity() ==  SODE_BPOINT)) {
 		DEBOUT("TRNSCT_INV_SV pre_0_1_bye_sv","true")
 		return true;
 	}
@@ -1146,6 +1158,8 @@ ACTION* act_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 	ACTION* action = new ACTION();
 
 	//_message changes its dest and gen
+	// remember initial generation  is used for backward messagges like bye coming from B
+	_message->setInitialGenEntity(_message->getGenEntity());
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->typeOfInternal = TYPE_MESS;
