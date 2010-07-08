@@ -89,6 +89,8 @@ class CALL_OSET {
 
 		//TODO is wrong
 		int getNextSequence(string method);
+		int getCurrentSequence(string method);
+		void insertSequence(string method, int cntr);
 
 
 };

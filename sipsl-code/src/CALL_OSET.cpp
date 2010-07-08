@@ -82,9 +82,9 @@ static SIPUTIL SipUtil;
 //**********************************************************************************
 CALL_OSET::CALL_OSET(ENGINE* _engine){
 	engine = _engine;
-	sequenceMap.insert(pair<string, int>("ACK",0));
-	sequenceMap.insert(pair<string, int>("INVITE",0));
-	sequenceMap.insert(pair<string, int>("BYE",0));
+	sequenceMap.insert(pair<string, int>("ACK_B",0));
+	sequenceMap.insert(pair<string, int>("INVITE_B",0));
+	sequenceMap.insert(pair<string, int>("BYE_B",0));
 }
 int CALL_OSET::getNextSequence(string _method){
 
@@ -99,6 +99,21 @@ int CALL_OSET::getNextSequence(string _method){
 		sequenceMap.insert(pair<string, int>(_method,1));
 		return 1;
 	}
+}
+void CALL_OSET::insertSequence(string _method, int _i){
+	sequenceMap.insert(pair<string, int>(_method,_i));
+}
+int CALL_OSET::getCurrentSequence(string _method){
+
+	map<string, int> ::iterator p;
+	p = sequenceMap.find(_method);
+	if (p != sequenceMap.end()){
+		return (int)p->second;
+	}
+	else {
+		return 0;
+	}
+
 }
 //**********************************************************************************
 ENGINE* CALL_OSET::getENGINE(void){
@@ -222,6 +237,7 @@ void SL_CO::call(MESSAGE* _message){
 
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+				call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
 				trnsctSM = new TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
 			}
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
@@ -432,6 +448,7 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_
 
 	requestType = _requestType;
 	Matrix = _matrixMess;
+	A_Matrix = 0x0;
 }
 TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 	SM_V5(_sl_cc, _sl_co){
@@ -692,7 +709,7 @@ ACTION* act_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
 //**********************************************************************************
 TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
+		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
 		PA_INV_0_1SV((SM_V5*)this),
 		PA_INV_1_2SV((SM_V5*)this),
 		PA_INV_1_3SV((SM_V5*)this),

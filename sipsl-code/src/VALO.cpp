@@ -67,7 +67,7 @@ void VALO::onInvite(MESSAGE* _message){
 		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
 
 		//New transaction
-		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE"), "INVITE");
+		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
 
 		//Standard changes
 		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
@@ -238,7 +238,7 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 
 		//TODO FIX THIS!
 		//must understadn here which dialog I am closing
-		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE"), "BYE");
+		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "BYE");
 		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
 
 		map<string, void*> ::iterator p;
@@ -258,6 +258,45 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 		sl_cc->p_w(message);
 
 	}
+	else if (_dir == -1 ) {
+
+		message->setDestEntity(SODE_TRNSCT_CL);
+		DEBOUT("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
+		TRNSCT_SM* trnsct_sv = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, call_oset->getCurrentSequence("INVITE_A"));
+		DEBY
+		MESSAGE* __message = trnsct_sv->getA_Matrix();
+		DEBY
+		DEBOUT("message->setHeadSipRequest(__message->getHeadSipRequest().getContent())", __message->getHeadSipRequest().getContent())
+		message->setHeadSipRequest(__message->getHeadSipRequest().getContent());
+
+		char viatmp[512];
+		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
+		string viatmpS(viatmp);
+		message->purgeSTKHeadVia();
+		message->pushHeadVia("Via: " + viatmpS);
+
+		//TODO FIX THIS!
+		//must understadn here which dialog I am closing
+		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_A"), "BYE");
+		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
+
+		map<string, void*> ::iterator p;
+		p = ctxt_store.find("tohead_200ok_b");
+		string tohead_200ok_b = *((string*)p->second);
+		p = ctxt_store.find("fromhead_200ok_b");
+		string fromhead_200ok_b = *((string*)p->second);
+		p = ctxt_store.find("callid_200ok_b");
+		string callid_200ok_b = *((string*)p->second);
+		message->replaceHeadTo(tohead_200ok_b);
+		message->replaceHeadFrom(fromhead_200ok_b);
+		message->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
+
+
+		message->compileMessage();
+		message->dumpVector();
+		sl_cc->p_w(message);
+	}
+
 
 //	if (_dir == 1 ) {
 //		message->setDestEntity(SODE_SMCLPOINT);
