@@ -2,6 +2,14 @@ CHANGES
 
 Luglio 9
 
+
+introdurre un network dispatcher, togliere SODE_APOINT e SODE_BPOINT e lasciare SODE_NTWPOINT.
+1. potrebbero esserci poi di due tier nella conversazione
+2. la destinazione del messaggio è definita negli header e non in base alla macchina a stati
+
+vedere: via , to, from, contact....
+
+
 Bye from B ancora probloemi, forse la state machine client va modificata.
 il bye non è mandato da quando ho invertito gli header
 
