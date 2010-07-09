@@ -697,8 +697,8 @@ void MESSAGE::replaceHeadFrom(string _content){
 }
 void MESSAGE::replaceHeadTo(string _content){
 
-	headFrom_p = false;
-	headFrom.setContent(_content);
+	headTo_p = false;
+	headTo.setContent(_content);
 
 	// replace in flex_line
 	unsigned int i;

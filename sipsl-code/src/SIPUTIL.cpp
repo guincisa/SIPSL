@@ -48,7 +48,11 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	if ( _gted->getHeadTo().getC_AttUriParms().getContent().length() == 0){
 		DEBOUT("_gted->getHeadTo().getC_AttUriParms()).getContent()",_gted->getHeadTo().getC_AttUriParms().getContent())
 		char totmp[512];
-		sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo().getNameUri().c_str(), __gtor->getHeadTo().getC_AttSipUri().getContent().c_str(),__gtor);
+		if (__gtor->getHeadTo().getNameUri().length()!= 0){
+			sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo().getNameUri().c_str(), __gtor->getHeadTo().getC_AttSipUri().getContent().c_str(),__gtor);
+		}else {
+			sprintf(totmp, "%s;tag=%x",__gtor->getHeadTo().getC_AttSipUri().getContent().c_str(),__gtor);
+		}
 		string totmpS(totmp);
 		DEBOUT("******** TO new" , totmpS)
 		_gted->replaceHeadTo(totmpS);

@@ -1,5 +1,14 @@
 CHANGES
 
+Luglio 9
+
+Bye from B ancora probloemi, forse la state machine client va modificata.
+il bye non è mandato da quando ho invertito gli header
+
+mettere ratio nella compilazione degli header
+-------------------------------------------------------------------------------
+
+
 Finire bye from B.
 test
 consolidare l'identificatore al call_oset con il call id semplice e non quello

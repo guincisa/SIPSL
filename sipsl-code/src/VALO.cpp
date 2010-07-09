@@ -225,7 +225,9 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
+
 	if (_dir == 1 ) {
+
 		message->setDestEntity(SODE_TRNSCT_CL);
 
 		message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
@@ -260,14 +262,14 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 	}
 	else if (_dir == -1 ) {
 
-		message->setDestEntity(SODE_TRNSCT_CL);
 		DEBOUT("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
 		TRNSCT_SM* trnsct_sv = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, call_oset->getCurrentSequence("INVITE_A"));
-		DEBY
 		MESSAGE* __message = trnsct_sv->getA_Matrix();
-		DEBY
+		message->setDestEntity(SODE_TRNSCT_CL);
+
 		DEBOUT("message->setHeadSipRequest(__message->getHeadSipRequest().getContent())", __message->getHeadSipRequest().getContent())
-		message->setHeadSipRequest(__message->getHeadSipRequest().getContent());
+		DEBOUT("BYE and rest of request", "BYE*" <<__message->getHeadSipRequest().getC_AttSipUri().getContent() << "*"<<__message->getHeadSipRequest().getChangeS_AttSipVersion().getContent())
+		message->setHeadSipRequest("BYE "+ __message->getHeadSipRequest().getC_AttSipUri().getContent() +" "+__message->getHeadSipRequest().getChangeS_AttSipVersion().getContent());
 
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
@@ -277,20 +279,17 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 
 		//TODO FIX THIS!
 		//must understadn here which dialog I am closing
-		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_A"), "BYE");
+		message->replaceHeadCSeq(call_oset->getCurrentSequence("INVITE_A"), "BYE");
 		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
 
 		map<string, void*> ::iterator p;
-		p = ctxt_store.find("tohead_200ok_b");
+		p = ctxt_store.find("tohead_200ok_a");
 		string tohead_200ok_b = *((string*)p->second);
-		p = ctxt_store.find("fromhead_200ok_b");
+		p = ctxt_store.find("fromhead_200ok_a");
 		string fromhead_200ok_b = *((string*)p->second);
-		p = ctxt_store.find("callid_200ok_b");
-		string callid_200ok_b = *((string*)p->second);
-		message->replaceHeadTo(tohead_200ok_b);
-		message->replaceHeadFrom(fromhead_200ok_b);
-		message->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
-
+		// are inverted
+		message->replaceHeadTo(fromhead_200ok_b);
+		message->replaceHeadFrom(tohead_200ok_b);
 
 		message->compileMessage();
 		message->dumpVector();
@@ -413,6 +412,8 @@ void VALO::on200Ok(MESSAGE* _message){
 	string* fromhead = new string(_message->getHeadFrom().getContent());
 	ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead ));
 
+
+
 	//this shoudl go into call_oset call_idy
 	DEBOUT("STORE CALL ID of 200 ok", _message->getHeadCallId().getContent())
 	string* callid_200ok_b = new string(_message->getHeadCallId().getContent());
@@ -452,6 +453,14 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	SipUtil.genASideReplyFromBReply(_message, __message, ok_x);
 	ok_x->compileMessage();
+
+	DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo().getContent() << "]["<<ok_x->getHeadFrom().getContent())
+	string* tohead_a = new string(ok_x->getHeadTo().getContent());
+	ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a ));
+	DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo().getContent())
+	string* fromhead_a = new string(ok_x->getHeadFrom().getContent());
+	ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a ));
+
 	ok_x->dumpVector();
 
 	sl_cc->p_w(ok_x);

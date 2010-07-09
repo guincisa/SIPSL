@@ -66,7 +66,7 @@ void ALO::parse(MESSAGE* _message) {
 				DEBOUT("Backward BYE","")
 				onBye(_message, -1);
 			}
-			if(_message->getInitialGenEntity() == SODE_APOINT){
+			else if(_message->getInitialGenEntity() == SODE_APOINT){
 				DEBOUT("Forward BYE","")
 				onBye(_message, 1);
 			}
