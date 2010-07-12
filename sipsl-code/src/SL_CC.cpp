@@ -173,22 +173,16 @@ void SL_CC::parse(MESSAGE* _mess) {
 			sl_co->call(_mess);
 		}
 	}
-	// Message comes from ALO
-	//v5 else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_SMCLPOINT){
 	else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_TRNSCT_CL){
 
 		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_TRNSCT_CL (4)", _mess->getGenEntity() )
 
-		//get generating idx to get the call object
-		//string callidx = _mess->getSourceMessage()->getDialogExtendedCID();
 		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
 
-		//DEBOUT("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callidx)
 		DEBOUT("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callids)
 
 		CALL_OSET* call_oset = 0x0;
 
-		//call_oset = comap->getCALL_OSET_XMain(callidx);
 		call_oset = comap->getCALL_OSET_XMain(callids);
 
 		if (call_oset == 0x0) {
@@ -198,6 +192,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 		else {
 				call_oset->getSL_CO()->call(_mess);
 		}
+	} else {
+		DEBOUT("Unexpected source of the message", _mess->getGenEntity())
+		DEBASSERT("")
 	}
     return;
 }

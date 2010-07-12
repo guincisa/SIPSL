@@ -145,9 +145,6 @@ void ALMGR::alarmer(void){
 							sl_cc->p_w(_tmpMess);
 						} else {
 							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)
-							//SysTime ccc;
-							//GETTIME(ccc)
-							//PRINTTIMESHORT("ALMGR::alarmer",ccc)
 							sl_cc->p_w(_tmpMess);
 						}
 					} else {

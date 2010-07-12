@@ -151,7 +151,7 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
-
+	//set new Via, is used by the b part to send replies
 	char viatmp[512];
 	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",sudp->getDomain().c_str(),sudp->getPort(),_gtor->getKey().c_str());
 	string viatmpS(viatmp);

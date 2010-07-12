@@ -186,19 +186,34 @@ int SUDP::getPort(void){
 ALMGR* SUDP::getAlmgr(void){
 	return alarm;
 }
-void SUDP::sendRequest(MESSAGE* message){
+void SUDP::sendRequest(MESSAGE* _message){
 
+	struct sockaddr_in si_part;
+	memset((char *) &si_part, 0, sizeof(si_bpart));
+	si_bpart.sin_family = AF_INET;
+	si_bpart.sin_port = htons(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort());
+	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName(), si_part.sin_addr) == 0 ){
+		DEBASSERT ("can set request address")
+	}
+	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, &si_part, sizeof(si_part));
+
+	return;
 }
-void SUDP::sendReply(MESSAGE* message){
+void SUDP::sendReply(MESSAGE* _message){
 
-	//Reply uses Via header
-#define ATRANSMIT(message) \
-	DEBOUT("SL_CO::call action is send APOINT string:", message->getIncBuffer()) \
-	sendto(message->getSock(), \
-			message->getIncBuffer().c_str(), \
-			message->getIncBuffer().length() , 0, (struct sockaddr *) &(message->getAddress()), \
-			sizeof(message->getAddress()));
+	//Reply uses topmost Via header
+	C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
 
+	struct sockaddr_in si_part;
+	memset((char *) &si_part, 0, sizeof(si_part));
+	si_part.sin_family = AF_INET;
+	si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
+	if( inet_aton(viatmp->getC_AttVia().getS_HostHostPort().getHostName(), si_part.sin_addr) == 0 ){
+		DEBASSERT ("can set reply address")
+	}
+	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, &si_part, sizeof(si_part));
+
+	return;
 }
 
 

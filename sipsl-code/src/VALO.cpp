@@ -43,11 +43,9 @@ VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
 
 void VALO::onInvite(MESSAGE* _message){
 
-	//	// do business logic...
-	//	// create b2b invite related message & so on...
-	//	//TODO clean this
-
 		CREATEMESSAGE(message, _message, SODE_ALOPOINT)
+
+		message->setDestEntity(SODE_TRNSCT_CL);
 
 		message->setSourceMessage(_message);
 
@@ -61,6 +59,7 @@ void VALO::onInvite(MESSAGE* _message){
 			DEBOUT("Exception ", e.getMessage())
 		}
 
+		//TODO use registrar
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
@@ -86,12 +85,9 @@ void VALO::onInvite(MESSAGE* _message){
 		//create the transaction
 		//v5 call_oset->createTransactionY(message);
 
-		message->setDestEntity(SODE_TRNSCT_CL);
-
 		DEBOUT("STORE CSeq for ack", message->getGenericHeader("CSeq:"))
 		string* CSeqB2BINIVTE = new string(message->getGenericHeader("CSeq:"));
 		ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
-
 
 		message->setLock();
 

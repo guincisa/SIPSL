@@ -212,7 +212,6 @@ void SL_CO::call(MESSAGE* _message){
 
 	if (_message->getDestEntity() == SODE_TRNSCT_SV) {
 
-	    //DEBOUT("SL_CO::search for transaction state machine", _message->getDialogExtendedCID())
 		DEBOUT("SL_CO::search for transaction state machine", _message->getHeadCallId().getContent())
 
 		TRNSCT_SM* trnsctSM = 0x0;
@@ -277,7 +276,8 @@ void SL_CO::call(MESSAGE* _message){
 				}
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 					if (_tmpMessage->getReqRepType() == REPSUPP) {
-						call_oset->getENGINE()->getSUDP()->sendReply();
+						//Check if there is a ROUTE header
+						call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
 						PURGEMESSAGE(_tmpMessage, "PURGE MESSAGE")
 					}
 					else {
@@ -288,9 +288,7 @@ void SL_CO::call(MESSAGE* _message){
 					//TODO
 					DEBASSERT("SL_CO::call action is ???")
 				}
-
 				actionList.pop();
-
 			}
 		}
 		else {
@@ -301,21 +299,13 @@ void SL_CO::call(MESSAGE* _message){
 	}
 	else if (_message->getDestEntity() == SODE_TRNSCT_CL){
 
-		//string callidy = _message->getDialogExtendedCID();
 		string callidys = _message->getHeadCallId().getContent();
-	    //DEBOUT("SL_CO::call client state machine", callidy)
 	    DEBOUT("SL_CO::call client state machine", callidys)
 
-		//TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadSipRequest().getS_AttMethod().getMethodName(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
 		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
-
 
 		if (trnsct_cl == 0x0){
 
-			//Trnsct client state machine does not exists
-			//create and put in comap
-
-			//DEBOUT("Creating Trnsct Client machine callidy", callidy)
 			DEBOUT("Creating Trnsct Client machine callidy", callidys)
 
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
@@ -330,22 +320,7 @@ void SL_CO::call(MESSAGE* _message){
 
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence(), trnsct_cl);
 
-
-			//V5 ??? DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
-			//V5 ??? call_oset->setSL_SM_CL(sl_sm_cl);
-			//V5 ??? call_oset->setCall_IdY_v4(callidy);
-
-
-			//V5 ???		//v4
-			//		if (call_oset->findGenMess_CL_v4(callidy) == 0x0){
-			//
-			//			DEBOUT("Associating", callidy << " and " << call_oset->getCallIdX())
-			//			//V5 ??? call_oset->addGenMess_CL_v4(callidy, _message);
-			//			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-			//			tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallIdX());
-
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-			//tmp_sl_cc->getCOMAP()->setY2XCallId(callidy,call_oset->getCallId_X());
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X());
 		}
 
@@ -367,55 +342,44 @@ void SL_CO::call(MESSAGE* _message){
 				//V3
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
-					//DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 					call_oset->getALO()->p_w(_tmpMessage);
 				}
-				//V3
-				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_BPOINT){
+				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 
-					//DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 
-					DEBOUT("*** si_bpart.sin_port", _tmpMessage->getHeadTo().getC_AttSipUri().getS_AttHostPort().getPort())
-
-					BTRANSMIT(_tmpMessage)
-
-					//DELETE INVITE HERE...
-					if (!_tmpMessage->getLock()){
-						PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
+					if (_tmpMessage->getReqRepType() == REQSUPP) {
+						call_oset->getENGINE()->getSUDP()->sendRequest(_tmpMessage);
+						if (!_tmpMessage->getLock()){
+							PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
+						}
 					}
 					else {
-						DEBOUT("PURGE INVITE", "locked")
+						DEBASSERT("???")
 					}
 
-				}//V3
+				}
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
-					//DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getDialogExtendedCID())
 					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 
 				}
-				//V3
 				else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
 
 					DEBOUT("SL_CO:: TYPE_OP","")
 
 					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
-						//DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 						DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 						SysTime st1 = _tmpMessage->getFireTime();
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
 
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
-						//DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
-						//string callid = _tmpMessage->getDialogExtendedCID();
 						string callids = _tmpMessage->getHeadCallId().getContent();
 						DEBOUT("SL_CO::cancel alarm, callid", callids)
-						//call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid);
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callids);
 
 					}
@@ -765,7 +729,8 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	ACTION* action = new ACTION();
 
-	_message->setDestEntity(SODE_BPOINT);
+	//Message has to be sent
+	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
@@ -773,24 +738,18 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//careful with source message.
+	//Prepare message for Alarm
 	DUPLICATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
 
 	//This is to be sent later, after timer expires
 	//Preconfigure message entity points, the alarm manager cannot do this
-
-	//V5?????
-	//???????
 	__timedmessage->setDestEntity(SODE_TRNSCT_CL);
 	__timedmessage->setGenEntity(SODE_TRNSCT_CL);
 
 	SysTime afterT;
 	GETTIME(afterT);
-	//TODO check if mc is overflowed
-	//V5 non funziona!!!
-	//DEBOUT("current time ", afterT.tv.tv_sec << "] [" <<afterT.tv.tv_usec)
 	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
 	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
-	//PRINTTIMESHORT("afterT",afterT)
 
 	__timedmessage->setFireTime(afterT);
 	__timedmessage->typeOfInternal = TYPE_OP;
@@ -799,10 +758,10 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_2);
 
-	//V5 TODO
 	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
 
-	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl","")
+	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
+
 	_sm->State = 1;
 
 	return action;
