@@ -1,5 +1,20 @@
 CHANGES
 
+11 Luglio
+Routing
+
+Request INVITE
+se è presente un Route header mandare a questo (porta di default 5060 se non indicata)
+Mandare alla Request-URI altrimenti
+
+Response
+utilizza il Via per rispondere
+
+Request Ack
+come Invite
+
+
+-------------------------------------------------------------------------------
 Luglio 9
 
 

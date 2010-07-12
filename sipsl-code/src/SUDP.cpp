@@ -186,5 +186,20 @@ int SUDP::getPort(void){
 ALMGR* SUDP::getAlmgr(void){
 	return alarm;
 }
+void SUDP::sendRequest(MESSAGE* message){
+
+}
+void SUDP::sendReply(MESSAGE* message){
+
+	//Reply uses Via header
+#define ATRANSMIT(message) \
+	DEBOUT("SL_CO::call action is send APOINT string:", message->getIncBuffer()) \
+	sendto(message->getSock(), \
+			message->getIncBuffer().c_str(), \
+			message->getIncBuffer().length() , 0, (struct sockaddr *) &(message->getAddress()), \
+			sizeof(message->getAddress()));
+
+}
+
 
 

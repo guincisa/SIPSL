@@ -81,6 +81,9 @@ class SUDP {
         int getPort(void);
         ALMGR* getAlmgr(void);
 
+        void sendRequest(MESSAGE* message);
+        void sendReply(MESSAGE* message);
+
     private:
 
         ENGINE * engine;

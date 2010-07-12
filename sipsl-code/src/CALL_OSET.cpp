@@ -275,9 +275,14 @@ void SL_CO::call(MESSAGE* _message){
 					//DEBOUT("SL_CO::call action is send to CL", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 					//call_oset->getENGINE()->p_w(_tmpMessage);
 				}
-				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_APOINT){
-					ATRANSMIT(_tmpMessage)
-					PURGEMESSAGE(_tmpMessage, "PURGE MESSAGE")
+				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
+					if (_tmpMessage->getReqRepType() == REPSUPP) {
+						call_oset->getENGINE()->getSUDP()->sendReply();
+						PURGEMESSAGE(_tmpMessage, "PURGE MESSAGE")
+					}
+					else {
+						DEBASSERT("???")
+					}
 
 				} else {
 					//TODO
@@ -541,7 +546,7 @@ bool pre_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
-			&& _message->getGenEntity() ==  SODE_APOINT) {
+			&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 		DEBOUT("TRNSCT_INV_SV pre_0_1_inv_sv","true")
 		return true;
 	}

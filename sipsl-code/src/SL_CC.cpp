@@ -101,13 +101,10 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		CALL_OSET* call_oset = 0x0;
 
-		//string callidx = _mess->getDialogExtendedCID();
 		string callids = _mess->getHeadCallId().getContent();
 
-		//DEBOUT("SL_CC::parse CALLOSET extended ID",callidx)
 		DEBOUT("SL_CC::parse CALLOSET normal ID",callids)
 
-		//call_oset = comap->getCALL_OSET_XMain(callidx);
 		call_oset = comap->getCALL_OSET_XMain(callids);
 
 
@@ -117,17 +114,18 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			//to SV if Request to CL if Reply
 			if (_mess->getReqRepType() == REQSUPP) {
-				_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_SV);
+				//_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_SV);
+				_mess->setDestEntity(SODE_TRNSCT_SV);
 			}
 			else if (_mess->getReqRepType() == REPSUPP){
-				_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_CL);
+				//_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_CL);
+				_mess->setDestEntity(SODE_TRNSCT_CL);
 			}
 
 			call_oset->getSL_CO()->call(_mess);
 		}
 		// Then try to get call object using y side params
 		else {
-			//call_oset = comap->getCALL_OSET_YDerived(callidx);
 			call_oset = comap->getCALL_OSET_YDerived(callids);
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")

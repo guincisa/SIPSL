@@ -46,8 +46,8 @@ using namespace std;
 
 #define SODE_NOPOINT 0
 #define SODE_STOPPOINT 9999
-#define SODE_APOINT 1
-#define SODE_BPOINT 2
+//#define SODE_APOINT 1
+//#define SODE_BPOINT 2
 #define SODE_ALOPOINT 3
 #define SODE_SMCLPOINT 4
 #define SODE_SMSVPOINT 5
