@@ -1110,11 +1110,20 @@ void C_AttVia::doParse(void){
 
     if(parsed)
         return;
+
+    //SIP/2.0/UDP 127.0.0.1:5062;rport;branch=z9hG4bKldbblwtj
+
+    DEBOUT("C_AttVia content", content)
     Tuple s1 = brkin2(content, " ");
+    DEBOUT("C_AttVia first brkin2",s1.Lvalue << "][" <<  s1.Rvalue)
 
     Tuple s2 = brkin2(s1.Lvalue, "/");
+    DEBOUT("C_AttVia second brkin2",s2.Lvalue << "][" <<  s2.Rvalue)
+
 
     Tuple s3 = brkin2(s2.Rvalue, "/");
+    DEBOUT("C_AttVia third brkin2",s3.Lvalue << "][" <<  s3.Rvalue)
+
 
     transport = s3.Rvalue;
     version.setVersion(s3.Lvalue);

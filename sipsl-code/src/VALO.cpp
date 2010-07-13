@@ -209,9 +209,11 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 //
 //
 }
-void VALO::onBye(MESSAGE* _message, int _dir){
+void VALO::onBye(MESSAGE* _message){
 
 	DEBOUT("VALO::onBye", _message->getIncBuffer())
+
+	//The direction of the bye is recognized by the CSEQ
 
 //	map<string, void*> ::iterator p;
 //	p = ctxt_store.find("invite_b");
@@ -221,6 +223,7 @@ void VALO::onBye(MESSAGE* _message, int _dir){
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
+	int _dir = 1;
 
 	if (_dir == 1 ) {
 

@@ -58,21 +58,11 @@ void ALO::parse(MESSAGE* _message) {
 		}
 		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && _message->typeOfInternal == TYPE_MESS && _message->type_trnsct == TYPE_NNTRNSCT ){
 			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
-				onAckNoTrnsct(_message);
+			onAckNoTrnsct(_message);
 		}
 		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
 			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
-			if (_message->getInitialGenEntity() == SODE_BPOINT){
-				DEBOUT("Backward BYE","")
-				onBye(_message, -1);
-			}
-			else if(_message->getInitialGenEntity() == SODE_APOINT){
-				DEBOUT("Forward BYE","")
-				onBye(_message, 1);
-			}
-			else {
-				DEBOUT("Unqualified BYE","")
-			}
+			onBye(_message);
 		}
 		else {
 			noCallBack(_message);
@@ -94,7 +84,7 @@ void ALO::onInvite(MESSAGE* m){
 void ALO::onAck(MESSAGE* m){
 	DEBOUT("ALO unoverridded onAck called ", m->getIncBuffer())
 }
-void ALO::onBye(MESSAGE* m, int _dir){
+void ALO::onBye(MESSAGE* m){
 	DEBOUT("ALO unoverridded onBye called ", m->getIncBuffer())
 }
 void ALO::on200Ok(MESSAGE* m){

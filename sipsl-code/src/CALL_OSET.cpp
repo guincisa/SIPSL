@@ -380,6 +380,7 @@ void SL_CO::call(MESSAGE* _message){
 						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 						string callids = _tmpMessage->getHeadCallId().getContent();
 						DEBOUT("SL_CO::cancel alarm, callid", callids)
+						//TODO call id to identify alarm is not enough
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callids);
 
 					}
@@ -584,7 +585,8 @@ ACTION* act_1_2_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 	DEBOUT("act_1_2_inv_sv::act_1_2_sv",  _message->getHeadSipReply().getReply().getCode() )
 	ACTION* action = new ACTION();
 
-	_message->setDestEntity(SODE_APOINT);
+	// The message ha been prepared by client so it's ready to be sent back
+	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
@@ -618,7 +620,7 @@ ACTION* act_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	ACTION* action = new ACTION();
 
-	_message->setDestEntity(SODE_APOINT);
+	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
@@ -642,7 +644,7 @@ bool pre_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
-			&& _message->getGenEntity() ==  SODE_APOINT) {
+			&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 		DEBOUT("SM_V5 pre_3_4_inv_sv","true")
 		return true;
 	}
@@ -815,7 +817,7 @@ bool pre_1_1b_inv_cl(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == TRYING_100
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
+		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 			DEBOUT("TRNSCT_INV_CL pre_1_1b_inv_cl","true")
 			return true;
 		}
@@ -847,7 +849,7 @@ bool pre_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message){
 		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
 				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
+		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 			DEBOUT("SM_CL pre_1_3_inv_cl","true")
 			return true;
 		}
@@ -888,8 +890,6 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	reply_x->compileMessage();
 	reply_x->dumpVector();
 
-	//C_HeadVia* viatmp2 = (C_HeadVia*) reply_x->getSTKHeadVia().top();
-
 	SingleAction sa_1 = SingleAction(reply_x);
 
 	action->addSingleAction(sa_1);
@@ -906,7 +906,7 @@ bool pre_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
+		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 			DEBOUT("SM_V5 pre_3_4_inv_cl","true")
 			return true;
 		}
@@ -958,7 +958,7 @@ ACTION* act_4_5_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	ACTION* action = new ACTION();
 
-	_message->setDestEntity(SODE_BPOINT);
+	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
@@ -1024,7 +1024,7 @@ bool pre_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
-			&& _message->getGenEntity() ==  SODE_APOINT) {
+			&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 		DEBOUT("SM_V5 pre_0_1_ack_sv","true")
 		return true;
 	}
@@ -1086,7 +1086,7 @@ ACTION* act_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	ACTION* action = new ACTION();
 
-	_message->setDestEntity(SODE_BPOINT);
+	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
@@ -1118,7 +1118,7 @@ bool pre_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
-			&& ( _message->getGenEntity() ==  SODE_APOINT || _message->getGenEntity() ==  SODE_BPOINT)) {
+			&& ( _message->getGenEntity() ==  SODE_NTWPOINT)) {
 		DEBOUT("TRNSCT_INV_SV pre_0_1_bye_sv","true")
 		return true;
 	}
@@ -1178,7 +1178,7 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	ACTION* action = new ACTION();
 
-	_message->setDestEntity(SODE_APOINT);
+	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
@@ -1235,7 +1235,7 @@ ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	ACTION* action = new ACTION();
 
-	_message->setDestEntity(SODE_BPOINT);
+	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
@@ -1301,7 +1301,7 @@ bool pre_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message){
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
-		&& _message->getGenEntity() ==  SODE_BPOINT) {
+		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 			DEBOUT("TRNSCT_SM_BYE_CL pre_1_4_bye_cl","true")
 			return true;
 		}

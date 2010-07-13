@@ -91,7 +91,7 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	DEBOUT("viatmp->getContent", viatmp->getContent())
 	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
 	_gted->popSTKHeadVia();
-	_gted->pushHeadVia("Via: "+viatmp->getC_AttVia().getContent());
+	_gted->pushHeadVia(viatmp->getC_AttVia().getContent());
 
 
 }
@@ -125,10 +125,10 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 
 	DEBOUT("GTED via", viatmp->getC_AttVia().getContent())
 	_gted->popSTKHeadVia();
-	_gted->pushHeadVia("Via: " + viatmp->getC_AttVia().getContent());
+	_gted->pushHeadVia(viatmp->getC_AttVia().getContent());
 
 	DEBOUT("GTED","setDestEntity")
-	_gted->setDestEntity(SODE_APOINT);
+	_gted->setDestEntity(SODE_NTWPOINT);
 }
 
 //void SIPUTIL::genBRequestfromARequest(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
@@ -156,7 +156,7 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",sudp->getDomain().c_str(),sudp->getPort(),_gtor->getKey().c_str());
 	string viatmpS(viatmp);
 	_gted->purgeSTKHeadVia();
-	_gted->pushHeadVia("Via: " + viatmpS);
+	_gted->pushHeadVia(viatmpS);
 
 	//Create new call id
 	char callIdtmp[512];

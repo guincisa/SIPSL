@@ -1,5 +1,9 @@
 CHANGES
 
+
+13 luglio
+il callid per identificare l'allarme non è sufficente
+-------------------------------------------------------------------------------
 11 Luglio
 Routing
 

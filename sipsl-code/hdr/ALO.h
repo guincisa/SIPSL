@@ -45,7 +45,7 @@ class ALO : public ENGINE {
 
         virtual void onInvite(MESSAGE*);
         virtual void onAck(MESSAGE*);
-        virtual void onBye(MESSAGE*,int);
+        virtual void onBye(MESSAGE*);
         virtual void on200Ok(MESSAGE*);
         virtual void onAckNoTrnsct(MESSAGE*);
 

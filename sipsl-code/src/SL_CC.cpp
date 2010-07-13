@@ -114,11 +114,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			//to SV if Request to CL if Reply
 			if (_mess->getReqRepType() == REQSUPP) {
-				//_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_SV);
 				_mess->setDestEntity(SODE_TRNSCT_SV);
 			}
 			else if (_mess->getReqRepType() == REPSUPP){
-				//_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_CL);
 				_mess->setDestEntity(SODE_TRNSCT_CL);
 			}
 
@@ -132,12 +130,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 				//to SV if Request to CL if Reply
 				if (_mess->getReqRepType() == REQSUPP) {
-					_mess->setEndPoints(SODE_BPOINT, SODE_TRNSCT_SV);
+					_mess->setDestEntity(SODE_TRNSCT_SV);
 				}
 				else if (_mess->getReqRepType() == REPSUPP){
-					_mess->setEndPoints(SODE_BPOINT, SODE_TRNSCT_CL);
+					_mess->setDestEntity(SODE_TRNSCT_CL);
 				}
-
 				call_oset->getSL_CO()->call(_mess);
 			}
 		}
@@ -147,27 +144,21 @@ void SL_CC::parse(MESSAGE* _mess) {
 			DEBOUT("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
 
 			//If new then it is always SODE_APOINT
-			_mess->setEndPoints(SODE_APOINT, SODE_TRNSCT_SV);
+			_mess->setDestEntity(SODE_TRNSCT_SV);
 
 			//////////////////////////////
 			//Start - Initialization block
 			call_oset = new CALL_OSET(this);
 			SL_CO* sl_co = new SL_CO(call_oset);
-
 			VALO* alo = new VALO(this, call_oset);
 			alo->linkSUDP(getSUDP());
 			call_oset->setALO(alo);
 			call_oset->setSL_CO(sl_co);
-
-			//call_oset->setCallId_X(callidx);
 			call_oset->setCallId_X(callids);
-
-			//comap->setCALL_OSET(callidx, call_oset);
 			comap->setCALL_OSET(callids, call_oset);
 			//End
 			//////////////////////////////
 
-			//DEBOUT("SL_CC::parse CALL_OSET created by x side", callidx << "] [" <<call_oset)
 			DEBOUT("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
 
 			sl_co->call(_mess);
