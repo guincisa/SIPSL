@@ -528,7 +528,7 @@ void MESSAGE::pushHeadVia(string _content){
 	else {
 		theIterator = getSDPposition();
 		DEBOUT("string tmp", _content)
-		flex_line.insert(theIterator ,1 , _content);
+		flex_line.insert(theIterator ,1 , "Via: " + _content);
 	}
 }
 void MESSAGE::purgeSDP(void){

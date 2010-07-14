@@ -378,10 +378,13 @@ void SL_CO::call(MESSAGE* _message){
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
 						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
-						string callids = _tmpMessage->getHeadCallId().getContent();
-						DEBOUT("SL_CO::cancel alarm, callid", callids)
+						string callid_alarm;
+						if (_tmpMessage->getReqRepType() == REQSUPP){
+							callid_alarm = _message->getHeadSipRequest().getS_AttMethod().getMethodName() + _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
+						}
+						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 						//TODO call id to identify alarm is not enough
-						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callids);
+						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 
 					}
 					else {

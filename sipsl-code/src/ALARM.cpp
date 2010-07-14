@@ -178,34 +178,32 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 		if (tmp != 0x0)
 			tmp->cancel();
 	}
-	DEBY
 
 	ALARM* alm = new ALARM(_message, _fireTime);
 	// insert into priority q
 	alarm_pq.push(alm->getTriggerTime());
-	DEBY
 
 
 	//insert into map time - alarm
 	time_alarm_mumap.insert(pair<long long int, ALARM*>(alm->getTriggerTime(), alm));
-	DEBY
 
 	//insert or replace into map message - alarm
 	//used to cancel an alarm by using the message pointer
 	mess_alm_map.insert(pair<MESSAGE*, ALARM*>(_message, alm));
-	DEBY
 
-	string callid = _message->getHeadCallId().getNormCallId() +
-			_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
+	string callid_alarm;
+	if(_message->getReqRepType() == REQSUPP){
+		callid_alarm = _message->getHeadSipRequest().getS_AttMethod().getMethodName() + _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
+		DEBOUT("Alarm id", callid_alarm);
 
+	}
 	//pthread_mutex_lock(&mutex);
-	callid_alm_map.insert(pair<string, ALARM*>(callid, alm));
+	callid_alm_map.insert(pair<string, ALARM*>(callid_alarm, alm));
 	//pthread_mutex_unlock(&mutex);
 
 
-	callid_message.insert(pair<string, MESSAGE*>(callid, _message));
-	message_callid.insert(pair<MESSAGE*, string>(_message, callid));
-	DEBY
+	callid_message.insert(pair<string, MESSAGE*>(callid_alarm, _message));
+	message_callid.insert(pair<MESSAGE*, string>(_message, callid_alarm));
 
 	return;
 

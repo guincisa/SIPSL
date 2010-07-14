@@ -157,6 +157,8 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 	string viatmpS(viatmp);
 	_gted->purgeSTKHeadVia();
 	_gted->pushHeadVia(viatmpS);
+	DEBOUT("_gted->pushHeadVia(viatmpS);", viatmpS)
+	_gted->dumpVector();
 
 	//Create new call id
 	char callIdtmp[512];

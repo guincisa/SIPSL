@@ -63,7 +63,7 @@ void VALO::onInvite(MESSAGE* _message){
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
-		message->setHeadSipRequest("INVITE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
+		message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5061 SIP/2.0");
 
 		//New transaction
 		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
@@ -133,7 +133,7 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 
 	//change request
 	DEBOUT("VALO ", newack->getHeadSipRequest().getContent())
-	newack->setHeadSipRequest("ACK sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
+	newack->setHeadSipRequest("ACK sip:GUGLISIPSL@bphone.gugli.com:5061 SIP/2.0");
 
 	//don't change CSEQ
 //	char buff[64];
@@ -229,7 +229,7 @@ void VALO::onBye(MESSAGE* _message){
 
 		message->setDestEntity(SODE_TRNSCT_CL);
 
-		message->setHeadSipRequest("BYE sip:SIPSLGUIC@172.21.160.162:5062 SIP/2.0");
+		message->setHeadSipRequest("BYE sip:GUGLISIPSL@bphone.gugli.com:5061 SIP/2.0");
 
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());

@@ -35,6 +35,8 @@
 #include <sys/socket.h> /* for socket() and bind() */
 #include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
 #include <stdlib.h>     /* for atoi() and exit() */
+#include <netdb.h>
+
 
 #ifndef UTIL_H
 #include "UTIL.h"
@@ -189,12 +191,18 @@ ALMGR* SUDP::getAlmgr(void){
 void SUDP::sendRequest(MESSAGE* _message){
 
 	struct sockaddr_in si_part;
+	struct hostent *host;
 	memset((char *) &si_part, 0, sizeof(si_part));
+
+	DEBOUT("Request address ", _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName() <<":"<< _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort())
+
 	si_part.sin_family = AF_INET;
+	host = gethostbyname(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str());
+	bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
 	si_part.sin_port = htons(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort());
-	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
-		DEBASSERT ("can set request address")
-	}
+//	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
+//		DEBASSERT ("Can't set request address")
+//	}
 	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
 	return;
@@ -206,8 +214,14 @@ void SUDP::sendReply(MESSAGE* _message){
 	DEBOUT("Reply to ",  viatmp->getC_AttVia().getS_HostHostPort().getHostName() << " : " << viatmp->getC_AttVia().getS_HostHostPort().getPort())
 
 	struct sockaddr_in si_part;
+	struct hostent *host;
 	memset((char *) &si_part, 0, sizeof(si_part));
+
+	DEBOUT("Reply address ", viatmp->getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp->getC_AttVia().getS_HostHostPort().getPort())
+
 	si_part.sin_family = AF_INET;
+	host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
+	bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
 	si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
 	if( inet_aton(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 		DEBASSERT ("can set reply address")
@@ -216,6 +230,36 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	return;
 }
+//void SUDP::sendRequest(MESSAGE* _message){
+//
+//	struct sockaddr_in si_part;
+//	memset((char *) &si_part, 0, sizeof(si_part));
+//	si_part.sin_family = AF_INET;
+//	si_part.sin_port = htons(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort());
+//	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
+//		DEBASSERT ("can set request address")
+//	}
+//	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+//
+//	return;
+//}
+//void SUDP::sendReply(MESSAGE* _message){
+//
+//	//Reply uses topmost Via header
+//	C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
+//	DEBOUT("Reply to ",  viatmp->getC_AttVia().getS_HostHostPort().getHostName() << " : " << viatmp->getC_AttVia().getS_HostHostPort().getPort())
+//
+//	struct sockaddr_in si_part;
+//	memset((char *) &si_part, 0, sizeof(si_part));
+//	si_part.sin_family = AF_INET;
+//	si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
+//	if( inet_aton(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
+//		DEBASSERT ("can set reply address")
+//	}
+//	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+//
+//	return;
+//}
 
 
 
