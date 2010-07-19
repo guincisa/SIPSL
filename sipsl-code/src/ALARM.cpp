@@ -122,8 +122,8 @@ void ALMGR::alarmer(void){
 
 				// now get a list of alarms from the multi map
 
-				multimap<long long int, ALARM*>::iterator iter;
-				pair<multimap<long long int,ALARM*>::iterator,multimap<long long int,ALARM*>::iterator> ret;
+				multimap<const long long int, ALARM*>::iterator iter;
+				pair<multimap<const long long int,ALARM*>::iterator,multimap<const long long int ,ALARM*>::iterator> ret;
 
 				ret = time_alarm_mumap.equal_range(tcu);
 
@@ -185,7 +185,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 
 
 	//insert into map time - alarm
-	time_alarm_mumap.insert(pair<long long int, ALARM*>(alm->getTriggerTime(), alm));
+	time_alarm_mumap.insert(pair<long long int const, ALARM*>(alm->getTriggerTime(), alm));
 
 	//insert or replace into map message - alarm
 	//used to cancel an alarm by using the message pointer

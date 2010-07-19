@@ -131,7 +131,7 @@ typedef struct {
 				string key(bu);\
 				m1->setKey(key);\
 				pthread_mutex_lock(&messTableMtx);\
-				globalMessTable.insert(pair<string, MESSAGE*>(m1->getKey(), m1));\
+				globalMessTable.insert(pair<const string, MESSAGE*>(m1->getKey(), m1));\
 				pthread_mutex_unlock(&messTableMtx);}
 
 #define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) char bu[512];\
@@ -145,7 +145,7 @@ typedef struct {
 				__mess->setKey(key);\
 				DEBMESSAGE("New message from buffer", __mess->getIncBuffer() << "]\nkey [" << key)\
 				pthread_mutex_lock(&messTableMtx);\
-				globalMessTable.insert(pair<string, MESSAGE*>(__mess->getKey(), __mess));\
+				globalMessTable.insert(pair<const string, MESSAGE*>(__mess->getKey(), __mess));\
 				pthread_mutex_unlock(&messTableMtx);
 
 

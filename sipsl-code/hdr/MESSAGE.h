@@ -321,7 +321,7 @@ class MESSAGE : public BASEMESSAGE {
 //// ALLOCATED MESSAGES TABLE
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-static multimap<string, MESSAGE *> globalMessTable;
+static multimap<const string, MESSAGE *> globalMessTable;
 static pthread_mutex_t messTableMtx;
 
 

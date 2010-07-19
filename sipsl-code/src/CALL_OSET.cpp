@@ -473,9 +473,9 @@ ACTION* SM_V5::event(MESSAGE* _event){
 
 	DEBOUT("SM_V5::event Look for state", State)
 
-	pair<multimap<int,PREDICATE_ACTION_V5*>::iterator,multimap<int,PREDICATE_ACTION_V5*>::iterator> ret;
+	pair<multimap<const int,PREDICATE_ACTION_V5*>::iterator,multimap<const int,PREDICATE_ACTION_V5*>::iterator> ret;
 
-	multimap<int,PREDICATE_ACTION_V5*>::iterator iter;
+	multimap<const int,PREDICATE_ACTION_V5*>::iterator iter;
 
 	ret = move_sm.equal_range(State);
 
@@ -500,7 +500,7 @@ ACTION* SM_V5::event(MESSAGE* _event){
 void SM_V5::insert_move(int _i, PREDICATE_ACTION_V5* _pa){
 
 	DEBOUT("SM_V5::insert_move", _i << " " << _pa )
-	move_sm.insert(pair<int, PREDICATE_ACTION_V5*>(_i, _pa));
+	move_sm.insert(pair<const int, PREDICATE_ACTION_V5*>(_i, _pa));
 
 }
 SM_V5::SM_V5(ENGINE* _eng, SL_CO* _sl_co){

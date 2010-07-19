@@ -125,7 +125,7 @@ class SM_V5 {
 
 	private:
 		pthread_mutex_t mutex;
-		multimap< int, PREDICATE_ACTION_V5*> move_sm;
+		multimap< const int, PREDICATE_ACTION_V5*> move_sm;
 
 		ENGINE* sl_cc;
 	    SL_CO* sl_co;

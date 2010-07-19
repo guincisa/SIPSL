@@ -55,7 +55,11 @@ class ALARM {
 		MESSAGE* getMessage(void);
 		bool isActive(void);
 };
-
+struct cmpr_longlong {
+    bool operator()(long long int const a, long long int const b){
+        return a < b;
+    }
+};
 class ALMGR {
 
 	private:
@@ -67,9 +71,9 @@ class ALMGR {
 		// a2 -> 20
 		// a3 -> 40
 
-		priority_queue<long long int, vector<long long int>, greater<long long int> > alarm_pq;
+		priority_queue<const long long int, vector<long long int>, greater<const long long int> > alarm_pq;
 
-		multimap<long long int, ALARM*> time_alarm_mumap;
+		multimap<const long long int, ALARM*, less<const long long int> > time_alarm_mumap;
 		timespec sleep_time;
 		SL_CC* sl_cc;
 
