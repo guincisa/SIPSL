@@ -55,11 +55,11 @@ class ALARM {
 		MESSAGE* getMessage(void);
 		bool isActive(void);
 };
-struct cmpr_longlong {
-    bool operator()(long long int const a, long long int const b){
-        return a < b;
-    }
-};
+//struct cmpr_longlong {
+//    bool operator()(long long int const a, long long int const b){
+//        return a < b;
+//    }
+//};
 class ALMGR {
 
 	private:
