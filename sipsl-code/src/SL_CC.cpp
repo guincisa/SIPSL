@@ -90,7 +90,7 @@ COMAP* SL_CC::getCOMAP(void){
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {
 
-	DEBOUT("SL_CC::parse", _mess->getIncBuffer())
+	DEBMESSAGE("SL_CC::parse", _mess->getIncBuffer())
 
 	pthread_mutex_unlock(&(sb.condvarmutex));
 
@@ -121,6 +121,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			}
 
 			call_oset->getSL_CO()->call(_mess);
+			return;
 		}
 		// Then try to get call object using y side params
 		else {
@@ -136,10 +137,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 					_mess->setDestEntity(SODE_TRNSCT_CL);
 				}
 				call_oset->getSL_CO()->call(_mess);
+				return;
 			}
 		}
 		// Does not exists on any side
-		if (call_oset == 0x0) {
+		if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP) {
 			//new call Server (originating) side
 			DEBOUT("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
 
@@ -162,6 +164,10 @@ void SL_CC::parse(MESSAGE* _mess) {
 			DEBOUT("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
 
 			sl_co->call(_mess);
+			return;
+		}else {
+			DEBMESSAGE("Unexpected message ignored", _mess->getIncBuffer())
+			return;
 		}
 	}
 	else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_TRNSCT_CL){
@@ -182,6 +188,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 		else {
 				call_oset->getSL_CO()->call(_mess);
+				return;
 		}
 	} else {
 		DEBOUT("Unexpected source of the message", _mess->getGenEntity())

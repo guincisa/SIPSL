@@ -137,7 +137,7 @@ void * threadparser (void * _pt){
             DEBOUT("ENGINE thread is empty",_pt)
             pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
         }
-
+        DEBOUT("ENGINE thread freed", _pt)
         MESSAGE* m = ps->sb.get();
         if (m == NULL)  {
             DEBOUT("ENGINE thread NULL",_pt)

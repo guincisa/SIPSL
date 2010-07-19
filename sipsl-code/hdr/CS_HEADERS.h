@@ -101,7 +101,6 @@ inline string trimCR(string s){
 inline string trimUseless(string s) {
 
     string output = "";
-    string final = "";
     int a = 0;
     a = s.find(" ", 0);
     string tmp;
@@ -171,6 +170,8 @@ inline string cleanHttpChars(string s){
 }
 
 inline vector<string> parse(string _par, string head, string sep, bool _trimspaces) {
+
+	DEBOUT("inline parse called", _par << "]["<<head<<"]["<<sep)
 
     int h = 0; // if has head then 1
 

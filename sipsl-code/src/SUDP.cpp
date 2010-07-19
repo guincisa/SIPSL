@@ -154,6 +154,7 @@ void SUDP::listen() {
 
     for (;;){
         /* Set the size of the in-out parameter */
+    	DEBY
         cliAddrLen = sizeof(echoClntAddr);
 
         /* Block until receive message from a client */
@@ -162,17 +163,14 @@ void SUDP::listen() {
         if ((recvMsgSize = recvfrom(sock, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
             DEBERROR("SUDP::listen() recvfrom() failed")
-            return;
+            //return;
+        }else {
+			//Message handling
+        	DEBY
+			CREATENEWMESSAGE(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
+        	DEBY
+			engine->p_w(message);
         }
-
-        //Message handling
-        CREATENEWMESSAGE(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
-
-		//DECTIME
-		//STARTTIME
-		engine->p_w(message);
-		//ENDTIME
-
 	}
 }
 // *****************************************************************************************

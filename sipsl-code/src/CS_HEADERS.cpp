@@ -1934,29 +1934,35 @@ void C_HeadFrom::doParse(void){
 
 	Tuple s = brkin2(content, " ");
 	string newCo;
-	if (s.Rvalue.length() == 0)
-		newCo = s.Lvalue;
-	else
-		newCo = s.Rvalue;
 
     string line;
-    int q = hasQuote(newCo);
-    if (q >=0){
-    	string line1 = replaceHttpChars(newCo.substr(q+1, -1));
 
-		line = trimUseless(newCo.substr(0,q+1) + line1);
+	if (s.Rvalue.length() == 0) {
+		newCo = s.Lvalue;
+	}
+	else {
+		newCo = s.Rvalue;
+		line = s.Lvalue;
+	}
 
+	DEBOUT("C_HeadFrom::doParse newCo", newCo)
+	int q = hasQuote(line);
+	if( line.length() > 0 && q > 0){
+    	string line1 = replaceHttpChars(line.substr(q+1, -1));
+    	nameUri = trimUseless(line.substr(0,q+1) + line1);
     }
     else {
-    	line = trimUseless(newCo);
+    	nameUri = trimUseless(line);
     }
 
-    Tuple s1 = brkin2(line, "<");
-    nameUri = s1.Lvalue; // "Mr. Watson"
-    string tmp = "<" + s1.Rvalue;
+    DEBOUT("C_HeadFrom::doParse nameUri", nameUri)
 
-    Tuple s2 = brkin2(tmp, ";");
-    sipUri.setContent(s2.Lvalue);
+    Tuple s2 = brkin2(newCo, ">");
+
+    DEBOUT("C_HeadFrom::doParse s2.Lvalue plus >", s2.Lvalue+ ">")
+    DEBOUT("C_HeadFrom::doParse s2.Rvalue", s2.Rvalue )
+
+    sipUri.setContent(s2.Lvalue + ">");
     uriParms.setContent(s2.Rvalue);
 
     parsed = true;

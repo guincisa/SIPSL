@@ -72,9 +72,9 @@ void ALMGR::initAlarm(void){
 
 	DEBOUT("ALMGR::initAlarm", "init")
 
-    listenerThread = new ThreadWrapper;
+    NEWPTR2(listenerThread,ThreadWrapper);
     ALMGRtuple *t1;
-    t1 = new ALMGRtuple;
+    NEWPTR2(t1,ALMGRtuple);
     t1->st = this;
     int res;
     res = pthread_create(&(listenerThread->thread), NULL, ALARMSTACK, (void *) t1 );
@@ -179,7 +179,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 			tmp->cancel();
 	}
 
-	ALARM* alm = new ALARM(_message, _fireTime);
+	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime))
 	// insert into priority q
 	alarm_pq.push(alm->getTriggerTime());
 
@@ -192,11 +192,12 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	mess_alm_map.insert(pair<MESSAGE*, ALARM*>(_message, alm));
 
 	string callid_alarm;
-	if(_message->getReqRepType() == REQSUPP){
-		callid_alarm = _message->getHeadSipRequest().getS_AttMethod().getMethodName() + _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
+	//if(_message->getReqRepType() == REQSUPP){
+		//callid_alarm = _message->getHeadSipRequest().getS_AttMethod().getMethodName() + _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
+		callid_alarm = _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
 		DEBOUT("Alarm id", callid_alarm);
 
-	}
+	//}
 	//pthread_mutex_lock(&mutex);
 	callid_alm_map.insert(pair<string, ALARM*>(callid_alarm, alm));
 	//pthread_mutex_unlock(&mutex);
@@ -240,6 +241,9 @@ void ALMGR::cancelAlarm(string _callid){
 		DEBOUT("ALMGR::cancelAlarm", "found")
 		tmp = (ALARM*)p->second;
 		tmp->cancel();
+	}
+	else {
+		DEBOUT("ALMGR::cancelAlarm", "not found")
 	}
 	//pthread_mutex_unlock(&mutex);
 

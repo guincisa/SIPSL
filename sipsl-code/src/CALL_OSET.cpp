@@ -201,12 +201,15 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, int _sequence, TRNSCT_SM*
 //**********************************************************************************
 SL_CO::SL_CO(CALL_OSET* _call_oset){
 	call_oset = _call_oset;
+    //pthread_mutex_init(&mutex, NULL);
+
 }
 //**********************************************************************************
 //**********************************************************************************
 void SL_CO::call(MESSAGE* _message){
 
-	DEBOUT("SL_CO::call incoming", _message->getHeadSipRequest().getContent())
+	//pthread_mutex_lock(&mutex);
+	DEBMESSAGE("SL_CO::call incoming", _message->getIncBuffer())
 
     ACTION* action = 0x0;
 
@@ -237,13 +240,13 @@ void SL_CO::call(MESSAGE* _message){
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
 				call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
-				trnsctSM = new TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+				NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this))
 			}
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
-				trnsctSM = new TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+				NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this))
 			}
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
-				trnsctSM = new TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this);
+				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this))
 			}
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << _message->getHeadCSeq().getSequence())
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence(), trnsctSM);
@@ -260,7 +263,7 @@ void SL_CO::call(MESSAGE* _message){
 			while (!actionList.empty()){
 
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
-				DEBOUT("SL_CO::reading action stack server, message:", _tmpMessage->getIncBuffer())
+				DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage->getIncBuffer())
 
 				//V5
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
@@ -278,7 +281,7 @@ void SL_CO::call(MESSAGE* _message){
 					if (_tmpMessage->getReqRepType() == REPSUPP) {
 						//Check if there is a ROUTE header
 						call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
-						PURGEMESSAGE(_tmpMessage, "PURGE MESSAGE")
+						//PURGEMESSAGE(_tmpMessage, "PURGE MESSAGE")
 					}
 					else {
 						DEBASSERT("???")
@@ -288,6 +291,7 @@ void SL_CO::call(MESSAGE* _message){
 					//TODO
 					DEBASSERT("SL_CO::call action is ???")
 				}
+				DEBOUT("pop action","")
 				actionList.pop();
 			}
 		}
@@ -307,15 +311,19 @@ void SL_CO::call(MESSAGE* _message){
 		if (trnsct_cl == 0x0){
 
 			DEBOUT("Creating Trnsct Client machine callidy", callidys)
-
-			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
-				trnsct_cl = new TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this);
-			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
-				trnsct_cl = new TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this);
-			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
-				trnsct_cl = new TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this);
+			if(_message->getReqRepType() == REQSUPP){
+				if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+					NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this))
+				}
+				else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
+					NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this))
+				}
+				else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
+					NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this))
+				}
+			}else{
+				DEBOUT("****************************errore","")
+				DEBASSERT("fare qui")
 			}
 
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence(), trnsct_cl);
@@ -337,13 +345,15 @@ void SL_CO::call(MESSAGE* _message){
 
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
 
-				DEBOUT("SL_CO::reading action stack client, message:", _tmpMessage->getIncBuffer())
+				DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage->getIncBuffer())
 
 				//V3
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 					call_oset->getALO()->p_w(_tmpMessage);
+					actionList.pop();
+					continue;
 				}
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 
@@ -351,20 +361,23 @@ void SL_CO::call(MESSAGE* _message){
 
 					if (_tmpMessage->getReqRepType() == REQSUPP) {
 						call_oset->getENGINE()->getSUDP()->sendRequest(_tmpMessage);
-						if (!_tmpMessage->getLock()){
-							PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
-						}
+//						if (!_tmpMessage->getLock()){
+//							PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
+//						}
 					}
 					else {
+						DEBOUT("++++++++++++++++++++ assert ","")
 						DEBASSERT("???")
 					}
-
+					actionList.pop();
+					continue;
 				}
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
 					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-
+					actionList.pop();
+					continue;
 				}
 				else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
 
@@ -378,19 +391,16 @@ void SL_CO::call(MESSAGE* _message){
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
 						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
-						string callid_alarm;
-						if (_tmpMessage->getReqRepType() == REQSUPP){
-							callid_alarm = _message->getHeadSipRequest().getS_AttMethod().getMethodName() + _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
-						}
+						string callid_alarm = _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
 						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
-						//TODO call id to identify alarm is not enough
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
-
+						PURGEMESSAGE(_tmpMessage, "Delete message used to clear alarm")
 					}
 					else {
 						DEBASSERT("SL_CO client side inconsistency")
 					}
-
+					actionList.pop();
+					continue;
 				}
 				else {
 					//TODO
@@ -402,7 +412,6 @@ void SL_CO::call(MESSAGE* _message){
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 			PURGEMESSAGE(_message, "SL_SM_SV::delete message")
-			//return;
 		}
 	}
 
@@ -411,6 +420,7 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("SL_CO::call delete action","")
 		delete action;
 	}
+	//pthread_mutex_unlock(&mutex);
 }
 //V5
 //**********************************************************************************
@@ -422,6 +432,8 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_
 	requestType = _requestType;
 	Matrix = _matrixMess;
 	A_Matrix = 0x0;
+	DEBY
+	DEBASSERT("no")
 }
 TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 	SM_V5(_sl_cc, _sl_co){
@@ -429,12 +441,25 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	requestType = _requestType;
 	Matrix = _matrixMess;
 	A_Matrix = _a_Matrix;
+	if (_a_Matrix == 0x0){
+		DEBY
+		DEBASSERT("NO")
+	}
 }
 
 MESSAGE* TRNSCT_SM::getMatrixMessage(void){
+	if (Matrix == 0x0){
+		DEBY
+		DEBASSERT("NO")
+	}
+
 	return Matrix;
 }
 MESSAGE* TRNSCT_SM::getA_Matrix(void){
+	if (A_Matrix == 0x0){
+		DEBY
+		DEBASSERT("NO")
+	}
 	return A_Matrix;
 }
 
@@ -586,7 +611,8 @@ bool pre_1_2_inv_sv(SM_V5* _sm, MESSAGE* _message){
 ACTION* act_1_2_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("act_1_2_inv_sv::act_1_2_sv",  _message->getHeadSipReply().getReply().getCode() )
-	ACTION* action = new ACTION();
+
+	NEWPTR(ACTION*, action, ACTION())
 
 	// The message ha been prepared by client so it's ready to be sent back
 	_message->setDestEntity(SODE_NTWPOINT);
@@ -621,7 +647,7 @@ ACTION* act_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_V5 act_1_3_inv_sv called","")
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
@@ -663,7 +689,7 @@ ACTION* act_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_V5::event move to state 4", _message->getHeadSipRequest().getContent())
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	//_message changes its dest and gen
 	_message->setDestEntity(SODE_ALOPOINT);
@@ -732,7 +758,7 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl","")
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	//Message has to be sent
 	_message->setDestEntity(SODE_NTWPOINT);
@@ -835,7 +861,7 @@ ACTION* act_1_1b_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	// TODO clear timer ad create new timer for the ringing ?
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 	_message->typeOfInternal = TYPE_OP;
 	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	SingleAction sa_1 = SingleAction(_message);
@@ -865,20 +891,18 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_CL act_1_3_inv_cl","")
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	// the message contains the to tag that we must save
 	// or store it in valo during 200ok
 
-	MESSAGE* __message = ((TRNSCT_SM_INVITE_CL*)_sm)->getA_Matrix();
+	MESSAGE* __message = ((TRNSCT_SM*)_sm)->getA_Matrix();
 	DEBOUT("MESSAGE GENERATOR", __message)
-
 
 	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_SV)
 	reply_x->setDestEntity(SODE_TRNSCT_SV);
 	reply_x->setGenEntity(SODE_TRNSCT_CL);
 	reply_x->typeOfInternal = TYPE_MESS;
-
 
 	DEBOUT("CONTACT", reply_x->getHeadContact().getContent())
 
@@ -897,6 +921,14 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
+
+	//Clear alam here in case the b did not send any trying
+	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+	___message->typeOfInternal = TYPE_OP;
+	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_2 = SingleAction(___message);
+	action->addSingleAction(sa_2);
+
 	_sm->State = 3;
 	return action;
 
@@ -904,25 +936,25 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 }
 bool pre_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_V5 pre_3_4_inv_cl","")
+	DEBOUT("SM_V5 pre_1_4_inv_cl","")
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-			DEBOUT("SM_V5 pre_3_4_inv_cl","true")
+			DEBOUT("SM_V5 pre_1_4_inv_cl","true")
 			return true;
 		}
 		else {
-			DEBOUT("SM_V5 pre_3_4_inv_cl","false")
+			DEBOUT("SM_V5 pre_1_4_inv_cl","false")
 			return false;
 		}
 }
 ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_3_4_inv_cl","")
+	DEBOUT("SM_V5 act_1_4_inv_cl","")
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
@@ -931,10 +963,11 @@ ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	DUPLICATEMESSAGE(__message, _message, SODE_TRNSCT_CL)
-	__message->typeOfInternal = TYPE_OP;
-	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	SingleAction sa_2 = SingleAction(__message);
+	//Clear alam here in case the b did not send any trying
+	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+	___message->typeOfInternal = TYPE_OP;
+	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_2 = SingleAction(___message);
 	action->addSingleAction(sa_2);
 
 	_sm->State = 4;
@@ -959,7 +992,7 @@ ACTION* act_4_5_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_V5 act_4_5_inv_cl","")
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
@@ -1015,6 +1048,8 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	insert_move(1,&PA_INV_1_4CL);
 	insert_move(3,&PA_INV_1_4CL);
 	insert_move(4,&PA_INV_4_5CL);
+
+	//manca 3 a 3 con dialoge
 
 
 	insert_move(1,&PA_INV_1_99CL);

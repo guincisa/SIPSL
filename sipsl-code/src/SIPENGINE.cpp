@@ -68,7 +68,7 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 	//B2BUA, NGApplication, SBC
 
 	//Check if Request or Reply
-	DEBOUT("SIPENGINE::parse",_mess->getIncBuffer())
+	DEBMESSAGE("SIPENGINE::parse",_mess->getIncBuffer())
 
 
 //	timespec sleep_time;

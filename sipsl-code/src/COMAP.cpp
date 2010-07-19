@@ -71,7 +71,7 @@ COMAP::~COMAP(void){
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
 
-	DEBOUT_UTIL("COMAP::getCALL_OSET_XMain retrieving using extended call id", _callId_X)
+	DEBOUT_UTIL("COMAP::getCALL_OSET_XMain retrieving using call id", _callId_X)
 
 	CALL_OSET* tmp = 0x0;
 	map<string, CALL_OSET*>::iterator p;

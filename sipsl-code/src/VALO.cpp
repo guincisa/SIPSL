@@ -63,7 +63,7 @@ void VALO::onInvite(MESSAGE* _message){
 		//change request
 		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
-		message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5061 SIP/2.0");
+		message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
 		//New transaction
 		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
@@ -81,7 +81,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 		message->compileMessage();
 		message->dumpVector();
-		DEBOUT("New outgoing b2b message", message->getIncBuffer())
+		DEBMESSAGE("New outgoing b2b message", message->getIncBuffer())
 		//create the transaction
 		//v5 call_oset->createTransactionY(message);
 
@@ -105,9 +105,11 @@ void VALO::onAck(MESSAGE* _message){
 }
 void VALO::onAckNoTrnsct(MESSAGE* _message){
 
+
 	DEBOUT("VALO::onAckNoTrnsct",_message->getHeadSipRequest().getContent())
 
 
+	WAITTIME
 	//V4
 	//get invite sent to b
 //	DEBOUT("VALO onAck", call_oset->getInviteB()->getIncBuffer())
@@ -133,7 +135,7 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 
 	//change request
 	DEBOUT("VALO ", newack->getHeadSipRequest().getContent())
-	newack->setHeadSipRequest("ACK sip:GUGLISIPSL@bphone.gugli.com:5061 SIP/2.0");
+	newack->setHeadSipRequest("ACK sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
 	//don't change CSEQ
 //	char buff[64];
@@ -165,7 +167,7 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 	p2 = ctxt_store.find("allvia");
 	string allVia = *((string*)p2->second);
 	newack->purgeSTKHeadVia();
-	newack->pushHeadVia("Via: " + allVia);
+	newack->pushHeadVia(allVia);
 	DEBOUT("NEW ACK via",allVia.c_str())
 
 	newack->compileMessage();
@@ -204,14 +206,14 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 	newack->dumpVector();
 
 
-	DEBOUT("New outgoing b2b message", newack->getIncBuffer())
+	DEBMESSAGE("New outgoing b2b message", newack->getIncBuffer())
 	sl_cc->p_w(newack);
 //
 //
 }
 void VALO::onBye(MESSAGE* _message){
 
-	DEBOUT("VALO::onBye", _message->getIncBuffer())
+	DEBMESSAGE("VALO::onBye", _message->getIncBuffer())
 
 	//The direction of the bye is recognized by the CSEQ
 
@@ -229,7 +231,7 @@ void VALO::onBye(MESSAGE* _message){
 
 		message->setDestEntity(SODE_TRNSCT_CL);
 
-		message->setHeadSipRequest("BYE sip:GUGLISIPSL@bphone.gugli.com:5061 SIP/2.0");
+		message->setHeadSipRequest("BYE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
@@ -386,37 +388,37 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
 
-	MESSAGE* __message = ((TRNSCT_SM_INVITE_CL*)trnsct_cl)->getA_Matrix();
+	MESSAGE* __message = ((TRNSCT_SM*)trnsct_cl)->getA_Matrix();
 
 	DEBOUT("Store TO TAG ",_message->getHeadTo().getC_AttUriParms().getContent())
 	DEBOUT("Store TO TAG value ",_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
-
-	string* totag = new string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag"));
-	ctxt_store.insert(pair<string, void*>("totag", (void*) totag ));
+	DEBY
+	NEWPTR(string*, totag, string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag")))
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("totag", (void*) totag )))
 
 	stack<C_HeadVia*>	tmpViaS;
 	tmpViaS = _message->getSTKHeadVia();
 	DEBOUT("200 ok get via rport and others 1", tmpViaS.top()->getContent())
 	DEBOUT("200 ok get via rport and others 2", tmpViaS.top()->getC_AttVia().getContent())
-	string* allvia = new string(tmpViaS.top()->getC_AttVia().getContent());
+	NEWPTR(string*, allvia, string(tmpViaS.top()->getC_AttVia().getContent()))
 	DEBOUT("200 ok get via rport and others 3", *allvia)
-	ctxt_store.insert(pair<string, void*>("allvia", (void*) allvia ));
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("allvia", (void*) allvia )))
 
 	// Need to store the FROM and TO
 	// To create the ACK
 	DEBOUT("STORE TO HEAD ok 200 ok from B", _message->getHeadTo().getContent())
-	string* tohead = new string(_message->getHeadTo().getContent());
-	ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead ));
+	NEWPTR(string*, tohead,  string(_message->getHeadTo().getContent()) )
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead )))
 	DEBOUT("STORE FROM HEAD of 200 ok", _message->getHeadTo().getContent())
-	string* fromhead = new string(_message->getHeadFrom().getContent());
-	ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead ));
+	NEWPTR(string*, fromhead, string(_message->getHeadFrom().getContent()))
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead )))
 
 
 
 	//this shoudl go into call_oset call_idy
 	DEBOUT("STORE CALL ID of 200 ok", _message->getHeadCallId().getContent())
-	string* callid_200ok_b = new string(_message->getHeadCallId().getContent());
-	ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b ));
+	NEWPTR(string*, callid_200ok_b, string(_message->getHeadCallId().getContent()))
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
 
 
 //
@@ -454,11 +456,11 @@ void VALO::on200Ok(MESSAGE* _message){
 	ok_x->compileMessage();
 
 	DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo().getContent() << "]["<<ok_x->getHeadFrom().getContent())
-	string* tohead_a = new string(ok_x->getHeadTo().getContent());
-	ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a ));
+	NEWPTR(string*, tohead_a, string(ok_x->getHeadTo().getContent()))
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a )))
 	DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo().getContent())
-	string* fromhead_a = new string(ok_x->getHeadFrom().getContent());
-	ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a ));
+	NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom().getContent()))
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 
 	ok_x->dumpVector();
 
