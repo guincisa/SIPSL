@@ -174,9 +174,14 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	if (!mess_alm_map.empty()){
 		DEBY
 		p = mess_alm_map.find(_message);
-		ALARM* tmp = (ALARM*)p->second;
-		if (tmp != 0x0)
-			tmp->cancel();
+		if (p != mess_alm_map.end()){
+			ALARM* tmp = (ALARM*)p->second;
+			if (tmp != 0x0)
+				tmp->cancel();
+		}
+		else {
+			//nothing?
+		}
 	}
 
 	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime))
