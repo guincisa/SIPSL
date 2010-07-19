@@ -108,8 +108,6 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 
 	DEBOUT("VALO::onAckNoTrnsct",_message->getHeadSipRequest().getContent())
 
-
-	WAITTIME
 	//V4
 	//get invite sent to b
 //	DEBOUT("VALO onAck", call_oset->getInviteB()->getIncBuffer())
@@ -225,6 +223,8 @@ void VALO::onBye(MESSAGE* _message){
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
+	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent())
+
 	int _dir = 1;
 
 	if (_dir == 1 ) {
@@ -237,7 +237,7 @@ void VALO::onBye(MESSAGE* _message){
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
 		string viatmpS(viatmp);
 		message->purgeSTKHeadVia();
-		message->pushHeadVia("Via: " + viatmpS);
+		message->pushHeadVia(viatmpS);
 
 		//TODO FIX THIS!
 		//must understadn here which dialog I am closing

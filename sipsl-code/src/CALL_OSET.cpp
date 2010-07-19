@@ -1077,7 +1077,7 @@ ACTION* act_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_V5::event move to state 1", _message->getHeadSipRequest().getContent())
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	//_message changes its dest and gen
 	_message->setDestEntity(SODE_ALOPOINT);
@@ -1122,7 +1122,7 @@ ACTION* act_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_V5 act_4_5_cl","")
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
@@ -1174,7 +1174,7 @@ ACTION* act_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 
     //_sm->setControlSequence(_message->getHeadCSeq().getSequence());
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	//_message changes its dest and gen
 	// remember initial generation  is used for backward messagges like bye coming from B
@@ -1214,7 +1214,7 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_V5 act_1_2_bye_sv called","")
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
@@ -1222,10 +1222,6 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
-
-	//TODO
-	// start here timer for resend 200OK until ACK
-	// arrives
 
 
 	DEBOUT("SM_V5 act_1_2_bye_sv move to state 2","")
@@ -1236,7 +1232,7 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 }
 //**********************************************************************************
 TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
+		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
 		PA_BYE_0_1SV((SM_V5*)this),
 		PA_BYE_1_2SV((SM_V5*)this){
 
@@ -1271,7 +1267,7 @@ ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl","")
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
