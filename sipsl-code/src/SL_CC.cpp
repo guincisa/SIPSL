@@ -115,6 +115,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			//to SV if Request to CL if Reply
 			if (_mess->getReqRepType() == REQSUPP) {
 				_mess->setDestEntity(SODE_TRNSCT_SV);
+				_mess->setRequestDirection(SODE_FWD);
 			}
 			else if (_mess->getReqRepType() == REPSUPP){
 				_mess->setDestEntity(SODE_TRNSCT_CL);
@@ -132,6 +133,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 				//to SV if Request to CL if Reply
 				if (_mess->getReqRepType() == REQSUPP) {
 					_mess->setDestEntity(SODE_TRNSCT_SV);
+					_mess->setRequestDirection(SODE_BKWD);
 				}
 				else if (_mess->getReqRepType() == REPSUPP){
 					_mess->setDestEntity(SODE_TRNSCT_CL);

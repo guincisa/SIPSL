@@ -85,8 +85,8 @@ void VALO::onInvite(MESSAGE* _message){
 		//create the transaction
 		//v5 call_oset->createTransactionY(message);
 
-		DEBOUT("STORE CSeq for ack", message->getGenericHeader("CSeq:"))
-		string* CSeqB2BINIVTE = new string(message->getGenericHeader("CSeq:"));
+		DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
+		int* CSeqB2BINIVTE = new int(message->getHeadCSeq().getSequence());
 		ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
 
 		message->setLock();
@@ -182,7 +182,7 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 	p = ctxt_store.find("callid_200ok_b");
 	string callid_200ok_b = *((string*)p->second);
 	p = ctxt_store.find("CSeqB2BINIVTE");
-	string CSeqB2BINIVTE = *((string*)p->second);
+	int CSeqB2BINIVTE = *((int*)p->second);
 
 	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
 	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
@@ -198,7 +198,7 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 	newack->replaceHeadTo(tohead_200ok_b);
 	newack->replaceHeadFrom(fromhead_200ok_b);
 	newack->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
-	newack->setGenericHeader("CSeq:", CSeqB2BINIVTE);
+	newack->getHeadCSeq().setSequence(CSeqB2BINIVTE);
 
 	newack->compileMessage();
 	newack->dumpVector();
@@ -223,11 +223,11 @@ void VALO::onBye(MESSAGE* _message){
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
-	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent())
+	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
 
 	int _dir = 1;
 
-	if (_dir == 1 ) {
+	if (_message->getRequestDirection() == SODE_FWD ) {
 
 		message->setDestEntity(SODE_TRNSCT_CL);
 
@@ -261,7 +261,9 @@ void VALO::onBye(MESSAGE* _message){
 		sl_cc->p_w(message);
 
 	}
-	else if (_dir == -1 ) {
+	else if (_message->getRequestDirection() == SODE_BKWD ) {
+
+		DEBASSERT(".")
 
 		DEBOUT("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
 		TRNSCT_SM* trnsct_sv = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, call_oset->getCurrentSequence("INVITE_A"));

@@ -62,6 +62,8 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, i
 
 	arrayFilled = false;
 
+	requestDirection = 0;
+
 	//others
     id = 0; //Used in spin buffer
     destEntity = 0;
@@ -80,6 +82,8 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
 	inc_ts = _inc_ts;
 
 	arrayFilled = false;
+
+	requestDirection = 0;
 
 	return;
 }
@@ -104,6 +108,9 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
     arrayFilled = false;
 
     genEntity = _genEntity;
+
+	requestDirection = _basemessage->getRequestDirection();
+
 
 	return;
 }
@@ -185,11 +192,11 @@ int BASEMESSAGE::getGenEntity(void){
 void BASEMESSAGE::setGenEntity(int _genEntity){
 	genEntity = _genEntity;
 }
-int BASEMESSAGE::getInitialGenEntity(void){
-	return initialGenEntity;
+int BASEMESSAGE::getRequestDirection(void){
+	return requestDirection;
 }
-void BASEMESSAGE::setInitialGenEntity(int _genEntity){
-	initialGenEntity = _genEntity;
+void BASEMESSAGE::setRequestDirection(int _genEntity){
+	requestDirection = _genEntity;
 }
 int BASEMESSAGE::getDestEntity(void){
 	return destEntity;

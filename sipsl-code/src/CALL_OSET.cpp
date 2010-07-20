@@ -557,7 +557,7 @@ ACTION* act_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
     //_sm->setControlSequence(_message->getHeadCSeq().getSequence());
 
-	ACTION* action = new ACTION();
+	NEWPTR(ACTION*, action, ACTION())
 
 	//_message changes its dest and gen
 	_message->setDestEntity(SODE_ALOPOINT);
@@ -1178,7 +1178,6 @@ ACTION* act_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	//_message changes its dest and gen
 	// remember initial generation  is used for backward messagges like bye coming from B
-	_message->setInitialGenEntity(_message->getGenEntity());
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->typeOfInternal = TYPE_MESS;

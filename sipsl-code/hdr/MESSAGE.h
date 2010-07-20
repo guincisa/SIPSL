@@ -46,8 +46,8 @@ using namespace std;
 
 #define SODE_NOPOINT 0
 #define SODE_STOPPOINT 9999
-//#define SODE_APOINT 1
-//#define SODE_BPOINT 2
+#define SODE_FWD 1
+#define SODE_BKWD 2
 #define SODE_ALOPOINT 3
 #define SODE_SMCLPOINT 4
 #define SODE_SMSVPOINT 5
@@ -104,8 +104,8 @@ class BASEMESSAGE {
         int getGenEntity(void);
         void setGenEntity(int);
 
-        int getInitialGenEntity(void);
-        void setInitialGenEntity(int);
+        int getRequestDirection(void);
+        void setRequestDirection(int);
 
         void setDestEntity(int);
         int getDestEntity(void);
@@ -125,7 +125,7 @@ class BASEMESSAGE {
     protected:
         int genEntity;
         int destEntity;
-        int initialGenEntity;
+        int requestDirection;
         vector<string> flex_line;
         SysTime inc_ts;
 
