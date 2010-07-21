@@ -285,12 +285,15 @@ void VALO::onBye(MESSAGE* _message){
 
 		map<string, void*> ::iterator p;
 		p = ctxt_store.find("tohead_200ok_a");
-		string tohead_200ok_b = *((string*)p->second);
+		string tohead_200ok_a = *((string*)p->second);
 		p = ctxt_store.find("fromhead_200ok_a");
-		string fromhead_200ok_b = *((string*)p->second);
+		string fromhead_200ok_a = *((string*)p->second);
 		// are inverted
-		message->replaceHeadTo(fromhead_200ok_b);
-		message->replaceHeadFrom(tohead_200ok_b);
+		message->replaceHeadTo(fromhead_200ok_a);
+		message->replaceHeadFrom(tohead_200ok_a);
+
+		message->setGenericHeader("Call-ID:", call_oset->getCallId_X());
+
 
 		message->compileMessage();
 		message->dumpVector();

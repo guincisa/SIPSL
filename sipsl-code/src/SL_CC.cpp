@@ -185,8 +185,15 @@ void SL_CC::parse(MESSAGE* _mess) {
 		call_oset = comap->getCALL_OSET_XMain(callids);
 
 		if (call_oset == 0x0) {
-			DEBOUT("SL_CC::parse","Orphan Invite")
-			//TODO kill the invite
+			call_oset = comap->getCALL_OSET_YDerived(callids);
+			if (call_oset != 0x0){
+				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
+
+				call_oset->getSL_CO()->call(_mess);
+				return;
+			}else{
+				DEBASSERT(".")
+			}
 		}
 		else {
 				call_oset->getSL_CO()->call(_mess);
