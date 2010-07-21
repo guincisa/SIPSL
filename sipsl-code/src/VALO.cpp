@@ -225,8 +225,6 @@ void VALO::onBye(MESSAGE* _message){
 
 	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
 
-	int _dir = 1;
-
 	if (_message->getRequestDirection() == SODE_FWD ) {
 
 		message->setDestEntity(SODE_TRNSCT_CL);
@@ -263,22 +261,22 @@ void VALO::onBye(MESSAGE* _message){
 	}
 	else if (_message->getRequestDirection() == SODE_BKWD ) {
 
-		DEBASSERT(".")
 
 		DEBOUT("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
 		TRNSCT_SM* trnsct_sv = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, call_oset->getCurrentSequence("INVITE_A"));
 		MESSAGE* __message = trnsct_sv->getA_Matrix();
 		message->setDestEntity(SODE_TRNSCT_CL);
 
-		DEBOUT("message->setHeadSipRequest(__message->getHeadSipRequest().getContent())", __message->getHeadSipRequest().getContent())
-		DEBOUT("BYE and rest of request", "BYE*" <<__message->getHeadSipRequest().getC_AttSipUri().getContent() << "*"<<__message->getHeadSipRequest().getChangeS_AttSipVersion().getContent())
-		message->setHeadSipRequest("BYE "+ __message->getHeadSipRequest().getC_AttSipUri().getContent() +" "+__message->getHeadSipRequest().getChangeS_AttSipVersion().getContent());
+		//Request has to be made using INVITE_A via address
+		C_HeadVia* viatmps= (C_HeadVia*) __message->getSTKHeadVia().top();
+		DEBOUT("BYE and rest of request", "BYE sip:ceppadim@"+viatmps->getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent())
+		message->setHeadSipRequest("BYE sip:ceppadim@"+viatmps->getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent());
 
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
 		string viatmpS(viatmp);
 		message->purgeSTKHeadVia();
-		message->pushHeadVia("Via: " + viatmpS);
+		message->pushHeadVia(viatmpS);
 
 		//TODO FIX THIS!
 		//must understadn here which dialog I am closing

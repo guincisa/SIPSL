@@ -1,6 +1,15 @@
 CHANGES
 
 
+21 luglio
+i cseq ancora non sono correttamente gestiti (?)
+alcuni header (from/to/contact) sono sbaglaiti forse
+
+non va piu niente dopo che ho corretto gli indirizzi su etc/hosts
+
+-------------------------------------------------------------------------------
+
+
 13 luglio
 il callid per identificare l'allarme non è sufficente
 -------------------------------------------------------------------------------
