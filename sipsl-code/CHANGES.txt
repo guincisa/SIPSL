@@ -1,6 +1,15 @@
 CHANGES
 
 
+29 luglio
+
+transazione: branch
+Cseq: no
+
+problema: ACK arriva con un nuovo branch e non c'è il matchn con la SM dell'invite
+
+-------------------------------------------------------------------------------
+
 21 luglio
 i cseq ancora non sono correttamente gestiti (?)
 alcuni header (from/to/contact) sono sbaglaiti forse

@@ -263,7 +263,7 @@ void VALO::onBye(MESSAGE* _message){
 
 
 		DEBOUT("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
-		TRNSCT_SM* trnsct_sv = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, call_oset->getCurrentSequence("INVITE_A"));
+		TRNSCT_SM* trnsct_sv = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 		MESSAGE* __message = trnsct_sv->getA_Matrix();
 		message->setDestEntity(SODE_TRNSCT_CL);
 
@@ -389,7 +389,7 @@ void VALO::onBye(MESSAGE* _message){
 }
 void VALO::on200Ok(MESSAGE* _message){
 
-	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 
 	MESSAGE* __message = ((TRNSCT_SM*)trnsct_cl)->getA_Matrix();
 

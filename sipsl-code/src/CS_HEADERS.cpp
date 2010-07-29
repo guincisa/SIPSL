@@ -176,12 +176,10 @@ void TupleVector::doParse(void) {
     if (parsed)
         return;
     try {
-
-		vector<string> xlval_rval;
 		if (hasheader) {
-			xlval_rval = parse(content, header, separator,true);
+			lval_rval = parse(content, header, separator,true);
 		} else {
-			xlval_rval = parse(content, "", separator,true);
+			lval_rval = parse(content, "", separator,true);
 		}
 
 		//TODO into tuples...

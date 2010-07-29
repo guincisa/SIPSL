@@ -69,9 +69,9 @@ class CALL_OSET {
 		CALL_OSET(ENGINE*);
 
 		// add transaction state machine
-		void addTrnsctSm(string method, int sode, int sequence, TRNSCT_SM* trnsctSm);
+		void addTrnsctSm(string method, int sode, string branch, TRNSCT_SM* trnsctSm);
 		// get transaction state machine
-		TRNSCT_SM* getTrnsctSm(string method, int sode, int sequence);
+		TRNSCT_SM* getTrnsctSm(string method, int sode, string branch);
 
 		void setSL_CO(SL_CO*);
 		SL_CO* getSL_CO(void);

@@ -157,14 +157,14 @@ string CALL_OSET::getCallId_X(void){
 	return callId_X;
 }
 //**********************************************************************************
-TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, int _sequence){
+TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
-	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", _method <<" "<<_sode << " " <<_sequence)
-	char t_key[64];
+	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", _method <<" "<<_branch)
+	char t_key[264];
 	if (_sode == SODE_TRNSCT_CL)
-		sprintf(t_key, "%s#SODE_TRNSCT_CL#%d", _method.c_str(), _sequence);
+		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
 	else if (_sode == SODE_TRNSCT_SV)
-		sprintf(t_key, "%s#SODE_TRNSCT_SV#%d", _method.c_str(), _sequence);
+		sprintf(t_key, "%s#SODE_TRNSCT_SV#%s", _method.c_str(), _branch.c_str());
 
 	map<string, TRNSCT_SM*> ::iterator p;
 	p = trnsctSmMap.find(t_key);
@@ -173,27 +173,23 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, int _sequence){
 	}else {
 		return 0x0;
 	}
-
-
 }
 //**********************************************************************************
-void CALL_OSET::addTrnsctSm(string _method, int _sode, int _sequence, TRNSCT_SM* _trnsctSm){
+void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm){
 
-	DEBOUT_UTIL("CALL_OSET::addTrnsctSm", _method <<" "<<_sode << " " <<_sequence)
+	DEBOUT_UTIL("CALL_OSET::addTrnsctSm", _method <<" "<<_branch)
 	char t_key[64];
 	if (_sode == SODE_TRNSCT_CL)
-		sprintf(t_key, "%s#SODE_TRNSCT_CL#%d", _method.c_str(), _sequence);
+		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
 	else if (_sode == SODE_TRNSCT_SV)
-		sprintf(t_key, "%s#SODE_TRNSCT_SV#%d", _method.c_str(), _sequence);
+		sprintf(t_key, "%s#SODE_TRNSCT_SV#%s", _method.c_str(), _branch.c_str());
 	else {
-		DEBOUT("CALL_OSET::addTrnsctSm NOT INSERTED", _method << _sode << _sequence)
+		DEBOUT("CALL_OSET::addTrnsctSm NOT INSERTED", _method << _branch)
 		return;
 	}
 
 	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(t_key, _trnsctSm));
-
-	//sequenceMap.insert()
-
+	return;
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -224,7 +220,8 @@ void SL_CO::call(MESSAGE* _message){
 	    //if the state machine is in a 2xx reply state then the ACK is acknowledging the INVITE
 	    //so the message must go to the INVITE state machine
 	    if (_message->getHeadCSeq().getMethod().getMethodID() == ACK_REQUEST) {
-			trnsctSM = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
+	    	//Problem ACK come with a new branch
+			trnsctSM = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 			if (trnsctSM != 0x0 && trnsctSM->State == 3){
 				//run into the INVITE state machine
 			}
@@ -234,7 +231,7 @@ void SL_CO::call(MESSAGE* _message){
 			}
 	    }
 	    else {
-	    	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence());
+	    	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 	    }
 
 		if (trnsctSM == 0x0){
@@ -248,8 +245,8 @@ void SL_CO::call(MESSAGE* _message){
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
 				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this))
 			}
-			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << _message->getHeadCSeq().getSequence())
-			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getHeadCSeq().getSequence(), trnsctSM);
+			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
 			DEBOUT("call_oset->addTrnsctSm","done")
 		}
 
@@ -306,7 +303,7 @@ void SL_CO::call(MESSAGE* _message){
 		string callidys = _message->getHeadCallId().getContent();
 	    DEBOUT("SL_CO::call client state machine", callidys)
 
-		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 
 		if (trnsct_cl == 0x0){
 
@@ -326,7 +323,7 @@ void SL_CO::call(MESSAGE* _message){
 				DEBASSERT("fare qui")
 			}
 
-			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence(), trnsct_cl);
+			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
 
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X());
