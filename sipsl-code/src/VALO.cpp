@@ -101,8 +101,107 @@ void VALO::onInvite(MESSAGE* _message){
 
 }
 void VALO::onAck(MESSAGE* _message){
-	DEBASSERT("VALO::onAck")
-}
+	DEBOUT("VALO::onAck",_message->getHeadSipRequest().getContent())
+
+
+	//V5 trying to build the ACK using the ACK_A instead of INVITE b
+	CREATEMESSAGE(newack, _message, SODE_ALOPOINT)
+	//set as source the original ack, needed to identify call_oset_x when back to call control
+	newack->setSourceMessage(_message);
+	newack->setDestEntity(SODE_SMCLPOINT);
+
+	//Remove route
+	try {
+		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute().getRoute().getHostName())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute().getRoute().getPort())
+		DEBOUT("VALO","remove route")
+		newack->removeHeadRoute();
+	}
+	catch(HeaderException e){
+		DEBOUT("Exception ", e.getMessage())
+	}
+
+	//change request
+	DEBOUT("VALO ", newack->getHeadSipRequest().getContent())
+	newack->setHeadSipRequest("ACK sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
+
+	//don't change CSEQ
+//	char buff[64];
+//	sprintf(buff, "%d ACK", call_oset->getNextSequence("ACK"));
+//	newack->replaceHeadCSeq(buff);
+//	DEBOUT("VALO","Cseq")
+
+	//Purge SDP
+	newack->purgeSDP();
+	newack->addGenericHeader("Content-Length:","0");
+
+//
+	//TOTAG
+	char toTmp[512];
+	map<string, void*> ::iterator p;
+	p = ctxt_store.find("totag");
+	string toTagB = *((string*)p->second);
+	sprintf(toTmp, "%s %s;tag=%s",newack->getHeadTo().getNameUri().c_str(), newack->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
+	string toTmpS(toTmp);
+	DEBOUT("******** TO new" , toTmpS)
+	newack->replaceHeadTo(toTmpS);
+	DEBOUT("TO",newack->getHeadTo().getContent())
+	DEBOUT("TO",newack->getHeadTo().getC_AttSipUri().getContent())
+	DEBOUT("TO",newack->getHeadTo().getNameUri())
+	DEBOUT("TO",newack->getHeadTo().getC_AttUriParms().getContent())
+
+	DEBOUT("NEW ACK via","")
+	map<string, void*> ::iterator p2;
+	p2 = ctxt_store.find("allvia");
+	string allVia = *((string*)p2->second);
+	newack->purgeSTKHeadVia();
+	newack->pushHeadVia(allVia);
+	DEBOUT("NEW ACK via",allVia.c_str())
+
+	// THIS ACK needs the B_INVITE call id and
+	// 200 ok from B from and to headers!!!
+	DEBOUT("CHECK THIS CALLID +++++++++++", call_oset->getCallId_Y());
+
+	p = ctxt_store.find("tohead_200ok_b");
+	string tohead_200ok_b = *((string*)p->second);
+	p = ctxt_store.find("fromhead_200ok_b");
+	string fromhead_200ok_b = *((string*)p->second);
+	p = ctxt_store.find("callid_200ok_b");
+	string callid_200ok_b = *((string*)p->second);
+	p = ctxt_store.find("CSeqB2BINIVTE");
+
+	//TODO cseq for ACK
+	int CSeqB2BINIVTE = *((int*)p->second);
+
+	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
+	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
+	DEBOUT("CHECK THIS CSeq  +++++++++++", CSeqB2BINIVTE);
+
+	DEBOUT("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
+	DEBOUT("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
+
+//	!!!!
+//	To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
+//	From: From: <sip:gugli_twinkle@guglicorp.com>;tag=9d448d81276175425117411
+
+	newack->replaceHeadTo(tohead_200ok_b);
+	newack->replaceHeadFrom(fromhead_200ok_b);
+	newack->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
+	newack->getHeadCSeq().setSequence(CSeqB2BINIVTE);
+
+	char viatmp[512];
+	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),newack->getKey().c_str());
+	string viatmpS(viatmp);
+	newack->purgeSTKHeadVia();
+	newack->pushHeadVia(viatmpS);
+	DEBOUT("newack->pushHeadVia(viatmpS);", viatmpS)
+
+	newack->compileMessage();
+	newack->dumpVector();
+
+
+	DEBMESSAGE("New outgoing b2b message", newack->getIncBuffer())
+	sl_cc->p_w(newack);}
 void VALO::onAckNoTrnsct(MESSAGE* _message){
 
 

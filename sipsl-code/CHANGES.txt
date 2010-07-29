@@ -3,6 +3,12 @@ CHANGES
 
 29 luglio
 
+
+correggere cseq di ACK
+controllare transact machines degli ack (sv e cl)
+modificare le transact machines degli invite perche non hanno piu l'ack
+il bye non funzione....
+
 transazione: branch
 Cseq: no
 

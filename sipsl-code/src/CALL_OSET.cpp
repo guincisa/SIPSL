@@ -219,20 +219,20 @@ void SL_CO::call(MESSAGE* _message){
 	    //if the Request is an ACK then check the CSEQ and look for "CSEQ INVITE" state machine
 	    //if the state machine is in a 2xx reply state then the ACK is acknowledging the INVITE
 	    //so the message must go to the INVITE state machine
-	    if (_message->getHeadCSeq().getMethod().getMethodID() == ACK_REQUEST) {
-	    	//Problem ACK come with a new branch
-			trnsctSM = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
-			if (trnsctSM != 0x0 && trnsctSM->State == 3){
-				//run into the INVITE state machine
-			}
-			//else the ACK is a new transaction
-			else {
-				DEBASSERT("ACK is a new transaction not supported now")
-			}
-	    }
-	    else {
+//	    if (_message->getHeadCSeq().getMethod().getMethodID() == ACK_REQUEST) {
+//	    	//Problem ACK come with a new branch
+//			trnsctSM = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
+//			if (trnsctSM != 0x0 && trnsctSM->State == 3){
+//				//run into the INVITE state machine
+//			}
+//			//else the ACK is a new transaction
+//			else {
+//				DEBASSERT("ACK is a new transaction not supported now")
+//			}
+//	    }
+//	    else {
 	    	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
-	    }
+//	    }
 
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
@@ -1080,11 +1080,12 @@ ACTION* act_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message) {
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->typeOfInternal = TYPE_MESS;
+	_message->type_trnsct = TYPE_TRNSCT;
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SM_V5 act_0_1_ack_sv move to state 4","")
+	DEBOUT("SM_V5 act_0_1_ack_sv move to state 1","")
 	_sm->State = 1;
 
 	return action;
@@ -1092,7 +1093,7 @@ ACTION* act_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message) {
 }
 //**********************************************************************************
 TRNSCT_SM_ACK_SV::TRNSCT_SM_ACK_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _sl_cc, _sl_co),
+		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
 		PA_ACK_0_1SV((SM_V5*)this){
 
 	PA_ACK_0_1SV.action = &act_0_1_ack_sv;
