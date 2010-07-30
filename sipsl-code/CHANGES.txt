@@ -1,5 +1,16 @@
 CHANGES
 
+30 luglio
+BYE ok
+
+
+mettere a posto la map_context
+mettere a posto le sequece
+
+nella threadparser cambiata la posizione dell'unlock
+
+
+
 
 29 luglio
 

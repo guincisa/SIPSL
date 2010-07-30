@@ -325,6 +325,8 @@ void SL_CO::call(MESSAGE* _message){
 
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
 
+			//TODO a che serve?
+			//serve solo la prima volta con l'invite...
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X());
 		}
@@ -344,9 +346,9 @@ void SL_CO::call(MESSAGE* _message){
 
 				DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage->getIncBuffer())
 
-				//V3
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
+					// should never happen
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 					call_oset->getALO()->p_w(_tmpMessage);
 					actionList.pop();
@@ -419,19 +421,9 @@ void SL_CO::call(MESSAGE* _message){
 	}
 	//pthread_mutex_unlock(&mutex);
 }
-//V5
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
-	SM_V5(_sl_cc, _sl_co){
-
-	requestType = _requestType;
-	Matrix = _matrixMess;
-	A_Matrix = 0x0;
-	DEBY
-	DEBASSERT("no")
-}
 TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 	SM_V5(_sl_cc, _sl_co){
 
@@ -1118,7 +1110,7 @@ bool pre_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message){
 }
 ACTION* act_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_4_5_cl","")
+	DEBOUT("SM_V5 act_0_1_ack_cl","")
 
 	NEWPTR(ACTION*, action, ACTION())
 

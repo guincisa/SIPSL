@@ -43,11 +43,11 @@ VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
 
 void VALO::onInvite(MESSAGE* _message){
 
+
+	//TODO must move "low level" instructions to upper class
+
 		CREATEMESSAGE(message, _message, SODE_ALOPOINT)
-
 		message->setDestEntity(SODE_TRNSCT_CL);
-
-		message->setSourceMessage(_message);
 
 		try {
 			DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
@@ -59,18 +59,16 @@ void VALO::onInvite(MESSAGE* _message){
 			DEBOUT("Exception ", e.getMessage())
 		}
 
-		//TODO use registrar
-		//change request
-		// INVITE INVITE sip:guic2@127.0.0.1:5061 SIP/2.0
+		//TODO use Registrar
 		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
 		message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
-		//New transaction
 		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
 
 		//Standard changes
 		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
 
+		//TODO needed???
 		if (_message->getSDPSize() != 0 ){
 			//SDP must copy the SDP from incoming OK and put here
 			vector<string> __sdp = _message->getSDP();
@@ -81,10 +79,10 @@ void VALO::onInvite(MESSAGE* _message){
 
 		message->compileMessage();
 		message->dumpVector();
-		DEBMESSAGE("New outgoing b2b message", message->getIncBuffer())
-		//create the transaction
-		//v5 call_oset->createTransactionY(message);
 
+		DEBMESSAGE("New outgoing b2b message", message->getIncBuffer())
+
+		//TODO ???
 		DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
 		int* CSeqB2BINIVTE = new int(message->getHeadCSeq().getSequence());
 		ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
@@ -94,8 +92,10 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBOUT("STORING now call id", message->getHeadCallId().getContent())
 		call_oset->setCallId_Y(message->getHeadCallId().getContent());
 
-		//store this invite
+		//store this invites
 		ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
+		ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message ));
+
 
 		sl_cc->p_w(message);
 
@@ -201,7 +201,8 @@ void VALO::onAck(MESSAGE* _message){
 
 
 	DEBMESSAGE("New outgoing b2b message", newack->getIncBuffer())
-	sl_cc->p_w(newack);}
+	sl_cc->p_w(newack);
+}
 void VALO::onAckNoTrnsct(MESSAGE* _message){
 
 
@@ -360,10 +361,11 @@ void VALO::onBye(MESSAGE* _message){
 	}
 	else if (_message->getRequestDirection() == SODE_BKWD ) {
 
+		map<string, void*> ::iterator p;
+		p = ctxt_store.find("invite_a");
+		MESSAGE* __message = (MESSAGE*)p->second;
 
 		DEBOUT("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
-		TRNSCT_SM* trnsct_sv = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
-		MESSAGE* __message = trnsct_sv->getA_Matrix();
 		message->setDestEntity(SODE_TRNSCT_CL);
 
 		//Request has to be made using INVITE_A via address
@@ -382,7 +384,6 @@ void VALO::onBye(MESSAGE* _message){
 		message->replaceHeadCSeq(call_oset->getCurrentSequence("INVITE_A"), "BYE");
 		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
 
-		map<string, void*> ::iterator p;
 		p = ctxt_store.find("tohead_200ok_a");
 		string tohead_200ok_a = *((string*)p->second);
 		p = ctxt_store.find("fromhead_200ok_a");

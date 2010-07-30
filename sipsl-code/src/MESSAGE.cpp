@@ -126,29 +126,20 @@ void BASEMESSAGE::fillLineArray(void){
 
     Tuple s = brkin2(incMessBuff,"\n");
     string t = s.Rvalue;
-
-    DEBOUT("Extracted line of message", s.Lvalue)
     string strim = trimCR(s.Lvalue);
-    DEBOUT("pushback 1", strim)
     flex_line.push_back(strim);
-    DEBY
     while (t.compare("")!=0){
 
     	s = brkin2(t,"\n");
-    	DEBOUT("Extracted line of message", s.Lvalue)
     	t = s.Rvalue;
 
     	if (s.Lvalue.substr(0,1).compare(" ") == 0 || s.Lvalue.substr(0,1).compare("\t") == 0){
-            DEBOUT("COMPACTING", s.Lvalue)
     		string tt = flex_line.back();
     		string ttt = tt + trimCR(s.Lvalue);
-            DEBOUT("COMPACTED", ttt)
     		flex_line.pop_back();
-    	    DEBOUT("pushback 2", ttt)
             flex_line.push_back(ttt);
     	} else{
     		string strim = trimCR(s.Lvalue);
-    	    DEBOUT("pushback 3", strim)
     		TRYCATCH(flex_line.push_back(strim))
     	}
     }
@@ -992,6 +983,9 @@ string MESSAGE::getDialogExtendedCID(void){
 	return getHeadCallId().getNormCallId() + getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag");
 }
 void MESSAGE::setLock(void){
+	if (source!=0x0){
+		source->setLock();
+	}
 	lock = true;
 }
 bool MESSAGE::getLock(void){

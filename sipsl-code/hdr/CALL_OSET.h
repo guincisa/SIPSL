@@ -42,7 +42,7 @@ class CALL_OSET {
 
 		// TRANSACTION MANAGEMENT
 		// KEY is like this
-		// <REQUESTTYPE>#<SIDE>#<SEQUENCE>
+		// <REQUESTTYPE>#<SIDE>#<BRANCH>
 		// example 1#A#1
 		map<string, TRNSCT_SM*> trnsctSmMap;
 
@@ -146,7 +146,10 @@ class TRNSCT_SM  :  public SM_V5{
 	private:
 
 		int requestType;
+		//Matrix is the request which triggers the creation of the State Machine
 		MESSAGE* Matrix;
+		//A Matrix is the a-side request which triggers the above request
+		//it differs from the above message only in case of client sm
 		MESSAGE* A_Matrix;
 
 	public:
@@ -162,8 +165,6 @@ class TRNSCT_SM  :  public SM_V5{
 		//#define BYE_REQUEST 4
 		//#define CANCEL_REQUEST 5
 
-		//Depending on the request the SM will be different
-		TRNSCT_SM(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 		TRNSCT_SM(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 
 

@@ -142,11 +142,14 @@ void * threadparser (void * _pt){
         if (m == NULL)  {
             DEBOUT("ENGINE thread NULL",_pt)
             ps->sb.move();
+            //aggiunta il 30 luglio 2010
+            pthread_mutex_unlock(&(ps->sb.condvarmutex));
         }
         else {
             pt->ps->parse(m);
         }
-        pthread_mutex_unlock(&(ps->sb.condvarmutex));
+        //TODO ??? 30 luglio 2010
+        //pthread_mutex_unlock(&(ps->sb.condvarmutex));
     }
     return (NULL);
 }
