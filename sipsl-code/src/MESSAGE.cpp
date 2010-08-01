@@ -449,7 +449,7 @@ stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 	unsigned int i;
 	unsigned int j = 1;
 
-	for(i = 1; i < flex_line.size(); i ++){
+	for( i =   flex_line.size() - 1 ; i > 0 ; i --){
 		if(flex_line[i].substr(0,4).compare("Via:") == 0){
 			C_HeadVia* s = new C_HeadVia(flex_line[i].substr(5));
 			s_headVia.push(s);

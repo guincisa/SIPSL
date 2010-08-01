@@ -159,7 +159,7 @@ string CALL_OSET::getCallId_X(void){
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
-	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", _method <<" "<<_branch)
+	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", _method << _sode <<" "<<_branch)
 	char t_key[264];
 	if (_sode == SODE_TRNSCT_CL)
 		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
