@@ -67,6 +67,7 @@ class CALL_OSET {
 
 		// TRANSACTION MANAGEMENT
 		CALL_OSET(ENGINE*);
+		~CALL_OSET(void);
 
 		// add transaction state machine
 		void addTrnsctSm(string method, int sode, string branch, TRNSCT_SM* trnsctSm);

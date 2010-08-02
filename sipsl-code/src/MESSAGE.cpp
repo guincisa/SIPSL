@@ -260,6 +260,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	type_trnsct = TYPE_TRNSCT;
 
+	doa = 0;
+
 }
 
 MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
@@ -292,7 +294,7 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 
 	type_trnsct = TYPE_TRNSCT;
 
-
+	doa = 0;
 
 	return;
 }

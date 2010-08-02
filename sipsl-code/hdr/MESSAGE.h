@@ -61,6 +61,11 @@ using namespace std;
 #define TYPE_TRNSCT 0 // reserved for ack
 #define TYPE_NNTRNSCT 1
 
+//dead on arrival: the message carring this will trigger the deletion of call_oset
+#define NOT_DOA 0
+#define DOA_REQUESTED 1
+#define DOA_CONFIRMED 2
+
 
 //#define SODE_SMSVCALLPOINT 8
 //#define SODE_SMCLCALLPOINT 9
@@ -212,6 +217,9 @@ class MESSAGE : public BASEMESSAGE {
     	// can be modified
     	bool isInternal;
 
+    	//this if not null, means that the call_oset can be purged
+    	int doa;
+
     public:
 
         MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
@@ -314,6 +322,9 @@ class MESSAGE : public BASEMESSAGE {
     	void setLock(void);
     	bool getLock(void);
     	void unSetLock(void);
+
+    	int getDoa(void);
+    	void setDoa(int);
 
 };
 ///////////////////////////////////////////////////////////////////////////////

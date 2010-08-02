@@ -81,10 +81,25 @@ static SIPUTIL SipUtil;
 // CALL_OSET
 //**********************************************************************************
 CALL_OSET::CALL_OSET(ENGINE* _engine){
+
 	engine = _engine;
 	sequenceMap.insert(pair<string, int>("ACK_B",0));
 	sequenceMap.insert(pair<string, int>("INVITE_B",0));
 	sequenceMap.insert(pair<string, int>("BYE_B",0));
+
+	sl_co = 0x0;
+	alo = 0x0;
+}
+CALL_OSET::~CALL_OSET(void){
+
+	//TODO
+	if (sl_co != 0x0){
+		//purge states machines
+	}
+	if (alo != 0x0){
+		//purge alo
+	}
+
 }
 int CALL_OSET::getNextSequence(string _method){
 
@@ -1190,6 +1205,7 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
+	ok_x->setDoa(DOA_REQUEST);
 
 	DEBOUT("SM_V5 act_1_2_bye_sv move to state 2","")
 	_sm->State = 2;
@@ -1331,6 +1347,7 @@ ACTION* act_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_2);
 
 	_sm->State = 2;
+
 	return action;
 }
 //**********************************************************************************

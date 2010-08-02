@@ -226,6 +226,9 @@ void SUDP::sendReply(MESSAGE* _message){
 	}
 	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
+	//TODO
+	//check here DOA and kill call_oset
+
 	return;
 }
 //void SUDP::sendRequest(MESSAGE* _message){
