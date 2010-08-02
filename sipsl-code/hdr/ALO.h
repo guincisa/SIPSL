@@ -29,7 +29,8 @@
 #include "CALL_OSET.h"
 #endif
 
-class ALO : public ENGINE {
+//V6
+class ALO {
 	public:
 
 		//CALL_OSET needed for back reference to umbrella object
@@ -41,7 +42,7 @@ class ALO : public ENGINE {
 		 * for example is INVITE, it will invoke onINVITE()
 		 * all call backs can be overridden if the application needs to implement something
 		 */
-        void parse(MESSAGE*);
+        void call(MESSAGE*);
 
         virtual void onInvite(MESSAGE*);
         virtual void onAck(MESSAGE*);
@@ -50,9 +51,14 @@ class ALO : public ENGINE {
         virtual void onAckNoTrnsct(MESSAGE*);
 
         void noCallBack(MESSAGE*);
+
+        void linkSUDP(SUDP*);
+        SUDP* getSUDP(void);
+
 	protected:
         //TODO must be private
         ENGINE* sl_cc;
         CALL_OSET* call_oset;
+        SUDP* sudp;
 
 };

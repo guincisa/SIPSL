@@ -1,6 +1,28 @@
 TODO
 ************************************************************************************
 ************************************************************************************
+---------------
+fix map of sequences
+---------------
+problemi di synch:
+mutex
+- CALL_OSET::call()
+---------------
+memoria:
+estendere la mappa dei messaggi e qualsiasi oggetto e mettere il tipo
+quando la call_oset ha raggiunto la fine della chiamata (bye-200ok) allora deve triggerare
+la cancellazione di tutte le sue strutture
+quindi o con la mappa oppure una mappa locale
+---------------
+parametrizzare il numero dei thread dell'engine
+
+
+
+
+
+
+
+
 Timers of call setup
 -> 0%
 ------------------------------------------------------------------------------------

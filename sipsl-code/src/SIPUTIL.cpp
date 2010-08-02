@@ -45,6 +45,12 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 
 	//Must define here the to tag
 	//only if empty...
+
+	_gted->replaceHeadContact("<sip:sipsl@grog:5060>");
+
+	_gted->purgeSDP();
+
+
 	if ( _gted->getHeadTo().getC_AttUriParms().getContent().length() == 0){
 		DEBOUT("_gted->getHeadTo().getC_AttUriParms()).getContent()",_gted->getHeadTo().getC_AttUriParms().getContent())
 		char totmp[512];
@@ -94,6 +100,10 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	_gted->pushHeadVia(viatmp->getC_AttVia().getContent());
 
 
+	_gted->compileMessage();
+	_gted->dumpVector();
+
+
 }
 
 void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
@@ -127,27 +137,8 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 	_gted->popSTKHeadVia();
 	_gted->pushHeadVia(viatmp->getC_AttVia().getContent());
 
-	DEBOUT("GTED","setDestEntity")
-	_gted->setDestEntity(SODE_NTWPOINT);
 }
 
-//void SIPUTIL::genBRequestfromARequest(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
-//
-//		//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
-//
-//		char viatmp[512];
-//		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",sudp->getDomain().c_str(),sudp->getPort(),_gtor->getKey().c_str());
-//		string viatmpS(viatmp);
-//		_gted->purgeSTKHeadVia();
-//		_gted->pushHeadVia("Via: " + viatmpS);
-//
-//		_gted->replaceHeadContact("<sip:sipsl@grog:5060>");
-//		DEBOUT("NEW CONTACT", _gted->getHeadContact().getContent())
-//
-//		// Compile the message
-//		_gted->compileMessage();
-//
-//	}
 void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
@@ -188,10 +179,26 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 	DEBOUT("FROM",_gted->getHeadFrom().getC_AttUriParms().getContent())
 
 
-	DEBOUT("CONTACT", _gted->getHeadContact().getContent())
-
-	_gted->replaceHeadContact("<sip:sipsl@grog:5060>");
-	DEBOUT("NEW CONTACT", _gted->getHeadContact().getContent())
-
+	if (_gtor->getSDPSize() != 0 ){
+		//SDP must copy the SDP from incoming OK and put here
+		vector<string> __sdp = _gtor->getSDP();
+		_gted->purgeSDP();
+		DEBOUT("PURGED SDP","")
+		_gted->importSDP(__sdp);
+	}
 
 }
+
+void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
+
+	DEBOUT("ETRY","SIP/2.0 100 Trying")
+		_etry->setHeadSipReply("SIP/2.0 100 Trying");
+
+	_etry->dropHeader("Contact:");
+
+	genASideReplyFromRequest(_invite, _etry);
+	_etry->compileMessage();
+	_etry->dumpVector();
+
+}
+

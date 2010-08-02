@@ -34,16 +34,19 @@
 #include "CALL_OSET.h"
 #endif
 
-ALO::ALO(ENGINE* _sl_cc, CALL_OSET* _oset):ENGINE(){
+//V6
+ALO::ALO(ENGINE* _sl_cc, CALL_OSET* _oset){
 
 	sl_cc = _sl_cc;
 	call_oset = _oset;
 
 }
-void ALO::parse(MESSAGE* _message) {
+//V6
+void ALO::call(MESSAGE* _message) {
 
-	DEBOUT("ALO","Dispatcher")
-	pthread_mutex_unlock(&(sb.condvarmutex));
+	DEBOUT("ALO","call")
+	//V6
+	//pthread_mutex_unlock(&(sb.condvarmutex));
 
 	// check message type and invoke call back...
 
@@ -105,5 +108,15 @@ void ALO::noCallBack(MESSAGE* _message){
 
 	sl_cc->p_w(_message);
 
+}
+//**********************************************************************************
+//**********************************************************************************
+//V6
+void ALO::linkSUDP(SUDP *_sudp){
+	sudp = _sudp;
+}
+//V6
+SUDP* ALO::getSUDP(void){
+	return sudp;
 }
 

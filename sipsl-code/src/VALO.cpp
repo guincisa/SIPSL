@@ -43,61 +43,52 @@ VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
 
 void VALO::onInvite(MESSAGE* _message){
 
+	DEBOUT("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
-	//TODO must move "low level" instructions to upper class
+	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
+	message->setDestEntity(SODE_TRNSCT_CL);
 
-		CREATEMESSAGE(message, _message, SODE_ALOPOINT)
-		message->setDestEntity(SODE_TRNSCT_CL);
+	try {
+		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
+		DEBOUT("VALO","remove route")
+		message->removeHeadRoute();
+	}
+	catch(HeaderException e){
+		DEBOUT("Exception ", e.getMessage())
+	}
 
-		try {
-			DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
-			DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
-			DEBOUT("VALO","remove route")
-			message->removeHeadRoute();
-		}
-		catch(HeaderException e){
-			DEBOUT("Exception ", e.getMessage())
-		}
+	//TODO use Registrar
+	message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
-		//TODO use Registrar
-		DEBOUT("VALO ", message->getHeadSipRequest().getContent())
-		message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
+	message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
 
-		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
+	//Standard changes
+	SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
+	message->replaceHeadContact("<sip:sipsl@grog:5060>");
+	DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
 
-		//Standard changes
-		SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
+	message->compileMessage();
+	message->dumpVector();
 
-		//TODO needed???
-		if (_message->getSDPSize() != 0 ){
-			//SDP must copy the SDP from incoming OK and put here
-			vector<string> __sdp = _message->getSDP();
-			message->purgeSDP();
-			DEBOUT("PURGED SDP","")
-			message->importSDP(__sdp);
-		}
+	DEBMESSAGE("New outgoing b2b message", message->getIncBuffer())
 
-		message->compileMessage();
-		message->dumpVector();
+	//TODO ???
+	DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
+	int* CSeqB2BINIVTE = new int(message->getHeadCSeq().getSequence());
+	ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
 
-		DEBMESSAGE("New outgoing b2b message", message->getIncBuffer())
+	message->setLock();
 
-		//TODO ???
-		DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
-		int* CSeqB2BINIVTE = new int(message->getHeadCSeq().getSequence());
-		ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
+	DEBOUT("STORING now call id", message->getHeadCallId().getContent())
+	call_oset->setCallId_Y(message->getHeadCallId().getContent());
 
-		message->setLock();
-
-		DEBOUT("STORING now call id", message->getHeadCallId().getContent())
-		call_oset->setCallId_Y(message->getHeadCallId().getContent());
-
-		//store this invites
-		ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
-		ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message ));
+	//store this invites
+	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
+	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message ));
 
 
-		sl_cc->p_w(message);
+	sl_cc->p_w(message);
 
 }
 void VALO::onAck(MESSAGE* _message){

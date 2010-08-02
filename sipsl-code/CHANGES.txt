@@ -1,5 +1,29 @@
 CHANGES
 
+
+2 agosto
+
+eliminato il codice per modificare i messaggi nelle SM
+alo non è piu un engine
+
+V6:
+ALO is not engine anymore due to concurrency issues.
+
+1 Agosto
+
+problemi di synch:
+mutex
+- CALL_OSET::call()
+
+Alo: analizzare se conviene eliminare l'eredità da engine e farlo girare sul thread del sl_cc 
+
+memoria:
+estendere la mappa dei messaggi e qualsiasi oggetto e mettere il tipo
+quando la call_oset ha raggiunto la fine della chiamata (bye-200ok) allora deve triggerare
+la cancellazione di tutte le sue strutture
+quindi o con la mappa oppure una mappa locale
+-------------------------------------------------------------------------------
+
 30 luglio
 BYE ok
 

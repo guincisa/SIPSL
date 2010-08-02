@@ -44,4 +44,6 @@ class SIPUTIL {
 		// Generate B Request from A Request
 		void genBInvitefromAInvite(MESSAGE* gtor, MESSAGE* getd, SUDP* sudp);
 
+		void genTryFromInvite(MESSAGE* invite, MESSAGE* etry);
+
 };
