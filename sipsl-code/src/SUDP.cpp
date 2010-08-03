@@ -176,6 +176,7 @@ void SUDP::listen() {
         }else {
 			//Message handling
         	DEBY
+        	MESSAGE *message=0x0;
 			CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
         	DEBY
 			engine->p_w(message);
@@ -238,8 +239,6 @@ void SUDP::sendReply(MESSAGE* _message){
 	//TODO
 	//check here DOA and kill call_oset
 	if (_message->getDoa() == DOA_REQUESTED){
-//		SIPENGINE* s = (SIPENGINE*)engine;
-//		SL_CC* ss = (SL_CC*)s->getSL_CC();
 		((DOA*)doa)->setComap(((SL_CC*)((SIPENGINE*)engine)->getSL_CC())->getCOMAP());
 		((DOA*)doa)->p_w(_message);
 	}

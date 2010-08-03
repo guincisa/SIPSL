@@ -120,7 +120,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			else if (_mess->getReqRepType() == REPSUPP){
 				_mess->setDestEntity(SODE_TRNSCT_CL);
 			}
-
+			call_oset->insertMessageKey(_mess->getKey());
 			call_oset->getSL_CO()->call(_mess);
 			return;
 		}
@@ -138,6 +138,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 				else if (_mess->getReqRepType() == REPSUPP){
 					_mess->setDestEntity(SODE_TRNSCT_CL);
 				}
+				call_oset->insertMessageKey(_mess->getKey());
 				call_oset->getSL_CO()->call(_mess);
 				return;
 			}
@@ -164,7 +165,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			//////////////////////////////
 
 			DEBOUT("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
-
+			call_oset->insertMessageKey(_mess->getKey());
 			sl_co->call(_mess);
 			return;
 		}else {

@@ -183,12 +183,11 @@ string CALL_OSET::getCallId_X(void){
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
 	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", _method << _sode <<" "<<_branch)
-	char t_key[264];
+	char t_key[512];
 	if (_sode == SODE_TRNSCT_CL)
 		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
 	else if (_sode == SODE_TRNSCT_SV)
 		sprintf(t_key, "%s#SODE_TRNSCT_SV#%s", _method.c_str(), _branch.c_str());
-
 	map<string, TRNSCT_SM*> ::iterator p;
 	p = trnsctSmMap.find(t_key);
 	if (p != trnsctSmMap.end()){
@@ -201,11 +200,13 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm){
 
 	DEBOUT_UTIL("CALL_OSET::addTrnsctSm", _method <<" "<<_branch)
-	char t_key[64];
-	if (_sode == SODE_TRNSCT_CL)
+	char t_key[512];
+	if (_sode == SODE_TRNSCT_CL){
 		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
-	else if (_sode == SODE_TRNSCT_SV)
+	}
+	else if (_sode == SODE_TRNSCT_SV){
 		sprintf(t_key, "%s#SODE_TRNSCT_SV#%s", _method.c_str(), _branch.c_str());
+	}
 	else {
 		DEBOUT("CALL_OSET::addTrnsctSm NOT INSERTED", _method << _branch)
 		return;

@@ -49,6 +49,19 @@ void DOA::parse(MESSAGE* _mess) {
 		call_oset = comap->getCALL_OSET_YDerived(_mess->getHeadCallId().getContent());
 		DEBY
 	}
+	string key;
+	static multimap<const string, MESSAGE *> ::iterator p;
+	while(!call_oset->messageKeys.empty()){
+		key = (string)(call_oset->messageKeys.top());
+		p = globalMessTable.find(key);
+		if (p != globalMessTable.end()){
+			delete ((MESSAGE*)p->second);
+			pthread_mutex_lock(&messTableMtx);
+			globalMessTable.erase(p);
+			pthread_mutex_unlock(&messTableMtx);
+		}
+		call_oset->messageKeys.pop();
+	}
 	if (call_oset != 0x0){
 		DEBY
 		delete call_oset;

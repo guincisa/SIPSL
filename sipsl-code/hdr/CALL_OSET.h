@@ -52,8 +52,6 @@ class CALL_OSET {
 		// current sequence, shared among all request
 		int currentSequence;
 
-		//list of keys of messages created in call oset
-		stack<string> messageKeys;
 
 		// Get new transaction state machine
 		TRNSCT_SM* newTrnsct(string method, string side);
@@ -66,6 +64,9 @@ class CALL_OSET {
 
 
 	public:
+
+		//list of keys of messages created in call oset
+		stack<string> messageKeys;
 
 		void insertMessageKey(string key);
 
