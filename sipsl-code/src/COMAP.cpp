@@ -143,4 +143,26 @@ void COMAP::deleteCALL_OSET(string _callId_X){
 			comap_mm.erase(p);
 	}
 }
+//**********************************************************************************
+//**********************************************************************************
+void COMAP::deleteYCALL_OSET(string _callId_Y){
+
+	DEBOUT("COMAP::delete/CALL_OSET remove ", _callId_Y)
+
+	map<string, CALL_OSET*>::iterator p;
+	map<string, string>::iterator p2;
+	string tmp2 = "";
+
+	p2 = call_id_y2x.find(_callId_Y);
+
+	if (p2 != call_id_y2x.end()){
+		tmp2 = (string)p2->second;
+		DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp2)
+		p = comap_mm.find(tmp2);
+		if (p != comap_mm.end()){
+			comap_mm.erase(p);
+			call_id_y2x.erase(p2);
+		}
+	}
+}
 

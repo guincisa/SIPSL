@@ -156,8 +156,6 @@ typedef struct {
 				SysTime inTime;\
 				GETTIME(inTime);\
 				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr));\
-				int i = __mess->getTotLines();\
-				DEBOUT("NEW MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
 				string key(bu);\

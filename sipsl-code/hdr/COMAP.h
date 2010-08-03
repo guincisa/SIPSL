@@ -45,6 +45,8 @@ class COMAP {
 		void setCALL_OSET(string callId_X, CALL_OSET*);
 		void setY2XCallId(string callId_Y, string callId_X);
 		void deleteCALL_OSET(string callId_X);
+		void deleteYCALL_OSET(string callId_Y);
+
 
 		COMAP(void);
 		~COMAP(void);

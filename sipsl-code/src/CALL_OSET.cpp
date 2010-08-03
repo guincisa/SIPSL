@@ -512,8 +512,6 @@ ACTION* SM_V5::event(MESSAGE* _event){
 	}
 	pthread_mutex_unlock(&mutex);
 	return(act);
-
-	DEBOUT("SM_V5::exec_it unexpected event", _event)
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -1315,7 +1313,7 @@ ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 }
 bool pre_1_1_bye_cl(SM_V5* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_SM_BYE_CL pre_1_1_inv_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL pre_1_1_bye_cl","")
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
