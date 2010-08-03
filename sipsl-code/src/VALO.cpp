@@ -75,7 +75,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 	DEBOUT("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
-	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
+	CREATEMESSAGE(message, _message, SODE_ALOPOINT, call_oset)
 	message->setDestEntity(SODE_TRNSCT_CL);
 
 	try {
@@ -125,7 +125,7 @@ void VALO::onAck(MESSAGE* _message){
 
 
 	//V5 trying to build the ACK using the ACK_A instead of INVITE b
-	CREATEMESSAGE(newack, _message, SODE_ALOPOINT)
+	CREATEMESSAGE(newack, _message, SODE_ALOPOINT, call_oset)
 	//set as source the original ack, needed to identify call_oset_x when back to call control
 	newack->setSourceMessage(_message);
 	newack->setDestEntity(SODE_SMCLPOINT);
@@ -342,7 +342,7 @@ void VALO::onBye(MESSAGE* _message){
 //
 //	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
 
-	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
+	CREATEMESSAGE(message, _message, SODE_ALOPOINT, call_oset)
 
 	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
 
@@ -452,7 +452,7 @@ void VALO::on200Ok(MESSAGE* _message){
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
 
 	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
-	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
+	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT, call_oset)
 	ok_x->setDestEntity(SODE_TRNSCT_SV);
 	ok_x->typeOfInternal = TYPE_MESS;
 

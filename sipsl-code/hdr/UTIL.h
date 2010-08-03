@@ -121,7 +121,7 @@ typedef struct {
 //							sizeof(si_bpart));}
 
 
-#define CREATEMESSAGE(m1, m2, m3) MESSAGE* m1=0x0; {char bu[512];\
+#define CREATEMESSAGE(m1, m2, m3, _call_oset) MESSAGE* m1=0x0; {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
 				NEWPTR2(m1, MESSAGE(m2, m3, inTime));\
@@ -132,9 +132,25 @@ typedef struct {
 				m1->setKey(key);\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<const string, MESSAGE*>(m1->getKey(), m1));\
+				if (_call_oset != 0x0) _call_oset->insertMessageKey(m1->getKey()); \
 				pthread_mutex_unlock(&messTableMtx);}
 
-#define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) char bu[512];\
+#define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode, _call_set) char bu[512];\
+				SysTime inTime;\
+				GETTIME(inTime);\
+				NEWPTR(MESSAGE*, __mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr));\
+				DEBOUT("NEW MESSAGE"," " << __mess->getTotLines());\
+				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
+				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
+				string key(bu);\
+				__mess->setKey(key);\
+				DEBMESSAGE("New message from buffer", __mess->getIncBuffer() << "]\nkey [" << key)\
+				pthread_mutex_lock(&messTableMtx);\
+				globalMessTable.insert(pair<const string, MESSAGE*>(__mess->getKey(), __mess));\
+				if (_call_oset != 0x0) _call_oset->insertMessageKey(__mess->getKey()); \
+				pthread_mutex_unlock(&messTableMtx);
+
+#define CREATENEWMESSAGE_EXT(__mess, __echob, __sock, __echoAddr, __sode) char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
 				NEWPTR(MESSAGE*, __mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr));\
@@ -149,8 +165,8 @@ typedef struct {
 				pthread_mutex_unlock(&messTableMtx);
 
 
-#define DUPLICATEMESSAGE(m1, m2, m3) \
-		CREATEMESSAGE(m1, m2, m3)\
+#define DUPLICATEMESSAGE(m1, m2, m3, _call_oset) \
+		CREATEMESSAGE(m1, m2, m3, _call_oset)\
 		m1->setSourceMessage(m2->getSourceMessage());
 
 class ThreadWrapper {

@@ -172,7 +172,7 @@ void SUDP::listen() {
         }else {
 			//Message handling
         	DEBY
-			CREATENEWMESSAGE(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
+			CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
         	DEBY
 			engine->p_w(message);
         }
@@ -233,6 +233,9 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	//TODO
 	//check here DOA and kill call_oset
+	if (_message->getDoa() == DOA_REQUESTED){
+
+	}
 
 	return;
 }

@@ -210,6 +210,11 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(t_key, _trnsctSm));
 	return;
 }
+void CALL_OSET::insertMessageKey(string _key){
+
+	messageKeys.push(_key);
+}
+
 //**********************************************************************************
 //**********************************************************************************
 // SL_CO
@@ -370,6 +375,7 @@ void SL_CO::call(MESSAGE* _message){
 					// should never happen
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 					call_oset->getALO()->call(_tmpMessage);
+
 					actionList.pop();
 					continue;
 				}
@@ -394,6 +400,7 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
 					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
 					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+
 					actionList.pop();
 					continue;
 				}
@@ -568,7 +575,7 @@ ACTION* act_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
 
-	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV)
+	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV, _sm->getSL_CO()->call_oset)
 	SipUtil.genTryFromInvite(_message, etry);
 	etry->setDestEntity(SODE_NTWPOINT);
 	etry->typeOfInternal = TYPE_MESS;
@@ -764,7 +771,7 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	//careful with source message.
 	//Prepare message for Alarm
-	DUPLICATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	DUPLICATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, _sm->getSL_CO()->call_oset)
 
 	//This is to be sent later, after timer expires
 	//Preconfigure message entity points, the alarm manager cannot do this
@@ -893,7 +900,7 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	MESSAGE* __message = ((TRNSCT_SM*)_sm)->getA_Matrix();
 	DEBOUT("MESSAGE GENERATOR", __message)
 
-	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_SV)
+	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_SV, _sm->getSL_CO()->call_oset)
 	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
 	reply_x->setDestEntity(SODE_TRNSCT_SV);
 	reply_x->setGenEntity(SODE_TRNSCT_CL);
@@ -909,7 +916,7 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 
 	//Clear alam here in case the b did not send any trying
-	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL, _sm->getSL_CO()->call_oset)
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	SingleAction sa_2 = SingleAction(___message);
@@ -950,7 +957,7 @@ ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//Clear alam here in case the b did not send any trying
-	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL, _sm->getSL_CO()->call_oset)
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	SingleAction sa_2 = SingleAction(___message);
@@ -1264,7 +1271,7 @@ ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//careful with source message.
-	DUPLICATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	DUPLICATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, _sm->getSL_CO()->call_oset)
 
 	//This is to be sent later, after timer expires
 	//Preconfigure message entity points, the alarm manager cannot do this
@@ -1344,7 +1351,7 @@ ACTION* act_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	DUPLICATEMESSAGE(__message, _message, SODE_TRNSCT_CL)
+	DUPLICATEMESSAGE(__message, _message, SODE_TRNSCT_CL, _sm->getSL_CO()->call_oset)
 	__message->typeOfInternal = TYPE_OP;
 	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	SingleAction sa_2 = SingleAction(__message);
