@@ -42,6 +42,8 @@ class SIPENGINE : public ENGINE {
 
         void parse(MESSAGE *);
 
+        SIPENGINE(int);
+
         // link on this the SL_CC engine
         void setSL_CC(ENGINE *);
 

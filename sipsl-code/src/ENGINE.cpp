@@ -58,41 +58,61 @@ ThreadWrapper::ThreadWrapper(void) {
 
 //**********************************************************************************
 //**********************************************************************************
-ENGINE::ENGINE(void) {
+ENGINE::ENGINE(int _i) {
 
     DEBOUT("ENGINE::ENGINE()","")
     int res;
+
+    if ( _i > 8)
+    	_i = 8;
+
     // unlock the CONSmutex once the derived class constructor has ended
     //res = pthread_mutex_lock(&CONSmutex);
 
-    ENGtuple *t1,*t2,*t3,*t4,*t5;
-    t1 = new ENGtuple;
-    t2 = new ENGtuple;
-    t3 = new ENGtuple;
-    t4 = new ENGtuple;
-    t5 = new ENGtuple;
-    t1->ps = this;
-    t1->id = 0;
-    t2->ps = this;
-    t2->id = 1;
-    t3->ps = this;
-    t3->id = 2;
-    t4->ps = this;
-    t4->id = 3;
-    t5->ps = this;
-    t5->id = 4;
+    //ENGtuple *t1,*t2,*t3,*t4,*t5;
 
-    parsethread[0] = new ThreadWrapper();
-    parsethread[1] = new ThreadWrapper();
-    parsethread[2] = new ThreadWrapper();
-    parsethread[3] = new ThreadWrapper();
-    parsethread[4] = new ThreadWrapper();
+    ENGtuple *t[8];
 
-    res = pthread_create(&(parsethread[0]->thread), NULL, threadparser, (void *) t1);
-    res = pthread_create(&(parsethread[1]->thread), NULL, threadparser, (void *) t2);
-    res = pthread_create(&(parsethread[2]->thread), NULL, threadparser, (void *) t3);
-    res = pthread_create(&(parsethread[3]->thread), NULL, threadparser, (void *) t4);
-    res = pthread_create(&(parsethread[4]->thread), NULL, threadparser, (void *) t5);
+//    t1 = new ENGtuple;
+//    t2 = new ENGtuple;
+//    t3 = new ENGtuple;
+//    t4 = new ENGtuple;
+//    t5 = new ENGtuple;
+
+    int i;
+    for ( i = 0 ; i < _i ; i++){
+        t[i]->ps = this;
+        t[i]->id = 0;
+
+        parsethread[i] = new ThreadWrapper();
+
+        res = pthread_create(&(parsethread[i]->thread), NULL, threadparser, (void *) t[i]);
+
+
+    }
+
+//    t1->ps = this;
+//    t1->id = 0;
+//    t2->ps = this;
+//    t2->id = 1;
+//    t3->ps = this;
+//    t3->id = 2;
+//    t4->ps = this;
+//    t4->id = 3;
+//    t5->ps = this;
+//    t5->id = 4;
+
+//    parsethread[0] = new ThreadWrapper();
+//    parsethread[1] = new ThreadWrapper();
+//    parsethread[2] = new ThreadWrapper();
+//    parsethread[3] = new ThreadWrapper();
+//    parsethread[4] = new ThreadWrapper();
+
+//    res = pthread_create(&(parsethread[0]->thread), NULL, threadparser, (void *) t1);
+//    res = pthread_create(&(parsethread[1]->thread), NULL, threadparser, (void *) t2);
+//    res = pthread_create(&(parsethread[2]->thread), NULL, threadparser, (void *) t3);
+//    res = pthread_create(&(parsethread[3]->thread), NULL, threadparser, (void *) t4);
+//    res = pthread_create(&(parsethread[4]->thread), NULL, threadparser, (void *) t5);
 
     sudp = 0x0;
 }

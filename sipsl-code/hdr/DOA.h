@@ -32,7 +32,7 @@ class DOA : public ENGINE {
 
     public:
         void parse(MESSAGE*);
-        DOA();
+        DOA(int);
 
     private:
 

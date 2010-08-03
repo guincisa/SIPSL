@@ -52,15 +52,15 @@ int main(void) {
 	SUDP mystack;
 
 	//Second stage engine: Call Control
-	SL_CC sl_cc;
+	SL_CC sl_cc(8);
 	sl_cc.linkSUDP(&mystack);
 
 	//First stage engine: Lazy parser
-	SIPENGINE gg;
+	SIPENGINE gg(2);
 	gg.setSL_CC(&sl_cc);
 	gg.linkSUDP(&mystack);
 
-	DOA doa;
+	DOA doa(2);
 
 	//Alarm setup
 	//sec , nsec

@@ -57,7 +57,7 @@ class ENGINE {
 
 	private:
 
-		ThreadWrapper* parsethread[5];
+		ThreadWrapper* parsethread[8];
 
         SUDP* sudp;
 
@@ -76,7 +76,7 @@ class ENGINE {
 
     	SPINB sb;
 
-		ENGINE(void);
+		ENGINE(int numthreads);
 };
 
 
