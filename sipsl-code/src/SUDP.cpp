@@ -50,6 +50,10 @@
 #ifndef SIPENGINE_H
 #include "SIPENGINE.h"
 #endif
+#ifndef SL_CC_H
+#include "SL_CC.h"
+#endif
+
 #ifndef SUDP_H
 #include "SUDP.h"
 #endif
@@ -234,7 +238,10 @@ void SUDP::sendReply(MESSAGE* _message){
 	//TODO
 	//check here DOA and kill call_oset
 	if (_message->getDoa() == DOA_REQUESTED){
-
+//		SIPENGINE* s = (SIPENGINE*)engine;
+//		SL_CC* ss = (SL_CC*)s->getSL_CC();
+		((DOA*)doa)->setComap(((SL_CC*)((SIPENGINE*)engine)->getSL_CC())->getCOMAP());
+		((DOA*)doa)->p_w(_message);
 	}
 
 	return;

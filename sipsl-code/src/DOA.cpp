@@ -31,10 +31,28 @@
 DOA::DOA(int _i):ENGINE(_i) {
 }
 
+void DOA::setComap(COMAP* _comap){
+	comap = _comap;
+}
+
 void DOA::parse(MESSAGE* _mess) {
 
 	DEBMESSAGE("DOA::parse", _mess->getIncBuffer())
 
 	pthread_mutex_unlock(&(sb.condvarmutex));
 
+	CALL_OSET* call_oset = 0x0;
+	DEBY
+	call_oset = comap->getCALL_OSET_XMain(_mess->getHeadCallId().getContent());
+	DEBY
+	if (call_oset == 0x0){
+		call_oset = comap->getCALL_OSET_YDerived(_mess->getHeadCallId().getContent());
+		DEBY
+	}
+	if (call_oset != 0x0){
+		DEBY
+		delete call_oset;
+	}
+
+	// delete message in the stack
 }

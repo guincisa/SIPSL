@@ -27,14 +27,22 @@
 #ifndef CALL_OSET_H
 #include "CALL_OSET.h"
 #endif
+#ifndef COMAP_H
+#include "COMAP.h"
+#endif
 
 class DOA : public ENGINE {
 
     public:
         void parse(MESSAGE*);
         DOA(int);
+        void setComap(COMAP*);
+        COMAP* getComap(void);
 
     private:
 
 		int dummy;
+
+    	COMAP* comap;
+
 };

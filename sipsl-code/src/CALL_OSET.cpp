@@ -94,13 +94,17 @@ CALL_OSET::~CALL_OSET(void){
 
 	//TODO
 	if (sl_co != 0x0){
+		DEBY
 		//purge states machines
 		map<string, TRNSCT_SM*> ::iterator p;
 		for (p = trnsctSmMap.begin() ; p != trnsctSmMap.end() ; p++) {
+			DEBY
 			delete (TRNSCT_SM*)p->second;
 		}
+		DEBY
 	}
 	if (alo != 0x0){
+		DEBY
 		delete alo;
 	}
 
