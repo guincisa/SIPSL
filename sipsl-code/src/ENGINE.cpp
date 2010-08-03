@@ -81,6 +81,9 @@ ENGINE::ENGINE(int _i) {
 
     int i;
     for ( i = 0 ; i < _i ; i++){
+
+    	t[i] = new ENGtuple;
+
         t[i]->ps = this;
         t[i]->id = 0;
 

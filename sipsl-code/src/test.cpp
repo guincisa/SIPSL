@@ -52,7 +52,7 @@ int main(void) {
 	SUDP mystack;
 
 	//Second stage engine: Call Control
-	SL_CC sl_cc(8);
+	SL_CC sl_cc(7);
 	sl_cc.linkSUDP(&mystack);
 
 	//First stage engine: Lazy parser
