@@ -1,8 +1,8 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-// SIPCSL Sip Core And Service Layer
-// Copyright (C) 2009 Guglielmo Incisa di Camerana
+// SIPSL Sip Core And Service Layer
+// Copyright (C) 2010 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -19,41 +19,22 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-
-//Vendor ALO: the final application
-//overrides ALO call backs
-
-#define VALO_H
-
-#ifndef ALO_H
-#include "ALO.h"
+#ifndef ENGINE_H
+#include "ENGINE.h"
 #endif
-#ifndef CALL_OSET_H
-#include "CALL_OSET.h"
-#endif
-#ifndef SIPUTIL_H
-#include "SIPUTIL.h"
+#ifndef DOA_H
+#include "DOA.h"
 #endif
 
+//**********************************************************************************
+//**********************************************************************************
+DOA::DOA(void) {
+}
 
-class VALO : public ALO {
+void DOA::parse(MESSAGE* _mess) {
 
-	private:
+	DEBMESSAGE("DOA::parse", _mess->getIncBuffer())
 
-		// the To Tag that B sends back in 200ok
-		// actually it is sent before in DE or 180 Ring but we store it here
-		// since VALO only intercepts the 200 ok
+	pthread_mutex_unlock(&(sb.condvarmutex));
 
-		map<string, void*> ctxt_store;
-
-		int dummy;
-	public:
-		VALO(ENGINE*, CALL_OSET*);
-		~VALO(void);
-		void onInvite(MESSAGE*);
-		void onAck(MESSAGE*);
-		void onBye(MESSAGE*);
-		void on200Ok(MESSAGE*);
-		void onAckNoTrnsct(MESSAGE*);
-
-};
+}

@@ -95,9 +95,13 @@ CALL_OSET::~CALL_OSET(void){
 	//TODO
 	if (sl_co != 0x0){
 		//purge states machines
+		map<string, TRNSCT_SM*> ::iterator p;
+		for (p = trnsctSmMap.begin() ; p != trnsctSmMap.end() ; p++) {
+			delete (TRNSCT_SM*)p->second;
+		}
 	}
 	if (alo != 0x0){
-		//purge alo
+		delete alo;
 	}
 
 }
@@ -1205,7 +1209,7 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	ok_x->setDoa(DOA_REQUEST);
+	_message->setDoa(DOA_REQUESTED);
 
 	DEBOUT("SM_V5 act_1_2_bye_sv move to state 2","")
 	_sm->State = 2;

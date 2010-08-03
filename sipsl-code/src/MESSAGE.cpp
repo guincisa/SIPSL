@@ -996,4 +996,10 @@ bool MESSAGE::getLock(void){
 void MESSAGE::unSetLock(void){
 	lock=false;
 }
+int MESSAGE::getDoa(void){
+	return doa;
+}
+void MESSAGE::setDoa(int _doa){
+	doa = _doa;
+}
 

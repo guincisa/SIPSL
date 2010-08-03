@@ -64,7 +64,7 @@ class SUDP {
     public:
 
         // Init stack
-        void init(int _PORT, ENGINE* _ENGINE, string _domain, ALMGR* _alarm);
+        void init(int _PORT, ENGINE* _ENGINE, ENGINE* _doa, string _domain, ALMGR* _alarm);
 
         // Start call processing
         void start(void);
@@ -84,9 +84,11 @@ class SUDP {
         void sendRequest(MESSAGE* message);
         void sendReply(MESSAGE* message);
 
+        ENGINE* getDoa();
+
     private:
 
-        ENGINE * engine;
+        ENGINE* engine;
         ThreadWrapper *listenerThread;
         string domain;
         int sock;
@@ -98,4 +100,6 @@ class SUDP {
         int recvMsgSize;
 
         ALMGR* alarm;
+
+        ENGINE* doa;
 };

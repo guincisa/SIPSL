@@ -40,6 +40,36 @@
 SIPUTIL SipUtil;
 
 VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
+VALO::~VALO(void){
+
+	//purge pointers on map except messages
+	map<string, void*> ::iterator p;
+
+	p = ctxt_store.find("tohead_200ok_b");
+	delete (string*)p->second;
+	ctxt_store.erase(p);
+
+	p = ctxt_store.find("CSeqB2BINIVTE");
+	delete (int*)p->second;
+	ctxt_store.erase(p);
+
+	p = ctxt_store.find("totag_200ok_b");
+	delete (string*)p->second;
+	ctxt_store.erase(p);
+
+	p = ctxt_store.find("allvia_200ok_b");
+	delete (string*)p->second;
+	ctxt_store.erase(p);
+
+	p = ctxt_store.find("callid_200ok_b");
+	delete (string*)p->second;
+	ctxt_store.erase(p);
+
+	p = ctxt_store.find("fromhead_200ok_b");
+	delete (string*)p->second;
+	ctxt_store.erase(p);
+
+}
 
 void VALO::onInvite(MESSAGE* _message){
 
@@ -129,7 +159,7 @@ void VALO::onAck(MESSAGE* _message){
 	//TOTAG
 	char toTmp[512];
 	map<string, void*> ::iterator p;
-	p = ctxt_store.find("totag_200OK_b");
+	p = ctxt_store.find("totag_200ok_b");
 	string toTagB = *((string*)p->second);
 	sprintf(toTmp, "%s %s;tag=%s",newack->getHeadTo().getNameUri().c_str(), newack->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
 	string toTmpS(toTmp);
@@ -142,7 +172,7 @@ void VALO::onAck(MESSAGE* _message){
 
 	DEBOUT("NEW ACK via","")
 	map<string, void*> ::iterator p2;
-	p2 = ctxt_store.find("allvia_200OK_b");
+	p2 = ctxt_store.find("allvia_200ok_b");
 	string allVia = *((string*)p2->second);
 	newack->purgeSTKHeadVia();
 	newack->pushHeadVia(allVia);
@@ -399,13 +429,13 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	NEWPTR(string*, totag, string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag")))
 	DEBOUT("STORE totag", totag)
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("totag_200OK_b", (void*) totag )))
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("totag_200ok_b", (void*) totag )))
 
 	stack<C_HeadVia*>	tmpViaS;
 	tmpViaS = _message->getSTKHeadVia();
 	NEWPTR(string*, allvia, string(tmpViaS.top()->getC_AttVia().getContent()))
 	DEBOUT("STORE totag", allvia)
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("allvia_200OK_b", (void*) allvia )))
+	TRYCATCH(ctxt_store.insert(pair<string, void*>("allvia_200ok_b", (void*) allvia )))
 
 	// Need to store the FROM and TO
 	// To create the ACK

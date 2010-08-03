@@ -62,6 +62,9 @@
 #ifndef ALARM_H
 #include "ALARM.h"
 #endif
+#ifndef DOA_H
+#include "DOA.h"
+#endif
 
 // *****************************************************************************************
 // Socket listener thread
@@ -87,7 +90,7 @@ void * SUDPSTACK(void *_tgtObject) {
 // Initialize Stack
 // *****************************************************************************************
 // *****************************************************************************************
-void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm){
+void SUDP::init(int _port, ENGINE *_engine, ENGINE* _doa, string _domain, ALMGR* _alarm){
 
     DEBOUT("SUDP init",_domain)
 
@@ -98,6 +101,8 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm){
     echoServPort = _port;
 
     alarm = _alarm;
+
+    doa = _doa;
 
     /* Create socket for sending/receiving datagrams */
     if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
@@ -231,6 +236,10 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	return;
 }
+ENGINE* SUDP::getDoa(){
+	return doa;
+}
+
 //void SUDP::sendRequest(MESSAGE* _message){
 //
 //	struct sockaddr_in si_part;

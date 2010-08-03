@@ -43,6 +43,9 @@
 #ifndef SIP_PROPERTIES_H
 #include "SIP_PROPERTIES.h"
 #endif
+#ifndef DOA_H
+#include "DOA.h"
+#endif
 
 int main(void) {
 
@@ -57,12 +60,14 @@ int main(void) {
 	gg.setSL_CC(&sl_cc);
 	gg.linkSUDP(&mystack);
 
+	DOA doa;
+
 	//Alarm setup
 	//sec , nsec
 	ALMGR alarm(&sl_cc, 0, 10000000);
 	alarm.initAlarm();
 
-	mystack.init(5060, &gg, "sipsl.gugli.com", &alarm);
+	mystack.init(5060, &gg, &doa, "sipsl.gugli.com", &alarm);
     mystack.start();
 
     pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
