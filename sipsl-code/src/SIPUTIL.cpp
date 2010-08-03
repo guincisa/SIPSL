@@ -48,8 +48,6 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 
 	_gted->replaceHeadContact("<sip:sipsl@grog:5060>");
 
-	_gted->purgeSDP();
-
 
 	if ( _gted->getHeadTo().getC_AttUriParms().getContent().length() == 0){
 		DEBOUT("_gted->getHeadTo().getC_AttUriParms()).getContent()",_gted->getHeadTo().getC_AttUriParms().getContent())
@@ -100,8 +98,6 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	_gted->pushHeadVia(viatmp->getC_AttVia().getContent());
 
 
-	_gted->compileMessage();
-	_gted->dumpVector();
 
 
 }

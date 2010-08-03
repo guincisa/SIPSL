@@ -907,6 +907,9 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_SV, _sm->getSL_CO()->call_oset)
 	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
+	reply_x->purgeSDP();
+	reply_x->compileMessage();
+	reply_x->dumpVector();
 	reply_x->setDestEntity(SODE_TRNSCT_SV);
 	reply_x->setGenEntity(SODE_TRNSCT_CL);
 	reply_x->typeOfInternal = TYPE_MESS;
