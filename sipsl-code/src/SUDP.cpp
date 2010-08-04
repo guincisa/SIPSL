@@ -176,10 +176,15 @@ void SUDP::listen() {
         }else {
 			//Message handling
         	DEBY
-        	MESSAGE *message=0x0;
+        	MESSAGE* message=0x0;
 			CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
-        	DEBY
-			engine->p_w(message);
+        	if (message != 0x0 ){
+    			DEBMESSAGE("New message from buffer ", message)
+
+    			engine->p_w(message);
+        	}else {
+        		DEBERROR("SUDP::listen() could not allocate memory for incoming message")
+        	}
         }
 	}
 }

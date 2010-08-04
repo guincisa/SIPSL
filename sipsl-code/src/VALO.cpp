@@ -101,7 +101,7 @@ void VALO::onInvite(MESSAGE* _message){
 	message->compileMessage();
 	message->dumpVector();
 
-	DEBMESSAGE("New outgoing b2b message", message->getIncBuffer())
+	DEBMESSAGE("New outgoing b2b message", message)
 
 	//TODO ???
 	DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
@@ -220,7 +220,7 @@ void VALO::onAck(MESSAGE* _message){
 	newack->dumpVector();
 
 
-	DEBMESSAGE("New outgoing b2b message", newack->getIncBuffer())
+	DEBMESSAGE("New outgoing b2b message", newack)
 	sl_cc->p_w(newack);
 }
 void VALO::onAckNoTrnsct(MESSAGE* _message){
@@ -332,7 +332,7 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 }
 void VALO::onBye(MESSAGE* _message){
 
-	DEBMESSAGE("VALO::onBye", _message->getIncBuffer())
+	DEBMESSAGE("VALO::onBye", _message)
 
 	//The direction of the bye is recognized by the CSEQ
 

@@ -37,7 +37,7 @@ void DOA::setComap(COMAP* _comap){
 
 void DOA::parse(MESSAGE* _mess) {
 
-	DEBMESSAGE("DOA::parse", _mess->getIncBuffer())
+	DEBMESSAGE("DOA::parse", _mess)
 
 	pthread_mutex_unlock(&(sb.condvarmutex));
 

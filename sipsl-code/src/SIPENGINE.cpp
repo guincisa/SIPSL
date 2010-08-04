@@ -68,18 +68,10 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	pthread_mutex_unlock(&(sb.condvarmutex));
 
-	//B2BUA, NGApplication, SBC
-
 	//Check if Request or Reply
-	DEBMESSAGE("SIPENGINE::parse",_mess->getIncBuffer())
-
-
-//	timespec sleep_time;
-//	sleep_time.tv_sec = 40;
-//	sleep_time.tv_nsec = 0;
-//	nanosleep(&sleep_time,NULL);
-
 	int tl = _mess->getTotLines();
+	DEBOUT("SIPENGINE::parse",_mess->getLine(0) << "] [" <<_mess->getKey())
+
 	DEBOUT("SIPENGINE::parse tot lines",tl)
 
 	int type = _mess->getReqRepType();

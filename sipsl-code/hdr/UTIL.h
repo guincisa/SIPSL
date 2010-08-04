@@ -56,7 +56,8 @@ typedef struct {
 #define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 //#define DEBOUT(m1,m2)
 #define DEBOUT_UTIL(m1,m2)  {stringstream xx ; xx << "DEBOUT_UTIL " <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
-#define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" << m2 << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
+#define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "]\n["<< m2->getIncBuffer() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
+#define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" <<m2->getKey() << "]\n["<< m2->getLine(0) << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
 #define DEBERROR(m1)  {stringstream xx ; xx << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]\n";cout << xx.str();cout.flush();}
 #define DEBY  {stringstream xx ; xx << "DEBY " << __FILE__ <<" " <<__LINE__<< "\n";cout << xx.str();cout.flush();}
 #define DEBASSERT(m1) cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; cout.flush();assert(0);
@@ -66,13 +67,12 @@ typedef struct {
 #define PRINTTIMESHORT(m,starttime){char bu[1024];sprintf(bu, "time %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec);DEBOUT(m, bu )}
 
 #define PURGEMESSAGE(m1,m2)  {string key = m1->getKey(); \
-	pthread_mutex_lock(&messTableMtx);\
-	DEBMESSAGE("PURGEMESSAGE",m1->getIncBuffer()) \
+	DEBMESSAGE("PURGEMESSAGE",m1) \
 	DEBOUT("PURGEMESSAGE "<<m2,key << " [" <<m1<<"]")\
-	globalMessTable.erase(key);\
 	delete m1;\
-	m1= 0x0;\
-	pthread_mutex_unlock(&messTableMtx); }
+	pthread_mutex_lock(&messTableMtx);\
+	globalMessTable.erase(key);\
+	pthread_mutex_unlock(&messTableMtx); m1= 0x0;}
 
 #define WAITTIME { timespec sleep_time; \
 	sleep_time.tv_sec = 20;\
@@ -84,7 +84,7 @@ typedef struct {
 	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
 #define NEWPTR2(m1, m2) m1 = 0x0;\
 	m1 = new m2;\
-	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
+	if (m1 == 0x0) { DEBERROR("NEW allocation failed")}
 
 #define TRYCATCH(m) try { m; } catch (exception& e) {DEBOUT("Exception thrown", e.what()) DEBASSERT("Exception")}
 
@@ -156,14 +156,13 @@ typedef struct {
 				SysTime inTime;\
 				GETTIME(inTime);\
 				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr));\
-				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
+				if (__mess != 0x0 ) {long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
 				string key(bu);\
 				__mess->setKey(key);\
-				DEBMESSAGE("New message from buffer", __mess->getIncBuffer() << "]\nkey [" << key)\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<const string, MESSAGE*>(__mess->getKey(), __mess));\
-				pthread_mutex_unlock(&messTableMtx);}
+				pthread_mutex_unlock(&messTableMtx);}}
 
 
 #define DUPLICATEMESSAGE(m1, m2, m3, _call_oset) \

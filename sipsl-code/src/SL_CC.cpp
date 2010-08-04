@@ -90,7 +90,7 @@ COMAP* SL_CC::getCOMAP(void){
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {
 
-	DEBMESSAGE("SL_CC::parse", _mess->getIncBuffer())
+	DEBMESSAGESHORT("SL_CC::parse", _mess)
 
 	pthread_mutex_unlock(&(sb.condvarmutex));
 
@@ -112,6 +112,12 @@ void SL_CC::parse(MESSAGE* _mess) {
 		if (call_oset != 0x0) {
 			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
 
+			//Check doa
+			if (call_oset->getDoa()){
+				PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
+				return;
+			}
+
 			//to SV if Request to CL if Reply
 			if (_mess->getReqRepType() == REQSUPP) {
 				_mess->setDestEntity(SODE_TRNSCT_SV);
@@ -129,6 +135,13 @@ void SL_CC::parse(MESSAGE* _mess) {
 			call_oset = comap->getCALL_OSET_YDerived(callids);
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
+
+				//Check doa
+				if (call_oset->getDoa()){
+					PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
+					return;
+				}
+
 
 				//to SV if Request to CL if Reply
 				if (_mess->getReqRepType() == REQSUPP) {
@@ -169,7 +182,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			sl_co->call(_mess);
 			return;
 		}else {
-			DEBMESSAGE("Unexpected message ignored", _mess->getIncBuffer())
+			DEBMESSAGE("Unexpected message ignored", _mess)
 			return;
 		}
 	}

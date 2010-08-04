@@ -36,6 +36,10 @@ class CALL_OSET {
 
 	private:
 
+		pthread_mutex_t doa_mutex;
+
+		bool doa;
+
 		SL_CO* sl_co;
 		ALO* alo;
 		ENGINE* engine;
@@ -64,6 +68,8 @@ class CALL_OSET {
 
 
 	public:
+
+		bool getDoa(void);
 
 		//list of keys of messages created in call oset
 		stack<string> messageKeys;

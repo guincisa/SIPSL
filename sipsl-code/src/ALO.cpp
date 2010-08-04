@@ -82,19 +82,19 @@ void ALO::call(MESSAGE* _message) {
 	}
 }
 void ALO::onInvite(MESSAGE* m){
-	DEBMESSAGE("ALO unoverridded onINVITE called ", m->getIncBuffer())
+	DEBMESSAGE("ALO unoverridded onINVITE called ", m)
 }
 void ALO::onAck(MESSAGE* m){
-	DEBMESSAGE("ALO unoverridded onAck called ", m->getIncBuffer())
+	DEBMESSAGE("ALO unoverridded onAck called ", m)
 }
 void ALO::onBye(MESSAGE* m){
-	DEBMESSAGE("ALO unoverridded onBye called ", m->getIncBuffer())
+	DEBMESSAGE("ALO unoverridded onBye called ", m)
 }
 void ALO::on200Ok(MESSAGE* m){
-	DEBMESSAGE("ALO unoverridded on200Ok called ", m->getIncBuffer())
+	DEBMESSAGE("ALO unoverridded on200Ok called ", m)
 }
 void ALO::onAckNoTrnsct(MESSAGE* m){
-	DEBMESSAGE("ALO unoverridded onAckNoTrcts called ", m->getIncBuffer())
+	DEBMESSAGE("ALO unoverridded onAckNoTrcts called ", m)
 }
 void ALO::noCallBack(MESSAGE* _message){
 

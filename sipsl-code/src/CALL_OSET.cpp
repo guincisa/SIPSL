@@ -89,8 +89,17 @@ CALL_OSET::CALL_OSET(ENGINE* _engine){
 
 	sl_co = 0x0;
 	alo = 0x0;
+
+	doa = false;
+
+    pthread_mutex_init(&doa_mutex, NULL);
+
 }
 CALL_OSET::~CALL_OSET(void){
+
+	pthread_mutex_lock(&doa_mutex);
+	doa = true;
+	pthread_mutex_unlock(&doa_mutex);
 
 	//TODO
 	if (sl_co != 0x0){
@@ -107,6 +116,15 @@ CALL_OSET::~CALL_OSET(void){
 		DEBY
 		delete alo;
 	}
+
+}
+bool CALL_OSET::getDoa(void){
+
+	bool tmp;
+	pthread_mutex_lock(&doa_mutex);
+	tmp = doa;
+	pthread_mutex_unlock(&doa_mutex);
+	return doa;
 
 }
 int CALL_OSET::getNextSequence(string _method){
@@ -234,7 +252,7 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 void SL_CO::call(MESSAGE* _message){
 
 	//pthread_mutex_lock(&mutex);
-	DEBMESSAGE("SL_CO::call incoming", _message->getIncBuffer())
+	DEBMESSAGE("SL_CO::call incoming", _message)
 
     ACTION* action = 0x0;
 
@@ -289,7 +307,7 @@ void SL_CO::call(MESSAGE* _message){
 			while (!actionList.empty()){
 
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
-				DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage->getIncBuffer())
+				DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
 
 				//V5
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
@@ -373,7 +391,7 @@ void SL_CO::call(MESSAGE* _message){
 
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
 
-				DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage->getIncBuffer())
+				DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage)
 
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
