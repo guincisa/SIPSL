@@ -94,6 +94,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	pthread_mutex_unlock(&(sb.condvarmutex));
 
+	//Maybe it has been delete by DOA when outside the call_oset
+	if (_mess == 0x0){
+		return;
+	}
+
 
 	if (_mess->getGenEntity() == SODE_NTWPOINT){
 
@@ -116,6 +121,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 			if (call_oset->getDoa()){
 				PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
 				return;
+			}else {
+				comap->setCALL_OSETStatus(call_oset, 1);
 			}
 
 			//to SV if Request to CL if Reply
@@ -128,6 +135,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			}
 			call_oset->insertMessageKey(_mess->getKey());
 			call_oset->getSL_CO()->call(_mess);
+			comap->setCALL_OSETStatus(call_oset, 0);
 			return;
 		}
 		// Then try to get call object using y side params
@@ -140,6 +148,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 				if (call_oset->getDoa()){
 					PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
 					return;
+				}else {
+					comap->setCALL_OSETStatus(call_oset, 1);
 				}
 
 
@@ -153,6 +163,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 				}
 				call_oset->insertMessageKey(_mess->getKey());
 				call_oset->getSL_CO()->call(_mess);
+				comap->setCALL_OSETStatus(call_oset, 0);
 				return;
 			}
 		}
@@ -174,11 +185,13 @@ void SL_CC::parse(MESSAGE* _mess) {
 			call_oset->setSL_CO(sl_co);
 			call_oset->setCallId_X(callids);
 			comap->setCALL_OSET(callids, call_oset);
+			comap->setCALL_OSETStatus(call_oset, 0);
 			//End
 			//////////////////////////////
 
 			DEBOUT("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
 			call_oset->insertMessageKey(_mess->getKey());
+			comap->setCALL_OSETStatus(call_oset, 0);
 			sl_co->call(_mess);
 			return;
 		}else {
@@ -203,15 +216,33 @@ void SL_CC::parse(MESSAGE* _mess) {
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
 
+				//Check doa
+				if (call_oset->getDoa()){
+					PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
+					return;
+				}else {
+					comap->setCALL_OSETStatus(call_oset, 1);
+				}
+
 				call_oset->getSL_CO()->call(_mess);
+				comap->setCALL_OSETStatus(call_oset, 0);
 				return;
 			}else{
 				DEBASSERT(".")
 			}
+
 		}
 		else {
-				call_oset->getSL_CO()->call(_mess);
+			if (call_oset->getDoa()){
+				PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
 				return;
+			}else {
+				comap->setCALL_OSETStatus(call_oset, 1);
+			}
+
+			call_oset->getSL_CO()->call(_mess);
+			comap->setCALL_OSETStatus(call_oset, 0);
+			return;
 		}
 	} else {
 		DEBOUT("Unexpected source of the message", _mess->getGenEntity())

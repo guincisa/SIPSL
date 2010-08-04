@@ -47,9 +47,20 @@ void DOA::parse(MESSAGE* _mess) {
 	DEBY
 	if (call_oset == 0x0){
 		call_oset = comap->getCALL_OSET_YDerived(_mess->getHeadCallId().getContent());
+		while (comap->getCALL_OSETStatus(call_oset) > 0){
+			DEBY
+			WAITTIME
+		}
 		comap->deleteYCALL_OSET(_mess->getHeadCallId().getContent());
 		DEBY
+	}else{
+		while (comap->getCALL_OSETStatus(call_oset) > 0){
+			DEBY
+			WAITTIME
+		}
 	}
+	DEBY
+	call_oset->setDoa();
 
 	string key;
 	static multimap<const string, MESSAGE *> ::iterator p;

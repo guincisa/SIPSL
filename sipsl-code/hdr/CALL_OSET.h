@@ -70,6 +70,7 @@ class CALL_OSET {
 	public:
 
 		bool getDoa(void);
+		void setDoa(void);
 
 		//list of keys of messages created in call oset
 		stack<string> messageKeys;

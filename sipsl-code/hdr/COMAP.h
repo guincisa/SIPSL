@@ -27,7 +27,7 @@
 #endif
 
 //map to store callId_X to call object
-typedef map<string, CALL_OSET *> COMAP_MM;
+typedef map<string, CALL_OSET*> COMAP_MM;
 //map to associate callId_Y to callId_X
 typedef map<string, string> CALL_ID_Y2X;
 
@@ -36,8 +36,11 @@ typedef map<string, string> CALL_ID_Y2X;
 class COMAP {
 
 	private:
+		pthread_mutex_t cos_mutex;
+
 		COMAP_MM comap_mm;
 		CALL_ID_Y2X call_id_y2x;
+		map<CALL_OSET*, int> call_oset_status;
 
 	public:
 		CALL_OSET* getCALL_OSET_XMain(string callId_X);
@@ -46,6 +49,8 @@ class COMAP {
 		void setY2XCallId(string callId_Y, string callId_X);
 		void deleteCALL_OSET(string callId_X);
 		void deleteYCALL_OSET(string callId_Y);
+		int getCALL_OSETStatus(CALL_OSET*);
+		void setCALL_OSETStatus(CALL_OSET*, int);
 
 
 		COMAP(void);

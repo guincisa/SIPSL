@@ -2,8 +2,13 @@ CHANGES
 
 -------------------------------------------------------------------------------
 
-3 agosto
+4 agosto
 
+nella comap metto lo stato della call_oset
+se 0 vuold dire che non sta gestendo messaggi
+se non 0 non la DOA non lo cancella
+ma un messaggio potrebbe esere nella sl_cc mentre la doa cancella
+e quindi lo cancellerebbe
 
 -------------------------------------------------------------------------------
 

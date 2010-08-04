@@ -97,9 +97,6 @@ CALL_OSET::CALL_OSET(ENGINE* _engine){
 }
 CALL_OSET::~CALL_OSET(void){
 
-	pthread_mutex_lock(&doa_mutex);
-	doa = true;
-	pthread_mutex_unlock(&doa_mutex);
 
 	//TODO
 	if (sl_co != 0x0){
@@ -127,6 +124,13 @@ bool CALL_OSET::getDoa(void){
 	return doa;
 
 }
+void CALL_OSET::setDoa(void){
+
+	pthread_mutex_lock(&doa_mutex);
+	doa = true;
+	pthread_mutex_unlock(&doa_mutex);
+}
+
 int CALL_OSET::getNextSequence(string _method){
 
 	map<string, int> ::iterator p;

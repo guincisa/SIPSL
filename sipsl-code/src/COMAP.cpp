@@ -63,10 +63,39 @@
 //**********************************************************************************
 //**********************************************************************************
 COMAP::COMAP(void){
-
+	pthread_mutex_init(&cos_mutex, NULL);
 }
 COMAP::~COMAP(void){
 }
+int COMAP::getCALL_OSETStatus(CALL_OSET* _call_oset){
+
+	pthread_mutex_lock(&cos_mutex);
+
+	map<CALL_OSET*, int>::iterator p;
+	p = call_oset_status.find(_call_oset);
+	if (p != call_oset_status.end()){
+		int i = (int)p->second;
+		pthread_mutex_unlock(&cos_mutex);
+		return i;
+	}else{
+		//status has not been set so by default is busy
+		pthread_mutex_unlock(&cos_mutex);
+		return 9999;
+	}
+}
+void COMAP::setCALL_OSETStatus(CALL_OSET* _call_oset, int _status){
+
+	pthread_mutex_lock(&cos_mutex);
+
+	map<CALL_OSET*, int>::iterator p;
+	p = call_oset_status.find(_call_oset);
+	if (p != call_oset_status.end()){
+		call_oset_status.erase(p);
+	}
+	call_oset_status.insert(pair<CALL_OSET*, int >(_call_oset, _status));
+	pthread_mutex_unlock(&cos_mutex);
+}
+
 //**********************************************************************************
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
@@ -117,6 +146,12 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y){
 void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset){
 
 	DEBOUT("COMAP::setCALL_OSET inserting ", _callId_X)
+
+	pthread_mutex_lock(&cos_mutex);
+
+	call_oset_status.insert(pair<CALL_OSET*, int >(_call_oset, 9999));
+
+	pthread_mutex_unlock(&cos_mutex);
 
 	comap_mm.insert(pair<string, CALL_OSET* >(_callId_X, _call_oset));
 
