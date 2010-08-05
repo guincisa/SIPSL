@@ -26,8 +26,6 @@
 #include "CALL_OSET.h"
 #endif
 
-//map to store callId_X to call object
-typedef map<string, CALL_OSET*> COMAP_MM;
 //map to associate callId_Y to callId_X
 typedef map<string, string> CALL_ID_Y2X;
 
@@ -36,11 +34,15 @@ typedef map<string, string> CALL_ID_Y2X;
 class COMAP {
 
 	private:
-		pthread_mutex_t cos_mutex;
+		pthread_mutex_t cosmap_mutex;
 
-		COMAP_MM comap_mm;
-		CALL_ID_Y2X call_id_y2x;
-		map<CALL_OSET*, int> call_oset_status;
+		//Call id x
+		map<string, CALL_OSET*> comap_mm;
+		//call id y to call id y
+		map<string, string> call_id_y2x;
+
+		//Number of messages currently running inside call_oset
+		map<CALL_OSET*, int> call_oset_msg_cnt;
 
 	public:
 		CALL_OSET* getCALL_OSET_XMain(string callId_X);
@@ -51,6 +53,10 @@ class COMAP {
 		void deleteYCALL_OSET(string callId_Y);
 		int getCALL_OSETStatus(CALL_OSET*);
 		void setCALL_OSETStatus(CALL_OSET*, int);
+
+	//Friend to call_oset
+		void use_CALL_OSET_SL_CO_call(CALL_OSET*, MESSAGE*);
+		void use_CALL_OSET_setCallId_Y(CALL_OSET*, string _cally);
 
 
 		COMAP(void);

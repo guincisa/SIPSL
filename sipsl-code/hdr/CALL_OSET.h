@@ -34,77 +34,53 @@ class TRNSCT_SM;
 //Umbrella class which hosts states machines and call object
 class CALL_OSET {
 
+	friend class COMAP;
+
 	private:
 
 		pthread_mutex_t doa_mutex;
-
 		bool doa;
+		bool getDoa(void);
+		void setDoa(void);
 
 		SL_CO* sl_co;
 		ALO* alo;
 		ENGINE* engine;
+		string callId_X;
+		string callId_Y;
+		void setCallId_Y(string _cally);
+		string getCallId_Y(void);
+		void setCallId_X(string callId_X);
+		string getCallId_X(void);
+		void setSL_CO(SL_CO*);
+		SL_CO* getSL_CO(void);
+		ENGINE* getENGINE(void);
+		ALO* getALO(void);
+		void setALO(ALO*);
 
 		// TRANSACTION MANAGEMENT
 		// KEY is like this
 		// <REQUESTTYPE>#<SIDE>#<BRANCH>
 		// example 1#A#1
 		map<string, TRNSCT_SM*> trnsctSmMap;
+		// Get new transaction state machine
+		TRNSCT_SM* newTrnsct(string method, string side);
+		// add transaction state machine
+		void addTrnsctSm(string method, int sode, string branch, TRNSCT_SM* trnsctSm);
+		// get transaction state machine
+		TRNSCT_SM* getTrnsctSm(string method, int sode, string branch);
 
 		// Sequence map
 		// used to store used sequences and return new unused sequences
 		map<string, int> sequenceMap;
 		// current sequence, shared among all request
 		int currentSequence;
-
-
-		// Get new transaction state machine
-		TRNSCT_SM* newTrnsct(string method, string side);
-
-
-		//From V4
-		string callId_X;
-		string callId_Y;
-
-
-
-	public:
-
-		bool getDoa(void);
-		void setDoa(void);
-
-		//list of keys of messages created in call oset
-		stack<string> messageKeys;
-
-		void insertMessageKey(string key);
-
-		// TRANSACTION MANAGEMENT
-		CALL_OSET(ENGINE*);
-		~CALL_OSET(void);
-
-		// add transaction state machine
-		void addTrnsctSm(string method, int sode, string branch, TRNSCT_SM* trnsctSm);
-		// get transaction state machine
-		TRNSCT_SM* getTrnsctSm(string method, int sode, string branch);
-
-		void setSL_CO(SL_CO*);
-		SL_CO* getSL_CO(void);
-
-		ENGINE* getENGINE(void);
-
-		ALO* getALO(void);
-		void setALO(ALO*);
-
-		//From V4
-		void setCallId_Y(string _cally);
-		string getCallId_Y(void);
-		void setCallId_X(string callId_X);
-		string getCallId_X(void);
-
-		//TODO is wrong
 		int getNextSequence(string method);
 		int getCurrentSequence(string method);
 		void insertSequence(string method, int cntr);
 
+		CALL_OSET(ENGINE*);
+		~CALL_OSET(void);
 
 };
 //**********************************************************************************

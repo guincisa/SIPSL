@@ -112,7 +112,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		call_oset = comap->getCALL_OSET_XMain(callids);
 
-
 		//First try to get the Call object using x side parameters
 		if (call_oset != 0x0) {
 			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
@@ -134,8 +133,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 				_mess->setDestEntity(SODE_TRNSCT_CL);
 			}
 			call_oset->insertMessageKey(_mess->getKey());
-			call_oset->getSL_CO()->call(_mess);
-			comap->setCALL_OSETStatus(call_oset, 0);
+
+			comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
+
 			return;
 		}
 		// Then try to get call object using y side params
@@ -162,8 +162,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 					_mess->setDestEntity(SODE_TRNSCT_CL);
 				}
 				call_oset->insertMessageKey(_mess->getKey());
-				call_oset->getSL_CO()->call(_mess);
-				comap->setCALL_OSETStatus(call_oset, 0);
+				comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
 				return;
 			}
 		}
@@ -191,8 +190,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			DEBOUT("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
 			call_oset->insertMessageKey(_mess->getKey());
-			comap->setCALL_OSETStatus(call_oset, 0);
-			sl_co->call(_mess);
+			comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
 			return;
 		}else {
 			DEBMESSAGE("Unexpected message ignored", _mess)
@@ -224,8 +222,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 					comap->setCALL_OSETStatus(call_oset, 1);
 				}
 
-				call_oset->getSL_CO()->call(_mess);
-				comap->setCALL_OSETStatus(call_oset, 0);
+				comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
 				return;
 			}else{
 				DEBASSERT(".")
@@ -240,8 +237,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 				comap->setCALL_OSETStatus(call_oset, 1);
 			}
 
-			call_oset->getSL_CO()->call(_mess);
-			comap->setCALL_OSETStatus(call_oset, 0);
+			comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
 			return;
 		}
 	} else {

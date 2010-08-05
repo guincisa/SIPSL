@@ -95,7 +95,23 @@ void COMAP::setCALL_OSETStatus(CALL_OSET* _call_oset, int _status){
 	call_oset_status.insert(pair<CALL_OSET*, int >(_call_oset, _status));
 	pthread_mutex_unlock(&cos_mutex);
 }
+void COMAP::useCALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message){
 
+	//check if not doa
+	//if doa return()
+
+	pthread_mutex_lock(&cos_mutex);
+	//busy call_oset + 1
+	pthread_mutex_unlock(&cos_mutex);
+	//else
+	_call_oset->getSL_CO()->call(_message);
+	pthread_mutex_lock(&cos_mutex);
+	//busy call_oset + 1
+	pthread_mutex_unlock(&cos_mutex);
+
+
+
+}
 //**********************************************************************************
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
