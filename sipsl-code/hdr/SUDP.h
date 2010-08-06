@@ -31,12 +31,6 @@
 *****************************************************************************************/
 
 #define SUDP_H
-#ifndef ENGINE_H
-#include "ENGINE.h"
-#endif
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
-#endif
 
 ////**********************************************************************************
 ////**********************************************************************************
@@ -64,7 +58,7 @@ class SUDP {
     public:
 
         // Init stack
-        void init(int _PORT, ENGINE* _ENGINE, ENGINE* _doa, string _domain, ALMGR* _alarm);
+        void init(int _PORT, ENGINE* _ENGINE, DOA* _doa, string _domain, ALMGR* _alarm);
 
         // Start call processing
         void start(void);
@@ -101,5 +95,5 @@ class SUDP {
 
         ALMGR* alarm;
 
-        ENGINE* doa;
+        DOA* doa;
 };

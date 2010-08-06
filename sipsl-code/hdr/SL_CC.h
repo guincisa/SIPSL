@@ -21,12 +21,8 @@
 //**********************************************************************************
 #define SL_CC_H
 
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
-#endif
-#ifndef COMAP_H
-#include "COMAP.h"
-#endif
+class ENGINE;
+class COMAP;
 //**********************************************************************************
 // * SL_CC
 // * Call Control second stage Engine

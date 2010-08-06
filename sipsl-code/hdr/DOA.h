@@ -20,29 +20,22 @@
 //**********************************************************************************
 //**********************************************************************************
 
-#define DOA_H
-#ifndef ENGINE_H
-#include "ENGINE.h"
-#endif
-#ifndef CALL_OSET_H
-#include "CALL_OSET.h"
-#endif
-#ifndef COMAP_H
-#include "COMAP.h"
-#endif
-
-class DOA : public ENGINE {
+class DOA {
 
     public:
-        void parse(MESSAGE*);
-        DOA(int);
-        void setComap(COMAP*);
-        COMAP* getComap(void);
+
+	void init(void);
+	void doa(void);
+	DOA(SL_CC* sl_cc, __time_t sec, long int nsec);
+
 
     private:
 
-		int dummy;
+    pthread_mutex_t mutex;
 
-    	COMAP* comap;
+	timespec sleep_time;
+	SL_CC* sl_cc;
+
+    ThreadWrapper *listenerThread;
 
 };

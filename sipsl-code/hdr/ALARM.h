@@ -24,16 +24,6 @@
 
 #include <queue>
 #include <map>
-#ifndef UTIL_H
-#include "UTIL.h"
-#endif
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
-#endif
-#ifndef SL_CC_H
-#include "SL_CC.h"
-#endif
-
 
 class ALARM {
 

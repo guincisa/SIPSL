@@ -260,8 +260,6 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	type_trnsct = TYPE_TRNSCT;
 
-	doa = 0;
-
 }
 
 MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
@@ -293,8 +291,6 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	lock = false;
 
 	type_trnsct = TYPE_TRNSCT;
-
-	doa = 0;
 
 	return;
 }
@@ -996,10 +992,3 @@ bool MESSAGE::getLock(void){
 void MESSAGE::unSetLock(void){
 	lock=false;
 }
-int MESSAGE::getDoa(void){
-	return doa;
-}
-void MESSAGE::setDoa(int _doa){
-	doa = _doa;
-}
-

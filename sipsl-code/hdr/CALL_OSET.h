@@ -22,20 +22,19 @@
 
 #define CALL_OSET_H
 
-#ifndef ACTION_H
-#include "ACTION.h"
-#endif
-
 class SL_CO;
 class ALO;
 class SL_SM;
 class TRNSCT_SM;
+class ENGINE;
 
 //Umbrella class which hosts states machines and call object
 class CALL_OSET {
 
 	friend class COMAP;
 	friend class SL_CO;
+	friend class ALO;
+	friend class VALO;
 
 	private:
 
@@ -96,8 +95,6 @@ class SL_CO {
 		SL_CO(CALL_OSET*);
 
 		CALL_OSET* call_oset;
-
-
 
 		void call(MESSAGE*);
 

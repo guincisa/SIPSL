@@ -22,10 +22,6 @@
 
 #define COMAP_H
 
-#ifndef CALL_OSET_H
-#include "CALL_OSET.h"
-#endif
-
 //Call oset is running and can be used
 #define NOT_DOA 0
 //Call oset has been delete from memory
@@ -75,6 +71,9 @@ class COMAP {
 	//Friend to call_oset
 		int use_CALL_OSET_SL_CO_call(CALL_OSET*, MESSAGE*);
 		void use_CALL_OSET_setCallId_Y(CALL_OSET*, string _cally);
+		void setDoaRequested(CALL_OSET*);
+
+		void purgeDOA(void);
 
 		COMAP(void);
 		~COMAP(void);

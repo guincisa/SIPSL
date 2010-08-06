@@ -40,6 +40,12 @@
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+#ifndef SPIN_H
+#include "SPIN.h"
+#endif
 #ifndef ENGINE_H
 #include "ENGINE.h"
 #endif
@@ -49,17 +55,20 @@
 #ifndef SL_CC_H
 #include "SL_CC.h"
 #endif
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
+#ifndef ACTION_H
+#include "ACTION.h"
 #endif
-#ifndef COMAP_H
-#include "COMAP.h"
+#ifndef DOA_H
+#include "DOA.h"
+#endif
+#ifndef SUDP_H
+#include "SUDP.h"
 #endif
 #ifndef CALL_OSET_H
 #include "CALL_OSET.h"
 #endif
-#ifndef ACTION_H
-#include "ACTION.h"
+#ifndef COMAP_H
+#include "COMAP.h"
 #endif
 #ifndef ALO_H
 #include "ALO.h"
@@ -1227,10 +1236,10 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	_message->setDoa(DOA_REQUESTED);
-
 	DEBOUT("SM_V5 act_1_2_bye_sv move to state 2","")
 	_sm->State = 2;
+
+	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset);
 
 	return action;
 

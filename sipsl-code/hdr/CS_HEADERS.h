@@ -25,9 +25,6 @@
 #include <map>
 #include <vector>
 
-#ifndef UTIL_H
-#include "UTIL.h"
-#endif
 using namespace std;
 #define REGISTER_REQUEST 1
 #define INVITE_REQUEST 2

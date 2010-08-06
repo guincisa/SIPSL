@@ -18,6 +18,16 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //**********************************************************************************
 //**********************************************************************************
+
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
 #ifndef ACTION_H
 #include "ACTION.h"
 #endif

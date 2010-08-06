@@ -27,16 +27,57 @@
 
 
 
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
+#endif
+#ifndef SPIN_H
+#include "SPIN.h"
+#endif
+#ifndef ENGINE_H
+#include "ENGINE.h"
+#endif
+#ifndef SIPENGINE_H
+#include "SIPENGINE.h"
+#endif
+#ifndef SL_CC_H
+#include "SL_CC.h"
+#endif
+#ifndef ACTION_H
+#include "ACTION.h"
+#endif
+#ifndef DOA_H
+#include "DOA.h"
+#endif
+#ifndef SUDP_H
+#include "SUDP.h"
+#endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
+#ifndef COMAP_H
+#include "COMAP.h"
+#endif
+#ifndef ALO_H
+#include "ALO.h"
 #endif
 #ifndef VALO_H
 #include "VALO.h"
 #endif
+#ifndef SIP_PROPERTIES_H
+#include "SIP_PROPERTIES.h"
+#endif
+#ifndef ALARM_H
+#include "ALARM.h"
+#endif
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
-
 SIPUTIL SipUtil;
 
 VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
@@ -75,7 +116,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 	DEBOUT("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
-	CREATEMESSAGE(message, _message, SODE_ALOPOINT, call_oset)
+	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 	message->setDestEntity(SODE_TRNSCT_CL);
 
 	try {
@@ -125,7 +166,7 @@ void VALO::onAck(MESSAGE* _message){
 
 
 	//V5 trying to build the ACK using the ACK_A instead of INVITE b
-	CREATEMESSAGE(newack, _message, SODE_ALOPOINT, call_oset)
+	CREATEMESSAGE(newack, _message, SODE_ALOPOINT)
 	//set as source the original ack, needed to identify call_oset_x when back to call control
 	newack->setSourceMessage(_message);
 	newack->setDestEntity(SODE_SMCLPOINT);
@@ -342,7 +383,7 @@ void VALO::onBye(MESSAGE* _message){
 //
 //	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
 
-	CREATEMESSAGE(message, _message, SODE_ALOPOINT, call_oset)
+	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 
 	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
 
@@ -452,7 +493,7 @@ void VALO::on200Ok(MESSAGE* _message){
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
 
 	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
-	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT, call_oset)
+	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
 	ok_x->setDestEntity(SODE_TRNSCT_SV);
 	ok_x->typeOfInternal = TYPE_MESS;
 

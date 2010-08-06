@@ -41,6 +41,12 @@
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+#ifndef SPIN_H
+#include "SPIN.h"
+#endif
 #ifndef ENGINE_H
 #include "ENGINE.h"
 #endif
@@ -50,14 +56,35 @@
 #ifndef SL_CC_H
 #include "SL_CC.h"
 #endif
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
+#ifndef ACTION_H
+#include "ACTION.h"
+#endif
+#ifndef DOA_H
+#include "DOA.h"
+#endif
+#ifndef SUDP_H
+#include "SUDP.h"
+#endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
 #endif
 #ifndef COMAP_H
 #include "COMAP.h"
 #endif
-#ifndef CALL_OSET_H
-#include "CALL_OSET.h"
+#ifndef ALO_H
+#include "ALO.h"
+#endif
+#ifndef VALO_H
+#include "VALO.h"
+#endif
+#ifndef SIP_PROPERTIES_H
+#include "SIP_PROPERTIES.h"
+#endif
+#ifndef ALARM_H
+#include "ALARM.h"
+#endif
+#ifndef SIPUTIL_H
+#include "SIPUTIL.h"
 #endif
 
 //**********************************************************************************
@@ -304,6 +331,12 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 	}else {
 		DEBY
 	}
+
+	//if no messages inside and in doa_requested then switch to doa_confirmed
+	if (i == 0 && getDoa(_call_oset)==DOA_REQUESTED){
+		setDoa(_call_oset, DOA_CONFIRMED);
+	}
+
 	pthread_mutex_unlock(&co_msgcnt_mutex);
 	return;
 
@@ -328,6 +361,34 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message){
 		return 0;
 	}
 	return -1;
+}
+//**********************************************************************************
+//**********************************************************************************
+void COMAP::setDoaRequested(CALL_OSET* _call_oset) {
+
+	if (getDoa(_call_oset) == DOA_DELETED || getDoa(_call_oset) == DOA_CONFIRMED) {
+		DEBY
+	}else {
+		setDoa(_call_oset, DOA_REQUESTED);
+	}
+
+}
+void COMAP::purgeDOA(void){
+
+	map<string, CALL_OSET*>::iterator p_comap_mm;
+	CALL_OSET* call_oset;
+
+	pthread_mutex_lock(&comap_mutex);
+
+	for( p_comap_mm = comap_mm.begin(); p_comap_mm != comap_mm.end(); ++p_comap_mm ){
+		call_oset = (CALL_OSET*)p_comap_mm->second;
+		if ( getDoa(call_oset) == DOA_CONFIRMED){
+			delete call_oset;
+			setDoa(call_oset, DOA_DELETED);
+		}else{
+			DEBY
+		}
+	}
 }
 
 //int COMAP::getCALL_OSETStatus(CALL_OSET* _call_oset){

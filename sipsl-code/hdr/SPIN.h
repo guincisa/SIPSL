@@ -21,13 +21,6 @@
 //**********************************************************************************
 
 #define SPIN_H
-#ifndef UTIL_H
-#include "UTIL.h"
-#endif
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
-#endif
-
 
 //SPINBUFFER
 #define SPIN_WW  2

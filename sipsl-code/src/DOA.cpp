@@ -19,66 +19,116 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
+//#ifndef CALL_OSET_H
+//#include "CALL_OSET.h"
+//#endif
+
+#include <pthread.h>
+#include <assert.h>
+#include <stdio.h>
+
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+#ifndef SPIN_H
+#include "SPIN.h"
+#endif
 #ifndef ENGINE_H
 #include "ENGINE.h"
+#endif
+#ifndef SIPENGINE_H
+#include "SIPENGINE.h"
+#endif
+#ifndef SL_CC_H
+#include "SL_CC.h"
+#endif
+#ifndef ACTION_H
+#include "ACTION.h"
 #endif
 #ifndef DOA_H
 #include "DOA.h"
 #endif
+#ifndef SUDP_H
+#include "SUDP.h"
+#endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
+#ifndef COMAP_H
+#include "COMAP.h"
+#endif
+#ifndef ALO_H
+#include "ALO.h"
+#endif
+#ifndef VALO_H
+#include "VALO.h"
+#endif
+#ifndef SIP_PROPERTIES_H
+#include "SIP_PROPERTIES.h"
+#endif
+#ifndef ALARM_H
+#include "ALARM.h"
+#endif
+#ifndef SIPUTIL_H
+#include "SIPUTIL.h"
+#endif
 
 //**********************************************************************************
 //**********************************************************************************
-DOA::DOA(int _i):ENGINE(_i) {
+typedef struct tuple2 {
+	DOA* st;
+} DOAtuple;
+//**********************************************************************************
+extern "C" void* DOASTACK (void*);
+//**********************************************************************************
+void * DOASTACK(void *_tgtObject) {
+
+    DEBOUT("DOASTACK start","")
+
+		DOAtuple *tgtObject = (DOAtuple *)_tgtObject;
+
+    tgtObject->st->doa();
+
+    DEBOUT("DOASTACK started","")
+
+    return (NULL);
+}
+//**********************************************************************************
+DOA::DOA(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
+	sleep_time.tv_sec = _sec;
+	sleep_time.tv_nsec = _nsec;
+	sl_cc = _sl_cc;
+	DEBOUT("DOA::DOA", "DOA created")
 }
 
-void DOA::setComap(COMAP* _comap){
-	comap = _comap;
-}
+void DOA::init(void) {
+	DEBOUT("DOA::init", "init")
 
-void DOA::parse(MESSAGE* _mess) {
+    NEWPTR2(listenerThread,ThreadWrapper);
+	DOAtuple *t1;
+    NEWPTR2(t1,DOAtuple);
+    t1->st = this;
+    int res;
+    res = pthread_create(&(listenerThread->thread), NULL, DOASTACK, (void *) t1 );
 
-	DEBMESSAGE("DOA::parse", _mess)
+    //TODO check consistency!!!
+    pthread_mutex_init(&mutex, NULL);
 
-	pthread_mutex_unlock(&(sb.condvarmutex));
+	DEBOUT("DOA::init", "started")
+    return;
 
-//	CALL_OSET* call_oset = 0x0;
-//	DEBY
-//	call_oset = comap->getCALL_OSET_XMain(_mess->getHeadCallId().getContent());
-//	DEBY
-//	if (call_oset == 0x0){
-//		call_oset = comap->getCALL_OSET_YDerived(_mess->getHeadCallId().getContent());
-//		while (comap->getCALL_OSETStatus(call_oset) > 0){
-//			DEBY
-//			WAITTIME
-//		}
-//		comap->deleteYCALL_OSET(_mess->getHeadCallId().getContent());
-//		DEBY
-//	}else{
-//		while (comap->getCALL_OSETStatus(call_oset) > 0){
-//			DEBY
-//			WAITTIME
-//		}
-//	}
-//	DEBY
-//	call_oset->setDoa();
-//
-//	string key;
-//	static multimap<const string, MESSAGE *> ::iterator p;
-//	while(!call_oset->messageKeys.empty()){
-//		key = (string)(call_oset->messageKeys.top());
-//		p = globalMessTable.find(key);
-//		if (p != globalMessTable.end()){
-//			delete ((MESSAGE*)p->second);
-//			pthread_mutex_lock(&messTableMtx);
-//			globalMessTable.erase(p);
-//			pthread_mutex_unlock(&messTableMtx);
-//		}
-//		call_oset->messageKeys.pop();
-//	}
-//	if (call_oset != 0x0){
-//		DEBY
-//		delete call_oset;
-//	}
+}void DOA::doa(void) {
 
-	// delete message in the stack
+	for(;;) {
+		nanosleep(&sleep_time,NULL);
+		DEBOUT("DOA::doa", "started")
+		sl_cc->getCOMAP()->purgeDOA();
+	}
+
 }

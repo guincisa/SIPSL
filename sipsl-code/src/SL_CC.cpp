@@ -53,6 +53,12 @@
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+#ifndef SPIN_H
+#include "SPIN.h"
+#endif
 #ifndef ENGINE_H
 #include "ENGINE.h"
 #endif
@@ -62,17 +68,35 @@
 #ifndef SL_CC_H
 #include "SL_CC.h"
 #endif
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
+#ifndef ACTION_H
+#include "ACTION.h"
 #endif
-#ifndef COMAP_H
-#include "COMAP.h"
+#ifndef DOA_H
+#include "DOA.h"
+#endif
+#ifndef SUDP_H
+#include "SUDP.h"
 #endif
 #ifndef CALL_OSET_H
 #include "CALL_OSET.h"
 #endif
+#ifndef COMAP_H
+#include "COMAP.h"
+#endif
+#ifndef ALO_H
+#include "ALO.h"
+#endif
 #ifndef VALO_H
 #include "VALO.h"
+#endif
+#ifndef SIP_PROPERTIES_H
+#include "SIP_PROPERTIES.h"
+#endif
+#ifndef ALARM_H
+#include "ALARM.h"
+#endif
+#ifndef SIPUTIL_H
+#include "SIPUTIL.h"
 #endif
 
 

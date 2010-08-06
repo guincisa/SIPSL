@@ -16,6 +16,12 @@
 #ifndef UTIL_H
 #include "UTIL.h"
 #endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
 #ifndef SPIN_H
 #include "SPIN.h"
 #endif
@@ -28,25 +34,36 @@
 #ifndef SL_CC_H
 #include "SL_CC.h"
 #endif
-#ifndef SUDP_H
-#include "SUDP.h"
-#endif
-#ifndef CS_HEADERS_H
-#include "CS_HEADERS.h"
-#endif
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
-#endif
-#ifndef ALARM_H
-#include "ALARM.h"
-#endif
-#ifndef SIP_PROPERTIES_H
-#include "SIP_PROPERTIES.h"
+#ifndef ACTION_H
+#include "ACTION.h"
 #endif
 #ifndef DOA_H
 #include "DOA.h"
 #endif
-
+#ifndef SUDP_H
+#include "SUDP.h"
+#endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
+#ifndef COMAP_H
+#include "COMAP.h"
+#endif
+#ifndef ALO_H
+#include "ALO.h"
+#endif
+#ifndef VALO_H
+#include "VALO.h"
+#endif
+#ifndef SIP_PROPERTIES_H
+#include "SIP_PROPERTIES.h"
+#endif
+#ifndef ALARM_H
+#include "ALARM.h"
+#endif
+#ifndef SIPUTIL_H
+#include "SIPUTIL.h"
+#endif
 int main(void) {
 
 	SUDP mystack;
@@ -60,12 +77,15 @@ int main(void) {
 	gg.setSL_CC(&sl_cc);
 	gg.linkSUDP(&mystack);
 
-	DOA doa(2);
+	DOA doa(&sl_cc, 30, 0);
+	doa.init();
 
 	//Alarm setup
 	//sec , nsec
 	ALMGR alarm(&sl_cc, 0, 10000000);
 	alarm.initAlarm();
+
+
 
 	mystack.init(5060, &gg, &doa, "sipsl.gugli.com", &alarm);
     mystack.start();

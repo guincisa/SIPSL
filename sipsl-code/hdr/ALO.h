@@ -20,15 +20,6 @@
 //**********************************************************************************
 //**********************************************************************************
 
-
-#define ALO_H
-#ifndef ENGINE_H
-#include "ENGINE.h"
-#endif
-#ifndef CALL_OSET_H
-#include "CALL_OSET.h"
-#endif
-
 //V6
 class ALO {
 	public:

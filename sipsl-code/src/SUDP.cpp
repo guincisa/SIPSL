@@ -41,6 +41,12 @@
 #ifndef UTIL_H
 #include "UTIL.h"
 #endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
 #ifndef SPIN_H
 #include "SPIN.h"
 #endif
@@ -53,21 +59,35 @@
 #ifndef SL_CC_H
 #include "SL_CC.h"
 #endif
-
+#ifndef ACTION_H
+#include "ACTION.h"
+#endif
+#ifndef DOA_H
+#include "DOA.h"
+#endif
 #ifndef SUDP_H
 #include "SUDP.h"
 #endif
-#ifndef CS_HEADERS_H
-#include "CS_HEADERS.h"
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
 #endif
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
+#ifndef COMAP_H
+#include "COMAP.h"
+#endif
+#ifndef ALO_H
+#include "ALO.h"
+#endif
+#ifndef VALO_H
+#include "VALO.h"
+#endif
+#ifndef SIP_PROPERTIES_H
+#include "SIP_PROPERTIES.h"
 #endif
 #ifndef ALARM_H
 #include "ALARM.h"
 #endif
-#ifndef DOA_H
-#include "DOA.h"
+#ifndef SIPUTIL_H
+#include "SIPUTIL.h"
 #endif
 
 // *****************************************************************************************
@@ -94,7 +114,7 @@ void * SUDPSTACK(void *_tgtObject) {
 // Initialize Stack
 // *****************************************************************************************
 // *****************************************************************************************
-void SUDP::init(int _port, ENGINE *_engine, ENGINE* _doa, string _domain, ALMGR* _alarm){
+void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm){
 
     DEBOUT("SUDP init",_domain)
 
@@ -241,19 +261,15 @@ void SUDP::sendReply(MESSAGE* _message){
 	}
 	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
-	//TODO
-	//check here DOA and kill call_oset
-	if (_message->getDoa() == DOA_REQUESTED){
-		((DOA*)doa)->setComap(((SL_CC*)((SIPENGINE*)engine)->getSL_CC())->getCOMAP());
-		((DOA*)doa)->p_w(_message);
-	}
+//	//TODO
+//	//check here DOA and kill call_oset
+//	if (_message->getDoa() == DOA_REQUESTED){
+//		((DOA*)doa)->setComap(((SL_CC*)((SIPENGINE*)engine)->getSL_CC())->getCOMAP());
+//		((DOA*)doa)->p_w(_message);
+//	}
 
 	return;
 }
-ENGINE* SUDP::getDoa(){
-	return doa;
-}
-
 //void SUDP::sendRequest(MESSAGE* _message){
 //
 //	struct sockaddr_in si_part;

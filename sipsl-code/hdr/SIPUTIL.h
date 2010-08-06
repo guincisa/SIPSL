@@ -24,13 +24,6 @@
 
 #define SIPUTIL_H
 
-#ifndef MESSAGE_H
-#include "MESSAGE.h"
-#endif
-#ifndef SUDP_H
-#include "SUDP.h"
-#endif
-
 class SIPUTIL {
 
 	private:

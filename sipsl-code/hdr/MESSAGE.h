@@ -25,16 +25,8 @@
 #include <stack>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
-
-
-#ifndef UTIL_H
-#include "UTIL.h"
-#endif
-
-#ifndef CS_HEADERS_H
-#include "CS_HEADERS.h"
-#endif
 
 using namespace std;
 
@@ -217,9 +209,6 @@ class MESSAGE : public BASEMESSAGE {
     	// can be modified
     	bool isInternal;
 
-    	//this if not null, means that the call_oset can be purged
-    	int doa;
-
     public:
 
         MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
@@ -322,9 +311,6 @@ class MESSAGE : public BASEMESSAGE {
     	void setLock(void);
     	bool getLock(void);
     	void unSetLock(void);
-
-    	int getDoa(void);
-    	void setDoa(int);
 
 };
 ///////////////////////////////////////////////////////////////////////////////

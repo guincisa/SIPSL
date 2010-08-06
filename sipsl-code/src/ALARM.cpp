@@ -20,14 +20,33 @@
 //**********************************************************************************
 //**********************************************************************************
 
-#include <pthread.h>
-#include <assert.h>
-#include <stdio.h>
 
-
-
+#ifndef UTIL_H
+#include "UTIL.h"
+#endif
+#ifndef CS_HEADERS_H
+#include "CS_HEADERS.h"
+#endif
+#ifndef MESSAGE_H
+#include "MESSAGE.h"
+#endif
+#ifndef SPIN_H
+#include "SPIN.h"
+#endif
 #ifndef ENGINE_H
 #include "ENGINE.h"
+#endif
+#ifndef ACTION_H
+#include "ACTION.h"
+#endif
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
+#ifndef COMAP_H
+#include "COMAP.h"
+#endif
+#ifndef SL_CC_H
+#include "SL_CC.h"
 #endif
 #ifndef ALARM_H
 #include "ALARM.h"
@@ -35,7 +54,6 @@
 #ifndef UTIL_H
 #include "UTIL.h"
 #endif
-
 
 //**********************************************************************************
 typedef struct tuple2 {
