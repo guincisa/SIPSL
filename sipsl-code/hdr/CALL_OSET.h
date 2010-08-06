@@ -35,13 +35,9 @@ class TRNSCT_SM;
 class CALL_OSET {
 
 	friend class COMAP;
+	friend class SL_CO;
 
 	private:
-
-		pthread_mutex_t doa_mutex;
-		bool doa;
-		bool getDoa(void);
-		void setDoa(void);
 
 		SL_CO* sl_co;
 		ALO* alo;
@@ -79,7 +75,8 @@ class CALL_OSET {
 		int getCurrentSequence(string method);
 		void insertSequence(string method, int cntr);
 
-		CALL_OSET(ENGINE*);
+	public:
+		CALL_OSET(ENGINE*, string call_x);
 		~CALL_OSET(void);
 
 };
@@ -99,6 +96,8 @@ class SL_CO {
 		SL_CO(CALL_OSET*);
 
 		CALL_OSET* call_oset;
+
+
 
 		void call(MESSAGE*);
 

@@ -95,6 +95,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 	pthread_mutex_unlock(&(sb.condvarmutex));
 
 	//Maybe it has been delete by DOA when outside the call_oset
+	//TODO needed???
 	if (_mess == 0x0){
 		return;
 	}
@@ -116,14 +117,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 		if (call_oset != 0x0) {
 			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
 
-			//Check doa
-			if (call_oset->getDoa()){
-				PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
-				return;
-			}else {
-				comap->setCALL_OSETStatus(call_oset, 1);
-			}
-
 			//to SV if Request to CL if Reply
 			if (_mess->getReqRepType() == REQSUPP) {
 				_mess->setDestEntity(SODE_TRNSCT_SV);
@@ -132,9 +125,10 @@ void SL_CC::parse(MESSAGE* _mess) {
 			else if (_mess->getReqRepType() == REPSUPP){
 				_mess->setDestEntity(SODE_TRNSCT_CL);
 			}
-			call_oset->insertMessageKey(_mess->getKey());
 
-			comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
+			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+				DEBOUT("SL_CC::parse rejected by COMAP", callids)
+			}
 
 			return;
 		}
@@ -144,15 +138,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
 
-				//Check doa
-				if (call_oset->getDoa()){
-					PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
-					return;
-				}else {
-					comap->setCALL_OSETStatus(call_oset, 1);
-				}
-
-
 				//to SV if Request to CL if Reply
 				if (_mess->getReqRepType() == REQSUPP) {
 					_mess->setDestEntity(SODE_TRNSCT_SV);
@@ -161,8 +146,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 				else if (_mess->getReqRepType() == REPSUPP){
 					_mess->setDestEntity(SODE_TRNSCT_CL);
 				}
-				call_oset->insertMessageKey(_mess->getKey());
-				comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
+				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+					DEBOUT("SL_CC::parse rejected by COMAP", callids)
+				}
 				return;
 			}
 		}
@@ -176,21 +162,15 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			//////////////////////////////
 			//Start - Initialization block
-			call_oset = new CALL_OSET(this);
-			SL_CO* sl_co = new SL_CO(call_oset);
-			VALO* alo = new VALO(this, call_oset);
-			alo->linkSUDP(getSUDP());
-			call_oset->setALO(alo);
-			call_oset->setSL_CO(sl_co);
-			call_oset->setCallId_X(callids);
+			call_oset = new CALL_OSET(this, callids);
 			comap->setCALL_OSET(callids, call_oset);
-			comap->setCALL_OSETStatus(call_oset, 0);
 			//End
 			//////////////////////////////
 
 			DEBOUT("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
-			call_oset->insertMessageKey(_mess->getKey());
-			comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
+			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+				DEBOUT("SL_CC::parse rejected by COMAP", callids)
+			}
 			return;
 		}else {
 			DEBMESSAGE("Unexpected message ignored", _mess)
@@ -213,16 +193,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 			call_oset = comap->getCALL_OSET_YDerived(callids);
 			if (call_oset != 0x0){
 				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
-
-				//Check doa
-				if (call_oset->getDoa()){
-					PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
-					return;
-				}else {
-					comap->setCALL_OSETStatus(call_oset, 1);
+				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+					DEBOUT("SL_CC::parse rejected by COMAP", callids)
 				}
-
-				comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
 				return;
 			}else{
 				DEBASSERT(".")
@@ -230,14 +203,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		}
 		else {
-			if (call_oset->getDoa()){
-				PURGEMESSAGE(_mess, "SL_CC::parse call_oset is doa");
-				return;
-			}else {
-				comap->setCALL_OSETStatus(call_oset, 1);
+			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+				DEBOUT("SL_CC::parse rejected by COMAP", callids)
 			}
-
-			comap->useCALL_OSET_SL_CO_call(call_oset, _mess);
 			return;
 		}
 	} else {

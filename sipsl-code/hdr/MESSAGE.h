@@ -45,7 +45,7 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SODE_NOPOINT 0
-#define SODE_STOPPOINT 9999
+#define SODE_KILL 9999
 #define SODE_FWD 1
 #define SODE_BKWD 2
 #define SODE_ALOPOINT 3

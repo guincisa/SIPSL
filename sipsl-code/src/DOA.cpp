@@ -41,44 +41,44 @@ void DOA::parse(MESSAGE* _mess) {
 
 	pthread_mutex_unlock(&(sb.condvarmutex));
 
-	CALL_OSET* call_oset = 0x0;
-	DEBY
-	call_oset = comap->getCALL_OSET_XMain(_mess->getHeadCallId().getContent());
-	DEBY
-	if (call_oset == 0x0){
-		call_oset = comap->getCALL_OSET_YDerived(_mess->getHeadCallId().getContent());
-		while (comap->getCALL_OSETStatus(call_oset) > 0){
-			DEBY
-			WAITTIME
-		}
-		comap->deleteYCALL_OSET(_mess->getHeadCallId().getContent());
-		DEBY
-	}else{
-		while (comap->getCALL_OSETStatus(call_oset) > 0){
-			DEBY
-			WAITTIME
-		}
-	}
-	DEBY
-	call_oset->setDoa();
-
-	string key;
-	static multimap<const string, MESSAGE *> ::iterator p;
-	while(!call_oset->messageKeys.empty()){
-		key = (string)(call_oset->messageKeys.top());
-		p = globalMessTable.find(key);
-		if (p != globalMessTable.end()){
-			delete ((MESSAGE*)p->second);
-			pthread_mutex_lock(&messTableMtx);
-			globalMessTable.erase(p);
-			pthread_mutex_unlock(&messTableMtx);
-		}
-		call_oset->messageKeys.pop();
-	}
-	if (call_oset != 0x0){
-		DEBY
-		delete call_oset;
-	}
+//	CALL_OSET* call_oset = 0x0;
+//	DEBY
+//	call_oset = comap->getCALL_OSET_XMain(_mess->getHeadCallId().getContent());
+//	DEBY
+//	if (call_oset == 0x0){
+//		call_oset = comap->getCALL_OSET_YDerived(_mess->getHeadCallId().getContent());
+//		while (comap->getCALL_OSETStatus(call_oset) > 0){
+//			DEBY
+//			WAITTIME
+//		}
+//		comap->deleteYCALL_OSET(_mess->getHeadCallId().getContent());
+//		DEBY
+//	}else{
+//		while (comap->getCALL_OSETStatus(call_oset) > 0){
+//			DEBY
+//			WAITTIME
+//		}
+//	}
+//	DEBY
+//	call_oset->setDoa();
+//
+//	string key;
+//	static multimap<const string, MESSAGE *> ::iterator p;
+//	while(!call_oset->messageKeys.empty()){
+//		key = (string)(call_oset->messageKeys.top());
+//		p = globalMessTable.find(key);
+//		if (p != globalMessTable.end()){
+//			delete ((MESSAGE*)p->second);
+//			pthread_mutex_lock(&messTableMtx);
+//			globalMessTable.erase(p);
+//			pthread_mutex_unlock(&messTableMtx);
+//		}
+//		call_oset->messageKeys.pop();
+//	}
+//	if (call_oset != 0x0){
+//		DEBY
+//		delete call_oset;
+//	}
 
 	// delete message in the stack
 }
