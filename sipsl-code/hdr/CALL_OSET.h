@@ -143,14 +143,9 @@ class TRNSCT_SM  :  public SM_V5{
 
 		MESSAGE* getA_Matrix(void);
 
-
-		//#define REGISTER_REQUEST 1
-		//#define INVITE_REQUEST 2
-		//#define ACK_REQUEST 3
-		//#define BYE_REQUEST 4
-		//#define CANCEL_REQUEST 5
-
 		TRNSCT_SM(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
+
+		~TRNSCT_SM();
 
 
 };
@@ -188,9 +183,6 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 //**********************************************************************************
 class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 
-	private:
-		//TODO move this to upper class
-		MESSAGE* A_Matrix;
 
 	public:
 
@@ -257,9 +249,6 @@ class TRNSCT_SM_BYE_SV : public TRNSCT_SM {
 //**********************************************************************************
 class TRNSCT_SM_BYE_CL : public TRNSCT_SM {
 
-	private:
-		//TODO move this to upper class
-		MESSAGE* A_Matrix;
 
 	public:
 

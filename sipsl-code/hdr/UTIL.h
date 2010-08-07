@@ -68,13 +68,16 @@ typedef struct {
 #define PRINTTIME(starttime,endtime){char bu[1024];sprintf(bu, "init %lld end %lld diff %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec - (lli)starttime.tv.tv_sec*1000000-(lli)starttime.tv.tv_usec );DEBOUT("TIME INTERVAL", bu )}
 #define PRINTTIMESHORT(m,starttime){char bu[1024];sprintf(bu, "time %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec);DEBOUT(m, bu )}
 
-#define PURGEMESSAGE(m1,m2)  {string key = m1->getKey(); \
+#define PURGEMESSAGE(m1)  { \
 	DEBMESSAGE("PURGEMESSAGE",m1) \
-	DEBOUT("PURGEMESSAGE "<<m2,key << " [" <<m1<<"]")\
-	delete m1;\
+	map<const MESSAGE*, MESSAGE*>::iterator p; \
 	pthread_mutex_lock(&messTableMtx);\
-	globalMessTable.erase(key);\
-	pthread_mutex_unlock(&messTableMtx); m1= 0x0;}
+	p = globalMessTable.find(m1);\
+	if (p !=globalMessTable.end()) {\
+		globalMessTable.erase(m1);\
+		delete m1;\
+	}\
+	pthread_mutex_unlock(&messTableMtx);}
 
 #define WAITTIME { timespec sleep_time; \
 	sleep_time.tv_sec = 20;\
@@ -134,7 +137,7 @@ typedef struct {
 				string key(bu);\
 				m1->setKey(key);\
 				pthread_mutex_lock(&messTableMtx);\
-				globalMessTable.insert(pair<const string, MESSAGE*>(m1->getKey(), m1));\
+				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(m1, m1));\
 				pthread_mutex_unlock(&messTableMtx);}
 
 #define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
@@ -149,7 +152,7 @@ typedef struct {
 				__mess->setKey(key);\
 				DEBMESSAGE("New message from buffer", __mess->getIncBuffer() << "]\nkey [" << key)\
 				pthread_mutex_lock(&messTableMtx);\
-				globalMessTable.insert(pair<const string, MESSAGE*>(__mess->getKey(), __mess));\
+				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, _mess));\
 				pthread_mutex_unlock(&messTableMtx);}
 
 #define CREATENEWMESSAGE_EXT(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
@@ -161,7 +164,7 @@ typedef struct {
 				string key(bu);\
 				__mess->setKey(key);\
 				pthread_mutex_lock(&messTableMtx);\
-				globalMessTable.insert(pair<const string, MESSAGE*>(__mess->getKey(), __mess));\
+				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, __mess));\
 				pthread_mutex_unlock(&messTableMtx);}}
 
 

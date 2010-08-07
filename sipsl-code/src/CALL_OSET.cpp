@@ -438,7 +438,7 @@ void SL_CO::call(MESSAGE* _message){
 						string callid_alarm = _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
 						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
-						PURGEMESSAGE(_tmpMessage, "Delete message used to clear alarm")
+						PURGEMESSAGE(_tmpMessage)
 					}
 					else {
 						DEBASSERT("SL_CO client side inconsistency")
@@ -480,6 +480,13 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 		DEBASSERT("NO")
 	}
 }
+TRNSCT_SM::~TRNSCT_SM(void){
+
+	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this)
+	PURGEMESSAGE(Matrix)
+	PURGEMESSAGE(A_Matrix)
+}
+
 
 MESSAGE* TRNSCT_SM::getMatrixMessage(void){
 	if (Matrix == 0x0){
