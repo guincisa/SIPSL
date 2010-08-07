@@ -316,6 +316,9 @@ void COMAP::incCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
+
+	DEBOUT("COMAP::decCALL_OSET_MsgCnt", _call_oset)
+
 	//call_oset message counter
 	int i;
 	map<CALL_OSET*,int>::iterator p_msgcnt;
@@ -326,6 +329,7 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 		DEBY
 		i = (int)p_msgcnt->second;
 		i--;
+		DEBOUT("COMAP::decCALL_OSET_MsgCnt new value", _call_oset << "] [" << i)
 		call_oset_msg_cnt.erase(p_msgcnt);
 		call_oset_msg_cnt.insert(pair<CALL_OSET*, int>(_call_oset, i));
 	}else {
@@ -334,6 +338,7 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 
 	//if no messages inside and in doa_requested then switch to doa_confirmed
 	if (i == 0 && getDoa(_call_oset)==DOA_REQUESTED){
+		DEBOUT("COMAP::decCALL_OSET_MsgCnt DOA_CONFIRMED", _call_oset )
 		setDoa(_call_oset, DOA_CONFIRMED);
 	}
 
@@ -345,16 +350,21 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 //**********************************************************************************
 int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message){
 
+	DEBOUT("COMAP::use_CALL_OSET_SL_CO_call", _call_oset << "] [" << _message->getKey())
+
 	//Check the call_oset doa
 	if (getDoa(_call_oset) == DOA_DELETED || getDoa(_call_oset) == DOA_CONFIRMED) {
+		DEBOUT("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa deleted", _call_oset )
 		_message->setDestEntity(SODE_KILL);
 		return -1;
 	}
 	if (getDoa(_call_oset) == DOA_REQUESTED && _message->getGenEntity() == SODE_NTWPOINT) {
+		DEBOUT("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa_requested", _call_oset )
 		_message->setDestEntity(SODE_KILL);
 		return -1;
 	}
 	if (getDoa(_call_oset) == NOT_DOA){
+		DEBOUT("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
 		incCALL_OSET_MsgCnt(_call_oset);
 		_call_oset->getSL_CO()->call(_message);
 		decCALL_OSET_MsgCnt(_call_oset);
@@ -366,6 +376,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message){
 //**********************************************************************************
 void COMAP::setDoaRequested(CALL_OSET* _call_oset) {
 
+	DEBOUT("COMAP::setDoaRequested", _call_oset)
 	if (getDoa(_call_oset) == DOA_DELETED || getDoa(_call_oset) == DOA_CONFIRMED) {
 		DEBY
 	}else {
@@ -382,13 +393,17 @@ void COMAP::purgeDOA(void){
 
 	for( p_comap_mm = comap_mm.begin(); p_comap_mm != comap_mm.end(); ++p_comap_mm ){
 		call_oset = (CALL_OSET*)p_comap_mm->second;
+		DEBOUT("COMAP::purgeDOA", call_oset)
 		if ( getDoa(call_oset) == DOA_CONFIRMED){
+			DEBOUT("COMAP::purgeDOA deleted", call_oset)
 			delete call_oset;
 			setDoa(call_oset, DOA_DELETED);
 		}else{
 			DEBY
 		}
 	}
+	pthread_mutex_unlock(&comap_mutex);
+
 }
 
 //int COMAP::getCALL_OSETStatus(CALL_OSET* _call_oset){
