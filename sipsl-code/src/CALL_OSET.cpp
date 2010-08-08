@@ -240,14 +240,14 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 //**********************************************************************************
 SL_CO::SL_CO(CALL_OSET* _call_oset){
 	call_oset = _call_oset;
-    //pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_init(&mutex, NULL);
 
 }
 //**********************************************************************************
 //**********************************************************************************
 void SL_CO::call(MESSAGE* _message){
 
-	//pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
 	DEBMESSAGE("SL_CO::call incoming", _message)
 
     ACTION* action = 0x0;
@@ -321,7 +321,7 @@ void SL_CO::call(MESSAGE* _message){
 					if (_tmpMessage->getReqRepType() == REPSUPP) {
 						//Check if there is a ROUTE header
 						call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
-						//PURGEMESSAGE(_tmpMessage, "PURGE MESSAGE")
+						PURGEMESSAGE(_tmpMessage)
 					}
 					else {
 						DEBASSERT("???")
@@ -337,7 +337,7 @@ void SL_CO::call(MESSAGE* _message){
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
-			PURGEMESSAGE(_message,"SL_CO::delete message")
+			PURGEMESSAGE(_message)
 			//return;
 		}
 	}
@@ -404,9 +404,6 @@ void SL_CO::call(MESSAGE* _message){
 
 					if (_tmpMessage->getReqRepType() == REQSUPP) {
 						call_oset->getENGINE()->getSUDP()->sendRequest(_tmpMessage);
-//						if (!_tmpMessage->getLock()){
-//							PURGEMESSAGE(_tmpMessage, "PURGE INVITE")
-//						}
 					}
 					else {
 						DEBOUT("++++++++++++++++++++ assert ","")
@@ -455,7 +452,7 @@ void SL_CO::call(MESSAGE* _message){
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
-			PURGEMESSAGE(_message, "SL_SM_SV::delete message")
+			PURGEMESSAGE(_message)
 		}
 	}
 
@@ -464,7 +461,7 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("SL_CO::call delete action","")
 		delete action;
 	}
-	//pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&mutex);
 }
 //**********************************************************************************
 //**********************************************************************************

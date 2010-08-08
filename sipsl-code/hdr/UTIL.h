@@ -84,11 +84,13 @@ typedef struct {
 	sleep_time.tv_nsec = 0;\
 	nanosleep(&sleep_time,NULL);}
 
+//with embedded declaration
 #define NEWPTR(type, m1, m2) type m1 = 0x0;\
-	m1 = new m2;\
+	m1 = new (nothrow) m2;\
 	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
+//no embedded declaration
 #define NEWPTR2(m1, m2) m1 = 0x0;\
-	m1 = new m2;\
+	m1 = new (nothrow) m2;\
 	if (m1 == 0x0) { DEBERROR("NEW allocation failed")}
 
 #define TRYCATCH(m) try { m; } catch (exception& e) {DEBOUT("Exception thrown", e.what()) DEBASSERT("Exception")}

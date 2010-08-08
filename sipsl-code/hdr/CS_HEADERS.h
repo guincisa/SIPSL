@@ -171,16 +171,18 @@ inline vector<string> parse(string _par, string head, string sep, bool _trimspac
 	DEBOUT("inline parse called", _par << "]["<<head<<"]["<<sep)
 
     int h = 0; // if has head then 1
-
-    string par;
-    if (_trimspaces)
-    	par = trimUseless(_par);
-    else
-    	par = _par;
-
     vector<string> output;
 
-    if (par.substr(0,1) == head) {
+    string par;
+    if (_trimspaces){
+    	par = trimUseless(_par);
+    }
+    else{
+    	par = _par;
+    }
+
+
+    if (par.substr(0,1).compare(head) == 0) {
         h = 1;
     }
     int a = par.find(sep.c_str(),0);
@@ -193,6 +195,7 @@ inline vector<string> parse(string _par, string head, string sep, bool _trimspac
     if (a < 0) {
        output.push_back(par.substr(h,a-1));
     }
+
     return output;
 }
 inline Tuple getLRvalue(string couple) {

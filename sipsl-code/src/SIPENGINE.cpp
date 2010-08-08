@@ -127,7 +127,7 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 				method != ACK_REQUEST) {
 
 			DEBOUT("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
-			PURGEMESSAGE(_mess,"SIPENGINE::parse message discarded")
+			PURGEMESSAGE(_mess)
 			return;
 
 		} else {
@@ -149,6 +149,6 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 	}
 	else {
 		// purge it
-		PURGEMESSAGE(_mess, "SIPENGINE::parse delete message")
+		PURGEMESSAGE(_mess)
 	}
 }

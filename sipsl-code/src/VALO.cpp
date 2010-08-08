@@ -110,6 +110,13 @@ VALO::~VALO(void){
 	delete (string*)p->second;
 	ctxt_store.erase(p);
 
+	p = ctxt_store.find("invite_a");
+	delete (MESSAGE*)p->second;
+	ctxt_store.erase(p);
+
+	p = ctxt_store.find("invite_b");
+	delete (MESSAGE*)p->second;
+	ctxt_store.erase(p);
 }
 
 void VALO::onInvite(MESSAGE* _message){

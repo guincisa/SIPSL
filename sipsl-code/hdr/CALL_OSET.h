@@ -87,7 +87,7 @@ class CALL_OSET {
 class SL_CO {
 
 	private:
-	//pthread_mutex_t mutex;
+	pthread_mutex_t mutex;
 
 	public:
 		int placeholder;

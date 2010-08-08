@@ -152,6 +152,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
 				DEBOUT("SL_CC::parse rejected by COMAP", callids)
+				PURGEMESSAGE(_mess)
 			}
 
 			return;

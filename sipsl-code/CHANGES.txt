@@ -1,5 +1,9 @@
 CHANGES
 
+
+7 agosto
+
+i messaggi resend devono essere cancellati
 -------------------------------------------------------------------------------
 
 4 agosto
