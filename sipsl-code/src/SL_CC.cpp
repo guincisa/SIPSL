@@ -133,6 +133,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		string callids = _mess->getHeadCallId().getContent();
 
+		GETMOD(callids)
+
 		DEBOUT("SL_CC::parse CALLOSET normal ID",callids)
 
 		call_oset = comap->getCALL_OSET_XMain(callids);

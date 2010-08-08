@@ -40,9 +40,11 @@ typedef map<string, string> CALL_ID_Y2X;
 class COMAP {
 
 	private:
+
 		//Call id x
 		pthread_mutex_t comap_mutex;
 		map<string, CALL_OSET*> comap_mm;
+
 
 		//call id y to call id y
 		pthread_mutex_t call_y2x_mutex;

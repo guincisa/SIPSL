@@ -34,6 +34,8 @@
 #include <sstream>
 #include <sys/time.h>
 #include <vector>
+#include <algorithm>
+
 
 using namespace std;
 
@@ -173,6 +175,16 @@ typedef struct {
 #define DUPLICATEMESSAGE(m1, m2, m3) \
 		CREATEMESSAGE(m1, m2, m3)\
 		m1->setSourceMessage(m2->getSourceMessage());
+
+#define GETMOD(m) {\
+	char x[32];\
+	int k = 32>m.length() ? 32 : m.length();\
+	sprintf(x,"%s", m.substr(0,k).c_str());\
+	long int tot=0;\
+	for (int i = 0; i < k; i++){\
+		tot = (long int)(x[k-i]) + tot;\
+	}\
+	DEBOUT("MODULUS",m <<" -- " << tot%4)}
 
 class ThreadWrapper {
     public:
