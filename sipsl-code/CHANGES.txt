@@ -1,5 +1,9 @@
 CHANGES
 
+9 agosto
+
+mettere nella context store i messaggi locked
+-------------------------------------------------------------------------------
 
 7 agosto
 

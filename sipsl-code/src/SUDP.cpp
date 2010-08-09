@@ -238,6 +238,10 @@ void SUDP::sendRequest(MESSAGE* _message){
 //	}
 	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
+	if (!_message->getLock()){
+		PURGEMESSAGE(_message)
+	}
+
 	return;
 }
 void SUDP::sendReply(MESSAGE* _message){
@@ -260,6 +264,10 @@ void SUDP::sendReply(MESSAGE* _message){
 		DEBASSERT ("can set reply address")
 	}
 	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+
+	if (!_message->getLock()){
+		PURGEMESSAGE(_message)
+	}
 
 //	//TODO
 //	//check here DOA and kill call_oset

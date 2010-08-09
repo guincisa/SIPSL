@@ -162,8 +162,11 @@ void VALO::onInvite(MESSAGE* _message){
 	call_oset->setCallId_Y(message->getHeadCallId().getContent());
 
 	//store this invites
-	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
 	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message ));
+
+
+	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
+	message->setLock();
 
 	sl_cc->p_w(message);
 
@@ -267,6 +270,7 @@ void VALO::onAck(MESSAGE* _message){
 	newack->compileMessage();
 	newack->dumpVector();
 
+	newack->setLock();
 
 	DEBMESSAGE("New outgoing b2b message", newack)
 	sl_cc->p_w(newack);
@@ -425,6 +429,7 @@ void VALO::onBye(MESSAGE* _message){
 
 		message->compileMessage();
 		message->dumpVector();
+		message->setLock();
 		sl_cc->p_w(message);
 
 	}
@@ -466,6 +471,7 @@ void VALO::onBye(MESSAGE* _message){
 
 		message->compileMessage();
 		message->dumpVector();
+		message->setLock();
 		sl_cc->p_w(message);
 	}
 

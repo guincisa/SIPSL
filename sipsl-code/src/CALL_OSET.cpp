@@ -471,11 +471,13 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 
 	requestType = _requestType;
 	Matrix = _matrixMess;
+	Matrix->setLock();
 	A_Matrix = _a_Matrix;
 	if (_a_Matrix == 0x0){
 		DEBY
 		DEBASSERT("NO")
 	}
+	A_Matrix->setLock();
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
@@ -807,6 +809,7 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	__timedmessage->setFireTime(afterT);
 	__timedmessage->typeOfInternal = TYPE_OP;
 	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
+	__timedmessage->setLock();
 	SingleAction sa_2 = SingleAction(__timedmessage);
 
 	action->addSingleAction(sa_2);
@@ -886,6 +889,7 @@ ACTION* act_1_1b_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	NEWPTR(ACTION*, action, ACTION())
 	_message->typeOfInternal = TYPE_OP;
 	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	_message->setLock();
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 
@@ -943,8 +947,11 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	___message->setLock();
 	SingleAction sa_2 = SingleAction(___message);
 	action->addSingleAction(sa_2);
+
+	PURGEMESSAGE(_message);
 
 	_sm->State = 3;
 	return action;
@@ -984,6 +991,7 @@ ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	___message->setLock();
 	SingleAction sa_2 = SingleAction(___message);
 	action->addSingleAction(sa_2);
 

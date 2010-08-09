@@ -174,6 +174,7 @@ typedef struct {
 
 #define DUPLICATEMESSAGE(m1, m2, m3) \
 		CREATEMESSAGE(m1, m2, m3)\
+		DEBOUT("m2->getSourceMessage", m2->getSourceMessage())\
 		m1->setSourceMessage(m2->getSourceMessage());
 
 #define GETMOD(m) {\

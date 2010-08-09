@@ -981,9 +981,6 @@ string MESSAGE::getDialogExtendedCID(void){
 	return getHeadCallId().getNormCallId() + getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag");
 }
 void MESSAGE::setLock(void){
-	if (source!=0x0){
-		source->setLock();
-	}
 	lock = true;
 }
 bool MESSAGE::getLock(void){
