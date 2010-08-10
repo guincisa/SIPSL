@@ -129,6 +129,7 @@ void DOA::init(void) {
 		nanosleep(&sleep_time,NULL);
 		DEBOUT("DOA::doa", "started")
 		sl_cc->getCOMAP()->purgeDOA();
+		DEBY
 	}
 
 }

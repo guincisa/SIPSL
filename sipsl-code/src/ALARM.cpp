@@ -160,7 +160,7 @@ void ALMGR::alarmer(void){
 							_tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
 							_tmpMess->compileMessage();
 							_tmpMess->dumpVector();
-							_tmpMess->unSetLock();
+							//_tmpMess->unSetLock();
 							sl_cc->p_w(_tmpMess);
 						} else {
 							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)

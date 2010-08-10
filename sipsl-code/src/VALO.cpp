@@ -110,13 +110,6 @@ VALO::~VALO(void){
 	delete (string*)p->second;
 	ctxt_store.erase(p);
 
-	p = ctxt_store.find("invite_a");
-	delete (MESSAGE*)p->second;
-	ctxt_store.erase(p);
-
-	p = ctxt_store.find("invite_b");
-	delete (MESSAGE*)p->second;
-	ctxt_store.erase(p);
 }
 
 void VALO::onInvite(MESSAGE* _message){
@@ -156,17 +149,17 @@ void VALO::onInvite(MESSAGE* _message){
 	int* CSeqB2BINIVTE = new int(message->getHeadCSeq().getSequence());
 	ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
 
-	message->setLock();
+//	message->setLock();
+//	call_oset->insertLockedMessage(message);
+
 
 	DEBOUT("STORING now call id", message->getHeadCallId().getContent())
 	call_oset->setCallId_Y(message->getHeadCallId().getContent());
 
 	//store this invites
 	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message ));
-
-
 	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
-	message->setLock();
+//	message->setLock();
 
 	sl_cc->p_w(message);
 
@@ -270,7 +263,10 @@ void VALO::onAck(MESSAGE* _message){
 	newack->compileMessage();
 	newack->dumpVector();
 
-	newack->setLock();
+	//done in state machine client
+//	newack->setLock();
+//	call_oset->insertLockedMessage(newack);
+
 
 	DEBMESSAGE("New outgoing b2b message", newack)
 	sl_cc->p_w(newack);
@@ -429,7 +425,8 @@ void VALO::onBye(MESSAGE* _message){
 
 		message->compileMessage();
 		message->dumpVector();
-		message->setLock();
+		//done in the client sm
+		//message->setLock();
 		sl_cc->p_w(message);
 
 	}
@@ -471,7 +468,9 @@ void VALO::onBye(MESSAGE* _message){
 
 		message->compileMessage();
 		message->dumpVector();
-		message->setLock();
+		//done in client sm
+		//message->setLock();
+		//call_oset->insertLockedMessage(message);
 		sl_cc->p_w(message);
 	}
 

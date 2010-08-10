@@ -35,6 +35,7 @@ class CALL_OSET {
 	friend class SL_CO;
 	friend class ALO;
 	friend class VALO;
+	friend class TRNSCT_SM;
 
 	private:
 
@@ -74,9 +75,16 @@ class CALL_OSET {
 		int getCurrentSequence(string method);
 		void insertSequence(string method, int cntr);
 
+		map<MESSAGE*,int> lockedMessages;
+
 	public:
 		CALL_OSET(ENGINE*, string call_x);
 		~CALL_OSET(void);
+		void insertLockedMessage(MESSAGE*);
+		MESSAGE* getNextLockedMessage(void);
+		void removeLockedMessage(MESSAGE*);
+
+
 
 };
 //**********************************************************************************

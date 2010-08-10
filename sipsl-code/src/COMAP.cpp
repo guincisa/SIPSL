@@ -391,18 +391,21 @@ void COMAP::purgeDOA(void){
 
 	pthread_mutex_lock(&comap_mutex);
 
-	for( p_comap_mm = comap_mm.begin(); p_comap_mm != comap_mm.end(); ++p_comap_mm ){
+	for( p_comap_mm = comap_mm.begin(); p_comap_mm != comap_mm.end(); p_comap_mm++){
 		call_oset = (CALL_OSET*)p_comap_mm->second;
 		DEBOUT("COMAP::purgeDOA", call_oset)
 		if ( getDoa(call_oset) == DOA_CONFIRMED){
 			DEBOUT("COMAP::purgeDOA deleted", call_oset)
 			setDoa(call_oset, DOA_DELETED);
 			delete call_oset;
+			DEBY
+			comap_mm.erase(p_comap_mm);
 		}else{
 			DEBY
 		}
 	}
 	pthread_mutex_unlock(&comap_mutex);
+	DEBY
 
 }
 

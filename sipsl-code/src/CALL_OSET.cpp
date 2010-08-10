@@ -110,8 +110,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, string _call){
 }
 CALL_OSET::~CALL_OSET(void){
 
-
-	//TODO
+	DEBOUT("CALL_OSET::~CALL_OSET begin", this)
 	if (sl_co != 0x0){
 		DEBY
 		//purge states machines
@@ -126,6 +125,16 @@ CALL_OSET::~CALL_OSET(void){
 		DEBY
 		delete alo;
 	}
+	MESSAGE* m = getNextLockedMessage();
+	while (m != 0x0){
+		DEBY
+		DEBMESSAGESHORT("DOA locked message", m)
+		PURGEMESSAGE(m);
+		DEBY
+		m = getNextLockedMessage();
+		DEBY
+	}
+	DEBY
 
 }
 int CALL_OSET::getNextSequence(string _method){
@@ -198,6 +207,38 @@ void CALL_OSET::setCallId_X(string _callId_X){
 string CALL_OSET::getCallId_X(void){
 	return callId_X;
 }
+
+void CALL_OSET::insertLockedMessage(MESSAGE* _message){
+	DEBMESSAGESHORT("Insert locked message", _message)
+	lockedMessages.insert(pair<MESSAGE*,int>(_message,0));
+}
+MESSAGE* CALL_OSET::getNextLockedMessage(void){
+
+	DEBY
+	map<MESSAGE*,int>::iterator p;
+	p=lockedMessages.begin();
+	if (p!=lockedMessages.end()){
+		MESSAGE* t = (MESSAGE*)p->first;
+		lockedMessages.erase(p);
+		DEBY
+		return t;
+	}
+	DEBY
+	return 0x0;
+
+}
+void CALL_OSET::removeLockedMessage(MESSAGE* _message){
+
+	map<MESSAGE*,int>::iterator p;
+	p=lockedMessages.find(_message);
+	if (p!=lockedMessages.end()){
+		MESSAGE* t = (MESSAGE*)p->first;
+		lockedMessages.erase(p);
+	}
+
+}
+
+
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
@@ -472,18 +513,25 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	requestType = _requestType;
 	Matrix = _matrixMess;
 	Matrix->setLock();
+	getSL_CO()->call_oset->insertLockedMessage(Matrix);
 	A_Matrix = _a_Matrix;
 	if (_a_Matrix == 0x0){
 		DEBY
 		DEBASSERT("NO")
 	}
 	A_Matrix->setLock();
+	getSL_CO()->call_oset->insertLockedMessage(A_Matrix);
+
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this)
+
+	getSL_CO()->call_oset->removeLockedMessage(Matrix);
+
 	PURGEMESSAGE(Matrix)
-	PURGEMESSAGE(A_Matrix)
+	DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
+
 }
 
 
@@ -810,6 +858,7 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	__timedmessage->typeOfInternal = TYPE_OP;
 	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
 	__timedmessage->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
 	SingleAction sa_2 = SingleAction(__timedmessage);
 
 	action->addSingleAction(sa_2);
@@ -890,6 +939,8 @@ ACTION* act_1_1b_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	_message->typeOfInternal = TYPE_OP;
 	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	_message->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 
@@ -948,6 +999,8 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	___message->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
+
 	SingleAction sa_2 = SingleAction(___message);
 	action->addSingleAction(sa_2);
 
@@ -992,6 +1045,8 @@ ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	___message->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
+
 	SingleAction sa_2 = SingleAction(___message);
 	action->addSingleAction(sa_2);
 
@@ -1325,6 +1380,8 @@ ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 	__timedmessage->setFireTime(afterT);
 	__timedmessage->typeOfInternal = TYPE_OP;
 	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
+	__timedmessage->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
 	SingleAction sa_2 = SingleAction(__timedmessage);
 
 	action->addSingleAction(sa_2);
@@ -1386,6 +1443,9 @@ ACTION* act_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 	DUPLICATEMESSAGE(__message, _message, SODE_TRNSCT_CL)
 	__message->typeOfInternal = TYPE_OP;
 	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	__message->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(__message);
+
 	SingleAction sa_2 = SingleAction(__message);
 	action->addSingleAction(sa_2);
 
