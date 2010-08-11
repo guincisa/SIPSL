@@ -125,11 +125,17 @@ void DOA::init(void) {
 
 }void DOA::doa(void) {
 
+	int i = 0;
 	for(;;) {
 		nanosleep(&sleep_time,NULL);
 		DEBOUT("DOA::doa", "started")
 		sl_cc->getCOMAP()->purgeDOA();
 		DEBY
+		i++;
+		if (i == 10){
+			DUMPMESSTABLE
+			i = 0;
+		}
 	}
 
 }

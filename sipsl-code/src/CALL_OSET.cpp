@@ -132,7 +132,7 @@ CALL_OSET::~CALL_OSET(void){
 		PURGEMESSAGE(m);
 		DEBY
 		m = getNextLockedMessage();
-		DEBY
+		DEBOUT("Message to be deleted", m)
 	}
 	DEBY
 
@@ -362,7 +362,6 @@ void SL_CO::call(MESSAGE* _message){
 					if (_tmpMessage->getReqRepType() == REPSUPP) {
 						//Check if there is a ROUTE header
 						call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
-						PURGEMESSAGE(_tmpMessage)
 					}
 					else {
 						DEBASSERT("???")
@@ -476,7 +475,6 @@ void SL_CO::call(MESSAGE* _message){
 						string callid_alarm = _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
 						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
-						PURGEMESSAGE(_tmpMessage)
 					}
 					else {
 						DEBASSERT("SL_CO client side inconsistency")
@@ -492,8 +490,11 @@ void SL_CO::call(MESSAGE* _message){
 			}
 		}
 		else {
+			//Alarm messages that are ignored by transact sm???
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
-			PURGEMESSAGE(_message)
+			if (!_message->getLock()){
+				PURGEMESSAGE(_message)
+			}
 		}
 	}
 
@@ -513,21 +514,21 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	requestType = _requestType;
 	Matrix = _matrixMess;
 	Matrix->setLock();
-	getSL_CO()->call_oset->insertLockedMessage(Matrix);
+//	getSL_CO()->call_oset->insertLockedMessage(Matrix);
 	A_Matrix = _a_Matrix;
 	if (_a_Matrix == 0x0){
 		DEBY
 		DEBASSERT("NO")
 	}
 	A_Matrix->setLock();
-	getSL_CO()->call_oset->insertLockedMessage(A_Matrix);
+//	getSL_CO()->call_oset->insertLockedMessage(A_Matrix);
 
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this)
 
-	getSL_CO()->call_oset->removeLockedMessage(Matrix);
+//	getSL_CO()->call_oset->removeLockedMessage(Matrix);
 
 	PURGEMESSAGE(Matrix)
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)

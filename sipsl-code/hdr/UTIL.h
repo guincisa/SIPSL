@@ -81,6 +81,15 @@ typedef struct {
 	}\
 	pthread_mutex_unlock(&messTableMtx);}
 
+#define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
+	pthread_mutex_lock(&messTableMtx);\
+	for (p=globalMessTable.begin() ; p != globalMessTable.end() ; p ++){\
+		DEBOUT("***********MESSAGE in table", (MESSAGE*)p->second)\
+	}\
+	pthread_mutex_unlock(&messTableMtx);}
+
+
+
 #define WAITTIME { timespec sleep_time; \
 	sleep_time.tv_sec = 20;\
 	sleep_time.tv_nsec = 0;\
