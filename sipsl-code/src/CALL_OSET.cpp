@@ -472,7 +472,7 @@ void SL_CO::call(MESSAGE* _message){
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
 						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
-						string callid_alarm = _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
+						string callid_alarm = _tmpMessage->getHeadCSeq().getContent() +  _tmpMessage->getHeadCallId().getNormCallId();
 						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 					}
@@ -996,7 +996,7 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 
 	//Clear alam here in case the b did not send any trying
-	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	___message->setLock();
@@ -1042,11 +1042,15 @@ ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//Clear alam here in case the b did not send any trying
-	DUPLICATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	___message->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
+
+	_message->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+
 
 	SingleAction sa_2 = SingleAction(___message);
 	action->addSingleAction(sa_2);
@@ -1441,7 +1445,7 @@ ACTION* act_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	DUPLICATEMESSAGE(__message, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(__message, _message, SODE_TRNSCT_CL)
 	__message->typeOfInternal = TYPE_OP;
 	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	__message->setLock();

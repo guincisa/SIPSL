@@ -71,9 +71,10 @@ typedef struct {
 #define PRINTTIMESHORT(m,starttime){char bu[1024];sprintf(bu, "time %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec);DEBOUT(m, bu )}
 
 #define PURGEMESSAGE(m1)  { \
-	DEBMESSAGE("PURGEMESSAGE",m1) \
+	DEBOUT("PURGEMESSAGE",m1) \
 	map<const MESSAGE*, MESSAGE*>::iterator p; \
 	pthread_mutex_lock(&messTableMtx);\
+	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 	p = globalMessTable.find(m1);\
 	if (p !=globalMessTable.end()) {\
 		globalMessTable.erase(m1);\
@@ -83,6 +84,7 @@ typedef struct {
 
 #define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
 	pthread_mutex_lock(&messTableMtx);\
+	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 	for (p=globalMessTable.begin() ; p != globalMessTable.end() ; p ++){\
 		DEBOUT("***********MESSAGE in table", (MESSAGE*)p->second)\
 	}\
@@ -149,6 +151,7 @@ typedef struct {
 				sprintf(bu, "%x%llu",m1,num);\
 				string key(bu);\
 				m1->setKey(key);\
+				DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(m1, m1));\
 				pthread_mutex_unlock(&messTableMtx);}
@@ -164,6 +167,7 @@ typedef struct {
 				string key(bu);\
 				__mess->setKey(key);\
 				DEBMESSAGE("New message from buffer", __mess->getIncBuffer() << "]\nkey [" << key)\
+				DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, _mess));\
 				pthread_mutex_unlock(&messTableMtx);}
@@ -176,6 +180,7 @@ typedef struct {
 				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
 				string key(bu);\
 				__mess->setKey(key);\
+				DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, __mess));\
 				pthread_mutex_unlock(&messTableMtx);}}

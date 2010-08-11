@@ -64,6 +64,11 @@
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
+
+map<const MESSAGE*, MESSAGE *> globalMessTable;
+pthread_mutex_t messTableMtx;
+
+
 int main(void) {
 
 	SUDP mystack;

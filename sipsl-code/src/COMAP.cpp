@@ -306,6 +306,7 @@ void COMAP::incCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 		i++;
 		call_oset_msg_cnt.erase(p_msgcnt);
 		call_oset_msg_cnt.insert(pair<CALL_OSET*, int>(_call_oset, i));
+		DEBY
 	}else {
 		DEBY
 	}
@@ -332,6 +333,7 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 		DEBOUT("COMAP::decCALL_OSET_MsgCnt new value", _call_oset << "] [" << i)
 		call_oset_msg_cnt.erase(p_msgcnt);
 		call_oset_msg_cnt.insert(pair<CALL_OSET*, int>(_call_oset, i));
+		DEBY
 	}else {
 		DEBY
 	}
@@ -366,8 +368,11 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message){
 	if (getDoa(_call_oset) == NOT_DOA){
 		DEBOUT("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
 		incCALL_OSET_MsgCnt(_call_oset);
+		DEBY
 		_call_oset->getSL_CO()->call(_message);
+		DEBY
 		decCALL_OSET_MsgCnt(_call_oset);
+		DEBY
 		return 0;
 	}
 	return -1;
