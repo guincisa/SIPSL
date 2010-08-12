@@ -506,6 +506,7 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
+
 	ok_x->setDestEntity(SODE_TRNSCT_SV);
 	ok_x->typeOfInternal = TYPE_MESS;
 
@@ -536,6 +537,8 @@ void VALO::on200Ok(MESSAGE* _message){
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 
 	ok_x->dumpVector();
+
+	PURGEMESSAGE(_message)
 
 	sl_cc->p_w(ok_x);
 

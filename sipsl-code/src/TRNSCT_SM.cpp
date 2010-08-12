@@ -106,16 +106,14 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	if (_a_Matrix == 0x0){
 		DEBASSERT("NO")
 	}
-	//TODO needed?
-	A_Matrix->setLock();
+//	//TODO needed?
+//	A_Matrix->setLock();
 
 
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this)
-
-//	getSL_CO()->call_oset->removeLockedMessage(Matrix);
 
 	PURGEMESSAGE(Matrix)
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
@@ -1017,23 +1015,23 @@ bool pre_1_1_bye_cl(SM* _sm, MESSAGE* _message){
 
 bool pre_1_2_bye_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_SM_BYE_CL pre_1_4_bye_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL pre_1_2_bye_cl","")
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-			DEBOUT("TRNSCT_SM_BYE_CL pre_1_4_bye_cl","true")
+			DEBOUT("TRNSCT_SM_BYE_CL pre_1_2_bye_cl","true")
 			return true;
 		}
 		else {
-			DEBOUT("TRNSCT_SM_BYE_CL pre_1_4_bye_cl","false")
+			DEBOUT("TRNSCT_SM_BYE_CL pre_1_2_bye_cl","false")
 			return false;
 		}
 }
 ACTION* act_1_2_bye_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_3_4_inv_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL act_1_2_bye_cl","")
 
 	ACTION* action = new ACTION();
 
