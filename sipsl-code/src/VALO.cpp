@@ -152,17 +152,14 @@ void VALO::onInvite(MESSAGE* _message){
 	int* CSeqB2BINIVTE = new int(message->getHeadCSeq().getSequence());
 	ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
 
-//	message->setLock();
-//	call_oset->insertLockedMessage(message);
-
 
 	DEBOUT("STORING now call id", message->getHeadCallId().getContent())
 	call_oset->setCallId_Y(message->getHeadCallId().getContent());
 
 	//store this invites
+	//only possible because both invites are locked during the creation of their SM
 	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message ));
 	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
-//	message->setLock();
 
 	sl_cc->p_w(message);
 

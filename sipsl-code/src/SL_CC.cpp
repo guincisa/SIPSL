@@ -154,7 +154,13 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
 				DEBOUT("SL_CC::parse rejected by COMAP", callids)
-				PURGEMESSAGE(_mess)
+				if(!_mess->getLock()){
+					PURGEMESSAGE(_mess)
+				}
+				else {
+					DEBOUT("Put this message into then locked messages table",_mess)
+					DEBASSERT("")
+				}
 			}
 
 			return;
@@ -208,6 +214,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_TRNSCT_CL (4)", _mess->getGenEntity() )
 
+		//Careful with source message
 		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
 
 		DEBOUT("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callids)

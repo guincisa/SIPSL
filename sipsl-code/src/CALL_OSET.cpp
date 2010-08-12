@@ -291,36 +291,23 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 //**********************************************************************************
 void SL_CO::call(MESSAGE* _message){
 
+	//TODO if we use this mutex we can remove mutexes in state machines
 	pthread_mutex_lock(&mutex);
 	DEBMESSAGE("SL_CO::call incoming", _message)
 
     ACTION* action = 0x0;
 
+	//Message is going to Server SM
 	if (_message->getDestEntity() == SODE_TRNSCT_SV) {
 
 		DEBOUT("SL_CO::search for transaction state machine", _message->getHeadCallId().getContent())
 
 		TRNSCT_SM* trnsctSM = 0x0;
 
-	    //ACK treatment:
-	    //if the Request is an ACK then check the CSEQ and look for "CSEQ INVITE" state machine
-	    //if the state machine is in a 2xx reply state then the ACK is acknowledging the INVITE
-	    //so the message must go to the INVITE state machine
-//	    if (_message->getHeadCSeq().getMethod().getMethodID() == ACK_REQUEST) {
-//	    	//Problem ACK come with a new branch
-//			trnsctSM = call_oset->getTrnsctSm("INVITE", SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
-//			if (trnsctSM != 0x0 && trnsctSM->State == 3){
-//				//run into the INVITE state machine
-//			}
-//			//else the ACK is a new transaction
-//			else {
-//				DEBASSERT("ACK is a new transaction not supported now")
-//			}
-//	    }
-//	    else {
-	    	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
-//	    }
+		//First look for an existing SM using METHOD+SM_SV+branch
+    	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 
+    	//There are no sm, create it
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
 				call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
@@ -332,16 +319,18 @@ void SL_CO::call(MESSAGE* _message){
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
 				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this))
 			}
+			//Add the sm to the map
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
 			DEBOUT("call_oset->addTrnsctSm","done")
 		}
 
+		//send the message to sm
 		action = trnsctSM->event(_message);
 
 		if (action != 0x0){
 
-			// now get actions
+			// now get actions one by one
 			stack<SingleAction> actionList = action->getActionList();
 
 			while (!actionList.empty()){
@@ -349,30 +338,28 @@ void SL_CO::call(MESSAGE* _message){
 				MESSAGE* _tmpMessage = actionList.top().getMessage();
 				DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
 
-				//V5
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
-					// send message to ALO
+					//To ALO
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 					call_oset->getALO()->call(_tmpMessage);
 				}
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
-					//server sm sending to client sm shoud not happen
-					DEBASSERT("should not happen")
-					//DEBOUT("SL_CO::call action is send to CL", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
-					//call_oset->getENGINE()->p_w(_tmpMessage);
+					//server sm sending to client sm should not happen
+					DEBASSERT("Server sm sending to client sm should not happen should not happen")
 				}
 				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
+					//To network
 					if (_tmpMessage->getReqRepType() == REPSUPP) {
-						//Check if there is a ROUTE header
+						//TODO Check if there is a ROUTE header
 						call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
 					}
 					else {
-						DEBASSERT("???")
+						DEBASSERT("Unexpected SM_SV sending a Request to network")
 					}
 
 				} else {
 					//TODO
-					DEBASSERT("SL_CO::call action is ???")
+					DEBASSERT("SL_CO::call action is unexpected")
 				}
 				DEBOUT("pop action","")
 				actionList.pop();
@@ -380,10 +367,18 @@ void SL_CO::call(MESSAGE* _message){
 		}
 		else {
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
-			PURGEMESSAGE(_message)
-			//return;
+			//Delete only if not locked
+			if (!_message->getLock()){
+				PURGEMESSAGE(_message)
+			} else {
+				//TODO
+				//The message is locked for some reason but did not trigger any action...
+				DEBASSERT("Check this case out")
+			}
+
 		}
 	}
+	//Message is going to Client SM
 	else if (_message->getDestEntity() == SODE_TRNSCT_CL){
 
 		string callidys = _message->getHeadCallId().getContent();
@@ -405,14 +400,15 @@ void SL_CO::call(MESSAGE* _message){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this))
 				}
 			}else{
-				DEBOUT("****************************errore","")
-				DEBASSERT("fare qui")
+				DEBOUT("A unexpected reply directed to client has reached the call object","")
+				DEBASSERT("Check this")
 			}
 
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
 
-			//TODO a che serve?
-			//serve solo la prima volta con l'invite...
+			//TODO?
+			//This is needed when a new request is coming from ALO
+			//B side call ID created by ALO has to be associated to the main call_id (from Aside)
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X());
 		}
@@ -422,7 +418,6 @@ void SL_CO::call(MESSAGE* _message){
 		if (action != 0x0){
 
 			// now read actions
-
 			stack<SingleAction> actionList;
 			actionList = action->getActionList();
 
@@ -434,10 +429,9 @@ void SL_CO::call(MESSAGE* _message){
 
 				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 					// send message to ALO
-					// should never happen
+					// 200OK B side
 					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 					call_oset->getALO()->call(_tmpMessage);
-
 					actionList.pop();
 					continue;
 				}
@@ -449,8 +443,7 @@ void SL_CO::call(MESSAGE* _message){
 						call_oset->getENGINE()->getSUDP()->sendRequest(_tmpMessage);
 					}
 					else {
-						DEBOUT("++++++++++++++++++++ assert ","")
-						DEBASSERT("???")
+						DEBASSERT("Unexpected SM_CL sending a Reply to network")
 					}
 					actionList.pop();
 					continue;
@@ -468,32 +461,34 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("SL_CO:: TYPE_OP","")
 
 					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
-						DEBOUT("SL_CO::call action is send to ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+						DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 						SysTime st1 = _tmpMessage->getFireTime();
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
 
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
-						DEBOUT("SL_CO::call action is clear ALARM", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+						DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 						string callid_alarm = _tmpMessage->getHeadCSeq().getContent() +  _tmpMessage->getHeadCallId().getNormCallId();
 						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 					}
 					else {
-						DEBASSERT("SL_CO client side inconsistency")
+						DEBASSERT("SL_CO client operation type inconsistency")
 					}
 					actionList.pop();
 					continue;
 				}
 				else {
 					//TODO
-					DEBOUT("SL_CO::call action is ???", "")
+					DEBOUT("SL_CO::call action is unexpected", "")
+					DEBASSERT("")
 				}
 				actionList.pop();
 			}
 		}
 		else {
-			//Alarm messages that are ignored by transact sm???
+			//TODO we mayn receive an alarm that is expired
+			//so the sm has ignored it
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 			if (!_message->getLock()){
 				PURGEMESSAGE(_message)

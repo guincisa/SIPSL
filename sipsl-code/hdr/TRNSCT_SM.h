@@ -33,28 +33,28 @@ class ENGINE;
 // V5 Transaction State machines
 //**********************************************************************************
 //**********************************************************************************
-class PREDICATE_ACTION_V5;
-class SM_V5 {
+class PREDICATE_ACTION;
+class SM {
 
 	private:
 		pthread_mutex_t mutex;
-		multimap< const int, PREDICATE_ACTION_V5*> move_sm;
+		multimap< const int, PREDICATE_ACTION*> move_sm;
 
 		ENGINE* sl_cc;
 	    SL_CO* sl_co;
 
 	public:
 	    int State; // initial 0, final -1
-		void insert_move(int, PREDICATE_ACTION_V5*);
+		void insert_move(int, PREDICATE_ACTION*);
 		ACTION* event(MESSAGE*);
 
 		ENGINE* getSL_CC(void);
 		SL_CO* getSL_CO(void);
-		SM_V5(ENGINE* sl_cc, SL_CO* sl_co);
+		SM(ENGINE* sl_cc, SL_CO* sl_co);
 
 };
 //**********************************************************************************
-class TRNSCT_SM  :  public SM_V5{
+class TRNSCT_SM  :  public SM{
 
 	private:
 
@@ -78,17 +78,17 @@ class TRNSCT_SM  :  public SM_V5{
 
 };
 //**********************************************************************************
-class PREDICATE_ACTION_V5 {
+class PREDICATE_ACTION {
 
 	private:
-	SM_V5* machine;
+	SM* machine;
 
 	public:
 
-	bool (*predicate)(SM_V5*, MESSAGE*);
-	ACTION* (*action)(SM_V5*, MESSAGE*);
+	bool (*predicate)(SM*, MESSAGE*);
+	ACTION* (*action)(SM*, MESSAGE*);
 
-	PREDICATE_ACTION_V5(SM_V5*);
+	PREDICATE_ACTION(SM*);
 
 };
 //**********************************************************************************
@@ -98,10 +98,10 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION_V5 PA_INV_0_1SV;
-		PREDICATE_ACTION_V5 PA_INV_1_2SV;
-		PREDICATE_ACTION_V5 PA_INV_1_3SV;
-		PREDICATE_ACTION_V5 PA_INV_3_4SV;
+		PREDICATE_ACTION PA_INV_0_1SV;
+		PREDICATE_ACTION PA_INV_1_2SV;
+		PREDICATE_ACTION PA_INV_1_3SV;
+		PREDICATE_ACTION PA_INV_3_4SV;
 
 		TRNSCT_SM_INVITE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 
@@ -114,13 +114,13 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION_V5 PA_INV_0_1CL;
-		PREDICATE_ACTION_V5 PA_INV_1_1CL; //resend invite
-		PREDICATE_ACTION_V5 PA_INV_1_1bCL; //100 try incoming
-		PREDICATE_ACTION_V5 PA_INV_1_3CL; //100 try not arriving, 180 ring or Diag Estab instead
-		PREDICATE_ACTION_V5 PA_INV_1_99CL; //resend invite max reached
-		PREDICATE_ACTION_V5 PA_INV_1_4CL; //200OK
-		PREDICATE_ACTION_V5 PA_INV_4_5CL; //Non transactional ACK
+		PREDICATE_ACTION PA_INV_0_1CL;
+		PREDICATE_ACTION PA_INV_1_1CL; //resend invite
+		PREDICATE_ACTION PA_INV_1_1bCL; //100 try incoming
+		PREDICATE_ACTION PA_INV_1_3CL; //100 try not arriving, 180 ring or Diag Estab instead
+		PREDICATE_ACTION PA_INV_1_99CL; //resend invite max reached
+		PREDICATE_ACTION PA_INV_1_4CL; //200OK
+		PREDICATE_ACTION PA_INV_4_5CL; //Non transactional ACK
 
 
 		int resend_invite;
@@ -135,7 +135,7 @@ class TRNSCT_SM_ACK_SV : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION_V5 PA_ACK_0_1SV;
+		PREDICATE_ACTION PA_ACK_0_1SV;
 
 
 		TRNSCT_SM_ACK_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
@@ -152,7 +152,7 @@ class TRNSCT_SM_ACK_CL : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION_V5 PA_ACK_0_1CL;
+		PREDICATE_ACTION PA_ACK_0_1CL;
 
 
 		TRNSCT_SM_ACK_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
@@ -165,8 +165,8 @@ class TRNSCT_SM_BYE_SV : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION_V5 PA_BYE_0_1SV;
-		PREDICATE_ACTION_V5 PA_BYE_1_2SV;
+		PREDICATE_ACTION PA_BYE_0_1SV;
+		PREDICATE_ACTION PA_BYE_1_2SV;
 
 
 		TRNSCT_SM_BYE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
@@ -182,9 +182,9 @@ class TRNSCT_SM_BYE_CL : public TRNSCT_SM {
 
 		int resend_bye;
 
-		PREDICATE_ACTION_V5 PA_BYE_0_1CL;
-		PREDICATE_ACTION_V5 PA_BYE_1_1CL; //resend bye
-		PREDICATE_ACTION_V5 PA_BYE_1_2CL; //200OK
+		PREDICATE_ACTION PA_BYE_0_1CL;
+		PREDICATE_ACTION PA_BYE_1_1CL; //resend bye
+		PREDICATE_ACTION PA_BYE_1_2CL; //200OK
 
 		TRNSCT_SM_BYE_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 
@@ -195,7 +195,7 @@ class TRNSCT_SM_BYE_CL : public TRNSCT_SM {
 // Call/Dialog state machine
 //**********************************************************************************
 //**********************************************************************************
-class CALL_SM  : SM_V5{
+class CALL_SM  : SM{
 
 	private:
 
@@ -207,44 +207,3 @@ class CALL_SM  : SM_V5{
 
 };
 
-//**********************************************************************************
-//**********************************************************************************
-class PREDICATE_ACTION {
-
-	private:
-	SL_SM* machine;
-
-	public:
-
-	bool (*predicate)(SL_SM*, MESSAGE*);
-	ACTION* (*action)(SL_SM*, MESSAGE*);
-
-	PREDICATE_ACTION(SL_SM*);
-
-};
-class SL_SM {
-
-	private:
-
-    pthread_mutex_t mutex;
-
-	multimap< int, PREDICATE_ACTION*> move_sm;
-
-	ENGINE* sl_cc;
-    SL_CO* sl_co;
-
-	public:
-
-	ENGINE* getSL_CC(void);
-	//MESSAGE* getGenerator(void);
-	SL_CO* getSL_CO(void);
-
-	SL_SM(ENGINE* sl_cc, SL_CO* sl_co);
-
-    int State; // initial 0, final -1
-
-	void insert_move(int, PREDICATE_ACTION*);
-
-	ACTION* event(MESSAGE*);
-
-};

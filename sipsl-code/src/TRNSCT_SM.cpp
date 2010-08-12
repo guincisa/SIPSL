@@ -96,19 +96,19 @@ static SIPUTIL SipUtil;
 //**********************************************************************************
 //**********************************************************************************
 TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
-	SM_V5(_sl_cc, _sl_co){
+	SM(_sl_cc, _sl_co){
 
 	requestType = _requestType;
 	Matrix = _matrixMess;
 	Matrix->setLock();
-//	getSL_CO()->call_oset->insertLockedMessage(Matrix);
+
 	A_Matrix = _a_Matrix;
 	if (_a_Matrix == 0x0){
-		DEBY
 		DEBASSERT("NO")
 	}
+	//TODO needed?
 	A_Matrix->setLock();
-//	getSL_CO()->call_oset->insertLockedMessage(A_Matrix);
+
 
 }
 TRNSCT_SM::~TRNSCT_SM(void){
@@ -141,17 +141,17 @@ MESSAGE* TRNSCT_SM::getA_Matrix(void){
 
 //**********************************************************************************
 
-ACTION* SM_V5::event(MESSAGE* _event){
+ACTION* SM::event(MESSAGE* _event){
 
-	PREDICATE_ACTION_V5* tmp;
+	PREDICATE_ACTION* tmp;
 
 	ACTION* act=0x0;
 
-	DEBOUT("SM_V5::event Look for state", State)
+	DEBOUT("SM::event Look for state", State)
 
-	pair<multimap<const int,PREDICATE_ACTION_V5*>::iterator,multimap<const int,PREDICATE_ACTION_V5*>::iterator> ret;
+	pair<multimap<const int,PREDICATE_ACTION*>::iterator,multimap<const int,PREDICATE_ACTION*>::iterator> ret;
 
-	multimap<const int,PREDICATE_ACTION_V5*>::iterator iter;
+	multimap<const int,PREDICATE_ACTION*>::iterator iter;
 
 	ret = move_sm.equal_range(State);
 
@@ -171,15 +171,15 @@ ACTION* SM_V5::event(MESSAGE* _event){
 }
 //**********************************************************************************
 //**********************************************************************************
-void SM_V5::insert_move(int _i, PREDICATE_ACTION_V5* _pa){
+void SM::insert_move(int _i, PREDICATE_ACTION* _pa){
 
-	DEBOUT("SM_V5::insert_move", _i << " " << _pa )
-	move_sm.insert(pair<const int, PREDICATE_ACTION_V5*>(_i, _pa));
+	DEBOUT("SM::insert_move", _i << " " << _pa )
+	move_sm.insert(pair<const int, PREDICATE_ACTION*>(_i, _pa));
 
 }
-SM_V5::SM_V5(ENGINE* _eng, SL_CO* _sl_co){
+SM::SM(ENGINE* _eng, SL_CO* _sl_co){
 
-	DEBOUT("SM_V5::SM_V5", "")
+	DEBOUT("SM::SM", "")
 	sl_cc = _eng;
     sl_co = _sl_co;
 
@@ -188,26 +188,26 @@ SM_V5::SM_V5(ENGINE* _eng, SL_CO* _sl_co){
 
 //	controlSequence = 1;
 }
-ENGINE* SM_V5::getSL_CC(void){
+ENGINE* SM::getSL_CC(void){
 	return sl_cc;
 }
-SL_CO* SM_V5::getSL_CO(void){
+SL_CO* SM::getSL_CO(void){
 	return sl_co;
 }
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-PREDICATE_ACTION_V5::PREDICATE_ACTION_V5(SM_V5* _sm){
+PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
 	machine = _sm;
 }
 //**********************************************************************************
 //**********************************************************************************
+
 //*****************************************************************
-// V5
-// server transaction
+// INVITE_A from network
 //*****************************************************************
-bool pre_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message){
+bool pre_0_1_inv_sv(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_INV_SV pre_0_1_inv_sv called","")
 	if (_message->getReqRepType() == REQSUPP
@@ -222,7 +222,7 @@ bool pre_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message){
 		return false;
 	}
 }
-ACTION* act_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv", _message->getHeadSipRequest().getContent())
 
@@ -251,7 +251,9 @@ ACTION* act_0_1_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 	return action;
 
 }
-bool pre_1_2_inv_sv(SM_V5* _sm, MESSAGE* _message){
+//*****************************************************************
+
+bool pre_1_2_inv_sv(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_SV pre_1_2_inv_sv called","")
 
@@ -268,7 +270,7 @@ bool pre_1_2_inv_sv(SM_V5* _sm, MESSAGE* _message){
 			return false;
 		}
 }
-ACTION* act_1_2_inv_sv(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_1_2_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("act_1_2_inv_sv::act_1_2_sv",  _message->getHeadSipReply().getContent() )
 
@@ -287,7 +289,7 @@ ACTION* act_1_2_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	return action;
 }
-bool pre_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message){
+bool pre_1_3_inv_sv(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_V5 pre_1_3_inv_sv","")
 
@@ -299,13 +301,13 @@ bool pre_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message){
 			return true;
 	}
 	else {
-		DEBOUT("SM_V5 pre_1_3_inv_sv","false")
+		DEBOUT("SM pre_1_3_inv_sv","false")
 		return false;
 	}
 }
-ACTION* act_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_1_3_inv_sv called","")
+	DEBOUT("SM act_1_3_inv_sv called","")
 
 	NEWPTR(ACTION*, action, ACTION())
 
@@ -321,33 +323,33 @@ ACTION* act_1_3_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 	// arrives
 
 
-	DEBOUT("SM_V5 act_1_3_inv_sv move to state 3","")
+	DEBOUT("SM act_1_3_inv_sv move to state 3","")
 	_sm->State = 3;
 
 	return action;
 
 }
-bool pre_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message){
+bool pre_3_4_inv_sv(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_V5 pre_3_4_inv_sv called","")
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-		DEBOUT("SM_V5 pre_3_4_inv_sv","true")
+		DEBOUT("SM pre_3_4_inv_sv","true")
 		return true;
 	}
 	else {
-		DEBOUT("SM_V5 pre_3_4_inv_sv","false")
+		DEBOUT("SM pre_3_4_inv_sv","false")
 		return false;
 	}
 }
 
-ACTION* act_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_3_4_inv_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_3_4_inv_sv called","")
+	DEBOUT("SM act_3_4_inv_sv called","")
 
-	DEBOUT("SM_V5::event move to state 4", _message->getHeadSipRequest().getContent())
+	DEBOUT("SM::event move to state 4", _message->getHeadSipRequest().getContent())
 
 	NEWPTR(ACTION*, action, ACTION())
 
@@ -360,7 +362,7 @@ ACTION* act_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SM_V5 act_3_4_inv_sv move to state 4","")
+	DEBOUT("SM act_3_4_inv_sv move to state 4","")
 	_sm->State = 4;
 
 	return action;
@@ -370,10 +372,10 @@ ACTION* act_3_4_inv_sv(SM_V5* _sm, MESSAGE* _message) {
 //**********************************************************************************
 TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
-		PA_INV_0_1SV((SM_V5*)this),
-		PA_INV_1_2SV((SM_V5*)this),
-		PA_INV_1_3SV((SM_V5*)this),
-		PA_INV_3_4SV((SM_V5*)this){
+		PA_INV_0_1SV((SM*)this),
+		PA_INV_1_2SV((SM*)this),
+		PA_INV_1_3SV((SM*)this),
+		PA_INV_3_4SV((SM*)this){
 
 	PA_INV_0_1SV.action = &act_0_1_inv_sv;
 	PA_INV_0_1SV.predicate = &pre_0_1_inv_sv;
@@ -396,10 +398,11 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 
 }
 //*****************************************************************
-// V5
 // client transaction
 //*****************************************************************
-bool pre_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message){
+// INVITE B
+//*****************************************************************
+bool pre_0_1_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_INV_CL pre_0_1_inv_cl","")
 	if (_message->getReqRepType() == REQSUPP
@@ -414,7 +417,7 @@ bool pre_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message){
 		return false;
 	}
 }
-ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl","")
 
@@ -430,7 +433,8 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	//careful with source message.
 	//Prepare message for Alarm
-	DUPLICATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	__timedmessage->setSourceMessage(_message->getSourceMessage());
 
 	//This is to be sent later, after timer expires
 	//Preconfigure message entity points, the alarm manager cannot do this
@@ -460,7 +464,13 @@ ACTION* act_0_1_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	return action;
 
 }
-bool pre_1_1_inv_cl(SM_V5* _sm, MESSAGE* _message){
+//*****************************************************************
+// INVITE B from ALARM
+//*****************************************************************
+//*****************************************************************
+// careful pre_1_1_inv_cl and pre_1_99_inv_cl are different
+// This invite could be deleted, currently is inserted into insertLockedMessage table
+bool pre_1_1_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_INV_CL pre_1_1_inv_cl","")
 	if (_message->getReqRepType() == REQSUPP
@@ -476,7 +486,8 @@ bool pre_1_1_inv_cl(SM_V5* _sm, MESSAGE* _message){
 		return false;
 	}
 }
-bool pre_1_99_inv_cl(SM_V5* _sm, MESSAGE* _message){
+//*****************************************************************
+bool pre_1_99_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_INV_CL pre_1_99_inv_cl","")
 	if (_message->getReqRepType() == REQSUPP
@@ -492,7 +503,7 @@ bool pre_1_99_inv_cl(SM_V5* _sm, MESSAGE* _message){
 		return false;
 	}
 }
-ACTION* act_1_99_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_1_99_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBASSERT("TRNSCT_INV_CL act_1_99_inv_cl please do something")
 
@@ -501,7 +512,8 @@ ACTION* act_1_99_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	return 0x0;
 
 }
-bool pre_1_1b_inv_cl(SM_V5* _sm, MESSAGE* _message){
+//*****************************************************************
+bool pre_1_1b_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_INV_CL pre_1_1b_inv_cl","")
 
@@ -517,7 +529,7 @@ bool pre_1_1b_inv_cl(SM_V5* _sm, MESSAGE* _message){
 			return false;
 		}
 }
-ACTION* act_1_1b_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_1_1b_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_INV_CL act_1_1b_inv_cl",_message->getHeadSipReply().getReply().getCode())
 
@@ -535,7 +547,7 @@ ACTION* act_1_1b_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	_sm->State = 1;
 	return action;
 }
-bool pre_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message){
+bool pre_1_3_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_CL pre_1_3_inv_cl","")
 
@@ -552,7 +564,7 @@ bool pre_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message){
 			return false;
 		}
 }
-ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_CL act_1_3_inv_cl","")
 
@@ -599,25 +611,25 @@ ACTION* act_1_3_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 
 
 }
-bool pre_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message){
+bool pre_1_4_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_V5 pre_1_4_inv_cl","")
+	DEBOUT("SM pre_1_4_inv_cl","")
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-			DEBOUT("SM_V5 pre_1_4_inv_cl","true")
+			DEBOUT("SM pre_1_4_inv_cl","true")
 			return true;
 		}
 		else {
-			DEBOUT("SM_V5 pre_1_4_inv_cl","false")
+			DEBOUT("SM pre_1_4_inv_cl","false")
 			return false;
 		}
 }
-ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_1_4_inv_cl","")
+	DEBOUT("SM act_1_4_inv_cl","")
 
 	NEWPTR(ACTION*, action, ACTION())
 
@@ -645,24 +657,24 @@ ACTION* act_1_4_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 	_sm->State = 4;
 	return action;
 }
-bool pre_4_5_inv_cl(SM_V5* _sm, MESSAGE* _message){
+bool pre_4_5_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_V5 pre_4_5_inv_cl","")
+	DEBOUT("SM pre_4_5_inv_cl","")
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-		DEBOUT("SM_V5 pre_4_5_inv_cl","true")
+		DEBOUT("SM pre_4_5_inv_cl","true")
 		return true;
 	}
 	else {
-		DEBOUT("SM_V5 pre_4_5_inv_cl","false")
+		DEBOUT("SM pre_4_5_inv_cl","false")
 		return false;
 	}
 }
-ACTION* act_4_5_inv_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_4_5_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_4_5_inv_cl","")
+	DEBOUT("SM act_4_5_inv_cl","")
 
 	NEWPTR(ACTION*, action, ACTION())
 
@@ -681,13 +693,13 @@ ACTION* act_4_5_inv_cl(SM_V5* _sm, MESSAGE* _message) {
 //**********************************************************************************
 TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
-		PA_INV_0_1CL((SM_V5*)this),
-		PA_INV_1_1CL((SM_V5*)this),
-		PA_INV_1_1bCL((SM_V5*)this),
-		PA_INV_1_3CL((SM_V5*)this),
-		PA_INV_1_4CL((SM_V5*)this),
-		PA_INV_4_5CL((SM_V5*)this),
-		PA_INV_1_99CL((SM_V5*)this){
+		PA_INV_0_1CL((SM*)this),
+		PA_INV_1_1CL((SM*)this),
+		PA_INV_1_1bCL((SM*)this),
+		PA_INV_1_3CL((SM*)this),
+		PA_INV_1_4CL((SM*)this),
+		PA_INV_4_5CL((SM*)this),
+		PA_INV_1_99CL((SM*)this){
 
 	PA_INV_0_1CL.action = &act_0_1_inv_cl;
 	PA_INV_0_1CL.predicate = &pre_0_1_inv_cl;
@@ -728,26 +740,26 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 
 
 }
-bool pre_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message){
+bool pre_0_1_ack_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_V5 pre_0_1_ack_sv called","")
+	DEBOUT("SM pre_0_1_ack_sv called","")
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-		DEBOUT("SM_V5 pre_0_1_ack_sv","true")
+		DEBOUT("SM pre_0_1_ack_sv","true")
 		return true;
 	}
 	else {
-		DEBOUT("SM_V5 pre_0_1_ack_sv","false")
+		DEBOUT("SM pre_0_1_ack_sv","false")
 		return false;
 	}
 }
-ACTION* act_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_0_1_ack_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_0_1_ack_sv called","")
+	DEBOUT("SM act_0_1_ack_sv called","")
 
-	DEBOUT("SM_V5::event move to state 1", _message->getHeadSipRequest().getContent())
+	DEBOUT("SM::event move to state 1", _message->getHeadSipRequest().getContent())
 
 	NEWPTR(ACTION*, action, ACTION())
 
@@ -760,7 +772,7 @@ ACTION* act_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SM_V5 act_0_1_ack_sv move to state 1","")
+	DEBOUT("SM act_0_1_ack_sv move to state 1","")
 	_sm->State = 1;
 
 	return action;
@@ -769,31 +781,31 @@ ACTION* act_0_1_ack_sv(SM_V5* _sm, MESSAGE* _message) {
 //**********************************************************************************
 TRNSCT_SM_ACK_SV::TRNSCT_SM_ACK_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
-		PA_ACK_0_1SV((SM_V5*)this){
+		PA_ACK_0_1SV((SM*)this){
 
 	PA_ACK_0_1SV.action = &act_0_1_ack_sv;
 	PA_ACK_0_1SV.predicate = &pre_0_1_ack_sv;
 
 	insert_move(0,&PA_ACK_0_1SV);
 }
-bool pre_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message){
+bool pre_0_1_ack_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_V5 pre_0_1_ack_cl","")
+	DEBOUT("SM pre_0_1_ack_cl","")
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-		DEBOUT("SM_V5 pre_0_1_ack_cl","true")
+		DEBOUT("SM pre_0_1_ack_cl","true")
 		return true;
 	}
 	else {
-		DEBOUT("SM_V5 pre_0_1_ack_cl","false")
+		DEBOUT("SM pre_0_1_ack_cl","false")
 		return false;
 	}
 }
-ACTION* act_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_0_1_ack_cl","")
+	DEBOUT("SM act_0_1_ack_cl","")
 
 	NEWPTR(ACTION*, action, ACTION())
 
@@ -812,7 +824,7 @@ ACTION* act_0_1_ack_cl(SM_V5* _sm, MESSAGE* _message) {
 //**********************************************************************************
 TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
-		PA_ACK_0_1CL((SM_V5*)this){
+		PA_ACK_0_1CL((SM*)this){
 
 	PA_ACK_0_1CL.action = &act_0_1_ack_cl;
 	PA_ACK_0_1CL.predicate = &pre_0_1_ack_cl;
@@ -823,7 +835,7 @@ TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-bool pre_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message){
+bool pre_0_1_bye_sv(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_INV_SV pre_0_1_bye_sv called","")
 	if (_message->getReqRepType() == REQSUPP
@@ -838,7 +850,7 @@ bool pre_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message){
 		return false;
 	}
 }
-ACTION* act_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_0_1_bye_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv", _message->getHeadSipRequest().getContent())
 
@@ -866,25 +878,25 @@ ACTION* act_0_1_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 	return action;
 
 }
-bool pre_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message){
+bool pre_1_2_bye_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_V5 pre_1_2_bye_sv","")
+	DEBOUT("SM pre_1_2_bye_sv","")
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-			DEBOUT("SM_V5 pre_1_2_bye_sv","true")
+			DEBOUT("SM pre_1_2_bye_sv","true")
 			return true;
 		}
 		else {
-			DEBOUT("SM_V5 pre_1_2_bye_sv","false")
+			DEBOUT("SM pre_1_2_bye_sv","false")
 			return false;
 		}
 }
-ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_1_2_bye_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_V5 act_1_2_bye_sv called","")
+	DEBOUT("SM act_1_2_bye_sv called","")
 
 	NEWPTR(ACTION*, action, ACTION())
 
@@ -895,7 +907,7 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SM_V5 act_1_2_bye_sv move to state 2","")
+	DEBOUT("SM act_1_2_bye_sv move to state 2","")
 	_sm->State = 2;
 
 	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset);
@@ -906,8 +918,8 @@ ACTION* act_1_2_bye_sv(SM_V5* _sm, MESSAGE* _message) {
 //**********************************************************************************
 TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
-		PA_BYE_0_1SV((SM_V5*)this),
-		PA_BYE_1_2SV((SM_V5*)this){
+		PA_BYE_0_1SV((SM*)this),
+		PA_BYE_1_2SV((SM*)this){
 
 	PA_BYE_0_1SV.action = &act_0_1_bye_sv;
 	PA_BYE_0_1SV.predicate = &pre_0_1_bye_sv;
@@ -920,7 +932,7 @@ TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGIN
 	insert_move(1,&PA_BYE_1_2SV);
 
 }
-bool pre_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message){
+bool pre_0_1_bye_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_SM_BYE_CL pre_0_1_bye_cl","")
 	if (_message->getReqRepType() == REQSUPP
@@ -936,7 +948,7 @@ bool pre_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message){
 	}
 
 }
-ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl","")
 
@@ -950,8 +962,8 @@ ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//careful with source message.
-	DUPLICATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
-
+	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	__timedmessage->setSourceMessage(_message->getSourceMessage());
 	//This is to be sent later, after timer expires
 	//Preconfigure message entity points, the alarm manager cannot do this
 
@@ -986,7 +998,7 @@ ACTION* act_0_1_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 
 	return action;
 }
-bool pre_1_1_bye_cl(SM_V5* _sm, MESSAGE* _message){
+bool pre_1_1_bye_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_SM_BYE_CL pre_1_1_bye_cl","")
 	if (_message->getReqRepType() == REQSUPP
@@ -1003,7 +1015,7 @@ bool pre_1_1_bye_cl(SM_V5* _sm, MESSAGE* _message){
 	}
 }
 
-bool pre_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message){
+bool pre_1_2_bye_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_SM_BYE_CL pre_1_4_bye_cl","")
 
@@ -1019,7 +1031,7 @@ bool pre_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message){
 			return false;
 		}
 }
-ACTION* act_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message) {
+ACTION* act_1_2_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_SM_BYE_CL act_3_4_inv_cl","")
 
@@ -1048,9 +1060,9 @@ ACTION* act_1_2_bye_cl(SM_V5* _sm, MESSAGE* _message) {
 //**********************************************************************************
 TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
-		PA_BYE_0_1CL((SM_V5*)this),
-		PA_BYE_1_1CL((SM_V5*)this),
-		PA_BYE_1_2CL((SM_V5*)this){
+		PA_BYE_0_1CL((SM*)this),
+		PA_BYE_1_1CL((SM*)this),
+		PA_BYE_1_2CL((SM*)this){
 
 	PA_BYE_0_1CL.action = &act_0_1_bye_cl;
 	PA_BYE_0_1CL.predicate = &pre_0_1_bye_cl;
