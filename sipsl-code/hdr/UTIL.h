@@ -84,7 +84,7 @@ typedef struct {
 
 #define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
 	pthread_mutex_lock(&messTableMtx);\
-	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
+	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable << "]["<<globalMessTable.size())\
 	for (p=globalMessTable.begin() ; p != globalMessTable.end() ; p ++){\
 		DEBOUT("***********MESSAGE in table", (MESSAGE*)p->second)\
 		DEBMESSAGE("MESSAGE in table" ,((MESSAGE*)p->second) ) \
