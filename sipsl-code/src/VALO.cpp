@@ -538,8 +538,9 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	ok_x->dumpVector();
 
-	PURGEMESSAGE(_message)
-
+	//TODO move this into state machines
+	_message->setLock();
+	call_oset->insertLockedMessage(_message);
 	sl_cc->p_w(ok_x);
 
 }

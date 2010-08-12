@@ -407,7 +407,7 @@ void COMAP::purgeDOA(void){
 			DEBY
 			comap_mm.erase(p_comap_mm);
 			p_comap_mm = comap_mm.begin();
-			break;
+			//break;
 		}else{
 			DEBY
 		}
