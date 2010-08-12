@@ -78,6 +78,9 @@
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
+#ifndef TRNSCT_SM_H
+#include "TRNSCT_SM.h"
+#endif
 SIPUTIL SipUtil;
 
 VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
