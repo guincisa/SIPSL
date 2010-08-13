@@ -243,6 +243,7 @@ void COMAP::setY2XCallId(string _callId_Y, string _callId_X){
 //**********************************************************************************
 void COMAP::setDoa(CALL_OSET* _call_oset, int _doa){
 
+	DEBY
 	map<CALL_OSET*, int>::iterator p;
 	pthread_mutex_lock(&doa_mutex);
 	p = call_oset_doa_state.find(_call_oset);
@@ -393,24 +394,50 @@ void COMAP::purgeDOA(void){
 
 	map<string, CALL_OSET*>::iterator p_comap_mm;
 	CALL_OSET* call_oset;
+	stack<string> todel_cx;
+
 
 	pthread_mutex_lock(&comap_mutex);
 
 	//TODO HORRORRRRRR!!!!
 	for( p_comap_mm = comap_mm.begin(); p_comap_mm != comap_mm.end(); ++p_comap_mm){
+		DEBY
 		call_oset = (CALL_OSET*)p_comap_mm->second;
 		DEBOUT("COMAP::purgeDOA", call_oset)
 		if ( getDoa(call_oset) == DOA_CONFIRMED){
 			DEBOUT("COMAP::purgeDOA deleted", call_oset)
 			setDoa(call_oset, DOA_DELETED);
-			delete call_oset;
 			DEBY
-			comap_mm.erase(p_comap_mm);
-			p_comap_mm = comap_mm.begin();
-			//break;
+
+			todel_cx.push((string)p_comap_mm->first);
+
+			pthread_mutex_lock(&doa_mutex);
+			DEBY
+			call_oset_doa_state.erase(call_oset);
+			pthread_mutex_unlock(&doa_mutex);
+
+			pthread_mutex_lock(&call_y2x_mutex);
+			DEBY
+			call_id_y2x.erase(call_oset->getCallId_Y());
+			pthread_mutex_unlock(&call_y2x_mutex);
+
+			pthread_mutex_lock(&co_msgcnt_mutex);
+			DEBY
+			call_oset_msg_cnt.erase(call_oset);
+			pthread_mutex_unlock(&co_msgcnt_mutex);
+
+			delete call_oset;
 		}else{
 			DEBY
 		}
+	}
+	DEBY
+	string tops;
+	while (!todel_cx.empty()){
+		tops = todel_cx.top();
+		DEBOUT("COMAP::purgeDOA todel_cx", tops)
+		comap_mm.erase(tops);
+		todel_cx.pop();
 	}
 	pthread_mutex_unlock(&comap_mutex);
 	DEBY

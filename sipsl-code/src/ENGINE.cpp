@@ -177,6 +177,7 @@ SUDP* ENGINE::getSUDP(void){
 void ENGINE::p_w(MESSAGE* _m) {
 
     pthread_mutex_lock(&(sb.condvarmutex));
+    DEBY
     sb.put(_m);
     pthread_cond_signal(&(sb.condvar));
     pthread_mutex_unlock(&(sb.condvarmutex));

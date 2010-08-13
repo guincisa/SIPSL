@@ -109,6 +109,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, string _call){
 	alo = new VALO(_engine, this);
 	alo->linkSUDP(_engine->getSUDP());
 	callId_X = _call;
+	callId_Y = "";
 
 }
 CALL_OSET::~CALL_OSET(void){
@@ -235,6 +236,7 @@ void CALL_OSET::removeLockedMessage(MESSAGE* _message){
 	map<MESSAGE*,int>::iterator p;
 	p=lockedMessages.find(_message);
 	if (p!=lockedMessages.end()){
+		DEBY
 		MESSAGE* t = (MESSAGE*)p->first;
 		lockedMessages.erase(p);
 	}

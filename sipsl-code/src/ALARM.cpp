@@ -110,17 +110,7 @@ void ALMGR::alarmer(void){
 	DEBOUT("ALMGR::alarmer", "begin")
 	for(;;){
 
-//		counter++;
-//		counter = counter % 1000;
-//		if (counter == 0)
-//			DEBOUT("ALMGR::alarmer", "sleep 1000")
-
-//		SysTime aaa;
-//		SysTime bbb;
-//		GETTIME(aaa)
 		nanosleep(&sleep_time,NULL);
-//		GETTIME(bbb)
-//		PRINTTIME(aaa,bbb)
 
 
 
@@ -130,11 +120,14 @@ void ALMGR::alarmer(void){
 		long long int curr = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;
 		long long int tcu = 0;
 		if (!alarm_pq.empty()) {
+
 			tcu = alarm_pq.top();
 
 			//{char bu[1024];sprintf(bu, "curr %lld tcu %lld",curr, tcu);DEBOUT("ALARM CHECK INTERVAL", bu )}
 
 			while (!alarm_pq.empty() && curr >= tcu){
+
+				DEBOUT("ALARM exists", alarm_pq.size())
 
 				alarm_pq.pop();
 
@@ -166,12 +159,7 @@ void ALMGR::alarmer(void){
 							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)
 							sl_cc->p_w(_tmpMess);
 						}
-					} else {
-						DEBY
-						//TODO purge alarms
 					}
-					//else
-					//time_alarm_mumap.erase(iter);
 					mess_alm_map.erase(tmal->getMessage());
 					delete tmal;
 					DEBY
