@@ -111,6 +111,9 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, string _call){
 	callId_X = _call;
 	callId_Y = "";
 
+	DEBOUT("CALL_OSET sequenceMap", &sequenceMap)
+	DEBOUT("CALL_OSET trnsctSmMap", &trnsctSmMap)
+
 }
 CALL_OSET::~CALL_OSET(void){
 
@@ -313,13 +316,13 @@ void SL_CO::call(MESSAGE* _message){
 		if (trnsctSM == 0x0){
 			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
 				call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
-				NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this))
+				NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_SV")
 			}
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
-				NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this))
+				NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
 			}
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
-				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this))
+				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
 			}
 			//Add the sm to the map
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
@@ -393,13 +396,13 @@ void SL_CO::call(MESSAGE* _message){
 			DEBOUT("Creating Trnsct Client machine callidy", callidys)
 			if(_message->getReqRepType() == REQSUPP){
 				if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
-					NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this))
+					NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
 				}
 				else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
-					NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this))
+					NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
 				}
 				else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
-					NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this))
+					NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_BYE_CL")
 				}
 			}else{
 				DEBOUT("A unexpected reply directed to client has reached the call object","")
@@ -463,14 +466,14 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("SL_CO:: TYPE_OP","")
 
 					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
-						DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+						DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 						SysTime st1 = _tmpMessage->getFireTime();
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
 
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
-						DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
-						string callid_alarm = _tmpMessage->getHeadCSeq().getContent() +  _tmpMessage->getHeadCallId().getNormCallId();
+						DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+						string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch");
 						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 					}

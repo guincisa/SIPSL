@@ -95,7 +95,10 @@ COMAP::COMAP(void){
 	pthread_mutex_init(&call_y2x_mutex, NULL);
 	pthread_mutex_init(&co_msgcnt_mutex, NULL);
 
-
+	DEBOUT("comap comap_mm", &comap_mm)
+	DEBOUT("comap call_id_y2x",&call_id_y2x)
+	DEBOUT("comap call_oset_doa_state", &call_oset_doa_state)
+	DEBOUT("comap call_oset_msg_cnt", &call_oset_msg_cnt)
 
 }
 COMAP::~COMAP(void){

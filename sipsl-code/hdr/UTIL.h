@@ -99,13 +99,19 @@ typedef struct {
 	nanosleep(&sleep_time,NULL);}
 
 //with embedded declaration
-#define NEWPTR(type, m1, m2) type m1 = 0x0;\
+#define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
 	m1 = new (nothrow) m2;\
+	DEBOUT("NEW ", mess << "][" <<m1)\
 	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
 //no embedded declaration
-#define NEWPTR2(m1, m2) m1 = 0x0;\
+#define NEWPTR2(m1, m2, mess) m1 = 0x0;\
 	m1 = new (nothrow) m2;\
+	DEBOUT("NEW ", mess << "][" <<m1)\
 	if (m1 == 0x0) { DEBERROR("NEW allocation failed")}
+
+#define DELPTR(m1, mess) \
+		DEBOUT("DELPTR",mess<<"]["<<m1)\
+		delete m1;
 
 #define TRYCATCH(m) try { m; } catch (exception& e) {DEBOUT("Exception thrown", e.what()) DEBASSERT("Exception")}
 
@@ -113,7 +119,7 @@ typedef struct {
 #define CREATEMESSAGE(m1, m2, m3) MESSAGE* m1=0x0; {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
-				NEWPTR2(m1, MESSAGE(m2, m3, inTime));\
+				NEWPTR2(m1, MESSAGE(m2, m3, inTime),"MESSAGE");\
 				int i= m1->getTotLines();\
 				DEBOUT("NEW MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
@@ -128,7 +134,7 @@ typedef struct {
 #define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
-				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr));\
+				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
 				int i= m1->getTotLines();\
 				DEBOUT("NEW MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
@@ -144,7 +150,7 @@ typedef struct {
 #define CREATENEWMESSAGE_EXT(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
-				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr));\
+				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
 				DEBOUT("NEW MESSAGE",__mess)\
 				if (__mess != 0x0 ) {long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\

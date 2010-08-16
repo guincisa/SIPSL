@@ -224,7 +224,7 @@ ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv", _message->getHeadSipRequest().getContent())
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	//_message changes its dest and gen
 	_message->setDestEntity(SODE_ALOPOINT);
@@ -272,7 +272,7 @@ ACTION* act_1_2_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("act_1_2_inv_sv::act_1_2_sv",  _message->getHeadSipReply().getContent() )
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	// The message ha been prepared by client so it's ready to be sent back
 	_message->setDestEntity(SODE_NTWPOINT);
@@ -307,7 +307,7 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_1_3_inv_sv called","")
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
@@ -349,7 +349,7 @@ ACTION* act_3_4_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM::event move to state 4", _message->getHeadSipRequest().getContent())
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	//_message changes its dest and gen
 	_message->setDestEntity(SODE_ALOPOINT);
@@ -419,7 +419,7 @@ ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl","")
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	//Message has to be sent
 	_message->setDestEntity(SODE_NTWPOINT);
@@ -533,7 +533,7 @@ ACTION* act_1_1b_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	// TODO clear timer ad create new timer for the ringing ?
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	_message->typeOfInternal = TYPE_OP;
 	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	_message->setLock();
@@ -566,7 +566,7 @@ ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_CL act_1_3_inv_cl","")
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	// the message contains the to tag that we must save
 	// or store it in valo during 200ok
@@ -629,7 +629,7 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_1_4_inv_cl","")
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
@@ -674,7 +674,7 @@ ACTION* act_4_5_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_4_5_inv_cl","")
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
@@ -759,7 +759,7 @@ ACTION* act_0_1_ack_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM::event move to state 1", _message->getHeadSipRequest().getContent())
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	//_message changes its dest and gen
 	_message->setDestEntity(SODE_ALOPOINT);
@@ -805,7 +805,7 @@ ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_0_1_ack_cl","")
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
@@ -857,7 +857,7 @@ ACTION* act_0_1_bye_sv(SM* _sm, MESSAGE* _message) {
 
     //_sm->setControlSequence(_message->getHeadCSeq().getSequence());
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	//_message changes its dest and gen
 	// remember initial generation  is used for backward messagges like bye coming from B
@@ -896,7 +896,7 @@ ACTION* act_1_2_bye_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_1_2_bye_sv called","")
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
@@ -950,7 +950,7 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl","")
 
-	NEWPTR(ACTION*, action, ACTION())
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);

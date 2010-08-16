@@ -480,27 +480,27 @@ void VALO::on200Ok(MESSAGE* _message){
 	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 	MESSAGE* __message = ((TRNSCT_SM*)trnsct_cl)->getA_Matrix();
 
-	NEWPTR(string*, totag, string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag")))
+	NEWPTR(string*, totag, string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag")),"string")
 	DEBOUT("STORE totag", totag)
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("totag_200ok_b", (void*) totag )))
 
 	stack<C_HeadVia*>	tmpViaS;
 	tmpViaS = _message->getSTKHeadVia();
-	NEWPTR(string*, allvia, string(tmpViaS.top()->getC_AttVia().getContent()))
+	NEWPTR(string*, allvia, string(tmpViaS.top()->getC_AttVia().getContent()),"string")
 	DEBOUT("STORE totag", allvia)
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("allvia_200ok_b", (void*) allvia )))
 
 	// Need to store the FROM and TO
 	// To create the ACK
-	NEWPTR(string*, tohead,  string(_message->getHeadTo().getContent()) )
+	NEWPTR(string*, tohead,  string(_message->getHeadTo().getContent()),"string")
 	DEBOUT("STORE TO HEAD ok 200 ok from B", tohead)
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead )))
-	NEWPTR(string*, fromhead, string(_message->getHeadFrom().getContent()))
+	NEWPTR(string*, fromhead, string(_message->getHeadFrom().getContent()),"string")
 	DEBOUT("STORE FROM HEAD of 200 ok", fromhead)
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead )))
 
 	//this shoudl go into call_oset call_idy
-	NEWPTR(string*, callid_200ok_b, string(_message->getHeadCallId().getContent()))
+	NEWPTR(string*, callid_200ok_b, string(_message->getHeadCallId().getContent()),"string")
 	DEBOUT("STORE CALL ID of 200 ok", callid_200ok_b)
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
 
@@ -530,10 +530,10 @@ void VALO::on200Ok(MESSAGE* _message){
 	ok_x->compileMessage();
 
 	DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo().getContent() << "]["<<ok_x->getHeadFrom().getContent())
-	NEWPTR(string*, tohead_a, string(ok_x->getHeadTo().getContent()))
+	NEWPTR(string*, tohead_a, string(ok_x->getHeadTo().getContent()),"string")
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a )))
 	DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo().getContent())
-	NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom().getContent()))
+	NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom().getContent()),"string")
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 
 	ok_x->dumpVector();

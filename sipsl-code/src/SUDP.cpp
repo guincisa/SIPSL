@@ -181,6 +181,7 @@ void SUDP::start(void) {
 // *****************************************************************************************
 void SUDP::listen() {
 
+	DEBOUT("SUDP","globalMessTable")
     for (;;){
         /* Set the size of the in-out parameter */
     	DEBY

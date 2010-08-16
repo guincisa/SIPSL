@@ -90,12 +90,19 @@ void ALMGR::initAlarm(void){
 
 	DEBOUT("ALMGR::initAlarm", "init")
 
-    NEWPTR2(listenerThread,ThreadWrapper);
+    NEWPTR2(listenerThread,ThreadWrapper, "ThreadWrapper");
     ALMGRtuple *t1;
-    NEWPTR2(t1,ALMGRtuple);
+    NEWPTR2(t1,ALMGRtuple, "ALMGRtuple");
     t1->st = this;
     int res;
     res = pthread_create(&(listenerThread->thread), NULL, ALARMSTACK, (void *) t1 );
+
+    DEBOUT("ALMGR priority_queue<const long long int, vector<long long int>, greater<const long long int> > alarm_pq", &alarm_pq)
+    DEBOUT("ALMGR multimap<const long long int, ALARM*, less<const long long int> > time_alarm_mumap", &time_alarm_mumap)
+    //DEBOUT("ALMGR map<MESSAGE*, ALARM*> mess_alm_map", &mess_alm_map);
+    DEBOUT("ALMGR map<string, ALARM*> callid_alm_map", &cidbranch_alm_map)
+//    DEBOUT("ALMGR map<string, MESSAGE*> callid_message", &cidbranch_message)
+//    DEBOUT("ALMGR map<MESSAGE*, string> message_callid", &message_cidbranch)
 
 
     //TODO check consistency!!!
@@ -112,29 +119,29 @@ void ALMGR::alarmer(void){
 
 		nanosleep(&sleep_time,NULL);
 
-
+		pthread_mutex_lock(&mutex);
 
 		//extract from priority queue
 		SysTime mytime;
 		GETTIME(mytime);
-		long long int curr = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;
-		long long int tcu = 0;
+		unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
+		unsigned long long int tcu = 0;
 		if (!alarm_pq.empty()) {
 
 			tcu = alarm_pq.top();
 
-			//{char bu[1024];sprintf(bu, "curr %lld tcu %lld",curr, tcu);DEBOUT("ALARM CHECK INTERVAL", bu )}
+
 
 			while (!alarm_pq.empty() && curr >= tcu){
 
 				DEBOUT("ALARM exists", alarm_pq.size())
 
-				alarm_pq.pop();
-
 				// now get a list of alarms from the multi map
 
-				multimap<const long long int, ALARM*>::iterator iter;
-				pair<multimap<const long long int,ALARM*>::iterator,multimap<const long long int ,ALARM*>::iterator> ret;
+				multimap<const unsigned long long int, ALARM*>::iterator iter;
+				pair<multimap<const unsigned long long int,ALARM*>::iterator,multimap<const unsigned long long int ,ALARM*>::iterator> ret;
+				map<ALARM*,int> delmap;
+				DEBOUT("map<ALARM*,int> delmap", &delmap)
 
 				ret = time_alarm_mumap.equal_range(tcu);
 
@@ -153,21 +160,38 @@ void ALMGR::alarmer(void){
 							_tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
 							_tmpMess->compileMessage();
 							_tmpMess->dumpVector();
-							//_tmpMess->unSetLock();
+
+							pthread_mutex_unlock(&mutex);
+
 							sl_cc->p_w(_tmpMess);
 						} else {
 							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)
+
+							pthread_mutex_unlock(&mutex);
+
 							sl_cc->p_w(_tmpMess);
 						}
 					}
-					mess_alm_map.erase(tmal->getMessage());
-					delete tmal;
+					//mess_alm_map.erase(tmal->getMessage());
+					delmap.insert(pair<ALARM*,int>(tmal,0));
+					{char bu[1024];sprintf(bu, "curr %ulld tcu %ulld",curr, tcu);DEBOUT("ALARM CHECK INTERVAL", tmal << "][" << bu << "][ curr > tcu " <<  (curr > tcu))}
+					cidbranch_alm_map.erase(tmal->getCidbranch());
 					DEBY
 				}
+			    for (map<ALARM*,int>::iterator iter2 = delmap.begin(); iter2!=delmap.end(); iter2++){
+			    	DELPTR((ALARM*)(iter2->first),"ALARM")
+
+			    }
 			    time_alarm_mumap.erase(tcu);
-				tcu = alarm_pq.top();
+
+				alarm_pq.pop();
+				if (!alarm_pq.empty()){
+					tcu = alarm_pq.top();
+				}
 			}
 		}
+		pthread_mutex_unlock(&mutex);
+
 	}
 }
 void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
@@ -175,81 +199,58 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	//check if message already exists and cancel related alarm
 	//do note remove it from multimap and from mess_alm map
 
-	DEBOUT("ALMGR::insertAlarm", _fireTime.tv.tv_sec*1000000+_fireTime.tv.tv_usec)
+	pthread_mutex_lock(&mutex);
+
+	//DEBOUT("ALMGR::insertAlarm", _fireTime.tv.tv_sec*1000000+_fireTime.tv.tv_usec)
+	{char bu[1024];sprintf(bu, "time %ulld",_fireTime.tv.tv_sec*1000000 + _fireTime.tv.tv_usec);DEBOUT("ALMGR::insertAlarm", bu )}
+
 	map<MESSAGE*, ALARM*>::iterator p;
 
-	if (!mess_alm_map.empty()){
-		DEBY
-		p = mess_alm_map.find(_message);
-		if (p != mess_alm_map.end()){
-			ALARM* tmp = (ALARM*)p->second;
-			if (tmp != 0x0)
-				tmp->cancel();
-		}
-		else {
-			//nothing?
-		}
-	}
+//	if (!mess_alm_map.empty()){
+//		DEBY
+//		p = mess_alm_map.find(_message);
+//		if (p != mess_alm_map.end()){
+//			DEBASSERT("no")
+//			ALARM* tmp = (ALARM*)p->second;
+//			if (tmp != 0x0){
+//				tmp->cancel();
+//			}
+//		}
+//	}
 
-	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime))
+	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
+
 	// insert into priority q
 	alarm_pq.push(alm->getTriggerTime());
 
 
 	//insert into map time - alarm
-	time_alarm_mumap.insert(pair<long long int const, ALARM*>(alm->getTriggerTime(), alm));
-
-	//insert or replace into map message - alarm
-	//used to cancel an alarm by using the message pointer
-	mess_alm_map.insert(pair<MESSAGE*, ALARM*>(_message, alm));
-
-	string callid_alarm;
-	//if(_message->getReqRepType() == REQSUPP){
-		//callid_alarm = _message->getHeadSipRequest().getS_AttMethod().getMethodName() + _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
-		callid_alarm = _message->getHeadCSeq().getContent() +  _message->getHeadCallId().getNormCallId();
-		DEBOUT("Alarm id", callid_alarm);
-
-	//}
-	//pthread_mutex_lock(&mutex);
-	callid_alm_map.insert(pair<string, ALARM*>(callid_alarm, alm));
-	//pthread_mutex_unlock(&mutex);
+	time_alarm_mumap.insert(pair<unsigned long long int const, ALARM*>(alm->getTriggerTime(), alm));
 
 
-	callid_message.insert(pair<string, MESSAGE*>(callid_alarm, _message));
-	message_callid.insert(pair<MESSAGE*, string>(_message, callid_alarm));
+	string cidbranch_alarm;
+	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch");
+	DEBOUT("Alarm id (cid+branch", cidbranch_alarm);
+	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
+
+	pthread_mutex_unlock(&mutex);
 
 	return;
 
 }
-//void ALMGR::cancelAlarm(MESSAGE* _message){
-//
-//	// alarm is deactivated and the related message may have been
-//	// purged so
-//
-//	DEBOUT("ALMGR::cancelAlarm", _message)
-//	//lookup alarm into map
-//	map<MESSAGE*, ALARM*> ::iterator p;
-//	p = mess_alm_map.find(_message);
-//	ALARM* tmp = 0x0;
-//	if (p != mess_alm_map.end()){
-//		DEBOUT("ALMGR::cancelAlarm", "found")
-//		tmp = (ALARM*)p->second;
-//		tmp->cancel();
-//	}
-//}
-void ALMGR::cancelAlarm(string _callid){
+void ALMGR::cancelAlarm(string _cidbranch){
 
 	// alarm is deactivated and the related message may have been
 	// purged so
 
-	DEBOUT("ALMGR::cancelAlarm", _callid)
-	//lookup alarm into map
-	//pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
+
+	DEBOUT("ALMGR::cancelAlarm", _cidbranch)
 
 	map<string, ALARM*> ::iterator p;
-	p = callid_alm_map.find(_callid);
+	p = cidbranch_alm_map.find(_cidbranch);
 	ALARM* tmp = 0x0;
-	if (p != callid_alm_map.end()){
+	if (p != cidbranch_alm_map.end()){
 		DEBOUT("ALMGR::cancelAlarm", "found")
 		tmp = (ALARM*)p->second;
 		tmp->cancel();
@@ -257,7 +258,8 @@ void ALMGR::cancelAlarm(string _callid){
 	else {
 		DEBOUT("ALMGR::cancelAlarm", "not found")
 	}
-	//pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&mutex);
+
 
 }
 //**********************************************************************************
@@ -266,12 +268,18 @@ ALARM::ALARM(MESSAGE *_message, SysTime _fireTime){
 	message = _message;
 	fireTime = _fireTime;
 	active = true;
-	fireTime_c = ((long long int) fireTime.tv.tv_sec)*1000000+(long long int)fireTime.tv.tv_usec;
+	fireTime_c = ((unsigned long long int) fireTime.tv.tv_sec)*1000000+(unsigned long long int)fireTime.tv.tv_usec;
+	DEBOUT("ALARM::ALARM firetime", fireTime_c)
+	cidbranch = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch");
 
 }
-long long int ALARM::getTriggerTime(void){
+unsigned long long int ALARM::getTriggerTime(void){
 	return fireTime_c;
 }
+string ALARM::getCidbranch(void){
+	return cidbranch;
+}
+
 void ALARM::cancel(void){
 	active = false;
 }

@@ -110,9 +110,9 @@ DOA::DOA(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
 void DOA::init(void) {
 	DEBOUT("DOA::init", "init")
 
-    NEWPTR2(listenerThread,ThreadWrapper);
+    NEWPTR2(listenerThread,ThreadWrapper,"ThreadWrapper");
 	DOAtuple *t1;
-    NEWPTR2(t1,DOAtuple);
+    NEWPTR2(t1,DOAtuple,"DOAtuple");
     t1->st = this;
     int res;
     res = pthread_create(&(listenerThread->thread), NULL, DOASTACK, (void *) t1 );

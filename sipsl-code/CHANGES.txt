@@ -1,5 +1,17 @@
 CHANGES
 
+16 agosto
+
+guic@grog:~/workspace/SIPSL_svn/Solaris$ ./SIPSL_svn > log
+SIPSL_svn: ../sipsl-code/src/TRNSCT_SM.cpp:506: Assertion `0' failed.
+Aborted
+
+
+13 Agosto
+
+usare un solo mutex in COMAP
+-------------------------------------------------------------------------------
+
 9 agosto
 
 mettere nella context store i messaggi locked
