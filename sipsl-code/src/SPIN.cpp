@@ -123,7 +123,7 @@ void ROTQ::put(MESSAGE* m) {
     top ++ ;
     top = top % ARR;
     if (top == bot) {
-        // discard old message
+        //DEBASSERT("FULL TRASHING")
         DEBOUT("FULL TRASHING","")
         pthread_mutex_lock(&(sb->mudim));
         (sb->DIM)--;

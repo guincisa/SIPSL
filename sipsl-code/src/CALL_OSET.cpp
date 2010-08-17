@@ -124,7 +124,7 @@ CALL_OSET::~CALL_OSET(void){
 		map<string, TRNSCT_SM*> ::iterator p;
 		for (p = trnsctSmMap.begin() ; p != trnsctSmMap.end() ; p++) {
 			DEBY
-			delete (TRNSCT_SM*)p->second;
+			DELPTR((TRNSCT_SM*)p->second,"(TRNSCT_SM*)p->second");
 		}
 		DEBY
 	}

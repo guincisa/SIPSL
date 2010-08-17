@@ -63,7 +63,10 @@ typedef struct {
 #define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "]\n["<< m2->getIncBuffer() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
 #define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" << m2 << "]\n[" <<m2->getKey() << "]\n["<< m2->getLine(0) << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
 #define DEBERROR(m1)  {stringstream xx ; xx << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]\n";cout << xx.str();cout.flush();}
-#define DEBY  {stringstream xx ; xx << "DEBY " << __FILE__ <<" " <<__LINE__<< "\n";cout << xx.str();cout.flush();}
+
+//#define DEBY  {stringstream xx ; xx << "DEBY " << __FILE__ <<" " <<__LINE__<< "\n";cout << xx.str();cout.flush();}
+#define DEBY
+
 #define DEBASSERT(m1) cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; cout.flush();assert(0);
 
 
@@ -82,15 +85,15 @@ typedef struct {
 	}\
 	pthread_mutex_unlock(&messTableMtx);}
 
-#define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
-	pthread_mutex_lock(&messTableMtx);\
-	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable << "]["<<globalMessTable.size())\
-	for (p=globalMessTable.begin() ; p != globalMessTable.end() ; p ++){\
-		DEBOUT("***********MESSAGE in table", (MESSAGE*)p->second)\
-		DEBMESSAGE("MESSAGE in table" ,((MESSAGE*)p->second) ) \
-	}\
-	pthread_mutex_unlock(&messTableMtx);}
-
+//#define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
+//	pthread_mutex_lock(&messTableMtx);\
+//	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable << "]["<<globalMessTable.size())\
+//	for (p=globalMessTable.begin() ; p != globalMessTable.end() ; p ++){\
+//		DEBOUT("***********MESSAGE in table", (MESSAGE*)p->second)\
+//		DEBMESSAGE("MESSAGE in table" ,((MESSAGE*)p->second) ) \
+//	}\
+//	pthread_mutex_unlock(&messTableMtx);}
+#define DUMPMESSTABLE
 
 
 #define WAITTIME { timespec sleep_time; \

@@ -346,6 +346,42 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 	if (i == 0 && getDoa(_call_oset)==DOA_REQUESTED){
 		DEBOUT("COMAP::decCALL_OSET_MsgCnt DOA_CONFIRMED", _call_oset )
 		setDoa(_call_oset, DOA_CONFIRMED);
+
+//		pthread_mutex_unlock(&co_msgcnt_mutex);
+//
+//		//TODO
+//		//p_w???
+//		//we are in sl_cc thread...
+//		pthread_mutex_lock(&comap_mutex);
+//
+//		DEBOUT("COMAP::decCALL_OSET_MsgCnt deleting here!", _call_oset)
+//		setDoa(_call_oset, DOA_DELETED);
+//		DEBY
+//
+//		pthread_mutex_lock(&doa_mutex);
+//		DEBY
+//		call_oset_doa_state.erase(_call_oset);
+//		pthread_mutex_unlock(&doa_mutex);
+//
+//		pthread_mutex_lock(&call_y2x_mutex);
+//		DEBY
+//		call_id_y2x.erase(_call_oset->getCallId_Y());
+//		pthread_mutex_unlock(&call_y2x_mutex);
+//
+//		pthread_mutex_lock(&co_msgcnt_mutex);
+//		DEBY
+//		call_oset_msg_cnt.erase(_call_oset);
+//		pthread_mutex_unlock(&co_msgcnt_mutex);
+//
+//
+//		comap_mm.erase(_call_oset->callId_X);
+//
+//		DELPTR(_call_oset,"call_oset");
+//
+//		pthread_mutex_unlock(&comap_mutex);
+
+
+
 	}
 
 	pthread_mutex_unlock(&co_msgcnt_mutex);
@@ -399,10 +435,10 @@ void COMAP::purgeDOA(void){
 	CALL_OSET* call_oset;
 	stack<string> todel_cx;
 
-
+	//TODO
+	// not good... this blocks the comap for too long!
 	pthread_mutex_lock(&comap_mutex);
 
-	//TODO HORRORRRRRR!!!!
 	for( p_comap_mm = comap_mm.begin(); p_comap_mm != comap_mm.end(); ++p_comap_mm){
 		DEBY
 		call_oset = (CALL_OSET*)p_comap_mm->second;
@@ -429,7 +465,7 @@ void COMAP::purgeDOA(void){
 			call_oset_msg_cnt.erase(call_oset);
 			pthread_mutex_unlock(&co_msgcnt_mutex);
 
-			delete call_oset;
+			DELPTR(call_oset,"call_oset");
 		}else{
 			DEBY
 		}
@@ -447,85 +483,5 @@ void COMAP::purgeDOA(void){
 
 }
 
-//int COMAP::getCALL_OSETStatus(CALL_OSET* _call_oset){
-//
-//	int j;
-//	pthread_mutex_lock(&cos_mutex);
-//
-//	map<CALL_OSET*, int>::iterator p;
-//	p = call_oset_status.find(_call_oset);
-//	if (p != call_oset_status.end()){
-//		j = (int)p->second;
-//		pthread_mutex_unlock(&cos_mutex);
-//	}else{
-//		//status has not been set so by default is busy
-//		pthread_mutex_unlock(&cos_mutex);
-//		j = 9999;
-//	}
-//}
-//void COMAP::setCALL_OSETStatus(CALL_OSET* _call_oset, int _status){
-//
-//	pthread_mutex_lock(&cos_mutex);
-//
-//	map<CALL_OSET*, int>::iterator p;
-//	p = call_oset_status.find(_call_oset);
-//	if (p != call_oset_status.end()){
-//		call_oset_status.erase(p);
-//	}
-//	call_oset_status.insert(pair<CALL_OSET*, int >(_call_oset, _status));
-//	pthread_mutex_unlock(&cos_mutex);
-//}
-//void COMAP::useCALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message){
-//
-//	//check if not doa
-//	//if doa return()
-//
-//	pthread_mutex_lock(&cos_mutex);
-//	//busy call_oset + 1
-//	pthread_mutex_unlock(&cos_mutex);
-//	//else
-//	_call_oset->getSL_CO()->call(_message);
-//	pthread_mutex_lock(&cos_mutex);
-//	//busy call_oset + 1
-//	pthread_mutex_unlock(&cos_mutex);
-//
-//
-//
-//}
-//////**********************************************************************************
-//////**********************************************************************************
-////void COMAP::deleteCALL_OSET(string _callId_X){
-////
-////	DEBOUT("COMAP::deleteCALL_OSET remove ", _callId_X)
-////
-////	CALL_OSET* tmp = 0x0;
-////	map<string, CALL_OSET*>::iterator p;
-////	p = comap_mm.find(_callId_X);
-////	if (p != comap_mm.end()){
-////			comap_mm.erase(p);
-////	}
-////}
-////**********************************************************************************
-////**********************************************************************************
-//void COMAP::deleteYCALL_OSET(string _callId_Y){
-//
-//	DEBOUT("COMAP::delete/CALL_OSET remove ", _callId_Y)
-//
-//	map<string, CALL_OSET*>::iterator p;
-//	map<string, string>::iterator p2;
-//	string tmp2 = "";
-//
-//	p2 = call_id_y2x.find(_callId_Y);
-//
-//	if (p2 != call_id_y2x.end()){
-//		tmp2 = (string)p2->second;
-//		DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp2)
-//		p = comap_mm.find(tmp2);
-//		if (p != comap_mm.end()){
-//			comap_mm.erase(p);
-//			call_id_y2x.erase(p2);
-//		}
-//	}
-//}
 
 

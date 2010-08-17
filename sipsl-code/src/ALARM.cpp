@@ -174,7 +174,7 @@ void ALMGR::alarmer(void){
 					}
 					//mess_alm_map.erase(tmal->getMessage());
 					delmap.insert(pair<ALARM*,int>(tmal,0));
-					{char bu[1024];sprintf(bu, "curr %ulld tcu %ulld",curr, tcu);DEBOUT("ALARM CHECK INTERVAL", tmal << "][" << bu << "][ curr > tcu " <<  (curr > tcu))}
+					DEBOUT("ALARM CHECK INTERVAL", tmal << "][curr " << (unsigned long long int)curr << "][tcu " <<  (unsigned long long int)tcu)
 					cidbranch_alm_map.erase(tmal->getCidbranch());
 					DEBY
 				}
@@ -202,21 +202,14 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	pthread_mutex_lock(&mutex);
 
 	//DEBOUT("ALMGR::insertAlarm", _fireTime.tv.tv_sec*1000000+_fireTime.tv.tv_usec)
-	{char bu[1024];sprintf(bu, "time %ulld",_fireTime.tv.tv_sec*1000000 + _fireTime.tv.tv_usec);DEBOUT("ALMGR::insertAlarm", bu )}
+	DEBOUT("ALMGR::insertAlarm", (unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec )
+	SysTime mytime;
+	GETTIME(mytime);
+	unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
+	DEBOUT("ALMGR::insertAlarm in ms", (double) ((unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec  - curr) / 1000000)
+
 
 	map<MESSAGE*, ALARM*>::iterator p;
-
-//	if (!mess_alm_map.empty()){
-//		DEBY
-//		p = mess_alm_map.find(_message);
-//		if (p != mess_alm_map.end()){
-//			DEBASSERT("no")
-//			ALARM* tmp = (ALARM*)p->second;
-//			if (tmp != 0x0){
-//				tmp->cancel();
-//			}
-//		}
-//	}
 
 	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
 

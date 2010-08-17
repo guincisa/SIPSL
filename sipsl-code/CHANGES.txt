@@ -1,5 +1,8 @@
 CHANGES
 
+
+vedere la DOA
+
 16 agosto
 
 guic@grog:~/workspace/SIPSL_svn/Solaris$ ./SIPSL_svn > log

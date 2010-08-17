@@ -106,15 +106,10 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	if (_a_Matrix == 0x0){
 		DEBASSERT("NO")
 	}
-//	//TODO needed?
-//	A_Matrix->setLock();
-
-
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this)
-
 	PURGEMESSAGE(Matrix)
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
 
@@ -123,7 +118,6 @@ TRNSCT_SM::~TRNSCT_SM(void){
 
 MESSAGE* TRNSCT_SM::getMatrixMessage(void){
 	if (Matrix == 0x0){
-		DEBY
 		DEBASSERT("NO")
 	}
 
@@ -131,7 +125,6 @@ MESSAGE* TRNSCT_SM::getMatrixMessage(void){
 }
 MESSAGE* TRNSCT_SM::getA_Matrix(void){
 	if (A_Matrix == 0x0){
-		DEBY
 		DEBASSERT("NO")
 	}
 	return A_Matrix;
@@ -503,7 +496,7 @@ bool pre_1_99_inv_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_99_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBASSERT("TRNSCT_INV_CL act_1_99_inv_cl please do something")
+	DEBOUT("TRNSCT_INV_CL act_1_99_inv_cl please do something","")
 
 	_sm->State = 99;
 
@@ -972,12 +965,8 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	SysTime afterT;
 	GETTIME(afterT);
-	//TODO check if mc is overflowed
-	//V5 non funziona!!!
-	//DEBOUT("current time ", afterT.tv.tv_sec << "] [" <<afterT.tv.tv_usec)
 	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((TRNSCT_SM_BYE_CL*)_sm)->resend_bye+1);
 	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((TRNSCT_SM_BYE_CL*)_sm)->resend_bye+1);
-	//PRINTTIMESHORT("afterT",afterT)
 
 	__timedmessage->setFireTime(afterT);
 	__timedmessage->typeOfInternal = TYPE_OP;
@@ -1074,5 +1063,8 @@ TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 	insert_move(0,&PA_BYE_0_1CL);
 	insert_move(1,&PA_BYE_1_1CL);
 	insert_move(1,&PA_BYE_1_2CL);
+
+	resend_bye = 0;
+
 
 }
