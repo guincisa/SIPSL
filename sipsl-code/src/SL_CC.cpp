@@ -116,7 +116,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	DEBMESSAGESHORT("SL_CC::parse", _mess)
 
-	pthread_mutex_unlock(&(sb.condvarmutex));
+	RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 
 	//Maybe it has been delete by DOA when outside the call_oset
 	//TODO needed???

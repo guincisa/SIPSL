@@ -146,18 +146,18 @@ ACTION* SM::event(MESSAGE* _event){
 
 	ret = move_sm.equal_range(State);
 
-	pthread_mutex_lock(&mutex);
+	GETLOCK(&mutex,"mutex");
 
     for (iter=ret.first; iter!=ret.second; ++iter){
 		tmp  = iter->second;
 
 		if (tmp->predicate(this, _event)){
 			act = tmp->action(this, _event);
-			pthread_mutex_unlock(&mutex);
+			RELLOCK(&mutex,"mutex");
 			return act;
 		}
 	}
-	pthread_mutex_unlock(&mutex);
+	RELLOCK(&mutex,"mutex");
 	return(act);
 }
 //**********************************************************************************

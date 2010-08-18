@@ -1,6 +1,16 @@
 CHANGES
 
 
+18 Agosto
+
+- capitato che arriva un reply da b ma non trova la sm e da assert
+
+- rivedere i meccanismi di lock nella comap
+
+- è possibile che il call_oset venga eliminato mentre viene esguito da un'altro th? 
+
+-----------------------------------------------------------------------
+
 vedere la DOA
 
 16 agosto

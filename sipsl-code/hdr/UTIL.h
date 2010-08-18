@@ -164,6 +164,15 @@ typedef struct {
 				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, __mess));\
 				pthread_mutex_unlock(&messTableMtx);}}
 
+#define GETLOCK(m,message) \
+		DEBOUT("Reaching lock " << message, m)\
+		pthread_mutex_lock(m);\
+		DEBOUT("Acquired lock " << message, m)
+
+#define RELLOCK(m,message) \
+		DEBOUT("Releasing lock " << message, m)\
+		pthread_mutex_unlock(m);
+
 
 #define GETMOD(m) {\
 	char x[32];\

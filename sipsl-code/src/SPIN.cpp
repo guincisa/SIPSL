@@ -125,9 +125,9 @@ void ROTQ::put(MESSAGE* m) {
     if (top == bot) {
         //DEBASSERT("FULL TRASHING")
         DEBOUT("FULL TRASHING","")
-        pthread_mutex_lock(&(sb->mudim));
+        GETLOCK(&(sb->mudim),"sb->mudim");
         (sb->DIM)--;
-        pthread_mutex_unlock(&(sb->mudim));
+        RELLOCK(&(sb->mudim),"sb->mudim");
         bot ++;
         bot = bot % ARR;
     }
@@ -188,7 +188,7 @@ void SPINB::put(MESSAGE* m) {
     int nextbuff = (writebuff +1);
     nextbuff = nextbuff % 3;
 
-    pthread_mutex_lock(&writemu);
+    GETLOCK(&writemu,"writemu");
     Q[writebuff].put(m);
 
     if (Q[nextbuff].getState() == SPIN_FF) {
@@ -197,17 +197,17 @@ void SPINB::put(MESSAGE* m) {
         Q[writebuff].setState(SPIN_FF);
         writebuff = nextbuff;
     }
-    pthread_mutex_unlock(&writemu);
-    pthread_mutex_lock(&mudim);
+    RELLOCK(&writemu,"writemu");
+    GETLOCK(&mudim,"mudim");
     DIM++;
-    pthread_mutex_unlock(&mudim);
+    RELLOCK(&mudim,"mudim");
 }
 MESSAGE* SPINB::get(void) {
     // MUTEX
 
     int nextbuff = (readbuff + 1);
     nextbuff = nextbuff % 3;
-    pthread_mutex_lock(&readmu);
+    GETLOCK(&readmu,"readmu");
     if (Q[readbuff].isEmpty() && Q[nextbuff].getState() == SPIN_FF) {
         //cout <<" Get spin" << endl;
             Q[nextbuff].setState(SPIN_RR);
@@ -215,12 +215,11 @@ MESSAGE* SPINB::get(void) {
             readbuff = nextbuff;
     }
     MESSAGE* m = Q[readbuff].get();
-    pthread_mutex_unlock(&readmu);
+    RELLOCK(&readmu,"readmu");
     if (m != NULL) {
-        pthread_mutex_lock(&mudim);
+        GETLOCK(&mudim,"mudim");
         DIM--;
-        pthread_mutex_unlock(&mudim);
-        //cout << "         GET readbuff " << readbuff << " mess " << m.id << endl;
+        RELLOCK(&mudim,"mudim");
     }
 
 
@@ -228,7 +227,7 @@ MESSAGE* SPINB::get(void) {
 }
 
 void SPINB::move(void) {
-    pthread_mutex_lock(&writemu);
+    GETLOCK(&writemu,"writemu")
 
     int nextbuff = (writebuff +1 ) ;
     nextbuff = nextbuff % 3;
@@ -238,7 +237,7 @@ void SPINB::move(void) {
         Q[writebuff].setState(SPIN_FF);
         writebuff = nextbuff;
     }
-    pthread_mutex_unlock(&writemu);
+    RELLOCK(&writemu,"writemu");
     DEBOUT("MOVE","")
 
 }

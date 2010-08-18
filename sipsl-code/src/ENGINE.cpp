@@ -103,18 +103,7 @@ ENGINE::ENGINE(int _i) {
     if ( _i > 8)
     	_i = 8;
 
-    // unlock the CONSmutex once the derived class constructor has ended
-    //res = pthread_mutex_lock(&CONSmutex);
-
-    //ENGtuple *t1,*t2,*t3,*t4,*t5;
-
     ENGtuple *t[8];
-
-//    t1 = new ENGtuple;
-//    t2 = new ENGtuple;
-//    t3 = new ENGtuple;
-//    t4 = new ENGtuple;
-//    t5 = new ENGtuple;
 
     int i;
     for ( i = 0 ; i < _i ; i++){
@@ -130,29 +119,6 @@ ENGINE::ENGINE(int _i) {
 
 
     }
-
-//    t1->ps = this;
-//    t1->id = 0;
-//    t2->ps = this;
-//    t2->id = 1;
-//    t3->ps = this;
-//    t3->id = 2;
-//    t4->ps = this;
-//    t4->id = 3;
-//    t5->ps = this;
-//    t5->id = 4;
-
-//    parsethread[0] = new ThreadWrapper();
-//    parsethread[1] = new ThreadWrapper();
-//    parsethread[2] = new ThreadWrapper();
-//    parsethread[3] = new ThreadWrapper();
-//    parsethread[4] = new ThreadWrapper();
-
-//    res = pthread_create(&(parsethread[0]->thread), NULL, threadparser, (void *) t1);
-//    res = pthread_create(&(parsethread[1]->thread), NULL, threadparser, (void *) t2);
-//    res = pthread_create(&(parsethread[2]->thread), NULL, threadparser, (void *) t3);
-//    res = pthread_create(&(parsethread[3]->thread), NULL, threadparser, (void *) t4);
-//    res = pthread_create(&(parsethread[4]->thread), NULL, threadparser, (void *) t5);
 
     sudp = 0x0;
 }
@@ -176,11 +142,11 @@ SUDP* ENGINE::getSUDP(void){
 //**********************************************************************************
 void ENGINE::p_w(MESSAGE* _m) {
 
-    pthread_mutex_lock(&(sb.condvarmutex));
+    GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
     DEBY
     sb.put(_m);
     pthread_cond_signal(&(sb.condvar));
-    pthread_mutex_unlock(&(sb.condvarmutex));
+    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
     return;
 
 }
@@ -193,7 +159,7 @@ void * threadparser (void * _pt){
     ENGINE * ps = pt->ps;
     while(true) {
         DEBOUT("ENGINE thread",_pt)
-        pthread_mutex_lock(&(ps->sb.condvarmutex));
+		GETLOCK(&(ps->sb.condvarmutex),"ps->sb.condvarmutex");
         while(ps->sb.isEmpty() ) {
             DEBOUT("ENGINE thread is empty",_pt)
             pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
@@ -204,7 +170,7 @@ void * threadparser (void * _pt){
             DEBOUT("ENGINE thread NULL",_pt)
             ps->sb.move();
             //aggiunta il 30 luglio 2010
-            pthread_mutex_unlock(&(ps->sb.condvarmutex));
+            RELLOCK(&(ps->sb.condvarmutex),"ps->sb.condvarmutex");
         }
         else {
             pt->ps->parse(m);

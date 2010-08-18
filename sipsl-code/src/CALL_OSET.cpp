@@ -250,7 +250,7 @@ void CALL_OSET::removeLockedMessage(MESSAGE* _message){
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
-	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", _method << _sode <<" "<<_branch)
+	DEBOUT_UTIL("CALL_OSET::getTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch)
 	char t_key[512];
 	if (_sode == SODE_TRNSCT_CL)
 		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
@@ -267,7 +267,7 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 //**********************************************************************************
 void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm){
 
-	DEBOUT_UTIL("CALL_OSET::addTrnsctSm", _method <<" "<<_branch)
+	DEBOUT_UTIL("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch)
 	char t_key[512];
 	if (_sode == SODE_TRNSCT_CL){
 		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
@@ -297,7 +297,7 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 void SL_CO::call(MESSAGE* _message){
 
 	//TODO if we use this mutex we can remove mutexes in state machines
-	pthread_mutex_lock(&mutex);
+	GETLOCK(&mutex,"mutex");
 	DEBMESSAGE("SL_CO::call incoming", _message)
 
     ACTION* action = 0x0;
@@ -506,7 +506,7 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("SL_CO::call delete action","")
 		delete action;
 	}
-	pthread_mutex_unlock(&mutex);
+	RELLOCK(&mutex,"mutex");
 }
 
 

@@ -12,10 +12,6 @@ Performance
 - aprire piu socket 
 - modulo per comap
 
-DOA:
-perche fa tante iterazioni anche dopo che la sipp ha finito?
-
-
 
 
 

@@ -119,7 +119,7 @@ void ALMGR::alarmer(void){
 
 		nanosleep(&sleep_time,NULL);
 
-		pthread_mutex_lock(&mutex);
+		GETLOCK(&mutex,"mutex");
 
 		//extract from priority queue
 		SysTime mytime;
@@ -161,13 +161,13 @@ void ALMGR::alarmer(void){
 							_tmpMess->compileMessage();
 							_tmpMess->dumpVector();
 
-							pthread_mutex_unlock(&mutex);
+							RELLOCK(&mutex,"mutex");
 
 							sl_cc->p_w(_tmpMess);
 						} else {
 							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)
 
-							pthread_mutex_unlock(&mutex);
+							RELLOCK(&mutex,"mutex");
 
 							sl_cc->p_w(_tmpMess);
 						}
@@ -190,7 +190,7 @@ void ALMGR::alarmer(void){
 				}
 			}
 		}
-		pthread_mutex_unlock(&mutex);
+		RELLOCK(&mutex,"mutex");
 
 	}
 }
@@ -199,7 +199,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	//check if message already exists and cancel related alarm
 	//do note remove it from multimap and from mess_alm map
 
-	pthread_mutex_lock(&mutex);
+	GETLOCK(&mutex,"mutex");
 
 	//DEBOUT("ALMGR::insertAlarm", _fireTime.tv.tv_sec*1000000+_fireTime.tv.tv_usec)
 	DEBOUT("ALMGR::insertAlarm", (unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec )
@@ -226,7 +226,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	DEBOUT("Alarm id (cid+branch", cidbranch_alarm);
 	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
 
-	pthread_mutex_unlock(&mutex);
+	RELLOCK(&mutex,"mutex");
 
 	return;
 
@@ -236,7 +236,7 @@ void ALMGR::cancelAlarm(string _cidbranch){
 	// alarm is deactivated and the related message may have been
 	// purged so
 
-	pthread_mutex_lock(&mutex);
+	GETLOCK(&mutex,"mutex");
 
 	DEBOUT("ALMGR::cancelAlarm", _cidbranch)
 
@@ -251,7 +251,7 @@ void ALMGR::cancelAlarm(string _cidbranch){
 	else {
 		DEBOUT("ALMGR::cancelAlarm", "not found")
 	}
-	pthread_mutex_unlock(&mutex);
+	RELLOCK(&mutex,"mutex");
 
 
 }

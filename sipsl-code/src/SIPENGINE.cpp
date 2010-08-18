@@ -105,7 +105,7 @@ void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
 //**********************************************************************************
 void SIPENGINE::parse(MESSAGE* _mess) {
 
-	pthread_mutex_unlock(&(sb.condvarmutex));
+	RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 
 	//Check if Request or Reply
 	int tl = _mess->getTotLines();
@@ -131,9 +131,9 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 			return;
 
 		} else {
-
+			DEBOUT("SIPENGINE::parse","1")
 			sl_cc->p_w(_mess);
-
+			DEBOUT("SIPENGINE::parse","2")
 		}
 	}
 	else if ( type == REPSUPP) {

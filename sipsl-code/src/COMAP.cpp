@@ -112,7 +112,7 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
 	CALL_OSET* tmp = 0x0;
 	map<string, CALL_OSET*>::iterator p;
 
-	pthread_mutex_lock(&comap_mutex);
+	GETLOCK(&comap_mutex,"comap_mutex");
 	p = comap_mm.find(_callId_X);
 	if (p != comap_mm.end()){
 			tmp = (CALL_OSET*)p->second;
@@ -121,7 +121,7 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
 	}else {
 		DEBOUT_UTIL("COMAP::getCALL_OSET not found", "")
 	}
-	pthread_mutex_unlock(&comap_mutex);
+	RELLOCK(&comap_mutex,"comap_mutex");
 	return tmp;
 }
 //**********************************************************************************
@@ -135,24 +135,24 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y){
 	map<string, CALL_OSET*>::iterator p;
 	map<string, string>::iterator p2;
 
-	pthread_mutex_lock(&call_y2x_mutex);
+	GETLOCK(&call_y2x_mutex,"call_y2x_mutex");
 	p2 = call_id_y2x.find(_callId_Y);
 
 	if (p2 != call_id_y2x.end()){
 		tmp2 = (string)p2->second;
 		DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp2)
-		pthread_mutex_lock(&comap_mutex);
+		GETLOCK(&comap_mutex,"comap_mutex");
 		p = comap_mm.find(tmp2);
 		if (p != comap_mm.end()){
 				tmp = (CALL_OSET*)p->second;
-				pthread_mutex_unlock(&comap_mutex);
-				pthread_mutex_unlock(&call_y2x_mutex);
+				RELLOCK(&comap_mutex,"comap_mutex");
+				RELLOCK(&call_y2x_mutex,"call_y2x_mutex");
 				DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp)
 				return tmp;
 		}
+		RELLOCK(&comap_mutex,"comap_mutex");
 	}
-	pthread_mutex_unlock(&comap_mutex);
-	pthread_mutex_unlock(&call_y2x_mutex);
+	RELLOCK(&call_y2x_mutex,"call_y2x_mutex");
 	DEBOUT("COMAP::getCALL_OSET Y-X not found", "")
 	return tmp; //0x0
 
@@ -177,11 +177,11 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset){
 
 	//doa
 	int doa_state;
-	pthread_mutex_lock(&doa_mutex);
+	GETLOCK(&doa_mutex,"doa_mutex");
 	p_doamap = call_oset_doa_state.find(_call_oset);
 	if (p_doamap != call_oset_doa_state.end()){
 		if ((int)(p_doamap->second) != DOA_DELETED) {
-			pthread_mutex_unlock(&doa_mutex);
+			RELLOCK(&doa_mutex,"doa_mutex");
 			DEBY
 			DEBASSERT("COMAP::setCALL_OSET invalid call_oset")
 			return;
@@ -191,36 +191,36 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset){
 		}
 	}
 	call_oset_doa_state.insert(pair<CALL_OSET*, int>(_call_oset, NOT_DOA));
-	pthread_mutex_unlock(&doa_mutex);
+	RELLOCK(&doa_mutex,"doa_mutex");
 
 	//comap
-	pthread_mutex_lock(&comap_mutex);
+	GETLOCK(&comap_mutex,"comap_mutex");
 	p_comap_mm = comap_mm.find(_callId_X);
 	if (p_comap_mm != comap_mm.end()){
 		DEBY
 		comap_mm.erase(p_comap_mm);
 	}
 	comap_mm.insert(pair<string, CALL_OSET*>(_callId_X, _call_oset));
-	pthread_mutex_unlock(&comap_mutex);
+	RELLOCK(&comap_mutex,"comap_mutex");
 
 	//call_y2x just delete it
-	pthread_mutex_lock(&call_y2x_mutex);
+	GETLOCK(&call_y2x_mutex,"call_y2x_mutex");
 	p_cally2x = call_id_y2x.find(_callId_X);
 	if (p_cally2x != call_id_y2x.end()){
 		DEBY
 		call_id_y2x.erase(p_cally2x);
 	}
-	pthread_mutex_unlock(&call_y2x_mutex);
+	RELLOCK(&call_y2x_mutex,"call_y2x_mutex");
 
 	//call_oset message counter
-	pthread_mutex_lock(&co_msgcnt_mutex);
+	GETLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 	p_msgcnt = call_oset_msg_cnt.find(_call_oset);
 	if (p_msgcnt != call_oset_msg_cnt.end()){
 		DEBY
 		call_oset_msg_cnt.erase(p_msgcnt);
 	}
 	call_oset_msg_cnt.insert(pair<CALL_OSET*, int>(_call_oset, 0));
-	pthread_mutex_unlock(&co_msgcnt_mutex);
+	RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 
 	DEBY
 	return;
@@ -232,14 +232,14 @@ void COMAP::setY2XCallId(string _callId_Y, string _callId_X){
 	DEBOUT("COMAP::setY2XCallId inserting ", _callId_Y + " " + _callId_X)
 	map<string,string>::iterator p_cally2x;
 
-	pthread_mutex_lock(&call_y2x_mutex);
+	GETLOCK(&call_y2x_mutex,"call_y2x_mutex");
 	p_cally2x = call_id_y2x.find(_callId_Y);
 	if (p_cally2x != call_id_y2x.end()){
 		DEBY
 		call_id_y2x.erase(p_cally2x);
 	}
 	call_id_y2x.insert(pair<string, string>(_callId_Y, _callId_X));
-	pthread_mutex_unlock(&call_y2x_mutex);
+	RELLOCK(&call_y2x_mutex,"call_y2x_mutex");
 
 }
 //**********************************************************************************
@@ -248,7 +248,7 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa){
 
 	DEBY
 	map<CALL_OSET*, int>::iterator p;
-	pthread_mutex_lock(&doa_mutex);
+	GETLOCK(&doa_mutex,"doa_mutex");
 	p = call_oset_doa_state.find(_call_oset);
 	if (p != call_oset_doa_state.end()){
 		call_oset_doa_state.erase(p);
@@ -256,21 +256,21 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa){
 	}else {
 		call_oset_doa_state.insert(pair<CALL_OSET*, int>(_call_oset,_doa));
 	}
-	pthread_mutex_unlock(&doa_mutex);
+	RELLOCK(&doa_mutex,"doa_mutex");
 
 }
 int COMAP::getDoa(CALL_OSET* _call_oset){
 
 	map<CALL_OSET*, int>::iterator p;
 	int tmp;
-	pthread_mutex_lock(&doa_mutex);
+	GETLOCK(&doa_mutex,"doa_mutex");
 	p = call_oset_doa_state.find(_call_oset);
 	if (p!=	call_oset_doa_state.end()){
 		tmp = (int)p->second;
 	}else {
 		tmp = DOA_DELETED;
 	}
-	pthread_mutex_unlock(&doa_mutex);
+	RELLOCK(&doa_mutex,"doa_mutex");
 	return tmp;
 }
 //**********************************************************************************
@@ -281,7 +281,7 @@ int COMAP::getCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 	int i;
 	map<CALL_OSET*,int>::iterator p_msgcnt;
 
-	pthread_mutex_lock(&co_msgcnt_mutex);
+	GETLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 	p_msgcnt = call_oset_msg_cnt.find(_call_oset);
 	if (p_msgcnt != call_oset_msg_cnt.end()){
 		DEBY
@@ -290,7 +290,7 @@ int COMAP::getCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 		DEBY
 		i = -1;
 	}
-	pthread_mutex_unlock(&co_msgcnt_mutex);
+	RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 	return i;
 
 }
@@ -302,7 +302,7 @@ void COMAP::incCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 	int i;
 	map<CALL_OSET*,int>::iterator p_msgcnt;
 
-	pthread_mutex_lock(&co_msgcnt_mutex);
+	GETLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 	p_msgcnt = call_oset_msg_cnt.find(_call_oset);
 	if (p_msgcnt != call_oset_msg_cnt.end()){
 		DEBY
@@ -314,7 +314,7 @@ void COMAP::incCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 	}else {
 		DEBY
 	}
-	pthread_mutex_unlock(&co_msgcnt_mutex);
+	RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 	return;
 
 }
@@ -328,7 +328,7 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 	int i;
 	map<CALL_OSET*,int>::iterator p_msgcnt;
 
-	pthread_mutex_lock(&co_msgcnt_mutex);
+	GETLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 	p_msgcnt = call_oset_msg_cnt.find(_call_oset);
 	if (p_msgcnt != call_oset_msg_cnt.end()){
 		DEBY
@@ -347,44 +347,44 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 		DEBOUT("COMAP::decCALL_OSET_MsgCnt DOA_CONFIRMED", _call_oset )
 		setDoa(_call_oset, DOA_CONFIRMED);
 
-//		pthread_mutex_unlock(&co_msgcnt_mutex);
-//
+		RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
+
 //		//TODO
 //		//p_w???
 //		//we are in sl_cc thread...
-//		pthread_mutex_lock(&comap_mutex);
-//
-//		DEBOUT("COMAP::decCALL_OSET_MsgCnt deleting here!", _call_oset)
-//		setDoa(_call_oset, DOA_DELETED);
-//		DEBY
-//
-//		pthread_mutex_lock(&doa_mutex);
-//		DEBY
-//		call_oset_doa_state.erase(_call_oset);
-//		pthread_mutex_unlock(&doa_mutex);
-//
-//		pthread_mutex_lock(&call_y2x_mutex);
-//		DEBY
-//		call_id_y2x.erase(_call_oset->getCallId_Y());
-//		pthread_mutex_unlock(&call_y2x_mutex);
-//
-//		pthread_mutex_lock(&co_msgcnt_mutex);
-//		DEBY
-//		call_oset_msg_cnt.erase(_call_oset);
-//		pthread_mutex_unlock(&co_msgcnt_mutex);
-//
-//
-//		comap_mm.erase(_call_oset->callId_X);
-//
-//		DELPTR(_call_oset,"call_oset");
-//
-//		pthread_mutex_unlock(&comap_mutex);
+//		GETLOCK(&comap_mutex,"comap_mutex");
+
+		DEBOUT("COMAP::decCALL_OSET_MsgCnt deleting here!", _call_oset)
+		setDoa(_call_oset, DOA_DELETED);
+		DEBY
+
+		GETLOCK(&doa_mutex,"doa_mutex");
+		DEBY
+		call_oset_doa_state.erase(_call_oset);
+		RELLOCK(&doa_mutex,"doa_mutex");
+
+		GETLOCK(&call_y2x_mutex,"call_y2x_mutex");
+		DEBY
+		call_id_y2x.erase(_call_oset->getCallId_Y());
+		RELLOCK(&call_y2x_mutex,"call_y2x_mutex");
+
+		GETLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
+		DEBY
+		call_oset_msg_cnt.erase(_call_oset);
+		RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 
 
+		comap_mm.erase(_call_oset->callId_X);
+
+		DELPTR(_call_oset,"call_oset");
+
+//		RELLOCK(&comap_mutex,"comap_mutex");
+
+		return;
 
 	}
 
-	pthread_mutex_unlock(&co_msgcnt_mutex);
+	RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 	return;
 
 }
@@ -437,7 +437,7 @@ void COMAP::purgeDOA(void){
 
 	//TODO
 	// not good... this blocks the comap for too long!
-	pthread_mutex_lock(&comap_mutex);
+	GETLOCK(&comap_mutex,"comap_mutex");
 
 	for( p_comap_mm = comap_mm.begin(); p_comap_mm != comap_mm.end(); ++p_comap_mm){
 		DEBY
@@ -450,20 +450,20 @@ void COMAP::purgeDOA(void){
 
 			todel_cx.push((string)p_comap_mm->first);
 
-			pthread_mutex_lock(&doa_mutex);
+			GETLOCK(&doa_mutex,"doa_mutex");
 			DEBY
 			call_oset_doa_state.erase(call_oset);
-			pthread_mutex_unlock(&doa_mutex);
+			RELLOCK(&doa_mutex,"doa_mutex");
 
-			pthread_mutex_lock(&call_y2x_mutex);
+			GETLOCK(&call_y2x_mutex,"call_y2x_mutex");
 			DEBY
 			call_id_y2x.erase(call_oset->getCallId_Y());
-			pthread_mutex_unlock(&call_y2x_mutex);
+			RELLOCK(&call_y2x_mutex,"call_y2x_mutex");
 
-			pthread_mutex_lock(&co_msgcnt_mutex);
+			GETLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 			DEBY
 			call_oset_msg_cnt.erase(call_oset);
-			pthread_mutex_unlock(&co_msgcnt_mutex);
+			RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 
 			DELPTR(call_oset,"call_oset");
 		}else{
@@ -478,7 +478,7 @@ void COMAP::purgeDOA(void){
 		comap_mm.erase(tops);
 		todel_cx.pop();
 	}
-	pthread_mutex_unlock(&comap_mutex);
+	RELLOCK(&comap_mutex,"comap_mutex");
 	DEBY
 
 }
