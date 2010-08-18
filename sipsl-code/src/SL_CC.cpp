@@ -127,7 +127,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	if (_mess->getGenEntity() == SODE_NTWPOINT){
 
-		DEBOUT("SL_CC::parse incoming message from network ", _mess->getGenEntity())
+		DEBSIP("SL_CC::parse incoming message from network ", _mess->getGenEntity())
 
 		CALL_OSET* call_oset = 0x0;
 
@@ -135,13 +135,13 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		GETMOD(callids)
 
-		DEBOUT("SL_CC::parse CALLOSET normal ID",callids)
+		DEBSIP("SL_CC::parse CALLOSET normal ID",callids)
 
 		call_oset = comap->getCALL_OSET_XMain(callids);
 
 		//First try to get the Call object using x side parameters
 		if (call_oset != 0x0) {
-			DEBOUT("SL_CC::parse", "A SIDE call_oset exists")
+			DEBINF("SL_CC::parse", "A SIDE call_oset exists")
 
 			//to SV if Request to CL if Reply
 			if (_mess->getReqRepType() == REQSUPP) {
@@ -153,12 +153,12 @@ void SL_CC::parse(MESSAGE* _mess) {
 			}
 
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
-				DEBOUT("SL_CC::parse rejected by COMAP", callids)
+				DEBINF("SL_CC::parse rejected by COMAP", callids)
 				if(!_mess->getLock()){
 					PURGEMESSAGE(_mess)
 				}
 				else {
-					DEBOUT("Put this message into then locked messages table",_mess)
+					DEBINF("Put this message into the locked messages table",_mess)
 					DEBASSERT("")
 				}
 			}
@@ -169,7 +169,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		else {
 			call_oset = comap->getCALL_OSET_YDerived(callids);
 			if (call_oset != 0x0){
-				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
+				DEBINF("SL_CC::parse", "B SIDE call_oset exists")
 
 				//to SV if Request to CL if Reply
 				if (_mess->getReqRepType() == REQSUPP) {
@@ -180,7 +180,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 					_mess->setDestEntity(SODE_TRNSCT_CL);
 				}
 				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
-					DEBOUT("SL_CC::parse rejected by COMAP", callids)
+					DEBINF("SL_CC::parse rejected by COMAP", callids)
 				}
 				return;
 			}
@@ -188,7 +188,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		// Does not exists on any side
 		if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP) {
 			//new call Server (originating) side
-			DEBOUT("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
+			DEBINF("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
 
 			//If new then it is always SODE_APOINT
 			_mess->setDestEntity(SODE_TRNSCT_SV);
@@ -200,9 +200,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 			//End
 			//////////////////////////////
 
-			DEBOUT("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
+			DEBINF("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
-				DEBOUT("SL_CC::parse rejected by COMAP", callids)
+				DEBINF("SL_CC::parse rejected by COMAP", callids)
 			}
 			return;
 		}else {
@@ -212,12 +212,12 @@ void SL_CC::parse(MESSAGE* _mess) {
 	}
 	else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_TRNSCT_CL){
 
-		DEBOUT("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_TRNSCT_CL (4)", _mess->getGenEntity() )
+		DEBINF("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_TRNSCT_CL (4)", _mess->getGenEntity() )
 
 		//Careful with source message
 		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
 
-		DEBOUT("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callids)
+		DEBSIP("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callids)
 
 		CALL_OSET* call_oset = 0x0;
 
@@ -226,9 +226,9 @@ void SL_CC::parse(MESSAGE* _mess) {
 		if (call_oset == 0x0) {
 			call_oset = comap->getCALL_OSET_YDerived(callids);
 			if (call_oset != 0x0){
-				DEBOUT("SL_CC::parse", "B SIDE call_oset exists")
+				DEBINF("SL_CC::parse", "B SIDE call_oset exists")
 				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
-					DEBOUT("SL_CC::parse rejected by COMAP", callids)
+					DEBINF("SL_CC::parse rejected by COMAP", callids)
 				}
 				return;
 			}else{
@@ -238,12 +238,12 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 		else {
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
-				DEBOUT("SL_CC::parse rejected by COMAP", callids)
+				DEBINF("SL_CC::parse rejected by COMAP", callids)
 			}
 			return;
 		}
 	} else {
-		DEBOUT("Unexpected source of the message", _mess->getGenEntity())
+		DEBINF("Unexpected source of the message", _mess->getGenEntity())
 		DEBASSERT("")
 	}
     return;

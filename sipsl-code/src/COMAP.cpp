@@ -95,10 +95,10 @@ COMAP::COMAP(void){
 	pthread_mutex_init(&call_y2x_mutex, NULL);
 	pthread_mutex_init(&co_msgcnt_mutex, NULL);
 
-	DEBOUT("comap comap_mm", &comap_mm)
-	DEBOUT("comap call_id_y2x",&call_id_y2x)
-	DEBOUT("comap call_oset_doa_state", &call_oset_doa_state)
-	DEBOUT("comap call_oset_msg_cnt", &call_oset_msg_cnt)
+	DEBDEV("comap comap_mm", &comap_mm)
+	DEBDEV("comap call_id_y2x",&call_id_y2x)
+	DEBDEV("comap call_oset_doa_state", &call_oset_doa_state)
+	DEBDEV("comap call_oset_msg_cnt", &call_oset_msg_cnt)
 
 }
 COMAP::~COMAP(void){
@@ -107,7 +107,7 @@ COMAP::~COMAP(void){
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
 
-	DEBOUT_UTIL("COMAP::getCALL_OSET_XMain retrieving using call id", _callId_X)
+	DEBINF("COMAP::getCALL_OSET_XMain retrieving using call id", _callId_X)
 
 	CALL_OSET* tmp = 0x0;
 	map<string, CALL_OSET*>::iterator p;
@@ -117,9 +117,9 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
 	if (p != comap_mm.end()){
 			tmp = (CALL_OSET*)p->second;
 
-			DEBOUT_UTIL("COMAP::getCALL_OSET found ", tmp)
+			DEBINF("COMAP::getCALL_OSET found ", tmp)
 	}else {
-		DEBOUT_UTIL("COMAP::getCALL_OSET not found", "")
+		DEBINF("COMAP::getCALL_OSET not found", "")
 	}
 	RELLOCK(&comap_mutex,"comap_mutex");
 	return tmp;
@@ -128,7 +128,7 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X){
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y){
 
-	DEBOUT("COMAP::getCALL_OSET_YSecond retrieving using derived", _callId_Y)
+	DEBINF("COMAP::getCALL_OSET_YSecond retrieving using derived", _callId_Y)
 
 	CALL_OSET* tmp = 0x0;
 	string tmp2 = "";
@@ -140,20 +140,20 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y){
 
 	if (p2 != call_id_y2x.end()){
 		tmp2 = (string)p2->second;
-		DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp2)
+		DEBINF("COMAP::getCALL_OSET Y-X found ", tmp2)
 		GETLOCK(&comap_mutex,"comap_mutex");
 		p = comap_mm.find(tmp2);
 		if (p != comap_mm.end()){
 				tmp = (CALL_OSET*)p->second;
 				RELLOCK(&comap_mutex,"comap_mutex");
 				RELLOCK(&call_y2x_mutex,"call_y2x_mutex");
-				DEBOUT("COMAP::getCALL_OSET Y-X found ", tmp)
+				DEBINF("COMAP::getCALL_OSET Y-X found ", tmp)
 				return tmp;
 		}
 		RELLOCK(&comap_mutex,"comap_mutex");
 	}
 	RELLOCK(&call_y2x_mutex,"call_y2x_mutex");
-	DEBOUT("COMAP::getCALL_OSET Y-X not found", "")
+	DEBINF("COMAP::getCALL_OSET Y-X not found", _callId_Y)
 	return tmp; //0x0
 
 }
@@ -161,7 +161,7 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y){
 //**********************************************************************************
 void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset){
 
-	DEBOUT("COMAP::setCALL_OSET inserting ", _callId_X << "] [" << _call_oset)
+	DEBINF("COMAP::setCALL_OSET inserting ", _callId_X << "] [" << _call_oset)
 
 	//need to look for call_oset in call_oset_doa_state
 	//need to look for call_id_x in comap_mm
@@ -229,7 +229,7 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset){
 //**********************************************************************************
 void COMAP::setY2XCallId(string _callId_Y, string _callId_X){
 
-	DEBOUT("COMAP::setY2XCallId inserting ", _callId_Y + " " + _callId_X)
+	DEBINF("COMAP::setY2XCallId inserting ", _callId_Y + " " + _callId_X)
 	map<string,string>::iterator p_cally2x;
 
 	GETLOCK(&call_y2x_mutex,"call_y2x_mutex");

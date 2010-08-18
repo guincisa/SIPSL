@@ -109,16 +109,16 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	//Check if Request or Reply
 	int tl = _mess->getTotLines();
-	DEBOUT("SIPENGINE::parse",_mess->getLine(0) << "] [" <<_mess->getKey())
+	DEBSIP("SIPENGINE::parse",_mess->getLine(0) << "] [" <<_mess->getKey())
 
-	DEBOUT("SIPENGINE::parse tot lines",tl)
+	DEBSIP("SIPENGINE::parse tot lines",tl)
 
 	int type = _mess->getReqRepType();
-	DEBOUT("SIPENGINE::parse request type",type)
+	DEBSIP("SIPENGINE::parse request type",type)
 
 	if (type == REQSUPP) {
 
-		DEBOUT("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest().getContent())
+		DEBSIP("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest().getContent())
 
 		int method = _mess->getHeadSipRequest().getS_AttMethod().getMethodID();
 		if (	// Supported methods
@@ -126,24 +126,24 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 				method != BYE_REQUEST &&
 				method != ACK_REQUEST) {
 
-			DEBOUT("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
+			DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
 			PURGEMESSAGE(_mess)
 			return;
 
 		} else {
-			DEBOUT("SIPENGINE::parse","1")
+			DEBDEV("SIPENGINE::parse sl_cc->p_w", _mess)
 			sl_cc->p_w(_mess);
-			DEBOUT("SIPENGINE::parse","2")
 		}
 	}
 	else if ( type == REPSUPP) {
 
-		DEBOUT("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply().getReply().getContent())
+		DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply().getReply().getContent())
 		int reply_id = _mess->getHeadSipReply().getReply().getReplyID();
 		int code = _mess->getHeadSipReply().getReply().getCode();
-		DEBOUT("SIPENGINE::reply type and code", reply_id << " " << code)
+		DEBSIP("SIPENGINE::reply type and code", reply_id << " " << code)
 
 		//All replies must be considered
+		DEBDEV("SIPENGINE::parse sl_cc->p_w", _mess)
 		sl_cc->p_w(_mess);
 
 	}
