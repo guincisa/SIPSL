@@ -51,74 +51,63 @@ typedef struct {
 	struct timezone tz;
 } SysTime;
 
-//#define TESTING
-
 #define ECHOMAX 2048
+
+class ThreadWrapper {
+    public:
+        pthread_t thread;
+        pthread_mutex_t mutex;
+        ThreadWrapper();
+};
+
+#define LOGSIP
+#define LOGINF
+#define LOGMIN
+#define LOGDEV
+#define LOGMEM
+#define LOGLOK
+//Mandatory
+//**********************************************************
+#undef DEBASSERT
+#define DEBASSERT(m1) cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; cout.flush();assert(0);
+//**********************************************************
+#define WAITTIME { timespec sleep_time; \
+	sleep_time.tv_sec = 20;\
+	sleep_time.tv_nsec = 0;\
+	nanosleep(&sleep_time,NULL);}
 
 #define GETTIME(mytime) gettimeofday(&mytime.tv, &mytime.tz);
 
-#define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
-//#define DEBOUT(m1,m2)
-#define DEBOUT_UTIL(m1,m2)  {stringstream xx ; xx << "DEBOUT_UTIL " <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
-#define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "]\n["<< m2->getIncBuffer() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
-#define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" << m2 << "]\n[" <<m2->getKey() << "]\n["<< m2->getLine(0) << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
-#define DEBERROR(m1)  {stringstream xx ; xx << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]\n";cout << xx.str();cout.flush();}
-
-//#define DEBY  {stringstream xx ; xx << "DEBY " << __FILE__ <<" " <<__LINE__<< "\n";cout << xx.str();cout.flush();}
-#define DEBY
-
-#define DEBASSERT(m1) cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; cout.flush();assert(0);
-
-
-#define PRINTTIME(starttime,endtime){char bu[1024];sprintf(bu, "init %lld end %lld diff %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec - (lli)starttime.tv.tv_sec*1000000-(lli)starttime.tv.tv_usec );DEBOUT("TIME INTERVAL", bu )}
-#define PRINTTIMESHORT(m,starttime){char bu[1024];sprintf(bu, "time %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec);DEBOUT(m, bu )}
-
+#undef NEWPTR
+#define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
+	m1 = new (nothrow) m2;\
+	if (m1 == 0x0) { DEBASSERT("Alloc failed")}
+//no embedded declaration
+#undef  NEWPTR2
+#define NEWPTR2(m1, m2, mess) m1 = 0x0;\
+	m1 = new (nothrow) m2;\
+	if (m1 == 0x0) { DEBASSERT("Alloc failed")}
+#undef DELPTR
+#define DELPTR(m1, mess) \
+		delete m1;
+#undef GETLOCK
+#define GETLOCK(m,message) \
+		pthread_mutex_lock(m);
+#undef RELLOCK
+#define RELLOCK(m,message) \
+		pthread_mutex_unlock(m);
+#undef TRYCATCH
+#define TRYCATCH(m) try { m; } catch (exception& e) { DEBASSERT("Exception" << e.what())}
+#undef PURGEMESSAGE
 #define PURGEMESSAGE(m1)  { \
-	DEBOUT("PURGEMESSAGE",m1) \
 	map<const MESSAGE*, MESSAGE*>::iterator p; \
 	pthread_mutex_lock(&messTableMtx);\
-	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 	p = globalMessTable.find(m1);\
 	if (p !=globalMessTable.end()) {\
 		globalMessTable.erase(m1);\
 		delete m1;\
 	}\
 	pthread_mutex_unlock(&messTableMtx);}
-
-//#define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
-//	pthread_mutex_lock(&messTableMtx);\
-//	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable << "]["<<globalMessTable.size())\
-//	for (p=globalMessTable.begin() ; p != globalMessTable.end() ; p ++){\
-//		DEBOUT("***********MESSAGE in table", (MESSAGE*)p->second)\
-//		DEBMESSAGE("MESSAGE in table" ,((MESSAGE*)p->second) ) \
-//	}\
-//	pthread_mutex_unlock(&messTableMtx);}
-#define DUMPMESSTABLE
-
-
-#define WAITTIME { timespec sleep_time; \
-	sleep_time.tv_sec = 20;\
-	sleep_time.tv_nsec = 0;\
-	nanosleep(&sleep_time,NULL);}
-
-//with embedded declaration
-#define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
-	m1 = new (nothrow) m2;\
-	DEBOUT("NEW ", mess << "][" <<m1)\
-	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
-//no embedded declaration
-#define NEWPTR2(m1, m2, mess) m1 = 0x0;\
-	m1 = new (nothrow) m2;\
-	DEBOUT("NEW ", mess << "][" <<m1)\
-	if (m1 == 0x0) { DEBERROR("NEW allocation failed")}
-
-#define DELPTR(m1, mess) \
-		DEBOUT("DELPTR",mess<<"]["<<m1)\
-		delete m1;
-
-#define TRYCATCH(m) try { m; } catch (exception& e) {DEBOUT("Exception thrown", e.what()) DEBASSERT("Exception")}
-
-
 #define CREATEMESSAGE(m1, m2, m3) MESSAGE* m1=0x0; {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
@@ -129,7 +118,6 @@ typedef struct {
 				sprintf(bu, "%x%llu",m1,num);\
 				string key(bu);\
 				m1->setKey(key);\
-				DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(m1, m1));\
 				pthread_mutex_unlock(&messTableMtx);}
@@ -139,13 +127,10 @@ typedef struct {
 				GETTIME(inTime);\
 				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
 				int i= m1->getTotLines();\
-				DEBOUT("NEW MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
 				string key(bu);\
 				__mess->setKey(key);\
-				DEBMESSAGE("New message from buffer", __mess->getIncBuffer() << "]\nkey [" << key)\
-				DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, _mess));\
 				pthread_mutex_unlock(&messTableMtx);}
@@ -154,26 +139,69 @@ typedef struct {
 				SysTime inTime;\
 				GETTIME(inTime);\
 				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
-				DEBOUT("NEW MESSAGE",__mess)\
 				if (__mess != 0x0 ) {long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
 				string key(bu);\
 				__mess->setKey(key);\
-				DEBOUT("GLOBALMESSAGETABLE",&globalMessTable)\
 				pthread_mutex_lock(&messTableMtx);\
 				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, __mess));\
 				pthread_mutex_unlock(&messTableMtx);}}
 
-#define GETLOCK(m,message) \
-		DEBOUT("Reaching lock " << message, m)\
-		pthread_mutex_lock(m);\
-		DEBOUT("Acquired lock " << message, m)
+//**********************************************************
+//**********************************************************
+#ifdef LOGSIP
+	//**********************************************************
+#undef DEBSIP
+#define DEBSIP(m1,m2)  {stringstream xx ; xx << "DEBSIP [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+	//**********************************************************
+#undef DEBMESSAGE
+#define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "]\n["<< m2->getIncBuffer() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
+//**********************************************************
+#undef DEBMESSAGESHORT
+#define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" << m2 << "]\n[" <<m2->getKey() << "]\n["<< m2->getLine(0) << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
+	//**********************************************************
+#endif
+//**********************************************************
+//**********************************************************
 
-#define RELLOCK(m,message) \
-		DEBOUT("Releasing lock " << message, m)\
-		pthread_mutex_unlock(m);
+
+//**********************************************************
+//**********************************************************
+#ifdef LOGINF
+	//**********************************************************
+#undef DEBINF
+#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+	//**********************************************************
+#undef DEBOUT
+#define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+	//**********************************************************
+#undef DEBOUT_UTIL
+#define DEBOUT_UTIL(m1,m2)  {stringstream xx ; xx << "DEBOUT_UTIL " <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+	//**********************************************************
+#endif
+//**********************************************************
+//**********************************************************
 
 
+//**********************************************************
+//**********************************************************
+#ifdef LOGMIN
+	//**********************************************************
+#undef DEBERROR
+#define DEBERROR(m1)  {stringstream xx ; xx << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]\n";cout << xx.str();cout.flush();}
+	//**********************************************************
+#endif
+//**********************************************************
+//**********************************************************
+
+//**********************************************************
+//**********************************************************
+#ifdef LOGDEV
+#undef DEBDEV
+#define DEBDEV(m1,m2)  {stringstream xx ; xx << "DEBDEV [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#undef DEBY
+#define DEBY  {stringstream xx ; xx << "DEBY " << __FILE__ <<" " <<__LINE__<< "\n";cout << xx.str();cout.flush();}
+#undef GETMOD
 #define GETMOD(m) {\
 	char x[32];\
 	int k = 32>m.length() ? 32 : m.length();\
@@ -183,11 +211,64 @@ typedef struct {
 		tot = (long int)(x[k-i]) + tot;\
 	}\
 	DEBOUT("MODULUS",m <<" -- " << tot%4)}
+#undef PRINTTIME
+#define PRINTTIME(starttime,endtime){char bu[1024];sprintf(bu, "init %lld end %lld diff %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec - (lli)starttime.tv.tv_sec*1000000-(lli)starttime.tv.tv_usec );DEBOUT("TIME INTERVAL", bu )}
+#undef PRINTTIMESHORT
+#define PRINTTIMESHORT(m,starttime){char bu[1024];sprintf(bu, "time %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec);DEBOUT(m, bu )}
+#endif
+//**********************************************************
+//**********************************************************
 
-class ThreadWrapper {
-    public:
-        pthread_t thread;
-        pthread_mutex_t mutex;
-        ThreadWrapper();
-};
+//**********************************************************
+//**********************************************************
+#ifdef LOGMEM
+	//**********************************************************
+#undef DUMPMESSTABLE
+#define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
+	pthread_mutex_lock(&messTableMtx);\
+	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable << "]["<<globalMessTable.size())\
+	for (p=globalMessTable.begin() ; p != globalMessTable.end() ; p ++){\
+		DEBOUT("***********MESSAGE in table", (MESSAGE*)p->second)\
+		DEBMESSAGE("MESSAGE in table" ,((MESSAGE*)p->second) ) \
+	}\
+	pthread_mutex_unlock(&messTableMtx);}
+	//**********************************************************
+#undef NEWPTR
+#define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
+	m1 = new (nothrow) m2;\
+	DEBOUT("NEW ", mess << "][" <<m1)\
+	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
+	//**********************************************************
+//no embedded declaration
+#undef NEWPTR2
+#define NEWPTR2(m1, m2, mess) m1 = 0x0;\
+	m1 = new (nothrow) m2;\
+	DEBOUT("NEW ", mess << "][" <<m1)\
+	if (m1 == 0x0) { DEBERROR("NEW allocation failed")}
+	//**********************************************************
+#undef DELPTR
+#define DELPTR(m1, mess) \
+		DEBOUT("DELPTR",mess<<"]["<<m1)\
+		delete m1;
+
+#endif
+//**********************************************************
+//**********************************************************
+
+//**********************************************************
+//**********************************************************
+#ifdef LOGLOK
+#undef GETLOCK
+#define GETLOCK(m,message) \
+		DEBOUT("Reaching lock " << message, m)\
+		pthread_mutex_lock(m);\
+		DEBOUT("Acquired lock " << message, m)
+#undef RELLOCK
+#define RELLOCK(m,message) \
+		DEBOUT("Releasing lock " << message, m)\
+		pthread_mutex_unlock(m);
+#endif
+//**********************************************************
+//**********************************************************
+
 

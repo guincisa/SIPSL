@@ -98,13 +98,13 @@ extern "C" void* SUPDSTACK (void*);
 
 void * SUDPSTACK(void *_tgtObject) {
 
-    DEBOUT("SUDPSTACK start","")
+    DEBDEV("SUDPSTACK start","")
 
 	SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
 
     tgtObject->st->listen();
 
-    DEBOUT("SUDPSTACK started","")
+    DEBDEV("SUDPSTACK started","")
 
     return (NULL);
 }
@@ -116,7 +116,7 @@ void * SUDPSTACK(void *_tgtObject) {
 // *****************************************************************************************
 void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm){
 
-    DEBOUT("SUDP init",_domain)
+	DEBDEV("SUDP init",_domain)
 
     domain = _domain;
 
@@ -151,7 +151,7 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 
     _engine->linkSUDP(this);
 
-    DEBOUT("SUDP init done","")
+    DEBDEV("SUDP init done","")
 
     return;
 }
@@ -164,7 +164,7 @@ void SUDP::start(void) {
 
     // allocate thread and starts
 
-    DEBOUT("SUDP::start","")
+	DEBDEV("SUDP::start","")
 
     listenerThread = new ThreadWrapper;
     SUDPtuple *t1;
@@ -181,7 +181,7 @@ void SUDP::start(void) {
 // *****************************************************************************************
 void SUDP::listen() {
 
-	DEBOUT("SUDP","globalMessTable")
+	DEBDEV("SUDP::listen","listen")
     for (;;){
         /* Set the size of the in-out parameter */
     	DEBY
@@ -228,7 +228,7 @@ void SUDP::sendRequest(MESSAGE* _message){
 	struct hostent *host;
 	memset((char *) &si_part, 0, sizeof(si_part));
 
-	DEBOUT("Request address ", _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName() <<":"<< _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort())
+	DEBSIP("Request address ", _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName() <<":"<< _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort())
 
 	si_part.sin_family = AF_INET;
 	host = gethostbyname(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str());
@@ -249,13 +249,13 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	//Reply uses topmost Via header
 	C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
-	DEBOUT("Reply to ",  viatmp->getC_AttVia().getS_HostHostPort().getHostName() << " : " << viatmp->getC_AttVia().getS_HostHostPort().getPort())
+	DEBSIP("Reply to ",  viatmp->getC_AttVia().getS_HostHostPort().getHostName() << " : " << viatmp->getC_AttVia().getS_HostHostPort().getPort())
 
 	struct sockaddr_in si_part;
 	struct hostent *host;
 	memset((char *) &si_part, 0, sizeof(si_part));
 
-	DEBOUT("Reply address ", viatmp->getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp->getC_AttVia().getS_HostHostPort().getPort())
+	DEBSIP("Reply address ", viatmp->getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp->getC_AttVia().getS_HostHostPort().getPort())
 
 	si_part.sin_family = AF_INET;
 	host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
