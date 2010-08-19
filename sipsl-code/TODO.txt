@@ -12,11 +12,8 @@ Performance
 - aprire piu socket 
 - modulo per comap
 
-Memory
-
-provare malloc/free : rimpiazzare tutte new con le macro
-
-
-
+Ancora leak
+- vedere le SM
+- controllare che gli allarmi fuznionano
 
 

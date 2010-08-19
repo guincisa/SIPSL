@@ -41,24 +41,22 @@ class COMAP {
 
 	private:
 
+		pthread_mutex_t unique;
+
 		//Call id x
-		pthread_mutex_t comap_mutex;
 		map<string, CALL_OSET*> comap_mm;
 
 
 		//call id y to call id y
-		pthread_mutex_t call_y2x_mutex;
 		map<string, string> call_id_y2x;
 
 		//Map of call_osets and doa
 		//doa can't be stored into call_oset
-		pthread_mutex_t doa_mutex;
 		map<CALL_OSET*, int> call_oset_doa_state;
 		void setDoa(CALL_OSET*, int);
 		int getDoa(CALL_OSET*);
 
 		//Number of messages currently running inside call_oset
-		pthread_mutex_t co_msgcnt_mutex;
 		map<CALL_OSET*, int> call_oset_msg_cnt;
 		int getCALL_OSET_MsgCnt(CALL_OSET*);
 		void incCALL_OSET_MsgCnt(CALL_OSET*);

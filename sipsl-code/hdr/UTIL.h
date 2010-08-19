@@ -223,6 +223,8 @@ class ThreadWrapper {
 //**********************************************************
 #ifdef LOGMEM
 	//**********************************************************
+
+#define DEBMEM(m1,m2)  {stringstream xx ; xx << "DEBMEM [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 #undef DUMPMESSTABLE
 #define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
 	pthread_mutex_lock(&messTableMtx);\
