@@ -281,13 +281,13 @@ class S_AttGeneric {
     public:
 
         S_AttGeneric(string content);
+        S_AttGeneric(const S_AttGeneric& x);
 
         virtual void buildContent(void) = 0;
 
 
         //forbidden
         S_AttGeneric(void);
-        S_AttGeneric(const S_AttGeneric& x);
 
         string &getContent(void);
         string copyContent(void);
@@ -753,6 +753,10 @@ class C_HeadVia : public S_HeadGeneric { //i //t
         C_AttVia copyC_AttVia(void);
 
         C_HeadVia(string content);
+        C_HeadVia(const C_HeadVia& x);
+
+        //Eccezione
+        //C_HeadVia(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

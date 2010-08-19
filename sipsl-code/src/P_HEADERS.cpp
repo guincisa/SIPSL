@@ -47,24 +47,24 @@ P_HeadSipRequest::P_HeadSipRequest(string _content, int genEntity)
     reqUri = NULL;
     sipvs = NULL;
 }
-void P_HeadSipRequest::doParse(void) {
-
-    if(parsed)
-        return;
-
-    vector<string> elements = brkSpaces(content);
-    
-    //AttMethod
-    vector<string>::iterator iter;
-    iter = elements.begin();
-    method = new S_AttMethod(*iter);
-
-    iter ++;
-    reqUri = new P_AttSipUri(*iter);
-
-    iter++;
-    sipvs = new S_AttSipVersion(*iter);
-}
+//void P_HeadSipRequest::doParse(void) {
+//
+//    if(parsed)
+//        return;
+//
+//    vector<string> elements = brkSpaces(content);
+//
+//    //AttMethod
+//    vector<string>::iterator iter;
+//    iter = elements.begin();
+//    method = new S_AttMethod(*iter);
+//
+//    iter ++;
+//    reqUri = new P_AttSipUri(*iter);
+//
+//    iter++;
+//    sipvs = new S_AttSipVersion(*iter);
+//}
 S_AttMethod *P_HeadSipRequest::getMethod(void){
     if(!parsed)
         doParse();
@@ -112,28 +112,28 @@ P_HeadSipReply::P_HeadSipReply(string _content, int _genEntity)
     sipvs = NULL;
     reply = NULL;
 }
-void P_HeadSipReply::doParse(void){
-
-    if(parsed){
-        return;
-    }
-
-    vector<string> elements = brkSpaces(content);
-    
-    vector<string>::iterator iter;
-    iter = elements.begin();
-
-    sipvs = new S_AttSipVersion(*iter);
-
-    iter ++;
-    reply = new S_AttReply(*iter, *(++iter));
-
-    parsed = true;
-    //TODO
-    correct = true;
-
-    return;
-}
+//void P_HeadSipReply::doParse(void){
+//
+//    if(parsed){
+//        return;
+//    }
+//
+//    vector<string> elements = brkSpaces(content);
+//
+//    vector<string>::iterator iter;
+//    iter = elements.begin();
+//
+//    sipvs = new S_AttSipVersion(*iter);
+//
+//    iter ++;
+//    reply = new S_AttReply(*iter, *(++iter));
+//
+//    parsed = true;
+//    //TODO
+//    correct = true;
+//
+//    return;
+//}
 S_AttReply *P_HeadSipReply::getReply(void) {
 
     if(!parsed) {

@@ -96,7 +96,13 @@ S_HeadGeneric::S_HeadGeneric(void) {
 	   DEBASSERT("S_HeadGeneric empty constructor");
 }
 S_HeadGeneric::S_HeadGeneric(const S_HeadGeneric& x) {
-	   DEBASSERT("S_HeadGeneric empty constructor");
+
+    DEBDEV("S_HeadGeneric copy constructor", x.content);
+    content = x.content;
+    contentReady = true;
+    parsed = false;
+    correct = true;
+
 }
 void S_HeadGeneric::setContent(string _content) {
 
@@ -132,7 +138,16 @@ bool S_HeadGeneric::isCorrect(void) {
 // *********************************************************************************
 // *********************************************************************************
 S_AttGeneric::S_AttGeneric(const S_AttGeneric& x){
-    DEBASSERT("S_AttGeneric copy constructor");
+
+
+    DEBDEV("S_AttGeneric copy constructor", x.content);
+
+    content = x.content;
+    parsed = false;
+    correct = true;
+    isSet = false;
+    contentReady = true;
+
 }
 S_AttGeneric::S_AttGeneric(string _content) {
    content = _content;
@@ -1145,6 +1160,7 @@ C_AttVia::C_AttVia(string _content) :
     transport(""),
     hostPort(""),
     viaParms("",";"){
+	DEBY
     return;
 }
 void C_AttVia::doParse(void){
@@ -1632,8 +1648,14 @@ S_AttSipVersion &C_HeadSipReply::getChangeSipVersion(void) {
 C_HeadVia::C_HeadVia(string _content) :
     S_HeadGeneric(_content),
     via("") {
-
+	DEBY
 }
+C_HeadVia::C_HeadVia(const C_HeadVia& x):
+	S_HeadGeneric(x.content),
+	via(""){
+	DEBY
+}
+
 void C_HeadVia::doParse(void) {
 
 	DEBOUT("C_HeadVia::doParse", content)
@@ -2172,7 +2194,6 @@ void C_HeadCSeq::doParse(void){
 	parsed = true;
 
 	return;
-
 }
 void C_HeadCSeq::buildContent(void){
 

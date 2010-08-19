@@ -104,7 +104,7 @@
 //**********************************************************************************
 SL_CC::SL_CC(int _i):ENGINE(_i) {
 
-	comap = new COMAP();
+	NEWPTR2(comap, COMAP(),"COMAP()")
 }
 COMAP* SL_CC::getCOMAP(void){
 	return comap;
@@ -195,7 +195,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			//////////////////////////////
 			//Start - Initialization block
-			call_oset = new CALL_OSET(this, callids);
+			NEWPTR2(call_oset, CALL_OSET(this, callids),"CALL_OSET(this, callids)")
 			comap->setCALL_OSET(callids, call_oset);
 			//End
 			//////////////////////////////

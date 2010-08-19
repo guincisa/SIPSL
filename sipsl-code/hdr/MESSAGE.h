@@ -173,7 +173,7 @@ class MESSAGE : public BASEMESSAGE {
     	// REQUNSUPP request unsupported, REPUNSUPP reply unsupported ??? defined latefr
     	int reqRep;
 
-    	stack<C_HeadVia*>	s_headVia;
+    	stack<C_HeadVia>	s_headVia;
     	bool 				s_headVia_p;
     	S_HeadMaxFwd	 	headMaxFwd;
     	bool 				headMaxFwd_p;
@@ -234,7 +234,7 @@ class MESSAGE : public BASEMESSAGE {
     	C_HeadSipReply   	&getHeadSipReply(void);
     	C_HeadSipRequest 	&getHeadSipRequest(void);
 
-    	stack<C_HeadVia*>	&getSTKHeadVia(void);
+    	stack<C_HeadVia>	&getSTKHeadVia(void);
     	//TODO is this one ok?
     	void				popSTKHeadVia(void);
     	S_HeadMaxFwd	 	&getHeadMaxFwd(void);

@@ -222,7 +222,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 
 
 	string cidbranch_alarm;
-	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch");
+	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch");
 	DEBOUT("Alarm id (cid+branch", cidbranch_alarm);
 	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
 
@@ -263,7 +263,7 @@ ALARM::ALARM(MESSAGE *_message, SysTime _fireTime){
 	active = true;
 	fireTime_c = ((unsigned long long int) fireTime.tv.tv_sec)*1000000+(unsigned long long int)fireTime.tv.tv_usec;
 	DEBOUT("ALARM::ALARM firetime", fireTime_c)
-	cidbranch = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch");
+	cidbranch = _message->getHeadCallId().getContent() + ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch");
 
 }
 unsigned long long int ALARM::getTriggerTime(void){

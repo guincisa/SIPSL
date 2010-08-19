@@ -166,9 +166,9 @@ void SUDP::start(void) {
 
 	DEBDEV("SUDP::start","")
 
-    listenerThread = new ThreadWrapper;
+	NEWPTR2(listenerThread, ThreadWrapper,"ThreadWrapper")
     SUDPtuple *t1;
-    t1 = new SUDPtuple;
+	NEWPTR2(t1, SUDPtuple,"SUDPtuple")
     t1->st = this;
 
     //TODO result not used
@@ -248,20 +248,20 @@ void SUDP::sendRequest(MESSAGE* _message){
 void SUDP::sendReply(MESSAGE* _message){
 
 	//Reply uses topmost Via header
-	C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
-	DEBSIP("Reply to ",  viatmp->getC_AttVia().getS_HostHostPort().getHostName() << " : " << viatmp->getC_AttVia().getS_HostHostPort().getPort())
+	C_HeadVia viatmp = (C_HeadVia) _message->getSTKHeadVia().top();
+	DEBSIP("Reply to ",  viatmp.getC_AttVia().getS_HostHostPort().getHostName() << " : " << viatmp.getC_AttVia().getS_HostHostPort().getPort())
 
 	struct sockaddr_in si_part;
 	struct hostent *host;
 	memset((char *) &si_part, 0, sizeof(si_part));
 
-	DEBSIP("Reply address ", viatmp->getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp->getC_AttVia().getS_HostHostPort().getPort())
+	DEBSIP("Reply address ", viatmp.getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp.getC_AttVia().getS_HostHostPort().getPort())
 
 	si_part.sin_family = AF_INET;
-	host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
+	host = gethostbyname(viatmp.getC_AttVia().getS_HostHostPort().getHostName().c_str());
 	bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-	si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
-	if( inet_aton(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
+	si_part.sin_port = htons(viatmp.getC_AttVia().getS_HostHostPort().getPort());
+	if( inet_aton(viatmp.getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 		DEBASSERT ("can set reply address")
 	}
 	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));

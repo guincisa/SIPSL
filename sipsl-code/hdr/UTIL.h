@@ -65,7 +65,7 @@ class ThreadWrapper {
 #define LOGMIN
 #define LOGDEV
 #define LOGMEM
-#define LOGLOK
+//#define LOGLOK
 //Mandatory
 //**********************************************************
 #undef DEBASSERT

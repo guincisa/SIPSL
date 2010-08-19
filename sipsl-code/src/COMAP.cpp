@@ -328,6 +328,8 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 	int i;
 	map<CALL_OSET*,int>::iterator p_msgcnt;
 
+	GETLOCK(&comap_mutex,"comap_mutex");
+
 	GETLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 	p_msgcnt = call_oset_msg_cnt.find(_call_oset);
 	if (p_msgcnt != call_oset_msg_cnt.end()){
@@ -349,11 +351,6 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 
 		RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 
-//		//TODO
-//		//p_w???
-//		//we are in sl_cc thread...
-//		GETLOCK(&comap_mutex,"comap_mutex");
-
 		DEBOUT("COMAP::decCALL_OSET_MsgCnt deleting here!", _call_oset)
 		setDoa(_call_oset, DOA_DELETED);
 		DEBY
@@ -373,18 +370,17 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset){
 		call_oset_msg_cnt.erase(_call_oset);
 		RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
 
-
 		comap_mm.erase(_call_oset->callId_X);
-
 		DELPTR(_call_oset,"call_oset");
-
-//		RELLOCK(&comap_mutex,"comap_mutex");
+		RELLOCK(&comap_mutex,"comap_mutex");
 
 		return;
 
 	}
 
 	RELLOCK(&co_msgcnt_mutex,"co_msgcnt_mutex");
+	RELLOCK(&comap_mutex,"comap_mutex");
+
 	return;
 
 }

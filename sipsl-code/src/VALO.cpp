@@ -149,7 +149,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 	//TODO ???
 	DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
-	int* CSeqB2BINIVTE = new int(message->getHeadCSeq().getSequence());
+	NEWPTR(int*, CSeqB2BINIVTE, int(message->getHeadCSeq().getSequence()),"int(message->getHeadCSeq().getSequence())")
 	ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
 
 
@@ -440,9 +440,9 @@ void VALO::onBye(MESSAGE* _message){
 		message->setDestEntity(SODE_TRNSCT_CL);
 
 		//Request has to be made using INVITE_A via address
-		C_HeadVia* viatmps= (C_HeadVia*) __message->getSTKHeadVia().top();
-		DEBOUT("BYE and rest of request", "BYE sip:ceppadim@"+viatmps->getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent())
-		message->setHeadSipRequest("BYE sip:ceppadim@"+viatmps->getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent());
+		C_HeadVia viatmps= (C_HeadVia) __message->getSTKHeadVia().top();
+		DEBOUT("BYE and rest of request", "BYE sip:ceppadim@"+viatmps.getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent())
+		message->setHeadSipRequest("BYE sip:ceppadim@"+viatmps.getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent());
 
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
@@ -477,16 +477,16 @@ void VALO::onBye(MESSAGE* _message){
 }
 void VALO::on200Ok(MESSAGE* _message){
 
-	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
+	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"));
 	MESSAGE* __message = ((TRNSCT_SM*)trnsct_cl)->getA_Matrix();
 
 	NEWPTR(string*, totag, string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag")),"string")
 	DEBOUT("STORE totag", totag)
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("totag_200ok_b", (void*) totag )))
 
-	stack<C_HeadVia*>	tmpViaS;
+	stack<C_HeadVia>	tmpViaS;
 	tmpViaS = _message->getSTKHeadVia();
-	NEWPTR(string*, allvia, string(tmpViaS.top()->getC_AttVia().getContent()),"string")
+	NEWPTR(string*, allvia, string(tmpViaS.top().getC_AttVia().getContent()),"string")
 	DEBOUT("STORE totag", allvia)
 	TRYCATCH(ctxt_store.insert(pair<string, void*>("allvia_200ok_b", (void*) allvia )))
 

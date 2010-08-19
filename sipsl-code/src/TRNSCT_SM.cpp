@@ -1022,8 +1022,7 @@ ACTION* act_1_2_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_SM_BYE_CL act_1_2_bye_cl","")
 
-	ACTION* action = new ACTION();
-
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->typeOfInternal = TYPE_MESS;

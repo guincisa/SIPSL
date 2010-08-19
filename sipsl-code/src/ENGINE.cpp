@@ -108,12 +108,12 @@ ENGINE::ENGINE(int _i) {
     int i;
     for ( i = 0 ; i < _i ; i++){
 
-    	t[i] = new ENGtuple;
+    	NEWPTR2(t[i], ENGtuple, "ENGtuple")
 
         t[i]->ps = this;
         t[i]->id = 0;
 
-        parsethread[i] = new ThreadWrapper();
+    	NEWPTR2(parsethread[i], ThreadWrapper(), "ThreadWrapper()")
 
         res = pthread_create(&(parsethread[i]->thread), NULL, threadparser, (void *) t[i]);
 
