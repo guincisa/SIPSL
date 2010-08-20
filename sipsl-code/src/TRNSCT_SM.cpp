@@ -901,7 +901,7 @@ ACTION* act_1_2_bye_sv(SM* _sm, MESSAGE* _message) {
 	DEBOUT("SM act_1_2_bye_sv move to state 2","")
 	_sm->State = 2;
 
-	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset);
+	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 
 	return action;
 

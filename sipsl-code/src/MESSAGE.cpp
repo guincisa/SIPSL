@@ -258,6 +258,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	isInternal = false;
 
+	modulus = 0;
+
 	type_trnsct = TYPE_TRNSCT;
 
 }
@@ -291,6 +293,9 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	lock = false;
 
 	type_trnsct = TYPE_TRNSCT;
+
+	modulus = 0;
+
 
 	return;
 }
@@ -992,4 +997,36 @@ bool MESSAGE::getLock(void){
 }
 void MESSAGE::unSetLock(void){
 	lock=false;
+}
+
+int MESSAGE::getModulus(void){
+
+	//is calculated in two ways:
+	// if first 5 chars of call id is "CoMap" then
+	// the modulus is the number after it (single digit)
+	// otherwise is calculated
+
+	string s = getHeadCallId().getContent();
+	DEBDEV("s.substr(0,5)", s.substr(0,5) )
+	DEBDEV("s.substr(5,1)", s.substr(5,1) )
+	if (s.substr(0,5).compare("CoMap") == 0){
+		DEBY
+		modulus = atoi(s.substr(5,1).c_str());
+	}else {
+		DEBY
+		char x[64];
+		int k = 64<s.length() ? 64 : s.length();
+		sprintf(x,"%s", s.substr(0,k).c_str());
+		long long int tot=0;
+		for (int i = 0; i < k; i++){
+			DEBDEV("substring ", "k [" << k << "][" <<  s.substr(i,1))
+			tot = (long long int) atol(s.substr(i,1).c_str()) + tot;
+		}
+		modulus = (tot+COMAPS)%COMAPS;
+	}
+	DEBDEV("Modulus found", modulus<<"]["<< s)
+	return modulus;
+
+
+
 }

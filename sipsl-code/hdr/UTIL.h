@@ -60,6 +60,8 @@ class ThreadWrapper {
         ThreadWrapper();
 };
 
+#define COMAPS 4
+
 #define LOGSIP
 #define LOGINF
 #define LOGMIN
@@ -201,16 +203,6 @@ class ThreadWrapper {
 #define DEBDEV(m1,m2)  {stringstream xx ; xx << "DEBDEV [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 #undef DEBY
 #define DEBY  {stringstream xx ; xx << "DEBY " << __FILE__ <<" " <<__LINE__<< "\n";cout << xx.str();cout.flush();}
-#undef GETMOD
-#define GETMOD(m) {\
-	char x[32];\
-	int k = 32>m.length() ? 32 : m.length();\
-	sprintf(x,"%s", m.substr(0,k).c_str());\
-	long int tot=0;\
-	for (int i = 0; i < k; i++){\
-		tot = (long int)(x[k-i]) + tot;\
-	}\
-	DEBOUT("MODULUS",m <<" -- " << tot%4)}
 #undef PRINTTIME
 #define PRINTTIME(starttime,endtime){char bu[1024];sprintf(bu, "init %lld end %lld diff %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec - (lli)starttime.tv.tv_sec*1000000-(lli)starttime.tv.tv_usec );DEBOUT("TIME INTERVAL", bu )}
 #undef PRINTTIMESHORT

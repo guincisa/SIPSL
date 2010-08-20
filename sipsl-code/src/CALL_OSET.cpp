@@ -416,7 +416,7 @@ void SL_CO::call(MESSAGE* _message){
 			//This is needed when a new request is coming from ALO
 			//B side call ID created by ALO has to be associated to the main call_id (from Aside)
 			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X());
+			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
 		}
 
 		ACTION* action = trnsct_cl->event(_message);

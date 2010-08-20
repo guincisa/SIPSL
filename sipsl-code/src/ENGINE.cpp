@@ -146,6 +146,7 @@ void ENGINE::p_w(MESSAGE* _m) {
     DEBY
     sb.put(_m);
     pthread_cond_signal(&(sb.condvar));
+    DEBY
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
     return;
 

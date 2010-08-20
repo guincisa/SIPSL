@@ -132,12 +132,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 		CALL_OSET* call_oset = 0x0;
 
 		string callids = _mess->getHeadCallId().getContent();
-
-		GETMOD(callids)
+		int modulus = _mess->getModulus();
 
 		DEBSIP("SL_CC::parse CALLOSET normal ID",callids)
 
-		call_oset = comap->getCALL_OSET_XMain(callids);
+		call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
 		//First try to get the Call object using x side parameters
 		if (call_oset != 0x0) {
@@ -152,7 +151,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 				_mess->setDestEntity(SODE_TRNSCT_CL);
 			}
 
-			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess, modulus) == -1 ){
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
 				if(!_mess->getLock()){
 					PURGEMESSAGE(_mess)
@@ -167,7 +166,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 		// Then try to get call object using y side params
 		else {
-			call_oset = comap->getCALL_OSET_YDerived(callids);
+			call_oset = comap->getCALL_OSET_YDerived(callids,modulus);
 			if (call_oset != 0x0){
 				DEBINF("SL_CC::parse", "B SIDE call_oset exists")
 
@@ -179,7 +178,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 				else if (_mess->getReqRepType() == REPSUPP){
 					_mess->setDestEntity(SODE_TRNSCT_CL);
 				}
-				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 					DEBINF("SL_CC::parse rejected by COMAP", callids)
 				}
 				return;
@@ -196,12 +195,12 @@ void SL_CC::parse(MESSAGE* _mess) {
 			//////////////////////////////
 			//Start - Initialization block
 			NEWPTR2(call_oset, CALL_OSET(this, callids),"CALL_OSET(this, callids)")
-			comap->setCALL_OSET(callids, call_oset);
+			comap->setCALL_OSET(callids, call_oset, modulus);
 			//End
 			//////////////////////////////
 
 			DEBINF("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
-			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
 			}
 			return;
@@ -216,18 +215,19 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		//Careful with source message
 		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
+		int modulus = _mess->getSourceMessage()->getModulus();
 
 		DEBSIP("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callids)
 
 		CALL_OSET* call_oset = 0x0;
 
-		call_oset = comap->getCALL_OSET_XMain(callids);
+		call_oset = comap->getCALL_OSET_XMain(callids,modulus);
 
 		if (call_oset == 0x0) {
-			call_oset = comap->getCALL_OSET_YDerived(callids);
+			call_oset = comap->getCALL_OSET_YDerived(callids,modulus);
 			if (call_oset != 0x0){
 				DEBINF("SL_CC::parse", "B SIDE call_oset exists")
-				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 					DEBINF("SL_CC::parse rejected by COMAP", callids)
 				}
 				return;
@@ -237,7 +237,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		}
 		else {
-			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess) == -1 ){
+			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
 			}
 			return;

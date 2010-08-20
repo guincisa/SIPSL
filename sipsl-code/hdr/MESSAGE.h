@@ -196,6 +196,9 @@ class MESSAGE : public BASEMESSAGE {
     	bool				sdpVecrot_e; // exists
     	int					sdpSize;
 
+    	//Modulus to reach the correct comap
+    	int					modulus;
+
     	//Allows to purge retranmissions
     	bool 				lock;
 
@@ -307,6 +310,8 @@ class MESSAGE : public BASEMESSAGE {
     	int typeOfOperation; // Type of operation
     	int specialAction; //delete co
     	int type_trnsct;
+
+    	int getModulus(void);
 
     	void setLock(void);
     	bool getLock(void);

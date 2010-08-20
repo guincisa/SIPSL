@@ -190,7 +190,7 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 
 	//Create new call id
 	char callIdtmp[512];
-	sprintf(callIdtmp, "%s@%s", _gtor->getKey().c_str(), sudp->getDomain().c_str());
+	sprintf(callIdtmp, "CoMap%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
 	string callIdtmpS(callIdtmp);
 	_gted->setGenericHeader("Call-ID:", callIdtmpS);
 

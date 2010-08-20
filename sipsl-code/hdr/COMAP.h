@@ -41,37 +41,39 @@ class COMAP {
 
 	private:
 
-		pthread_mutex_t unique;
+		pthread_mutex_t unique[COMAPS];
 
 		//Call id x
-		map<string, CALL_OSET*> comap_mm;
+		map<string, CALL_OSET*> comap_mm[COMAPS];
 
 
 		//call id y to call id y
-		map<string, string> call_id_y2x;
+		map<string, string> call_id_y2x[COMAPS];
 
 		//Map of call_osets and doa
 		//doa can't be stored into call_oset
-		map<CALL_OSET*, int> call_oset_doa_state;
-		void setDoa(CALL_OSET*, int);
-		int getDoa(CALL_OSET*);
+		map<CALL_OSET*, int> call_oset_doa_state[COMAPS];
+
+		void setDoa(CALL_OSET*, int,int);
+		int getDoa(CALL_OSET*,int);
 
 		//Number of messages currently running inside call_oset
-		map<CALL_OSET*, int> call_oset_msg_cnt;
-		int getCALL_OSET_MsgCnt(CALL_OSET*);
-		void incCALL_OSET_MsgCnt(CALL_OSET*);
-		void decCALL_OSET_MsgCnt(CALL_OSET*);
+		map<CALL_OSET*, int> call_oset_msg_cnt[COMAPS];
+
+		int getCALL_OSET_MsgCnt(CALL_OSET*,int);
+		void incCALL_OSET_MsgCnt(CALL_OSET*,int);
+		void decCALL_OSET_MsgCnt(CALL_OSET*,int);
 
 	public:
-		void setCALL_OSET(string callId_X, CALL_OSET*);
-		CALL_OSET* getCALL_OSET_XMain(string callId_X);
-		CALL_OSET* getCALL_OSET_YDerived(string callId_Y);
-		void setY2XCallId(string callId_Y, string callId_X);
+		void setCALL_OSET(string callId_X, CALL_OSET*,int);
+		CALL_OSET* getCALL_OSET_XMain(string callId_X,int);
+		CALL_OSET* getCALL_OSET_YDerived(string callId_Y,int);
+		void setY2XCallId(string callId_Y, string callId_X,int);
 
 	//Friend to call_oset
-		int use_CALL_OSET_SL_CO_call(CALL_OSET*, MESSAGE*);
-		void use_CALL_OSET_setCallId_Y(CALL_OSET*, string _cally);
-		void setDoaRequested(CALL_OSET*);
+		int use_CALL_OSET_SL_CO_call(CALL_OSET*, MESSAGE*,int);
+		void use_CALL_OSET_setCallId_Y(CALL_OSET*, string _cally,int);
+		void setDoaRequested(CALL_OSET*,int);
 
 		void purgeDOA(void);
 
