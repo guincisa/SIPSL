@@ -100,6 +100,8 @@ class SL_CO {
 	public:
 		int placeholder;
 
+		int OverallState;
+
 		SL_CO(CALL_OSET*);
 
 		CALL_OSET* call_oset;

@@ -1,6 +1,13 @@
 CHANGES
 
 
+20 Agosto
+
+se B non riceve l'ack rimanda il 200 ok.
+ma il 200_ok b non è correlato alla sm dell'ack: quindi:
+devo fa entrare il 200 ok nella sm dell'ack: 
+o reintegrare di nuovo l'ack nella state del invite
+
 18 Agosto
 
 - capitato che arriva un reply da b ma non trova la sm e da assert
@@ -8,6 +15,8 @@ CHANGES
 - rivedere i meccanismi di lock nella comap
 
 - è possibile che il call_oset venga eliminato mentre viene esguito da un'altro th? 
+
+Se arriva un BYE e non esiste la chiamata la call_oset viene creata...
 
 -----------------------------------------------------------------------
 

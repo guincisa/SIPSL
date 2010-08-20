@@ -290,6 +290,7 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 SL_CO::SL_CO(CALL_OSET* _call_oset){
 	call_oset = _call_oset;
     pthread_mutex_init(&mutex, NULL);
+    OverallState = OS_INIT;
 
 }
 //**********************************************************************************
@@ -314,75 +315,87 @@ void SL_CO::call(MESSAGE* _message){
     	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, C_HeadVia(_message->getSTKHeadVia().top().getC_AttVia().getViaParms().findRvalue("branch")).getContent());
     	DEBY
     	//There are no sm, create it
-		if (trnsctSM == 0x0){
-			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+		if (trnsctSM == 0x0 ){
+			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST && OverallState == OS_INIT){
 				call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
 				NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_SV")
+				OverallState = OS_INVITE_ON;
 			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
+			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && OverallState == OS_INVITE_END){
 				NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
+				OverallState = OS_ACK_ON;
 			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
+			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && OS_ACK_END){
 				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
+				OverallState = OS_BYE_ON;
+			} else {
+				// SL_CO no in correct state
+				DEBOUT("Unexpected message ignored", _message)
+				//Message is purged here...
+				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, _message->getModulus());
 			}
 			//Add the sm to the map
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"))
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
 			DEBOUT("call_oset->addTrnsctSm","done")
 		}
+    	if (trnsctSM != 0x0 ){
+			//send the message to sm
+			action = trnsctSM->event(_message);
 
-		//send the message to sm
-		action = trnsctSM->event(_message);
+			if (action != 0x0){
 
-		if (action != 0x0){
+				// now get actions one by one
+				stack<SingleAction> actionList = action->getActionList();
 
-			// now get actions one by one
-			stack<SingleAction> actionList = action->getActionList();
+				while (!actionList.empty()){
 
-			while (!actionList.empty()){
+					MESSAGE* _tmpMessage = actionList.top().getMessage();
+					DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
 
-				MESSAGE* _tmpMessage = actionList.top().getMessage();
-				DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
-
-				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
-					//To ALO
-					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
-					call_oset->getALO()->call(_tmpMessage);
-				}
-				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
-					//server sm sending to client sm should not happen
-					DEBASSERT("Server sm sending to client sm should not happen should not happen")
-				}
-				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
-					//To network
-					if (_tmpMessage->getReqRepType() == REPSUPP) {
-						//TODO Check if there is a ROUTE header
-						call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
+					if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+						//To ALO
+						DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+						call_oset->getALO()->call(_tmpMessage);
 					}
-					else {
-						DEBASSERT("Unexpected SM_SV sending a Request to network")
+					else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
+						//server sm sending to client sm should not happen
+						DEBASSERT("Server sm sending to client sm should not happen should not happen")
 					}
+					else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
+						//To network
+						if (_tmpMessage->getReqRepType() == REPSUPP) {
+							//TODO Check if there is a ROUTE header
+							call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
+						}
+						else {
+							DEBASSERT("Unexpected SM_SV sending a Request to network")
+						}
 
+					} else {
+						//TODO
+						DEBASSERT("SL_CO::call action is unexpected")
+					}
+					DEBOUT("pop action","")
+					actionList.pop();
+				}
+			}
+			else {
+				DEBOUT("SL_CO::event", "action is null nothing, event ignored")
+				//Delete only if not locked
+				if (!_message->getLock()){
+					PURGEMESSAGE(_message)
 				} else {
 					//TODO
-					DEBASSERT("SL_CO::call action is unexpected")
+					//The message is locked for some reason but did not trigger any action...
+					DEBASSERT("Check this case out")
 				}
-				DEBOUT("pop action","")
-				actionList.pop();
-			}
-		}
-		else {
-			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
-			//Delete only if not locked
-			if (!_message->getLock()){
-				PURGEMESSAGE(_message)
-			} else {
-				//TODO
-				//The message is locked for some reason but did not trigger any action...
-				DEBASSERT("Check this case out")
-			}
 
+			}
 		}
+    	else {
+
+    	}
 	}
 	//Message is going to Client SM
 	else if (_message->getDestEntity() == SODE_TRNSCT_CL){
@@ -395,6 +408,7 @@ void SL_CO::call(MESSAGE* _message){
 		if (trnsct_cl == 0x0){
 
 			DEBOUT("Creating Trnsct Client machine callidy", callidys)
+			// All those request are generated by ALO
 			if(_message->getReqRepType() == REQSUPP){
 				if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
@@ -406,6 +420,8 @@ void SL_CO::call(MESSAGE* _message){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_BYE_CL")
 				}
 			}else{
+			    // Do per scontato che da questa parte i reply trovano la sm
+			    // ma potrebbe non essere?
 				DEBOUT("A unexpected reply directed to client has reached the call object","")
 				DEBASSERT("Check this")
 			}

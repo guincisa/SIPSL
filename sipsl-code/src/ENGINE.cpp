@@ -176,8 +176,6 @@ void * threadparser (void * _pt){
         else {
             pt->ps->parse(m);
         }
-        //TODO ??? 30 luglio 2010
-        //pthread_mutex_unlock(&(ps->sb.condvarmutex));
     }
     return (NULL);
 }

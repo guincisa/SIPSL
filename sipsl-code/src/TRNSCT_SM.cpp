@@ -317,6 +317,8 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	DEBOUT("SM act_1_3_inv_sv move to state 3","")
 	_sm->State = 3;
 
+	_sm->getSL_CO()->OverallState = OS_INVITE_END;
+
 	return action;
 
 }
@@ -1043,11 +1045,39 @@ ACTION* act_1_2_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	return action;
 }
+//*****************************************************************
+bool pre_1_99_bye_cl(SM* _sm, MESSAGE* _message){
+
+	DEBOUT("TRNSCT_BYE_CL pre_1_99_bye_cl","")
+	if (_message->getReqRepType() == REQSUPP
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getDestEntity() == SODE_TRNSCT_CL
+			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
+			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye > MAX_INVITE_RESEND) {
+		DEBOUT("TRNSCT_BYE_CL pre_1_99_bye_cl","true")
+		return true;
+	}
+	else {
+		DEBOUT("TRNSCT_INV_CL pre_1_99_bye_cl","false")
+		return false;
+	}
+}
+ACTION* act_1_99_bye_cl(SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRNSCT_BYE_CL act_1_99_bye_cl please do something","")
+
+	_sm->State = 99;
+
+	return 0x0;
+
+}
+
 //**********************************************************************************
 TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
 		PA_BYE_0_1CL((SM*)this),
 		PA_BYE_1_1CL((SM*)this),
+		PA_BYE_1_99CL((SM*)this),
 		PA_BYE_1_2CL((SM*)this){
 
 	PA_BYE_0_1CL.action = &act_0_1_bye_cl;
@@ -1056,11 +1086,16 @@ TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 	PA_BYE_1_1CL.action = &act_0_1_bye_cl;
 	PA_BYE_1_1CL.predicate = &pre_1_1_bye_cl;
 
+	PA_BYE_1_99CL.action = &act_1_99_bye_cl;
+	PA_BYE_1_99CL.predicate = &pre_1_99_bye_cl;
+
+
 	PA_BYE_1_2CL.action = &act_1_2_bye_cl;
 	PA_BYE_1_2CL.predicate = &pre_1_2_bye_cl;
 
 	insert_move(0,&PA_BYE_0_1CL);
 	insert_move(1,&PA_BYE_1_1CL);
+	insert_move(1,&PA_BYE_1_99CL);
 	insert_move(1,&PA_BYE_1_2CL);
 
 	resend_bye = 0;

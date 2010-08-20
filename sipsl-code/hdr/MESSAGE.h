@@ -58,6 +58,17 @@ using namespace std;
 #define DOA_REQUESTED 1
 #define DOA_CONFIRMED 2
 
+//SL_CO overall state
+//TODO put the real SIP states....
+#define OS_INIT 0
+#define OS_INVITE_ON 1
+#define OS_INVITE_END 2
+#define OS_ACK_ON 3
+#define OS_ACK_END 4
+#define OS_BYE_ON 5
+#define OS_BYE_END 6
+
+
 
 //#define SODE_SMSVCALLPOINT 8
 //#define SODE_SMCLCALLPOINT 9

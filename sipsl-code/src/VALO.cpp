@@ -93,6 +93,10 @@ VALO::~VALO(void){
 	delete (string*)p->second;
 	ctxt_store.erase(p);
 
+	p = ctxt_store.find("tohead_200ok_a");
+	delete (string*)p->second;
+	ctxt_store.erase(p);
+
 	p = ctxt_store.find("CSeqB2BINIVTE");
 	delete (int*)p->second;
 	ctxt_store.erase(p);
@@ -113,6 +117,9 @@ VALO::~VALO(void){
 	delete (string*)p->second;
 	ctxt_store.erase(p);
 
+	p = ctxt_store.find("fromhead_200ok_a");
+	delete (string*)p->second;
+	ctxt_store.erase(p);
 }
 
 void VALO::onInvite(MESSAGE* _message){
