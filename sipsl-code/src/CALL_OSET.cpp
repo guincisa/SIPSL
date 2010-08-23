@@ -290,7 +290,9 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 SL_CO::SL_CO(CALL_OSET* _call_oset){
 	call_oset = _call_oset;
     pthread_mutex_init(&mutex, NULL);
-    OverallState = OS_INIT;
+    OverallState_SV = OS_INIT;
+    OverallState_CL = OS_INIT;
+
 
 }
 //**********************************************************************************
@@ -316,21 +318,19 @@ void SL_CO::call(MESSAGE* _message){
     	DEBY
     	//There are no sm, create it
 		if (trnsctSM == 0x0 ){
-			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST && OverallState == OS_INIT){
+			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST && OverallState_SV == OS_INIT){
 				call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
 				NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_SV")
-				OverallState = OS_INVITE_ON;
 			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && OverallState == OS_INVITE_END){
+			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && OverallState_SV == OS_COMPLETED){
 				NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
-				OverallState = OS_ACK_ON;
 			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && OS_ACK_END){
+			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && OverallState_SV == OS_CONFIRMED ){
 				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
-				OverallState = OS_BYE_ON;
 			} else {
 				// SL_CO no in correct state
 				DEBOUT("Unexpected message ignored", _message)
+				//DEBASSERT("OVERALL STATE ERROR")
 				//Message is purged here...
 				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, _message->getModulus());
 			}
@@ -403,6 +403,7 @@ void SL_CO::call(MESSAGE* _message){
 		string callidys = _message->getHeadCallId().getContent();
 	    DEBOUT("SL_CO::call client state machine", callidys)
 
+		//Replies are recognized here
 		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"));
 
 		if (trnsct_cl == 0x0){
@@ -412,6 +413,7 @@ void SL_CO::call(MESSAGE* _message){
 			if(_message->getReqRepType() == REQSUPP){
 				if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
+
 				}
 				else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
@@ -483,14 +485,14 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("SL_CO:: TYPE_OP","")
 
 					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
-						DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"));
+						DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->orderOfOperation+ "#");
 						SysTime st1 = _tmpMessage->getFireTime();
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
 
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
-						DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"))
-						string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch");
+						DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->orderOfOperation+ "#")
+						string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->orderOfOperation+ "#";
 						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 					}

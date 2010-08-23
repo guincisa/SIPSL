@@ -260,6 +260,10 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	modulus = 0;
 
+	typeOfInternal = TYPE_MESS; // Message or operation
+	typeOfOperation = TYPE_OP_NOOP; // Type of operation
+	orderOfOperation = ""; //Alarm id in case more alarms are triggered with the same message
+
 	type_trnsct = TYPE_TRNSCT;
 
 }
@@ -295,6 +299,9 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	type_trnsct = TYPE_TRNSCT;
 
 	modulus = 0;
+	typeOfInternal = TYPE_MESS; // Message or operation
+	typeOfOperation = TYPE_OP_NOOP; // Type of operation
+	orderOfOperation = ""; //Alarm id in case more alarms are triggered with the same message
 
 
 	return;

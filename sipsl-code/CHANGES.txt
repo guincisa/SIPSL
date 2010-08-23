@@ -18,6 +18,8 @@ o reintegrare di nuovo l'ack nella state del invite
 
 Se arriva un BYE e non esiste la chiamata la call_oset viene creata...
 
+nuovi stati pagina 128 dell rfc
+
 -----------------------------------------------------------------------
 
 vedere la DOA

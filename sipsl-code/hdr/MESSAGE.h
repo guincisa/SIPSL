@@ -58,16 +58,32 @@ using namespace std;
 #define DOA_REQUESTED 1
 #define DOA_CONFIRMED 2
 
-//SL_CO overall state
-//TODO put the real SIP states....
-#define OS_INIT 0
-#define OS_INVITE_ON 1
-#define OS_INVITE_END 2
-#define OS_ACK_ON 3
-#define OS_ACK_END 4
-#define OS_BYE_ON 5
-#define OS_BYE_END 6
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// SL_CO overall states:
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
+#define OS_INIT 0
+
+//Server
+#define OS_CALLING 1
+
+//Client
+#define OS_TRYING 2
+
+#define OS_PROCEEDING 3
+#define OS_COMPLETED 4
+#define OS_TERMINATED 5
+#define OS_CONFIRMED 6
+
+#define TYPE_MESS 1
+#define TYPE_OP 2
+
+
+#define TYPE_OP_NOOP 0
+#define TYPE_OP_TIMER_ON 3
+#define TYPE_OP_TIMER_OFF 4
 
 
 //#define SODE_SMSVCALLPOINT 8
@@ -319,7 +335,10 @@ class MESSAGE : public BASEMESSAGE {
 
     	int typeOfInternal; // Message or operation
     	int typeOfOperation; // Type of operation
-    	int specialAction; //delete co
+    	string orderOfOperation; //Alarm id in case more alarms are triggered with the same message
+    	//int specialAction; //delete co
+
+    	//Needed for ACK
     	int type_trnsct;
 
     	int getModulus(void);

@@ -176,24 +176,31 @@ inline vector<string> parse(string _par, string head, string sep, bool _trimspac
     string par;
     if (_trimspaces){
     	par = trimUseless(_par);
+    	DEBY
     }
     else{
     	par = _par;
+    	DEBY
     }
 
 
     if (par.substr(0,1).compare(head) == 0) {
         h = 1;
+        DEBY
     }
     int a = par.find(sep.c_str(),0);
     while (a > 0) {
+    	DEBY
        output.push_back(par.substr(h,a-h));
        par = par.substr(a+1,-1);
        h=0;
        a = par.find(sep.c_str(),0);
+       DEBY
     }
     if (a < 0) {
+       DEBY
        output.push_back(par.substr(h,a-1));
+       DEBY
     }
 
     return output;
@@ -330,7 +337,7 @@ class TupleVector : public S_AttGeneric{
         void replaceRvalue(string Lvalue, string Rvalue);
 
         //header can be ? or whatever the string begins with
-        string findRvalue(string Lvalue);
+        const string findRvalue(string Lvalue);
 
         //forbidden
         TupleVector();

@@ -255,7 +255,7 @@ void TupleVector::doParse(void) {
     	throw HeaderException("TupleVector malformed [" + content + "]");
     }
 }
-string TupleVector::findRvalue(string _Lvalue){
+const string TupleVector::findRvalue(string _Lvalue){
 
 	if (!correct){
 		throw HeaderException("TupleVector malformed [" + _Lvalue + "]");
@@ -1188,6 +1188,7 @@ void C_AttVia::doParse(void){
     //fix the contentReady
     version.getContent();
 
+
     Tuple s4 = brkin2(s1.Rvalue, ";");
     hostPort.setContent(s4.Lvalue);
     viaParms.setContent(s4.Rvalue);
@@ -1249,7 +1250,7 @@ S_AttHostPort &C_AttVia::getChangeS_HostHostPort(void) {
     contentReady = false;
     return hostPort;
 }
-TupleVector &C_AttVia::getViaParms(void) {
+TupleVector &C_AttVia::getViaParms(void){
     if (!parsed)
         doParse();
     return viaParms;
@@ -1652,7 +1653,7 @@ C_HeadVia::C_HeadVia(string _content) :
 }
 C_HeadVia::C_HeadVia(const C_HeadVia& x):
 	S_HeadGeneric(x.content),
-	via(""){
+	via("") {
 	DEBY
 }
 
@@ -1674,7 +1675,7 @@ void C_HeadVia::doParse(void) {
 
     parsed = true;
 }
-C_AttVia &C_HeadVia::getC_AttVia(void) {
+C_AttVia &C_HeadVia::getC_AttVia(void){
 
     if (!parsed)
         doParse();
