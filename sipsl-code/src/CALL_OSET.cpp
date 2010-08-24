@@ -121,16 +121,41 @@ CALL_OSET::~CALL_OSET(void){
 	if (sl_co != 0x0){
 		DEBY
 		//purge states machines
+		//must delete specific SM!
 		map<string, TRNSCT_SM*> ::iterator p;
 		for (p = trnsctSmMap.begin() ; p != trnsctSmMap.end() ; p++) {
-			DEBY
-			DELPTR((TRNSCT_SM*)p->second,"(TRNSCT_SM*)p->second");
+			DEBOUT("(p->first)", (p->first))
+			if ( (p->first).substr(0,8).compare("INVITE#4") == 0){
+				DELPTR((TRNSCT_SM_INVITE_CL*)p->second,"(TRNSCT_SM_INVITE_CL*)p->second");
+				continue;
+			}
+			if ( (p->first).substr(0,8).compare("INVITE#5") == 0){
+				DELPTR((TRNSCT_SM_INVITE_SV*)p->second,"(TRNSCT_SM_INVITE_SV*)p->second");
+				continue;
+			}
+			if ( (p->first).substr(0,5).compare("ACK#4") == 0){
+				DELPTR((TRNSCT_SM_ACK_CL*)p->second,"(TRNSCT_SM_ACK_CL*)p->second");
+				continue;
+			}
+			if ( (p->first).substr(0,5).compare("ACK#5") == 0){
+				DELPTR((TRNSCT_SM_ACK_SV*)p->second,"(TRNSCT_SM_ACK_SV*)p->second");
+				continue;
+			}
+			if ( (p->first).substr(0,5).compare("BYE#4") == 0){
+				DELPTR((TRNSCT_SM_BYE_CL*)p->second,"(TRNSCT_SM_BYE_CL*)p->second");
+				continue;
+			}
+			if ( (p->first).substr(0,5).compare("BYE#5") == 0){
+				DELPTR((TRNSCT_SM_BYE_SV*)p->second,"(TRNSCT_SM_BYE_SV*)p->second");
+				continue;
+			}
+
 		}
 		DEBY
 	}
 	if (alo != 0x0){
 		DEBY
-		delete alo;
+		DELPTR((VALO*)alo, "ALO");
 	}
 	MESSAGE* m = getNextLockedMessage();
 	while (m != 0x0){
@@ -141,6 +166,7 @@ CALL_OSET::~CALL_OSET(void){
 		m = getNextLockedMessage();
 		DEBOUT("Message to be deleted", m)
 	}
+	DELPTR(sl_co, "SL_CO")
 	DEBY
 
 }
@@ -252,10 +278,7 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
 	DEBOUT_UTIL("CALL_OSET::getTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch)
 	char t_key[512];
-	if (_sode == SODE_TRNSCT_CL)
-		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
-	else if (_sode == SODE_TRNSCT_SV)
-		sprintf(t_key, "%s#SODE_TRNSCT_SV#%s", _method.c_str(), _branch.c_str());
+	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode,_branch.c_str());
 	map<string, TRNSCT_SM*> ::iterator p;
 	p = trnsctSmMap.find(t_key);
 	if (p != trnsctSmMap.end()){
@@ -269,16 +292,7 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 
 	DEBOUT_UTIL("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch)
 	char t_key[512];
-	if (_sode == SODE_TRNSCT_CL){
-		sprintf(t_key, "%s#SODE_TRNSCT_CL#%s", _method.c_str(), _branch.c_str());
-	}
-	else if (_sode == SODE_TRNSCT_SV){
-		sprintf(t_key, "%s#SODE_TRNSCT_SV#%s", _method.c_str(), _branch.c_str());
-	}
-	else {
-		DEBOUT("CALL_OSET::addTrnsctSm NOT INSERTED", _method << _branch)
-		return;
-	}
+	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode, _branch.c_str());
 
 	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(t_key, _trnsctSm));
 	return;
@@ -313,8 +327,8 @@ void SL_CO::call(MESSAGE* _message){
 		TRNSCT_SM* trnsctSM = 0x0;
 
 		//First look for an existing SM using METHOD+SM_SV+branch
-		DEBDEV("C_HeadVia(_message->getSTKHeadVia().top().getC_AttVia().getViaParms().findRvalue(\"branch\")).getContent()",C_HeadVia(_message->getSTKHeadVia().top().getC_AttVia().getViaParms().findRvalue("branch")).getContent())
-    	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, C_HeadVia(_message->getSTKHeadVia().top().getC_AttVia().getViaParms().findRvalue("branch")).getContent());
+		DEBDEV("((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue(\"branch\")",((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+    	trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
     	DEBY
     	//There are no sm, create it
 		if (trnsctSM == 0x0 ){
@@ -325,7 +339,7 @@ void SL_CO::call(MESSAGE* _message){
 			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && OverallState_SV == OS_COMPLETED){
 				NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
 			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && OverallState_SV == OS_CONFIRMED ){
+			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && (OverallState_SV == OS_CONFIRMED)){
 				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
 			} else {
 				// SL_CO no in correct state
@@ -335,8 +349,8 @@ void SL_CO::call(MESSAGE* _message){
 				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, _message->getModulus());
 			}
 			//Add the sm to the map
-			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"))
-			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
+			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
 			DEBOUT("call_oset->addTrnsctSm","done")
 		}
     	if (trnsctSM != 0x0 ){
@@ -404,7 +418,7 @@ void SL_CO::call(MESSAGE* _message){
 	    DEBOUT("SL_CO::call client state machine", callidys)
 
 		//Replies are recognized here
-		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"));
+		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 
 		if (trnsct_cl == 0x0){
 
@@ -428,7 +442,7 @@ void SL_CO::call(MESSAGE* _message){
 				DEBASSERT("Check this")
 			}
 
-			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
+			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
 
 			//TODO?
 			//This is needed when a new request is coming from ALO
@@ -485,14 +499,14 @@ void SL_CO::call(MESSAGE* _message){
 					DEBOUT("SL_CO:: TYPE_OP","")
 
 					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
-						DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->orderOfOperation+ "#");
+						DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->orderOfOperation+ "#");
 						SysTime st1 = _tmpMessage->getFireTime();
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
 
 					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
 
-						DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->orderOfOperation+ "#")
-						string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia) _tmpMessage->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->orderOfOperation+ "#";
+						DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->orderOfOperation+ "#")
+						string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->orderOfOperation+ "#";
 						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 					}
@@ -523,7 +537,7 @@ void SL_CO::call(MESSAGE* _message){
 	DEBOUT("SL_CO::call ended","")
 	if (action != 0x0){
 		DEBOUT("SL_CO::call delete action","")
-		delete action;
+		DELPTR(action,"ACTION");
 	}
 	RELLOCK(&mutex,"mutex");
 }

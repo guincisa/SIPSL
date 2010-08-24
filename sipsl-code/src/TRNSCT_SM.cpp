@@ -885,7 +885,7 @@ ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
 	//TODO
 	// store this ack and retransmit is 200 ok arrives again
-	_sm->getSL_CO()->OverallState_SV = OS_COMPLETED;
+	_sm->getSL_CO()->OverallState_CL = OS_COMPLETED;
 
 
 	return action;

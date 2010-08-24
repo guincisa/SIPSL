@@ -64,6 +64,7 @@ using namespace std;
 //    a=b
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
 typedef struct {
     string Lvalue;
     string Rvalue;
@@ -288,13 +289,13 @@ class S_AttGeneric {
     public:
 
         S_AttGeneric(string content);
-        S_AttGeneric(const S_AttGeneric& x);
 
         virtual void buildContent(void) = 0;
 
 
         //forbidden
         S_AttGeneric(void);
+        S_AttGeneric(const S_AttGeneric& x);
 
         string &getContent(void);
         string copyContent(void);
@@ -398,6 +399,7 @@ class S_AttUserInfo : public S_AttGeneric{
 
         //forbidden
         S_AttUserInfo(const S_AttUserInfo& x);
+        S_AttUserInfo();
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -421,6 +423,10 @@ class S_AttHostPort : public S_AttGeneric{
         void setPort(int port);
         void setHostName(string hostName);
         S_AttHostPort(string content);
+
+        S_AttHostPort();
+        S_AttHostPort(const S_AttHostPort& x);
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -442,6 +448,7 @@ class C_AttUriParms : public S_AttGeneric{ //i //t
         TupleVector &getChangeTuples(void); // i t
         TupleVector copyTuples(void); // i t
         C_AttUriParms(string content);
+        C_AttUriParms();
         C_AttUriParms(const C_AttUriParms& _p);
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -465,6 +472,10 @@ class C_AttUriHeaders : public S_AttGeneric{ //i //t
         TupleVector &getChangeTuples(void); // i t
         TupleVector copyTuples(void); // i t
         C_AttUriHeaders(string content);
+
+        C_AttUriHeaders();
+        C_AttUriHeaders(const C_AttUriHeaders& x);
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -506,6 +517,8 @@ class C_AttSipUri : public S_AttGeneric{ // sip or sips //i //t
 
         C_AttSipUri(string content);
         C_AttSipUri(const C_AttSipUri &x);
+        C_AttSipUri();
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -545,6 +558,10 @@ class S_AttSipVersion : public S_AttGeneric{ //i //t
 
         S_AttSipVersion(string content);
         S_AttSipVersion(string protocol, string version);
+
+        S_AttSipVersion();
+        S_AttSipVersion(const S_AttSipVersion& x);
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -584,6 +601,10 @@ class C_AttVia : public S_AttGeneric { //i //t
         TupleVector copyViaParms(void);
 
         C_AttVia(string content);
+        C_AttVia(const C_AttVia& x);
+        C_AttVia();
+
+
 } ;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -615,6 +636,10 @@ class S_AttReply : public S_AttGeneric{ //i //t
         void setContent(string reply, string code);
         S_AttReply(string content);
         S_AttReply(string replyID, string code);
+
+        S_AttReply();
+        S_AttReply(const S_AttReply& x);
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -649,6 +674,9 @@ class C_AttContactElem : public S_AttGeneric {
 
         C_AttContactElem(string content);
         C_AttContactElem(const C_AttContactElem& x);
+
+        C_AttContactElem();
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -671,6 +699,10 @@ class C_AttContactList : public S_AttGeneric {
         vector<C_AttContactElem> &getChangeContactList(void);
         vector<C_AttContactElem> copyContactList(void);
         C_AttContactList(string content);
+
+        C_AttContactList();
+        C_AttContactList(const C_AttContactList& x);
+
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -762,8 +794,6 @@ class C_HeadVia : public S_HeadGeneric { //i //t
         C_HeadVia(string content);
         C_HeadVia(const C_HeadVia& x);
 
-        //Eccezione
-        //C_HeadVia(void);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

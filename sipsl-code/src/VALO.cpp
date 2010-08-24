@@ -90,35 +90,35 @@ VALO::~VALO(void){
 	map<string, void*> ::iterator p;
 
 	p = ctxt_store.find("tohead_200ok_b");
-	delete (string*)p->second;
+	DELPTR((string*)p->second,"tohead_200ok_b");
 	ctxt_store.erase(p);
 
 	p = ctxt_store.find("tohead_200ok_a");
-	delete (string*)p->second;
+	DELPTR((string*)p->second,"tohead_200ok_a");
 	ctxt_store.erase(p);
 
 	p = ctxt_store.find("CSeqB2BINIVTE");
-	delete (int*)p->second;
+	DELPTR((int*)p->second,"CSeqB2BINIVTE");
 	ctxt_store.erase(p);
 
 	p = ctxt_store.find("totag_200ok_b");
-	delete (string*)p->second;
+	DELPTR((string*)p->second,"totag_200ok_b");
 	ctxt_store.erase(p);
 
 	p = ctxt_store.find("allvia_200ok_b");
-	delete (string*)p->second;
+	DELPTR((string*)p->second,"allvia_200ok_b");
 	ctxt_store.erase(p);
 
 	p = ctxt_store.find("callid_200ok_b");
-	delete (string*)p->second;
+	DELPTR((string*)p->second,"callid_200ok_b");
 	ctxt_store.erase(p);
 
 	p = ctxt_store.find("fromhead_200ok_b");
-	delete (string*)p->second;
+	DELPTR((string*)p->second,"fromhead_200ok_b");
 	ctxt_store.erase(p);
 
 	p = ctxt_store.find("fromhead_200ok_a");
-	delete (string*)p->second;
+	DELPTR((string*)p->second,"fromhead_200ok_a");
 	ctxt_store.erase(p);
 }
 
@@ -147,7 +147,7 @@ void VALO::onInvite(MESSAGE* _message){
 	//Standard changes
 	SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
 	message->replaceHeadContact("<sip:sipsl@grog:5060>");
-	DEBOUT("NEW CONTACT", message->getHeadContact().getContent())
+	DEBOUT("New CONTACT", message->getHeadContact().getContent())
 
 	message->compileMessage();
 	message->dumpVector();
@@ -156,7 +156,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 	//TODO ???
 	DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
-	NEWPTR(int*, CSeqB2BINIVTE, int(message->getHeadCSeq().getSequence()),"int(message->getHeadCSeq().getSequence())")
+	NEWPTR(int*, CSeqB2BINIVTE, int(message->getHeadCSeq().getSequence()),"CSeqB2BINIVTE")
 	ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
 
 
@@ -221,13 +221,13 @@ void VALO::onAck(MESSAGE* _message){
 	DEBOUT("TO",newack->getHeadTo().getNameUri())
 	DEBOUT("TO",newack->getHeadTo().getC_AttUriParms().getContent())
 
-	DEBOUT("NEW ACK via","")
+	DEBOUT("New ACK via","")
 	map<string, void*> ::iterator p2;
 	p2 = ctxt_store.find("allvia_200ok_b");
 	string allVia = *((string*)p2->second);
 	newack->purgeSTKHeadVia();
 	newack->pushHeadVia(allVia);
-	DEBOUT("NEW ACK via",allVia.c_str())
+	DEBOUT("New ACK via",allVia.c_str())
 
 	// THIS ACK needs the B_INVITE call id and
 	// 200 ok from B from and to headers!!!
@@ -447,7 +447,7 @@ void VALO::onBye(MESSAGE* _message){
 		message->setDestEntity(SODE_TRNSCT_CL);
 
 		//Request has to be made using INVITE_A via address
-		C_HeadVia viatmps= (C_HeadVia) __message->getSTKHeadVia().top();
+		C_HeadVia& viatmps= (C_HeadVia&) __message->getSTKHeadVia().top();
 		DEBOUT("BYE and rest of request", "BYE sip:ceppadim@"+viatmps.getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent())
 		message->setHeadSipRequest("BYE sip:ceppadim@"+viatmps.getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent());
 
@@ -484,32 +484,41 @@ void VALO::onBye(MESSAGE* _message){
 }
 void VALO::on200Ok(MESSAGE* _message){
 
-	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().findRvalue("branch"));
+	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 	MESSAGE* __message = ((TRNSCT_SM*)trnsct_cl)->getA_Matrix();
 
-	NEWPTR(string*, totag, string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag")),"string")
-	DEBOUT("STORE totag", totag)
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("totag_200ok_b", (void*) totag )))
+	//The 200OK is called twice so we are leaking
+	if (ctxt_store.find("totag_200ok_b") == ctxt_store.end()){
+		NEWPTR(string*, totag, string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag")),"totag_200ok_b")
+		DEBOUT("STORE totag", totag)
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("totag_200ok_b", (void*) totag )))
+	}
 
-	stack<C_HeadVia>	tmpViaS;
-	tmpViaS = _message->getSTKHeadVia();
-	NEWPTR(string*, allvia, string(tmpViaS.top().getC_AttVia().getContent()),"string")
-	DEBOUT("STORE totag", allvia)
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("allvia_200ok_b", (void*) allvia )))
+	if (ctxt_store.find("allvia_200ok_b") == ctxt_store.end()){
+		NEWPTR(string*, allvia, string(_message->getSTKHeadVia().top()->getC_AttVia().getContent()),"allvia_200ok_b")
+		DEBOUT("STORE totag", allvia)
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("allvia_200ok_b", (void*) allvia )))
+	}
 
 	// Need to store the FROM and TO
 	// To create the ACK
-	NEWPTR(string*, tohead,  string(_message->getHeadTo().getContent()),"string")
-	DEBOUT("STORE TO HEAD ok 200 ok from B", tohead)
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead )))
-	NEWPTR(string*, fromhead, string(_message->getHeadFrom().getContent()),"string")
-	DEBOUT("STORE FROM HEAD of 200 ok", fromhead)
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead )))
+	if (ctxt_store.find("tohead_200ok_b") == ctxt_store.end()){
+		NEWPTR(string*, tohead,  string(_message->getHeadTo().getContent()),"tohead_200ok_b")
+		DEBOUT("STORE TO HEAD ok 200 ok from B", tohead)
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead )))
+	}
+	if (ctxt_store.find("fromhead_200ok_b") == ctxt_store.end()){
+		NEWPTR(string*, fromhead, string(_message->getHeadFrom().getContent()),"fromhead_200ok_b")
+		DEBOUT("STORE FROM HEAD of 200 ok", fromhead)
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead )))
+	}
 
 	//this shoudl go into call_oset call_idy
-	NEWPTR(string*, callid_200ok_b, string(_message->getHeadCallId().getContent()),"string")
-	DEBOUT("STORE CALL ID of 200 ok", callid_200ok_b)
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
+	if (ctxt_store.find("callid_200ok_b") == ctxt_store.end()){
+		NEWPTR(string*, callid_200ok_b, string(_message->getHeadCallId().getContent()),"callid_200ok_b")
+		DEBOUT("STORE CALL ID of 200 ok", callid_200ok_b)
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
+	}
 
 	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
@@ -536,12 +545,16 @@ void VALO::on200Ok(MESSAGE* _message){
 	SipUtil.genASideReplyFromBReply(_message, __message, ok_x);
 	ok_x->compileMessage();
 
-	DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo().getContent() << "]["<<ok_x->getHeadFrom().getContent())
-	NEWPTR(string*, tohead_a, string(ok_x->getHeadTo().getContent()),"string")
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a )))
-	DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo().getContent())
-	NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom().getContent()),"string")
-	TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
+	if (ctxt_store.find("tohead_200ok_a") == ctxt_store.end()){
+		DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo().getContent() << "]["<<ok_x->getHeadFrom().getContent())
+		NEWPTR(string*, tohead_a, string(ok_x->getHeadTo().getContent()),"tohead_200ok_a")
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a )))
+	}
+	if (ctxt_store.find("fromhead_200ok_a") == ctxt_store.end()){
+		DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo().getContent())
+		NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom().getContent()),"fromhead_200ok_a")
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
+	}
 
 	ok_x->dumpVector();
 

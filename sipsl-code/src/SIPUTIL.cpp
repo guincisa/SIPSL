@@ -131,12 +131,12 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 
 	//via add rport
 	DEBY
-	C_HeadVia viatmp = (C_HeadVia) _gted->getSTKHeadVia().top();
+	C_HeadVia* viatmp = (C_HeadVia*) _gted->getSTKHeadVia().top();
 	//TODO 124??
-	DEBOUT("viatmp->getContent", viatmp.getContent())
-	viatmp.getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-	_gted->popSTKHeadVia();
-	_gted->pushHeadVia(viatmp.getC_AttVia().getContent());
+	DEBOUT("viatmp->getContent", viatmp->getContent())
+	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+//	_gted->popSTKHeadVia();
+//	_gted->pushHeadVia(viatmp.getC_AttVia().getContent());
 
 
 
@@ -164,15 +164,15 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 	_gted->setGenericHeader("Content-Length:","0");
 
 	//via add rport
-	C_HeadVia viatmp = (C_HeadVia) _gted->getSTKHeadVia().top();
+	C_HeadVia* viatmp = (C_HeadVia*) _gted->getSTKHeadVia().top();
 	DEBY
 	//TODO 124??
-	viatmp.getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
+	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
 	DEBY
 
-	DEBOUT("GTED via", viatmp.getC_AttVia().getContent())
-	_gted->popSTKHeadVia();
-	_gted->pushHeadVia(viatmp.getC_AttVia().getContent());
+//	DEBOUT("GTED via", viatmp.getC_AttVia().getContent())
+//	_gted->popSTKHeadVia();
+//	_gted->pushHeadVia(viatmp.getC_AttVia().getContent());
 
 }
 

@@ -267,7 +267,15 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	type_trnsct = TYPE_TRNSCT;
 
 }
+MESSAGE::~MESSAGE(){
 
+	while (!s_headVia.empty()){
+		DELPTR(s_headVia.top(), "Delete via")
+		s_headVia.pop();
+	}
+
+
+}
 MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	BASEMESSAGE(_message, _genEntity, _creaTime),
 	headSipRequest(""),
@@ -451,7 +459,7 @@ C_HeadSipReply &MESSAGE::getHeadSipReply(void){
 /*
  * Via
  */
-stack<C_HeadVia> &MESSAGE::getSTKHeadVia(void){
+stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 
 	if(s_headVia_p){
 		return s_headVia;
@@ -463,10 +471,9 @@ stack<C_HeadVia> &MESSAGE::getSTKHeadVia(void){
 	for( i =   flex_line.size() - 1 ; i > 0 ; i --){
 		if(flex_line[i].substr(0,4).compare("Via:") == 0){
 
-			C_HeadVia s = C_HeadVia(flex_line[i].substr(5));
-			DEBY
+			C_HeadVia* s;
+			NEWPTR2(s, C_HeadVia(flex_line[i].substr(5)), "New via")
 			s_headVia.push(s);
-			DEBY
 		}
 	}
 	s_headVia_p = true;
@@ -474,25 +481,26 @@ stack<C_HeadVia> &MESSAGE::getSTKHeadVia(void){
 }
 void MESSAGE::popSTKHeadVia(void){
 
-	if(s_headVia_p){
-		getSTKHeadVia();
-	}
-
-	unsigned int i;
-	unsigned int j = 1;
-	bool topout = false;
-	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,4).compare("Via:") == 0){
-			if (!topout){
-				flex_line[i] = "xxDxx";
-				topout = true;
-			} else {
-				C_HeadVia s = C_HeadVia(flex_line[i]);
-				s_headVia.push(s);
-			}
-		}
-	}
-	s_headVia_p = true;
+	DEBASSERT("popSTKHeadVia")
+//	if(s_headVia_p){
+//		getSTKHeadVia();
+//	}
+//
+//	unsigned int i;
+//	unsigned int j = 1;
+//	bool topout = false;
+//	for(i = 1; i < flex_line.size(); i ++){
+//		if(flex_line[i].substr(0,4).compare("Via:") == 0){
+//			if (!topout){
+//				flex_line[i] = "xxDxx";
+//				topout = true;
+//			} else {
+//				C_HeadVia* s = new C_HeadVia(flex_line[i]);
+//				s_headVia.push(s);
+//			}
+//		}
+//	}
+//	s_headVia_p = true;
 }
 //
 void MESSAGE::purgeSTKHeadVia(void){
@@ -514,15 +522,16 @@ void MESSAGE::purgeSTKHeadVia(void){
 		while(!s_headVia.empty()){
 			//delete s_headVia.top();
 			s_headVia.pop();
+			DELPTR((C_HeadVia*)s_headVia.top(), "(C_HeadVia*)s_headVia.top()");
 		}
-		stack<C_HeadVia> tmp;
-		s_headVia = tmp;
+//		stack<C_HeadVia*> tmp;
+//		s_headVia = tmp;
 		s_headVia_p = false;
 	}
 }
 void MESSAGE::pushHeadVia(string _content){
 
-	C_HeadVia s = C_HeadVia(_content);
+	NEWPTR(C_HeadVia*, s, C_HeadVia(_content),"New via")
 	s_headVia.push(s);
 	// first search Via and insert before
 	// if no via, then search SDP
@@ -987,7 +996,7 @@ SysTime MESSAGE::getFireTime(void){
 }
 string MESSAGE::getTransactionExtendedCID(void){
 
-	return getHeadCallId().getNormCallId() + getSTKHeadVia().top().getC_AttVia().getViaParms().findRvalue("branch");
+	return getHeadCallId().getNormCallId() + getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 
 }
 string MESSAGE::getDialogExtendedCID(void){

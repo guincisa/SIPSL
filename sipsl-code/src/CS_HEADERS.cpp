@@ -97,7 +97,7 @@ S_HeadGeneric::S_HeadGeneric(void) {
 }
 S_HeadGeneric::S_HeadGeneric(const S_HeadGeneric& x) {
 
-    DEBDEV("S_HeadGeneric copy constructor", x.content);
+    DEBASSERT("S_HeadGeneric copy constructor");
     content = x.content;
     contentReady = true;
     parsed = false;
@@ -139,8 +139,7 @@ bool S_HeadGeneric::isCorrect(void) {
 // *********************************************************************************
 S_AttGeneric::S_AttGeneric(const S_AttGeneric& x){
 
-
-    DEBDEV("S_AttGeneric copy constructor", x.content);
+	DEBASSERT("S_AttGeneric copy constructor");
 
     content = x.content;
     parsed = false;
@@ -475,6 +474,13 @@ void S_AttMethod::setMethodName(string _method) {
 // S_AttReply
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+S_AttReply::S_AttReply(){
+	DEBASSERT("S_AttReply()")
+}
+S_AttReply::S_AttReply(const S_AttReply& x){
+	DEBASSERT("S_AttReply(const S_AttReply& x)")
+}
+
 S_AttReply::S_AttReply(string _content)
     :S_AttGeneric(_content){
 
@@ -687,6 +693,13 @@ string S_AttReply::copyReply(void){
 // Fake
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+S_AttSipVersion::S_AttSipVersion(){
+	DEBASSERT("S_AttSipVersion::S_AttSipVersion()")
+}
+
+S_AttSipVersion::S_AttSipVersion(const S_AttSipVersion& x){
+	DEBASSERT("S_AttSipVersion::S_AttSipVersion()")
+}
 S_AttSipVersion::S_AttSipVersion(string content)
     : S_AttGeneric(content) {
 }
@@ -776,6 +789,9 @@ S_AttUserInfo::S_AttUserInfo(string _content)
 S_AttUserInfo::S_AttUserInfo(const S_AttUserInfo& x){
 	DEBASSERT("S_AttUserInfo::S_AttUserInfo(const S_AttUserInfo& x)");
 }
+S_AttUserInfo::S_AttUserInfo(){
+	DEBASSERT("S_AttUserInfo::S_AttUserInfo()");
+}
 void S_AttUserInfo::buildContent(void){
 
     if (contentReady) {
@@ -848,6 +864,13 @@ S_AttHostPort::S_AttHostPort(string _content)
     :S_AttGeneric(_content){
     return;
 }
+S_AttHostPort::S_AttHostPort(){
+	DEBASSERT("S_AttHostPort()")
+}
+S_AttHostPort::S_AttHostPort(const S_AttHostPort& x){
+	DEBASSERT("S_AttHostPort(const S_AttHostPort& )")
+}
+
 void S_AttHostPort::doParse(void){
 
 	if(!correct){
@@ -973,8 +996,12 @@ TupleVector C_AttUriParms::copyTuples(void){
     return tuples;
 }
 C_AttUriParms::C_AttUriParms(const C_AttUriParms& _p) {
-	DEBASSERT("COPY of C_AttUriParms")
+	DEBASSERT("C_AttUriParms(const C_AttUriParms& _p)")
 }
+C_AttUriParms::C_AttUriParms(){
+	DEBASSERT("C_AttUriParms()")
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // C_AttUriHeaders
@@ -984,6 +1011,12 @@ C_AttUriHeaders::C_AttUriHeaders(string _content)
     : S_AttGeneric(_content),
       tuples(_content, "&", "?") {
     return;
+}
+C_AttUriHeaders::C_AttUriHeaders(){
+	DEBASSERT("C_AttUriHeaders()")
+}
+C_AttUriHeaders::C_AttUriHeaders(const C_AttUriHeaders& x){
+	DEBASSERT("C_AttUriHeaders(const C_AttUriHeaders& x)")
 }
 void C_AttUriHeaders::doParse(void){
     return;
@@ -1027,9 +1060,12 @@ C_AttSipUri::C_AttSipUri(const C_AttSipUri& x):
     hostPort(""),
     uriParms(""),
     uriHeads(""){
-    DEBOUT("C_AttSipUri copy constructor", "")
-assert(0);
+	DEBASSERT("C_AttSipUri(const C_AttSipUri& x)")
 }
+C_AttSipUri::C_AttSipUri(){
+	DEBASSERT("C_AttSipUri()")
+}
+
 void C_AttSipUri::doParse(void){
 
     if(parsed) {
@@ -1163,6 +1199,13 @@ C_AttVia::C_AttVia(string _content) :
 	DEBY
     return;
 }
+C_AttVia::C_AttVia(const C_AttVia& x){
+	DEBASSERT("C_AttVia(const C_AttVia& x)")
+}
+C_AttVia::C_AttVia(){
+	DEBASSERT("C_AttVia()")
+}
+
 void C_AttVia::doParse(void){
 
     if(parsed)
@@ -1293,15 +1336,14 @@ C_AttContactElem::C_AttContactElem(string _content) :
     sipUri(""),
     uriParms(""){
 }
+C_AttContactElem::C_AttContactElem(){
+	DEBASSERT("C_AttContactElem::C_AttContactElem")
+}
 C_AttContactElem::C_AttContactElem(const C_AttContactElem& x):
     S_AttGeneric(x.content),
     sipUri(""),
     uriParms(""){
-    DEBOUT("C_AttContactElem copy constructor", x.content)
-
-    //content = x.copyContent();
-    parsed = false;
-    assert(0);
+	DEBASSERT("C_AttContactElem::C_AttContactElem")
 }
 void C_AttContactElem::doParse(void){
 
@@ -1429,6 +1471,13 @@ C_AttUriParms C_AttContactElem::copyC_AttUriParms(void){
 C_AttContactList::C_AttContactList(string _content):
     S_AttGeneric(_content) {
 }
+C_AttContactList::C_AttContactList(){
+	DEBASSERT("C_AttContactList()")
+}
+C_AttContactList::C_AttContactList(const C_AttContactList& x){
+	DEBASSERT("C_AttContactList(const C_AttContactList&)")
+}
+
 void C_AttContactList::doParse(void){
 
     if (parsed)
@@ -1651,10 +1700,8 @@ C_HeadVia::C_HeadVia(string _content) :
     via("") {
 	DEBY
 }
-C_HeadVia::C_HeadVia(const C_HeadVia& x):
-	S_HeadGeneric(x.content),
-	via("") {
-	DEBY
+C_HeadVia::C_HeadVia(const C_HeadVia& x):via(""){
+	DEBASSERT("C_HeadVia::C_HeadVia copy constructor")
 }
 
 void C_HeadVia::doParse(void) {

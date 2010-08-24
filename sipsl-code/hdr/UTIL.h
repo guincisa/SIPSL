@@ -107,7 +107,7 @@ class ThreadWrapper {
 	p = globalMessTable.find(m1);\
 	if (p !=globalMessTable.end()) {\
 		globalMessTable.erase(m1);\
-		delete m1;\
+		DELPTR(m1,"MESSAGE");\
 	}\
 	pthread_mutex_unlock(&messTableMtx);}
 #define CREATEMESSAGE(m1, m2, m3) MESSAGE* m1=0x0; {char bu[512];\
@@ -115,7 +115,7 @@ class ThreadWrapper {
 				GETTIME(inTime);\
 				NEWPTR2(m1, MESSAGE(m2, m3, inTime),"MESSAGE");\
 				int i= m1->getTotLines();\
-				DEBOUT("NEW MESSAGE"," " << i);\
+				DEBOUT("Nw MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",m1,num);\
 				string key(bu);\
