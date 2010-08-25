@@ -451,7 +451,7 @@ void SL_CO::call(MESSAGE* _message){
 			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
 		}
 
-		ACTION* action = trnsct_cl->event(_message);
+		action = trnsct_cl->event(_message);
 
 		if (action != 0x0){
 
