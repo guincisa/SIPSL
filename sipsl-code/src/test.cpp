@@ -69,37 +69,49 @@ map<const MESSAGE*, MESSAGE *> globalMessTable;
 pthread_mutex_t messTableMtx;
 
 
-int main(void) {
+int main(int argc, const char* argv[]) {
 
-	SUDP mystack;
+	if (argc == 1){
+		SUDP mystack;
 
-	//Second stage engine: Call Control
-	SL_CC sl_cc(8);
-	sl_cc.linkSUDP(&mystack);
+		//Second stage engine: Call Control
+		SL_CC sl_cc(8);
+		sl_cc.linkSUDP(&mystack);
 
-	//First stage engine: Lazy parser
-	SIPENGINE gg(2);
-	gg.setSL_CC(&sl_cc);
-	gg.linkSUDP(&mystack);
+		//First stage engine: Lazy parser
+		SIPENGINE gg(2);
+		gg.setSL_CC(&sl_cc);
+		gg.linkSUDP(&mystack);
 
-	DOA doa(&sl_cc, 30, 0);
-	doa.init();
+		DOA doa(&sl_cc, 30, 0);
+		doa.init();
 
-	//Alarm setup
-	//sec , nsec
-	ALMGR alarm(&sl_cc, 0, 10000000);
-	alarm.initAlarm();
+		//Alarm setup
+		//sec , nsec
+		ALMGR alarm(&sl_cc, 0, 10000000);
+		alarm.initAlarm();
 
 
 
-	mystack.init(5060, &gg, &doa, "sipsl.gugli.com", &alarm);
-    mystack.start();
+		mystack.init(5060, &gg, &doa, "sipsl.gugli.com", &alarm);
+		mystack.start();
 
-    pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
-    int res = pthread_mutex_lock(&gu);
-    res = pthread_mutex_lock(&gu);
-    res = pthread_mutex_lock(&gu);
+		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
+		int res = pthread_mutex_lock(&gu);
+		res = pthread_mutex_lock(&gu);
+		res = pthread_mutex_lock(&gu);
 
-    return 0;
+		return 0;
+	}
+	else {
+		cout << "test" << endl;
+
+		string s = "SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bKb0a1b1f81282750073027419;rport";
+
+		C_HeadVia c = C_HeadVia(s);
+
+		DEBOUT("Test",c.getC_AttVia().getViaParms().findRvalue("branch"));
+
+	}
 
 }
