@@ -60,7 +60,7 @@ class ThreadWrapper {
         ThreadWrapper();
 };
 
-#define COMAPS 4
+#define COMAPS 2
 
 #define LOGSIP
 #define LOGINF
@@ -115,7 +115,7 @@ class ThreadWrapper {
 				GETTIME(inTime);\
 				NEWPTR2(m1, MESSAGE(m2, m3, inTime),"MESSAGE");\
 				int i= m1->getTotLines();\
-				DEBOUT("Nw MESSAGE"," " << i);\
+				DEBDEV("New MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",m1,num);\
 				string key(bu);\
@@ -207,6 +207,11 @@ class ThreadWrapper {
 #define PRINTTIME(starttime,endtime){char bu[1024];sprintf(bu, "init %lld end %lld diff %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec - (lli)starttime.tv.tv_sec*1000000-(lli)starttime.tv.tv_usec );DEBOUT("TIME INTERVAL", bu )}
 #undef PRINTTIMESHORT
 #define PRINTTIMESHORT(m,starttime){char bu[1024];sprintf(bu, "time %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec);DEBOUT(m, bu )}
+#else
+#define DEBY
+#define DEBDEV(m1,m2)
+#define PRINTTIME(starttime,endtime)
+#define PRINTTIMESHORT(m,starttime)
 #endif
 //**********************************************************
 //**********************************************************
