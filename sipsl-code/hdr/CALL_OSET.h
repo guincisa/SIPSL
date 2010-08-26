@@ -97,6 +97,10 @@ class SL_CO {
 	private:
 	pthread_mutex_t mutex;
 
+	void actionCall_SV(ACTION*);
+	void actionCall_CL(ACTION*);
+
+
 	public:
 		int placeholder;
 

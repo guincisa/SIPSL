@@ -359,40 +359,8 @@ void SL_CO::call(MESSAGE* _message){
 
 			if (action != 0x0){
 
-				// now get actions one by one
-				stack<SingleAction> actionList = action->getActionList();
+				actionCall_SV(action);
 
-				while (!actionList.empty()){
-
-					MESSAGE* _tmpMessage = actionList.top().getMessage();
-					DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
-
-					if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
-						//To ALO
-						DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
-						call_oset->getALO()->call(_tmpMessage);
-					}
-					else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
-						//server sm sending to client sm should not happen
-						DEBASSERT("Server sm sending to client sm should not happen should not happen")
-					}
-					else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
-						//To network
-						if (_tmpMessage->getReqRepType() == REPSUPP) {
-							//TODO Check if there is a ROUTE header
-							call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
-						}
-						else {
-							DEBASSERT("Unexpected SM_SV sending a Request to network")
-						}
-
-					} else {
-						//TODO
-						DEBASSERT("SL_CO::call action is unexpected")
-					}
-					DEBOUT("pop action","")
-					actionList.pop();
-				}
 			}
 			else {
 				DEBOUT("SL_CO::event", "action is null nothing, event ignored")
@@ -455,77 +423,8 @@ void SL_CO::call(MESSAGE* _message){
 
 		if (action != 0x0){
 
-			// now read actions
-			stack<SingleAction> actionList;
-			actionList = action->getActionList();
+			actionCall_CL(action);
 
-			while (!actionList.empty()){
-
-				MESSAGE* _tmpMessage = actionList.top().getMessage();
-
-				DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage)
-
-				if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
-					// send message to ALO
-					// 200OK B side
-					DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
-					call_oset->getALO()->call(_tmpMessage);
-					actionList.pop();
-					continue;
-				}
-				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
-
-					DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
-
-					if (_tmpMessage->getReqRepType() == REQSUPP) {
-						call_oset->getENGINE()->getSUDP()->sendRequest(_tmpMessage);
-					}
-					else {
-						DEBASSERT("Unexpected SM_CL sending a Reply to network")
-					}
-					actionList.pop();
-					continue;
-				}
-				else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
-					DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
-					DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
-					((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-
-					actionList.pop();
-					continue;
-				}
-				else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
-
-					DEBOUT("SL_CO:: TYPE_OP","")
-
-					if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
-						DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->orderOfOperation+ "#");
-						DEBY
-						SysTime st1 = _tmpMessage->getFireTime();
-						DEBY
-						call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
-						DEBY
-
-					} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
-
-						DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->orderOfOperation+ "#")
-						string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->orderOfOperation+ "#";
-						DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
-						call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
-					}
-					else {
-						DEBASSERT("SL_CO client operation type inconsistency")
-					}
-					actionList.pop();
-					continue;
-				}
-				else {
-					//TODO
-					DEBOUT("SL_CO::call action is unexpected", "")
-					DEBASSERT("")
-				}
-				actionList.pop();
-			}
 		}
 		else {
 			//TODO we mayn receive an alarm that is expired
@@ -543,6 +442,117 @@ void SL_CO::call(MESSAGE* _message){
 		DELPTR(action,"ACTION");
 	}
 	RELLOCK(&mutex,"mutex");
+}
+
+void SL_CO::actionCall_SV(ACTION* action){
+	// now get actions one by one
+	stack<SingleAction> actionList = action->getActionList();
+
+	while (!actionList.empty()){
+
+		MESSAGE* _tmpMessage = actionList.top().getMessage();
+		DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
+
+		if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+			//To ALO
+			DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+			call_oset->getALO()->call(_tmpMessage);
+		}
+		else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
+			//server sm sending to client sm should not happen
+			DEBASSERT("Server sm sending to client sm should not happen should not happen")
+		}
+		else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
+			//To network
+			if (_tmpMessage->getReqRepType() == REPSUPP) {
+				//TODO Check if there is a ROUTE header
+				call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
+			}
+			else {
+				DEBASSERT("Unexpected SM_SV sending a Request to network")
+			}
+
+		} else {
+			//TODO
+			DEBASSERT("SL_CO::call action is unexpected")
+		}
+		DEBOUT("pop action","")
+		actionList.pop();
+	}
+}
+void SL_CO::actionCall_CL(ACTION* action){
+
+	// now read actions
+	stack<SingleAction> actionList;
+	actionList = action->getActionList();
+
+	while (!actionList.empty()){
+
+		MESSAGE* _tmpMessage = actionList.top().getMessage();
+
+		DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage)
+
+		if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+			// send message to ALO
+			// 200OK B side
+			DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+			call_oset->getALO()->call(_tmpMessage);
+			actionList.pop();
+			continue;
+		}
+		else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
+
+			DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+
+			if (_tmpMessage->getReqRepType() == REQSUPP) {
+				call_oset->getENGINE()->getSUDP()->sendRequest(_tmpMessage);
+			}
+			else {
+				DEBASSERT("Unexpected SM_CL sending a Reply to network")
+			}
+			actionList.pop();
+			continue;
+		}
+		else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
+			DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
+			DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
+			((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+
+			actionList.pop();
+			continue;
+		}
+		else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
+
+			DEBOUT("SL_CO:: TYPE_OP","")
+
+			if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
+				DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->orderOfOperation+ "#");
+				DEBY
+				SysTime st1 = _tmpMessage->getFireTime();
+				DEBY
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
+				DEBY
+
+			} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
+
+				DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->orderOfOperation+ "#")
+				string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->orderOfOperation+ "#";
+				DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
+			}
+			else {
+				DEBASSERT("SL_CO client operation type inconsistency")
+			}
+			actionList.pop();
+			continue;
+		}
+		else {
+			//TODO
+			DEBOUT("SL_CO::call action is unexpected", "")
+			DEBASSERT("")
+		}
+		actionList.pop();
+	}
 }
 
 
