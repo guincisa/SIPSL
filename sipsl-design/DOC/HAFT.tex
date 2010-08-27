@@ -1,0 +1,36 @@
+\documentclass[a4paper]{article}
+\title{Fault tolerance and High Availability - Multi-tier SIPSL}
+\author{guic}
+\date{April 2010}
+\begin{document}
+	\small
+	\maketitle 
+\section{Overview}
+
+\subsection{comments}
+Split the SIPSL between SUDP and SIPENGINE (or between SIPENGINE and SL_CC) to
+have one frontend tier to receive calls and more backend tiers to handle the
+logic. The backend tiers can be spread on different nodes or colocated.
+I need to decide how messages are sent to the backtier, shared memory or tcp.
+
+\subsection{Design}
+The fronend tier supportst the SUDP and the SIPENGINE. The sip message creted by
+the SIPENGINE is encapsulated into the MESSAGE. The message must be passed to
+one backend tier.
+
+The frontend tier must decide to which backend tier to send the message. If the
+message is new then it will choose following some criteria. If the transaction
+is in progress the fronend must send the message to the correct backend.
+Frontend must keep a map of CALL-ID and backend id.
+
+Moving the message:
+
+\begin{enumerate}
+        \item Corba 
+        \item Shared Memory
+\end{enumerate}
+
+
+
+
+\end{document}

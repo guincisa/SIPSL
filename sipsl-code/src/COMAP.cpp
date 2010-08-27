@@ -86,6 +86,9 @@
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
+#ifndef TRNSPRT_H
+#include "TRNSPRT.h"
+#endif
 
 //**********************************************************************************
 //**********************************************************************************
@@ -427,7 +430,8 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 		incCALL_OSET_MsgCnt(_call_oset,_mod);
 		DEBY
 		RELLOCK(&unique[_mod],"unique"<<_mod);
-		_call_oset->getSL_CO()->call(_message);
+		_call_oset->getTRNSPRT()->upCall(_message);
+		//_call_oset->getSL_CO()->call(_message);
 		GETLOCK(&unique[_mod],"unique"<<_mod);
 		DEBY
 		decCALL_OSET_MsgCnt(_call_oset,_mod);

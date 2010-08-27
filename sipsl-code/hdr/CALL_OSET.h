@@ -27,6 +27,7 @@ class ALO;
 class SL_SM;
 class TRNSCT_SM;
 class ENGINE;
+class TRNSPRT;
 
 //Umbrella class which hosts states machines and call object
 class CALL_OSET {
@@ -36,9 +37,11 @@ class CALL_OSET {
 	friend class ALO;
 	friend class VALO;
 	friend class TRNSCT_SM;
+	friend class TRNSPRT;
 
 	private:
 
+		TRNSPRT* transport;
 		SL_CO* sl_co;
 		ALO* alo;
 		ENGINE* engine;
@@ -53,6 +56,7 @@ class CALL_OSET {
 		ENGINE* getENGINE(void);
 		ALO* getALO(void);
 		void setALO(ALO*);
+		TRNSPRT* getTRNSPRT(void);
 
 		// TRANSACTION MANAGEMENT
 		// KEY is like this

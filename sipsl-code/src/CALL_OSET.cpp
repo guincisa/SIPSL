@@ -88,6 +88,9 @@
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
+#ifndef TRNSPRT_H
+#include "TRNSPRT.h"
+#endif
 
 static SIPUTIL SipUtil;
 
@@ -110,6 +113,9 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, string _call){
 	alo->linkSUDP(_engine->getSUDP());
 	callId_X = _call;
 	callId_Y = "";
+
+	NEWPTR2(transport, TRNSPRT(this), "TRNSPRT(this)")
+
 
 	DEBOUT("CALL_OSET sequenceMap", &sequenceMap)
 	DEBOUT("CALL_OSET trnsctSmMap", &trnsctSmMap)
@@ -218,6 +224,10 @@ SL_CO* CALL_OSET::getSL_CO(void){
 void CALL_OSET::setSL_CO(SL_CO* _sl_co){
 	sl_co = _sl_co;
 }
+TRNSPRT* CALL_OSET::getTRNSPRT(void){
+	return transport;
+}
+
 //**********************************************************************************
 //v4
 void CALL_OSET::setCallId_Y(string _cally){
@@ -464,13 +474,15 @@ void SL_CO::actionCall_SV(ACTION* action){
 		}
 		else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 			//To network
-			if (_tmpMessage->getReqRepType() == REPSUPP) {
-				//TODO Check if there is a ROUTE header
-				call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
-			}
-			else {
-				DEBASSERT("Unexpected SM_SV sending a Request to network")
-			}
+			DEBDEV("Send to trnasport", _tmpMessage)
+			call_oset->getTRNSPRT()->downCall(_tmpMessage);
+//			if (_tmpMessage->getReqRepType() == REPSUPP) {
+//				//TODO Check if there is a ROUTE header
+//				call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
+//			}
+//			else {
+//				DEBASSERT("Unexpected SM_SV sending a Request to network")
+//			}
 
 		} else {
 			//TODO
@@ -503,13 +515,10 @@ void SL_CO::actionCall_CL(ACTION* action){
 		else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 
 			DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+			//To network
+			DEBDEV("Send to trnasport", _tmpMessage)
+			call_oset->getTRNSPRT()->downCall(_tmpMessage);
 
-			if (_tmpMessage->getReqRepType() == REQSUPP) {
-				call_oset->getENGINE()->getSUDP()->sendRequest(_tmpMessage);
-			}
-			else {
-				DEBASSERT("Unexpected SM_CL sending a Reply to network")
-			}
 			actionList.pop();
 			continue;
 		}

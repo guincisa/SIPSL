@@ -67,6 +67,8 @@ class ThreadWrapper {
 #define LOGMIN
 #define LOGDEV
 #define LOGMEM
+#define LOGNTW
+
 //#define LOGLOK
 //Mandatory
 //**********************************************************
@@ -165,8 +167,10 @@ class ThreadWrapper {
 #endif
 //**********************************************************
 //**********************************************************
-
-
+#ifdef LOGNTW
+#undef DEBNTW
+#define DEBNTW(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#endif
 //**********************************************************
 //**********************************************************
 #ifdef LOGINF
