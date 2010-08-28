@@ -1,19 +1,14 @@
 TODO
 ************************************************************************************
 
-misure
+
+
+Misure
 
 
 ************************************************************************************
 
 Performance
-
-- ridurre i log
 - aprire piu socket 
-- modulo per comap
-
-Ancora leak
-- vedere le SM
-- controllare che gli allarmi fuznionano
 
 

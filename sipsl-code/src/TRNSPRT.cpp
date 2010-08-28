@@ -102,6 +102,44 @@ void TRNSPRT::upCall(MESSAGE* _message){
 	call_oset->sl_co->call(_message);
 }
 void TRNSPRT::downCall(MESSAGE* _message){
+
+	//RETRANSMISSIONS
+	//INVITE_B retransmission is setup using ALARM
+	//1) ALARM sends INVITE_B with destination = NTW
+	//2) INVITE_B arrives here and ALARM is armed again with higher timeout
+	//3) if max resends reached then ALARM is not triggered error is sent to CL
+	//   CL send error to VALO
+	//   VALO sends error to SV
+	//   SV sends error to A
+	//4) if 1xx arrives in upCall, ALARM is dearmed
+
+	// requiremets:
+	// - ALARM are armed using (call-id, branch, orderOfOp)
+	// max-resend are referred using same tuple
+	// 1xx are identified by (call-id,branch) orderOfOp is predefined for this resend logic
+
+
+	//200OK_A retransmission in case ACK_A is missing
+	//ALARM is armed all is like above
+
+	//ACK_B Retransmission in case B resends 200OK_B
+	//ACK_B is stored and resent
+	//in case no ACK is found error is sent
+
+	//BYE_B in case 200Ok is missing
+
+	//TRNSPRT can be Engine:
+	//need map for max-invite retransm <(callid-branch), int>
+	// and for all other counters
+	// map for message to resend <(callid-branch),MESSAGE*>
+	// map indicating is call_oset is alive (?)
+
+	//CALL ABORT
+	//for timeouts (
+	//for errors messages from network
+
+
+
 	DEBNTW("TRNSPRT::downCall", _message)
 	if (_message->getReqRepType() == REPSUPP) {
 		//TODO Check if there is a ROUTE header
