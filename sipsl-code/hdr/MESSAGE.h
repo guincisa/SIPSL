@@ -272,7 +272,7 @@ class MESSAGE : public BASEMESSAGE {
     	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
     	C_HeadContact	 	&getHeadContact(void);
     	C_HeadTo*	     	getHeadTo(void);
-    	C_HeadFrom       	&getHeadFrom(void);
+    	C_HeadFrom*       	getHeadFrom(void);
     	C_HeadCallId     	&getHeadCallId(void);
     	C_HeadCSeq			&getHeadCSeq(void);
     	C_HeadContentType	&getHeadContentType(void);

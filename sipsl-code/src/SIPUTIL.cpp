@@ -197,23 +197,23 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 	//From changes
 	// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
 	// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-	DEBOUT("FROM",_gted->getHeadFrom().getContent())
-	DEBOUT("FROM",_gted->getHeadFrom().getC_AttSipUri().getContent())
-	DEBOUT("FROM",_gted->getHeadFrom().getNameUri())
-	DEBOUT("FROM",_gted->getHeadFrom().getC_AttUriParms().getContent())
+	DEBOUT("FROM",_gted->getHeadFrom()->getContent())
+	DEBOUT("FROM",_gted->getHeadFrom()->getC_AttSipUri().getContent())
+	DEBOUT("FROM",_gted->getHeadFrom()->getNameUri())
+	DEBOUT("FROM",_gted->getHeadFrom()->getC_AttUriParms().getContent())
 	// change tag
 	char fromtmp[512];
-	if (_gted->getHeadFrom().getNameUri().length() == 0)
-		sprintf(fromtmp, "%s;tag=%s",_gted->getHeadFrom().getC_AttSipUri().getContent().c_str(),_gted->getKey().c_str());
+	if (_gted->getHeadFrom()->getNameUri().length() == 0)
+		sprintf(fromtmp, "%s;tag=%s",_gted->getHeadFrom()->getC_AttSipUri().getContent().c_str(),_gted->getKey().c_str());
 	else
-		sprintf(fromtmp, "%s %s;tag=%s",_gted->getHeadFrom().getNameUri().c_str(), _gted->getHeadFrom().getC_AttSipUri().getContent().c_str(),_gted->getKey().c_str());
+		sprintf(fromtmp, "%s %s;tag=%s",_gted->getHeadFrom()->getNameUri().c_str(), _gted->getHeadFrom()->getC_AttSipUri().getContent().c_str(),_gted->getKey().c_str());
 	string fromtmpS(fromtmp);
 	DEBOUT("******** FROM new" , fromtmpS)
 	_gted->replaceHeadFrom(fromtmpS);
-	DEBOUT("FROM",_gted->getHeadFrom().getContent())
-	DEBOUT("FROM",_gted->getHeadFrom().getC_AttSipUri().getContent())
-	DEBOUT("FROM",_gted->getHeadFrom().getNameUri())
-	DEBOUT("FROM",_gted->getHeadFrom().getC_AttUriParms().getContent())
+	DEBOUT("FROM",_gted->getHeadFrom()->getContent())
+	DEBOUT("FROM",_gted->getHeadFrom()->getC_AttSipUri().getContent())
+	DEBOUT("FROM",_gted->getHeadFrom()->getNameUri())
+	DEBOUT("FROM",_gted->getHeadFrom()->getC_AttUriParms().getContent())
 
 
 	if (_gtor->getSDPSize() != 0 ){

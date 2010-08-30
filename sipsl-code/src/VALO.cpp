@@ -524,7 +524,7 @@ void VALO::on200Ok(MESSAGE* _message){
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead )))
 	}
 	if (ctxt_store.find("fromhead_200ok_b") == ctxt_store.end()){
-		NEWPTR(string*, fromhead, string(_message->getHeadFrom().getContent()),"fromhead_200ok_b")
+		NEWPTR(string*, fromhead, string(_message->getHeadFrom()->getContent()),"fromhead_200ok_b")
 		DEBOUT("STORE FROM HEAD of 200 ok", fromhead)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead )))
 	}
@@ -562,13 +562,13 @@ void VALO::on200Ok(MESSAGE* _message){
 	ok_x->compileMessage();
 
 	if (ctxt_store.find("tohead_200ok_a") == ctxt_store.end()){
-		DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo()->getContent() << "]["<<ok_x->getHeadFrom().getContent())
+		DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo()->getContent() << "]["<<ok_x->getHeadFrom()->getContent())
 		NEWPTR(string*, tohead_a, string(ok_x->getHeadTo()->getContent()),"tohead_200ok_a")
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a )))
 	}
 	if (ctxt_store.find("fromhead_200ok_a") == ctxt_store.end()){
 		DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo()->getContent())
-		NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom().getContent()),"fromhead_200ok_a")
+		NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom()->getContent()),"fromhead_200ok_a")
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 	}
 

@@ -232,7 +232,6 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headSipReply(""),
 	headMaxFwd(""),
 	headContact(""),
-	headFrom(""),
 	headCallId(""),
 	headCSeq(""),
 	headRoute(""){
@@ -267,6 +266,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	//Pointers
 	headTo = NULL;
+	headFrom = NULL;
 
 }
 MESSAGE::~MESSAGE(){
@@ -278,6 +278,9 @@ MESSAGE::~MESSAGE(){
 	if (headTo != NULL){
 		DELPTR(headTo, "C_HeadTo")
 	}
+	if (headFrom != NULL){
+		DELPTR(headFrom, "C_HeadFrom")
+	}
 
 
 }
@@ -288,7 +291,6 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headMaxFwd(""),
 	headContact(""),
 	//headTo(""),
-	headFrom(""),
 	headCallId(""),
 	headCSeq(""),
 	headRoute(""){
@@ -318,6 +320,7 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 
 	//Pointers
 	headTo = NULL;
+	headFrom = NULL;
 
 
 	return;
@@ -694,10 +697,10 @@ C_HeadTo* MESSAGE::getHeadTo(void){
 /*
  * From
  */
-C_HeadFrom &MESSAGE::getHeadFrom(void){
+C_HeadFrom* MESSAGE::getHeadFrom(void){
 
 	if (headFrom == 0x0){
-		NEWPTR2(headFrom, C_HeadFrom(""), "C_HeadC_HeadFromTo")
+		NEWPTR2(headFrom, C_HeadFrom(""), "C_HeadFrom")
 	}
 
 
@@ -709,7 +712,7 @@ C_HeadFrom &MESSAGE::getHeadFrom(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("From:")==0){
-			headFrom.setContent(flex_line[i].substr(6));
+			headFrom->setContent(flex_line[i].substr(6));
 			break;
 		}
 	}
@@ -719,7 +722,12 @@ C_HeadFrom &MESSAGE::getHeadFrom(void){
 void MESSAGE::replaceHeadFrom(string _content){
 
 	headFrom_p = false;
-	headFrom.setContent(_content);
+
+	if (headFrom == NULL){
+		NEWPTR2(headFrom, C_HeadFrom(""), "C_HeadFrom")
+	}
+
+	headFrom->setContent(_content);
 
 	// replace in flex_line
 	unsigned int i;
@@ -967,6 +975,13 @@ void MESSAGE::dropHeader(string _header){
 void MESSAGE::setGenericHeader(string _header, string _content){
 
 	DEBOUT("MESSAGE::setGenericHeader", _header + " " + _content)
+	if (_header.compare("To:") == 0){
+		DEBASSERT("DON'T USE")
+	}
+	if (_header.compare("From:") == 0){
+		DEBASSERT("DON'T USE")
+	}
+
 	unsigned int i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
@@ -1024,8 +1039,8 @@ string MESSAGE::getTransactionExtendedCID(void){
 string MESSAGE::getDialogExtendedCID(void){
 	//Call id and FromTag
 	DEBY
-	DEBOUT_UTIL("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag"))
-	return getHeadCallId().getNormCallId() + getHeadFrom().getC_AttUriParms().getTuples().findRvalue("tag");
+	DEBOUT_UTIL("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag"))
+	return getHeadCallId().getNormCallId() + getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag");
 }
 void MESSAGE::setLock(void){
 	lock = true;
