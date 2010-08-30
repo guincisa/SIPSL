@@ -98,7 +98,7 @@ static SIPUTIL SipUtil;
 //**********************************************************************************
 // CALL_OSET
 //**********************************************************************************
-CALL_OSET::CALL_OSET(ENGINE* _engine, string _call){
+CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call){
 
 	engine = _engine;
 	sequenceMap.insert(pair<string, int>("ACK_B",0));
@@ -114,7 +114,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, string _call){
 	callId_X = _call;
 	callId_Y = "";
 
-	NEWPTR2(transport, TRNSPRT(this), "TRNSPRT(this)")
+	transport = _transport;
 
 
 	DEBOUT("CALL_OSET sequenceMap", &sequenceMap)
@@ -475,7 +475,7 @@ void SL_CO::actionCall_SV(ACTION* action){
 		else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 			//To network
 			DEBDEV("Send to trnasport", _tmpMessage)
-			call_oset->getTRNSPRT()->downCall(_tmpMessage);
+				call_oset->getTRNSPRT()->downCall(_tmpMessage, call_oset);
 //			if (_tmpMessage->getReqRepType() == REPSUPP) {
 //				//TODO Check if there is a ROUTE header
 //				call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
@@ -517,7 +517,7 @@ void SL_CO::actionCall_CL(ACTION* action){
 			DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 			//To network
 			DEBDEV("Send to trnasport", _tmpMessage)
-			call_oset->getTRNSPRT()->downCall(_tmpMessage);
+			call_oset->getTRNSPRT()->downCall(_tmpMessage, call_oset);
 
 			actionList.pop();
 			continue;

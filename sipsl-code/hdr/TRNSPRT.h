@@ -22,17 +22,16 @@
 
 #define TRNSPRT_H
 
+//Is a global object but not an engine, it runs
+//inside SIPENGINE when up
+//inside SL_CC when down
 class TRNSPRT {
 
 	private:
-
-	CALL_OSET* call_oset;
-
+		int dummy;
 	public:
 
-	TRNSPRT(CALL_OSET*);
-
-	void upCall(MESSAGE*);
-	void downCall(MESSAGE*);
+	void upCall(MESSAGE*, SL_CC*);
+	void downCall(MESSAGE*, CALL_OSET*);
 
 };

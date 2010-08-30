@@ -33,8 +33,11 @@ class SL_CC : public ENGINE {
         void parse(MESSAGE*);
         SL_CC(int);
         COMAP* getCOMAP(void);
+        void linkTransport(TRNSPRT*);
 
     private:
+
+        TRNSPRT* transport;
 
     	COMAP* comap;
 

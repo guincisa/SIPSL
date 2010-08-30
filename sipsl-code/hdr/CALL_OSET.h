@@ -58,6 +58,7 @@ class CALL_OSET {
 		void setALO(ALO*);
 		TRNSPRT* getTRNSPRT(void);
 
+
 		// TRANSACTION MANAGEMENT
 		// KEY is like this
 		// <REQUESTTYPE>#<SIDE>#<BRANCH>
@@ -82,7 +83,7 @@ class CALL_OSET {
 		map<MESSAGE*,int> lockedMessages;
 
 	public:
-		CALL_OSET(ENGINE*, string call_x);
+		CALL_OSET(ENGINE*, TRNSPRT*, string call_x);
 		~CALL_OSET(void);
 		void insertLockedMessage(MESSAGE*);
 		MESSAGE* getNextLockedMessage(void);

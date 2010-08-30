@@ -64,6 +64,9 @@
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
+#ifndef TRNSPRT_H
+#include "TRNSPRT.h"
+#endif
 
 map<const MESSAGE*, MESSAGE *> globalMessTable;
 pthread_mutex_t messTableMtx;
@@ -74,8 +77,11 @@ int main(int argc, const char* argv[]) {
 	if (argc == 1){
 		SUDP mystack;
 
+		TRNSPRT transport;
+
 		//Second stage engine: Call Control
 		SL_CC sl_cc(8);
+		sl_cc.linkTransport(&transport);
 		sl_cc.linkSUDP(&mystack);
 
 		//First stage engine: Lazy parser

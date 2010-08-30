@@ -206,9 +206,9 @@ class MESSAGE : public BASEMESSAGE {
     	bool 				headMaxFwd_p;
     	C_HeadContact	 	headContact;
     	bool 				headContact_p;
-    	C_HeadTo	     	headTo;
+    	C_HeadTo*	     	headTo;
     	bool 				headTo_p;
-    	C_HeadFrom       	headFrom;
+    	C_HeadFrom*       	headFrom;
     	bool 				headFrom_p;
     	C_HeadCallId     	headCallId;
     	bool 				headCallId_p;
@@ -271,7 +271,7 @@ class MESSAGE : public BASEMESSAGE {
     	void				popSTKHeadVia(void);
     	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
     	C_HeadContact	 	&getHeadContact(void);
-    	C_HeadTo	     	&getHeadTo(void);
+    	C_HeadTo*	     	getHeadTo(void);
     	C_HeadFrom       	&getHeadFrom(void);
     	C_HeadCallId     	&getHeadCallId(void);
     	C_HeadCSeq			&getHeadCSeq(void);

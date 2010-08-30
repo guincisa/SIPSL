@@ -109,6 +109,9 @@ SL_CC::SL_CC(int _i):ENGINE(_i) {
 COMAP* SL_CC::getCOMAP(void){
 	return comap;
 }
+void SL_CC::linkTransport(TRNSPRT* _transport){
+	transport = _transport;
+}
 
 //**********************************************************************************
 //**********************************************************************************
@@ -194,7 +197,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			//////////////////////////////
 			//Start - Initialization block
-			NEWPTR2(call_oset, CALL_OSET(this, callids),"CALL_OSET(this, callids)")
+			NEWPTR2(call_oset, CALL_OSET(this, transport, callids),"CALL_OSET(this, callids)")
 			comap->setCALL_OSET(callids, call_oset, modulus);
 			//End
 			//////////////////////////////

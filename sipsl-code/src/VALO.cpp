@@ -90,36 +90,52 @@ VALO::~VALO(void){
 	map<string, void*> ::iterator p;
 
 	p = ctxt_store.find("tohead_200ok_b");
-	DELPTR((string*)p->second,"tohead_200ok_b");
-	ctxt_store.erase(p);
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"tohead_200ok_b");
+		ctxt_store.erase(p);
+	}
 
 	p = ctxt_store.find("tohead_200ok_a");
-	DELPTR((string*)p->second,"tohead_200ok_a");
-	ctxt_store.erase(p);
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"tohead_200ok_a");
+		ctxt_store.erase(p);
+	}
 
 	p = ctxt_store.find("CSeqB2BINIVTE");
-	DELPTR((int*)p->second,"CSeqB2BINIVTE");
-	ctxt_store.erase(p);
+	if (p != ctxt_store.end()){
+		DELPTR((int*)p->second,"CSeqB2BINIVTE");
+		ctxt_store.erase(p);
+	}
 
 	p = ctxt_store.find("totag_200ok_b");
-	DELPTR((string*)p->second,"totag_200ok_b");
-	ctxt_store.erase(p);
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"totag_200ok_b");
+		ctxt_store.erase(p);
+	}
 
 	p = ctxt_store.find("allvia_200ok_b");
-	DELPTR((string*)p->second,"allvia_200ok_b");
-	ctxt_store.erase(p);
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"allvia_200ok_b");
+		ctxt_store.erase(p);
+	}
 
 	p = ctxt_store.find("callid_200ok_b");
-	DELPTR((string*)p->second,"callid_200ok_b");
-	ctxt_store.erase(p);
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"callid_200ok_b");
+		ctxt_store.erase(p);
+	}
 
 	p = ctxt_store.find("fromhead_200ok_b");
-	DELPTR((string*)p->second,"fromhead_200ok_b");
-	ctxt_store.erase(p);
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"fromhead_200ok_b");
+		ctxt_store.erase(p);
+	}
 
 	p = ctxt_store.find("fromhead_200ok_a");
-	DELPTR((string*)p->second,"fromhead_200ok_a");
-	ctxt_store.erase(p);
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"fromhead_200ok_a");
+		ctxt_store.erase(p);
+	}
 }
 
 void VALO::onInvite(MESSAGE* _message){
@@ -212,14 +228,14 @@ void VALO::onAck(MESSAGE* _message){
 	map<string, void*> ::iterator p;
 	p = ctxt_store.find("totag_200ok_b");
 	string toTagB = *((string*)p->second);
-	sprintf(toTmp, "%s %s;tag=%s",newack->getHeadTo().getNameUri().c_str(), newack->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
+	sprintf(toTmp, "%s %s;tag=%s",newack->getHeadTo()->getNameUri().c_str(), newack->getHeadTo()->getC_AttSipUri().getContent().c_str(),toTagB.c_str());
 	string toTmpS(toTmp);
 	DEBOUT("******** TO new" , toTmpS)
 	newack->replaceHeadTo(toTmpS);
-	DEBOUT("TO",newack->getHeadTo().getContent())
-	DEBOUT("TO",newack->getHeadTo().getC_AttSipUri().getContent())
-	DEBOUT("TO",newack->getHeadTo().getNameUri())
-	DEBOUT("TO",newack->getHeadTo().getC_AttUriParms().getContent())
+	DEBOUT("TO",newack->getHeadTo()->getContent())
+	DEBOUT("TO",newack->getHeadTo()->getC_AttSipUri().getContent())
+	DEBOUT("TO",newack->getHeadTo()->getNameUri())
+	DEBOUT("TO",newack->getHeadTo()->getC_AttUriParms().getContent())
 
 	DEBOUT("New ACK via","")
 	map<string, void*> ::iterator p2;
@@ -489,7 +505,7 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	//The 200OK is called twice so we are leaking
 	if (ctxt_store.find("totag_200ok_b") == ctxt_store.end()){
-		NEWPTR(string*, totag, string(_message->getHeadTo().getC_AttUriParms().getTuples().findRvalue("tag")),"totag_200ok_b")
+		NEWPTR(string*, totag, string(_message->getHeadTo()->getC_AttUriParms().getTuples().findRvalue("tag")),"totag_200ok_b")
 		DEBOUT("STORE totag", totag)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("totag_200ok_b", (void*) totag )))
 	}
@@ -503,7 +519,7 @@ void VALO::on200Ok(MESSAGE* _message){
 	// Need to store the FROM and TO
 	// To create the ACK
 	if (ctxt_store.find("tohead_200ok_b") == ctxt_store.end()){
-		NEWPTR(string*, tohead,  string(_message->getHeadTo().getContent()),"tohead_200ok_b")
+		NEWPTR(string*, tohead,  string(_message->getHeadTo()->getContent()),"tohead_200ok_b")
 		DEBOUT("STORE TO HEAD ok 200 ok from B", tohead)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead )))
 	}
@@ -546,12 +562,12 @@ void VALO::on200Ok(MESSAGE* _message){
 	ok_x->compileMessage();
 
 	if (ctxt_store.find("tohead_200ok_a") == ctxt_store.end()){
-		DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo().getContent() << "]["<<ok_x->getHeadFrom().getContent())
-		NEWPTR(string*, tohead_a, string(ok_x->getHeadTo().getContent()),"tohead_200ok_a")
+		DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo()->getContent() << "]["<<ok_x->getHeadFrom().getContent())
+		NEWPTR(string*, tohead_a, string(ok_x->getHeadTo()->getContent()),"tohead_200ok_a")
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a )))
 	}
 	if (ctxt_store.find("fromhead_200ok_a") == ctxt_store.end()){
-		DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo().getContent())
+		DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo()->getContent())
 		NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom().getContent()),"fromhead_200ok_a")
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 	}

@@ -84,6 +84,9 @@
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
+#ifndef TRNSPRT_H
+#include "TRNSPRT.h"
+#endif
 
 //**********************************************************************************
 //**********************************************************************************
@@ -93,6 +96,12 @@ SIPENGINE::SIPENGINE(int _i):ENGINE(_i){}
 ENGINE * SIPENGINE::getSL_CC(void){
     return sl_cc;
 }
+//**********************************************************************************
+//**********************************************************************************
+void SIPENGINE::linkTransport(TRNSPRT* _transport){
+	transport = _transport;
+}
+
 //**********************************************************************************
 //**********************************************************************************
 void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
@@ -131,8 +140,9 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 			return;
 
 		} else {
-			DEBDEV("SIPENGINE::parse sl_cc->p_w", _mess)
-			sl_cc->p_w(_mess);
+			DEBDEV("SIPENGINE::parse transport->upCall", _mess)
+			//sl_cc->p_w(_mess);
+			transport->upCall(_mess, (SL_CC*)sl_cc);
 		}
 	}
 	else if ( type == REPSUPP) {
@@ -143,8 +153,9 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 		DEBSIP("SIPENGINE::reply type and code", reply_id << " " << code)
 
 		//All replies must be considered
-		DEBDEV("SIPENGINE::parse sl_cc->p_w", _mess)
-		sl_cc->p_w(_mess);
+		DEBDEV("SIPENGINE::parse transport->upCall", _mess)
+		transport->upCall(_mess, (SL_CC*)sl_cc);
+//		sl_cc->p_w(_mess);
 
 	}
 	else {

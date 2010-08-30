@@ -93,15 +93,12 @@
 #include "TRNSPRT.h"
 #endif
 
-TRNSPRT::TRNSPRT(CALL_OSET* _call_oset){
-	call_oset = _call_oset;
-}
 
-void TRNSPRT::upCall(MESSAGE* _message){
+void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
 	DEBNTW("TRNSPRT::upCall", _message)
-	call_oset->sl_co->call(_message);
+	_sl_cc->p_w(_message);
 }
-void TRNSPRT::downCall(MESSAGE* _message){
+void TRNSPRT::downCall(MESSAGE* _message, CALL_OSET* _call_oset){
 
 	//RETRANSMISSIONS
 	//INVITE_B retransmission is setup using ALARM
@@ -143,10 +140,10 @@ void TRNSPRT::downCall(MESSAGE* _message){
 	DEBNTW("TRNSPRT::downCall", _message)
 	if (_message->getReqRepType() == REPSUPP) {
 		//TODO Check if there is a ROUTE header
-		call_oset->getENGINE()->getSUDP()->sendReply(_message);
+		_call_oset->getENGINE()->getSUDP()->sendReply(_message);
 	}
 	else if (_message->getReqRepType() == REQSUPP) {
-		call_oset->getENGINE()->getSUDP()->sendRequest(_message);
+		_call_oset->getENGINE()->getSUDP()->sendRequest(_message);
 	}
 	else {
 		DEBASSERT("Unexpected sending to network")

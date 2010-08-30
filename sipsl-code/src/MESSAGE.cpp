@@ -232,7 +232,6 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headSipReply(""),
 	headMaxFwd(""),
 	headContact(""),
-	headTo(""),
 	headFrom(""),
 	headCallId(""),
 	headCSeq(""),
@@ -266,12 +265,18 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	type_trnsct = TYPE_TRNSCT;
 
+	//Pointers
+	headTo = NULL;
+
 }
 MESSAGE::~MESSAGE(){
 
 	while (!s_headVia.empty()){
 		DELPTR(s_headVia.top(), "Delete via")
 		s_headVia.pop();
+	}
+	if (headTo != NULL){
+		DELPTR(headTo, "C_HeadTo")
 	}
 
 
@@ -282,7 +287,7 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headSipReply(""),
 	headMaxFwd(""),
 	headContact(""),
-	headTo(""),
+	//headTo(""),
 	headFrom(""),
 	headCallId(""),
 	headCSeq(""),
@@ -310,6 +315,9 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	typeOfInternal = TYPE_MESS; // Message or operation
 	typeOfOperation = TYPE_OP_NOOP; // Type of operation
 	orderOfOperation = ""; //Alarm id in case more alarms are triggered with the same message
+
+	//Pointers
+	headTo = NULL;
 
 
 	return;
@@ -662,7 +670,11 @@ S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
 	headMaxFwd_p = true;
 		return headMaxFwd;
 }
-C_HeadTo &MESSAGE::getHeadTo(void){
+C_HeadTo* MESSAGE::getHeadTo(void){
+
+	if (headTo == 0x0){
+		NEWPTR2(headTo, C_HeadTo(""), "C_HeadTo")
+	}
 
 	if(headTo_p){
 		return headTo;
@@ -672,7 +684,7 @@ C_HeadTo &MESSAGE::getHeadTo(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,3).compare("To:")==0){
-			headTo.setContent(flex_line[i].substr(4));
+			headTo->setContent(flex_line[i].substr(4));
 			break;
 		}
 	}
@@ -683,6 +695,11 @@ C_HeadTo &MESSAGE::getHeadTo(void){
  * From
  */
 C_HeadFrom &MESSAGE::getHeadFrom(void){
+
+	if (headFrom == 0x0){
+		NEWPTR2(headFrom, C_HeadFrom(""), "C_HeadC_HeadFromTo")
+	}
+
 
 	if(headFrom_p){
 		return headFrom;
@@ -721,7 +738,12 @@ void MESSAGE::replaceHeadFrom(string _content){
 void MESSAGE::replaceHeadTo(string _content){
 
 	headTo_p = false;
-	headTo.setContent(_content);
+
+	if (headTo == NULL){
+		NEWPTR2(headTo, C_HeadTo(""), "C_HeadTo")
+	}
+
+	headTo->setContent(_content);
 
 	// replace in flex_line
 	unsigned int i;
