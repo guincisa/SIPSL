@@ -231,10 +231,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headSipRequest(""),
 	headSipReply(""),
 	headMaxFwd(""),
-	headContact(""),
 	headCallId(""),
-	headCSeq(""),
-	headRoute(""){
+	headCSeq(""){
 
 	reqRep = 0;
 
@@ -267,6 +265,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	//Pointers
 	headTo = NULL;
 	headFrom = NULL;
+	headContact = NULL;
+	headRoute = NULL;
 
 }
 MESSAGE::~MESSAGE(){
@@ -281,6 +281,13 @@ MESSAGE::~MESSAGE(){
 	if (headFrom != NULL){
 		DELPTR(headFrom, "C_HeadFrom")
 	}
+	if (headContact != NULL){
+		DELPTR(headContact, "C_HeadContact")
+	}
+	if (headRoute != NULL){
+		DELPTR(headRoute, "C_HeadRoute")
+	}
+
 
 
 }
@@ -289,11 +296,9 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headSipRequest(""),
 	headSipReply(""),
 	headMaxFwd(""),
-	headContact(""),
 	//headTo(""),
 	headCallId(""),
-	headCSeq(""),
-	headRoute(""){
+	headCSeq(""){
 	DEBOUT("MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):","")
 	source = _message;
 	s_headVia_p = false;
@@ -321,6 +326,8 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	//Pointers
 	headTo = NULL;
 	headFrom = NULL;
+	headContact = NULL;
+	headRoute = NULL;
 
 
 	return;
@@ -853,10 +860,15 @@ void MESSAGE::replaceHeadCSeq(int _cseq, string _method){
 /*
  * Route
  */
-C_HeadRoute &MESSAGE::getHeadRoute(void) throw (HeaderException){
+C_HeadRoute* MESSAGE::getHeadRoute(void) throw (HeaderException){
 
+	if (headRoute == 0x0){
+		NEWPTR2(headRoute, C_HeadRoute(""),"C_HeadRoute")
+	}
 	if(headRoute_e){
 		DEBOUT("MESSAGE::getHeadRoute","No Route header")
+		DELPTR(headRoute,"C_HeadRoute")
+		headRoute = NULL;
 		throw HeaderException("No Route header");
 	}
 	if(headRoute_p){
@@ -868,7 +880,7 @@ C_HeadRoute &MESSAGE::getHeadRoute(void) throw (HeaderException){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,6).compare("Route:")==0){
 			found = true;
-			headRoute.setContent(flex_line[i]);
+			headRoute->setContent(flex_line[i]);
 			break;
 		}
 	}
@@ -878,6 +890,8 @@ C_HeadRoute &MESSAGE::getHeadRoute(void) throw (HeaderException){
 	}
 	else {
 		headRoute_e = true;
+		DELPTR(headRoute,"C_HeadRoute")
+		headRoute = NULL;
 		DEBOUT("MESSAGE::getHeadRoute","No Route header")
 		throw HeaderException("No Route header");
 	}
@@ -888,6 +902,8 @@ void MESSAGE::removeHeadRoute(void){
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,6).compare("Route:")==0){
 			removeHeader(i);
+			headRoute = NULL;
+			DELPTR(headRoute,"C_HeadRoute")
 			break;
 		}
 	}
@@ -896,7 +912,11 @@ void MESSAGE::removeHeadRoute(void){
 /*
  * Contact
  */
-C_HeadContact &MESSAGE::getHeadContact(void){
+C_HeadContact* MESSAGE::getHeadContact(void){
+
+	if (headContact == 0x0){
+		NEWPTR2(headContact, C_HeadContact(""),"C_HeadContact")
+	}
 
 	if(headContact_p){
 		return headContact;
@@ -906,7 +926,7 @@ C_HeadContact &MESSAGE::getHeadContact(void){
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Contact:")==0){
-			headContact.setContent(flex_line[i].substr(9));
+			headContact->setContent(flex_line[i].substr(9));
 			break;
 		}
 	}
@@ -916,8 +936,12 @@ C_HeadContact &MESSAGE::getHeadContact(void){
 
 void MESSAGE::replaceHeadContact(string _content){
 
+	if (headContact == 0x0){
+		NEWPTR2(headContact, C_HeadContact(""),"C_HeadContact")
+	}
+
 	headContact_p = false;
-	headContact.setContent(_content);
+	headContact->setContent(_content);
 
 	// replace in flex_line
 	unsigned int i;
@@ -981,6 +1005,13 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 	if (_header.compare("From:") == 0){
 		DEBASSERT("DON'T USE")
 	}
+	if (_header.compare("Contact:") == 0){
+		DEBASSERT("DON'T USE")
+	}
+	if (_header.compare("Route:") == 0){
+		DEBASSERT("DON'T USE")
+	}
+
 
 	unsigned int i;
 	bool found = false;

@@ -204,7 +204,7 @@ class MESSAGE : public BASEMESSAGE {
     	bool 				s_headVia_p;
     	S_HeadMaxFwd	 	headMaxFwd;
     	bool 				headMaxFwd_p;
-    	C_HeadContact	 	headContact;
+    	C_HeadContact*	 	headContact;
     	bool 				headContact_p;
     	C_HeadTo*	     	headTo;
     	bool 				headTo_p;
@@ -214,7 +214,7 @@ class MESSAGE : public BASEMESSAGE {
     	bool 				headCallId_p;
     	C_HeadCSeq			headCSeq;
     	bool 				headCSeq_p;
-    	C_HeadRoute			headRoute;
+    	C_HeadRoute*		headRoute;
 							//parsed, exists, correct
     	bool 				headRoute_p, headRoute_e;
 
@@ -270,7 +270,7 @@ class MESSAGE : public BASEMESSAGE {
     	//TODO is this one ok?
     	void				popSTKHeadVia(void);
     	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
-    	C_HeadContact	 	&getHeadContact(void);
+    	C_HeadContact*	 	getHeadContact(void);
     	C_HeadTo*	     	getHeadTo(void);
     	C_HeadFrom*       	getHeadFrom(void);
     	C_HeadCallId     	&getHeadCallId(void);
@@ -280,7 +280,7 @@ class MESSAGE : public BASEMESSAGE {
     	C_SDPInfo			&getHeadSDPInfo(void);
     	C_HeadAllow			&getHeadAllow(void);
     	C_HeadSubject		&getHeadSubject(void);
-    	C_HeadRoute			&getHeadRoute(void) throw (HeaderException);
+    	C_HeadRoute*		getHeadRoute(void) throw (HeaderException);
 
     	//string getExtendedInternalCID(void);
 

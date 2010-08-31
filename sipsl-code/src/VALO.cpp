@@ -146,8 +146,8 @@ void VALO::onInvite(MESSAGE* _message){
 	message->setDestEntity(SODE_TRNSCT_CL);
 
 	try {
-		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute().getRoute().getHostName())
-		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute().getRoute().getPort())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute()->getRoute().getHostName())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute()->getRoute().getPort())
 		DEBOUT("VALO","remove route")
 		message->removeHeadRoute();
 	}
@@ -163,7 +163,7 @@ void VALO::onInvite(MESSAGE* _message){
 	//Standard changes
 	SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
 	message->replaceHeadContact("<sip:sipsl@grog:5060>");
-	DEBOUT("New CONTACT", message->getHeadContact().getContent())
+	DEBOUT("New CONTACT", message->getHeadContact()->getContent())
 
 	message->compileMessage();
 	message->dumpVector();
@@ -199,8 +199,8 @@ void VALO::onAck(MESSAGE* _message){
 
 	//Remove route
 	try {
-		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute().getRoute().getHostName())
-		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute().getRoute().getPort())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute()->getRoute().getHostName())
+		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute()->getRoute().getPort())
 		DEBOUT("VALO","remove route")
 		newack->removeHeadRoute();
 	}

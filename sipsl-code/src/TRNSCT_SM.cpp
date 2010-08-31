@@ -607,9 +607,7 @@ ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 	reply_x->setGenEntity(SODE_TRNSCT_CL);
 	reply_x->typeOfInternal = TYPE_MESS;
 
-	DEBOUT("CONTACT", reply_x->getHeadContact().getContent())
-
-
+	DEBOUT("CONTACT", reply_x->getHeadContact()->getContent())
 
 	SingleAction sa_1 = SingleAction(reply_x);
 
