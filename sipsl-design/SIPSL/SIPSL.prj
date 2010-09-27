@@ -1,7 +1,7 @@
 format 73
 "SIPSL"
-  revision 90
-  modified_by 44 "guic"
+  revision 91
+  modified_by 55 "guic"
 
 
   
@@ -455,10 +455,6 @@ s
 	  external 
 	end
 
-	transition 211767 "<transition>"
-	  on state_ref 189239 // ICL_1
-	  external 
-	end
       end
 
       state 128161 "ISV_1"
@@ -956,34 +952,57 @@ correct timer interaction with client state machine"
         end
     end
 
-    state 182583 "SM_V5"
+    state 195767 "SM_SV_INVITE"
       stereotype "machine"
-      statediagram 147895 "statediagram_invite_x"
+      statediagram 161079 "SM_SV_INVITE"
 	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
 	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
 	size A2
       end
 
-      statediagram 154423 "statediagram_ack_x"
-	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
-	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-	size A2
-      end
-
-      state 189111 "A_1"
-	transition 211639 "event<ACKx, s=A, d=trnsct_ack_x>"
-	  on state_ref 128545 // A_2
+      pseudostate 141239 initial 
+	transition 225335 "INVITE_A(NTW,SV)"
+	  on state_ref 195895 // 1
 	  external 
 	end
       end
 
-      statediagram 154551 "statediagram_invite_y"
-	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations no shadow default
-	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-	size A2
+      state 195895 "1"
+	transition 225463 "<transition>"
+	  on state_ref 196023 // 2
+	  external 
+	end
+
+	transition 225591 "DIALOG_101(CL,SV) or RING_180(CL,SV)"
+	  on state_ref 196023 // 2
+	  external 
+	end
+
+	transition 225719 "200_OK(ALO,SV)"
+	  on state_ref 196151 // 3
+	  external 
+	end
       end
 
-      state 189239 "ICL_1"
+      stateaction 134839
+	stereotype "receive-signal"
+      end
+
+      state 196023 "2"
+	transition 225975 "200_OK(ALO,SV)"
+	  on state_ref 196151 // 3
+	  external 
+	end
+      end
+
+      state 196151 "3"
+	transition 225847 "ACK_A(NTW,SV)"
+	  on state_ref 196279 // 4
+	  external 
+	end
+      end
+
+      state 196279 "4"
       end
     end
   end

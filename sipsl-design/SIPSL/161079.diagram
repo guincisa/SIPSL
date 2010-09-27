@@ -1,0 +1,71 @@
+format 73
+
+pseudostatecanvas 128055 pseudostate_ref 141239 // initial
+   xyz 107 55 2000
+end
+statecanvas 128183 state_ref 195895 // 1
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 270 115 2000 40 29
+end
+note 128567 "ACTION:
+TRY(SM,NTW)
+INVITE_A(SM,ALO)"
+  xyzwh 252 42 2006 145 59
+statecanvas 128823 state_ref 196023 // 2
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 368 332 2000 40 29
+end
+note 129719 "ACTION:
+DIALOG_101(SV,NTW) or RING_180(SV,NTW)"
+  xyzwh 454 188 2000 165 61
+statecanvas 129975 state_ref 196151 // 3
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 55 331 2000 40 29
+end
+note 130487 "ACTION
+200_OK(SV,NTW)
+OVERALL_STATE_SV = OS_COMPLETED"
+  xyzwh 18 154 2000 149 69
+statecanvas 130743 state_ref 196279 // 4
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 212 588 2000 40 29
+end
+note 130999 "ACTION;
+ACK(SV,ALO)"
+  xyzwh 245 448 2000 135 45
+transitioncanvas 128311 transition_ref 225335 // INVITE_A(NTW,SV)
+  
+  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 155 60 3000 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129207 transition_ref 225591 // DIALOG_101(CL,SV) or RING_180(CL,SV)
+  
+  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 467.5 169.5 3000 to ref 128823
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130103 transition_ref 225719 // 200_OK(ALO,SV)
+  
+  from ref 128183 z 2001 label "200_OK(ALO,SV)" xyz 88.5 239 3000 to ref 129975
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130871 transition_ref 225847 // ACK_A(NTW,SV)
+  
+  from ref 129975 z 2001 label "ACK_A(NTW,SV)" xyz 141.5 435 3000 to ref 130743
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 131383 transition_ref 225975 // 200_OK(ALO,SV)
+  
+  from ref 128823 z 2001 label "200_OK(ALO,SV)" xyz 254 351 3000 to ref 129975
+  write_horizontally default show_definition default drawing_language default
+end
+line 128695 -_-_
+  from ref 128567 z 2007 to ref 128311
+line 130359 -_-_
+  from ref 129719 z 2002 to ref 129207
+line 130615 -_-_
+  from ref 130487 z 2002 to ref 130103
+line 131255 -_-_
+  from ref 130871 z 2002 to ref 130999
+line 131511 -_-_
+  from ref 130487 z 2002 to ref 131383
+end

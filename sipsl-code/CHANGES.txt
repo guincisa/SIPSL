@@ -1,5 +1,46 @@
 CHANGES
 
+27 Settembre
+
+1. Retransmission of INVITE_B if 1xx/2xx missing: most be handled by TRNSPRT instead of SM_CL.
+   Could this be generic for any outgoing request? (Except ACK_B)
+   
+   Soluzione: INVITE_B deve portare una informazione concernente al sua ritrasmissione: quando
+   TRNSPRT vede questa info attiva l'allarme
+   Quando l'allarme scatta l'invite arriva alla sl_cc che to manda alla cl_sm (come adesso)
+   la sl_sm si comporta come adesso e controlla se ha raggiunto il numero massimo di trasmissioni,
+   se no manda giù l'invite (-- oppure se vede che manca un tentativo manda giu un invite senza
+   le informazioni di ritrasmissione cosi TRNSPRT non crea l'allarme
+   Se il numero massimo è raggiunto l'invite non viene passato alla trasnport e altre azioni
+   vengono intraprese (chiude la call).
+   Oppure quando la cl_sm manda giu l'ultimo invite, aggiunge altre info per l'allarme: chiudere
+   la call.
+   
+   ve bene cosi: tutto gestito in cl_sm
+
+2. INVITE_A received again: resend 1xx: currently not implemented? SM_SV ignores the INVITE_A
+	
+	Soluzione: Quando la sv_sm manda il 1xx si aspetta che l'invite a sia acknowledged.
+	Se arriva di nuovo un invite_a deve rimandare il 1xx:
+	1. il 1xx viene messo in una tabella delle ritrasmissioni gestita dalla TRNSPRT, con chiave di accesso
+	uguale all'invite_a cosi se arriva allora lo ritrasmette automaticamente.
+	-> come fa a toglierlo? quano arriva l'ack?
+	
+	per ogni messaggio deve controllare la tabella...
+	
+	meglio modificare la sm_sv e rimandare l'ultimo messaggio
+	
+3. ACK B has to be resent if 200OK_B arrives again
+
+	handle with sm_cl
+
+4. Resend the 200_OK_A if ACK_A is not received
+
+	gestire con la SM?
+	
+5. 
+
+
 28 Agosto
 TRNSPRT:
 	//RETRANSMISSIONS
@@ -12,11 +53,12 @@ TRNSPRT:
 	//   SV sends error to A
 	//4) if 1xx arrives in upCall, ALARM is dearmed
 
-	// requiremets:
+	// requirements:
 	// - ALARM are armed using (call-id, branch, orderOfOp)
 	// max-resend are referred using same tuple
 	// 1xx are identified by (call-id,branch) orderOfOp is predefined for this resend logic
 
+	//resend of 1xx if INVITE_A is arriving
 
 	//200OK_A retransmission in case ACK_A is missing
 	//ALARM is armed all is like above
