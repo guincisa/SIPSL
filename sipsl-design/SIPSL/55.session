@@ -1,10 +1,6 @@
 window_sizes 1382 813 219 1157 744 0
-diagrams
-  active  statediagram_ref 161079 // SM_SV_INVITE
-    1157 744 100 2 0 0
-end
 show_stereotypes
-selected statediagram_ref 161079 // SM_SV_INVITE
+selected usecaseview_ref 128134 // VANILLA_CALL
 open
   state_ref 128002 // SM_SL_CL
   state_ref 149431 // SM_CL_V3

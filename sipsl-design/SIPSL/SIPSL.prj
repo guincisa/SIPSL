@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 91
+  revision 92
   modified_by 55 "guic"
 
 
@@ -454,7 +454,6 @@ s
 	  on state_ref 128161 // ISV_1
 	  external 
 	end
-
       end
 
       state 128161 "ISV_1"
@@ -993,6 +992,10 @@ correct timer interaction with client state machine"
 	  on state_ref 196151 // 3
 	  external 
 	end
+
+	transition 232503 "INVITE_A(NTW,SV)"
+	  on state_ref 196023 // 2
+	end
       end
 
       state 196151 "3"
@@ -1000,9 +1003,21 @@ correct timer interaction with client state machine"
 	  on state_ref 196279 // 4
 	  external 
 	end
+
+	transition 232631 "TIMER 200OK"
+	  on state_ref 196151 // 3
+	end
+
+	transition 232759 "MAX 200OK sent"
+	  on state_ref 202807 // 5
+	  external 
+	end
       end
 
       state 196279 "4"
+      end
+
+      state 202807 "5"
       end
     end
   end
