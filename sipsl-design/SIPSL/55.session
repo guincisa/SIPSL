@@ -1,9 +1,16 @@
-window_sizes 1382 813 219 1157 744 0
+window_sizes 1233 773 219 1008 704 0
+diagrams
+  active  statediagram_ref 167607 // SM_CL_INVITE
+    1356 751 100 2 0 0
+  statediagram_ref 161079 // SM_SV_INVITE
+    925 595 100 2 0 0
+end
 show_stereotypes
-selected usecaseview_ref 128134 // VANILLA_CALL
+selected statediagram_ref 161079 // SM_SV_INVITE
 open
   state_ref 128002 // SM_SL_CL
   state_ref 149431 // SM_CL_V3
   state_ref 195767 // SM_SV_INVITE
+  state_ref 209335 // SM_CL_INVITE
 end
 end

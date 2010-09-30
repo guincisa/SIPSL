@@ -1,0 +1,106 @@
+format 73
+
+pseudostatecanvas 128055 pseudostate_ref 147767 // initial
+   xyz 243 50 2000
+end
+statecanvas 128183 state_ref 209463 // 1
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 473 209 2000 40 29
+end
+note 128439 "INVITE_B(CL,ALARM)
+INVITE_B(CL,NTW)
+resend ++
+OVERALL=OS_CALLING"
+  xyzwh 445 65 2000 231 75
+statecanvas 129207 state_ref 209591 // 99
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 162 209 2000 40 29
+end
+statecanvas 129591 state_ref 209719 // 2
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 474 370 2000 40 29
+end
+note 129847 "Clear INVITE_B alarm"
+  xyzwh 542 470 2000 197 35
+statecanvas 130103 state_ref 209847 // 3
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 284 464 2000 43 29
+end
+note 130999 "MESSAGE(CL,SV)"
+  xyzwh 93 353 2000 191 35
+statecanvas 131383 state_ref 209975 // 4
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 786 407 2000 40 29
+end
+note 132023 "200OK(CL,ALO)"
+  xyzwh 767 326 2000 123 37
+statecanvas 132279 state_ref 210103 // 5
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 786 590 2000 40 29
+end
+note 132535 "ACK_B(CL,NTW)"
+  xyzwh 830 453 2000 111 35
+transitioncanvas 128311 transition_ref 239287 // INVITE_B(ALO,CL)
+  
+  from ref 128055 z 2001 label "INVITE_B(ALO,CL)" xyz 313 74 3000 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 128695 transition_ref 239415 // INVITE_B(CL,CL) && resend <= max
+  
+  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend <= max" xyz 690 193 3000 to point 672 281
+  line 128823 z 2001 to point 670 180
+  line 128951 z 2001 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129335 transition_ref 239543 // INVITE_B(CL,CL) && resend > max
+  
+  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 245 198 3000 to ref 129207
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129719 transition_ref 239671 // TRY_B(NTW,CL)
+  
+  from ref 128183 z 2001 label "TRY_B(NTW,CL)" xyz 498 288 3000 to ref 129591
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130231 transition_ref 239799 // DIALOG(NTW,CL)
+  
+  from ref 129591 z 2001 label "DIALOG(NTW,CL)" xyz 369.5 448 3000 to ref 130103
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130487 transition_ref 239927 // 180RING(NTW,CL)
+  
+  from ref 129591 z 2001 label "180RING(NTW,CL)" xyz 324 371 3000 to point 335 389
+  line 130615 z 2001 to ref 130103
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 131767 transition_ref 240183 // 200OK(NTW,CL)
+  
+  from ref 128183 z 2001 label "200OK(NTW,CL)" xyz 691 308 3000 to ref 131383
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 132407 transition_ref 240311 // ACK_B(ALO,CL)
+  
+  from ref 131383 z 2001 label "ACK_B(ALO,CL)" xyz 805 519 3000 to ref 132279
+  write_horizontally default show_definition default drawing_language default
+end
+line 128567 -_-_
+  from ref 128439 z 2002 to ref 128311
+line 129079 -_-_
+  from ref 128439 z 2006 to ref 128951
+line 129975 -_-_
+  from ref 129847 z 2002 to ref 129719
+line 130743 -_-_
+  from ref 129847 z 2002 to ref 130487
+line 130871 -_-_
+  from ref 129847 z 2002 to ref 130231
+line 131127 -_-_
+  from ref 130999 z 2004 to ref 130615
+line 131255 -_-_
+  from ref 130999 z 2002 to ref 130231
+line 131895 -_-_
+  from ref 129847 z 2002 to ref 131767
+line 132151 -_-_
+  from ref 132023 z 2002 to ref 131767
+line 132663 -_-_
+  from ref 132535 z 2002 to ref 132407
+end
