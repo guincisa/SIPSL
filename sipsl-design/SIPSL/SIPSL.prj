@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 93
+  revision 94
   modified_by 55 "guic"
 
 
@@ -1053,6 +1053,16 @@ correct timer interaction with client state machine"
 
 	transition 240183 "200OK(NTW,CL)"
 	  on state_ref 209975 // 4
+	  external 
+	end
+
+	transition 246839 "<transition>"
+	  on state_ref 209847 // 3
+	  external 
+	end
+
+	transition 246967 "<transition>"
+	  on state_ref 209847 // 3
 	  external 
 	end
       end
