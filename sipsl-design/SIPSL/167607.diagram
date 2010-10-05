@@ -1,38 +1,38 @@
 format 73
 
 pseudostatecanvas 128055 pseudostate_ref 147767 // initial
-   xyz 243 50 2000
+   xyz 285 20 2000
 end
 statecanvas 128183 state_ref 209463 // 1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 473 209 2000 40 29
+  xyzwh 515 179 2000 63 43
 end
 note 128439 "INVITE_B(CL,ALARM)
 INVITE_B(CL,NTW)
 resend ++
 
 OverallState_CL = OS_CALLING"
-  xyzwh 445 65 2000 231 75
+  xyzwh 487 35 2000 253 89
 statecanvas 129207 state_ref 209591 // 99
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 162 209 2000 40 29
 end
 statecanvas 129591 state_ref 209719 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 478 358 2000 40 29
+  xyzwh 470 313 2000 40 29
 end
 note 129847 "Clear INVITE_B alarm
 
 OverallState_CL = OS_PROCEEDING"
-  xyzwh 536 549 2000 197 35
+  xyzwh 515 635 2000 237 69
 statecanvas 130103 state_ref 209847 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 45 504 2000 43 29
+  xyzwh 56 406 2000 43 29
 end
 note 130999 "MESSAGE(CL,SV)
 
 OverallState_CL = OS_PROCEEDING"
-  xyzwh 198 590 2000 251 71
+  xyzwh 87 628 2000 251 71
 statecanvas 131383 state_ref 209975 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 786 407 2000 40 29
@@ -46,49 +46,50 @@ statecanvas 132279 state_ref 210103 // 5
   xyzwh 786 590 2000 40 29
 end
 note 132535 "ACK_B(CL,NTW)"
-  xyzwh 830 453 2000 111 35
+  xyzwh 845 404 2000 161 53
 transitioncanvas 128311 transition_ref 239287 // INVITE_B(ALO,CL)
   
-  from ref 128055 z 2001 label "INVITE_B(ALO,CL)" xyz 313 74 2001 to ref 128183
+  from ref 128055 z 2001 label "INVITE_B(ALO,CL)" xyz 355 44 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 128695 transition_ref 239415 // INVITE_B(CL,CL) && resend <= max
   
-  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend <= max" xyz 690 193 2001 to point 672 281
-  line 128823 z 2001 to point 670 180
+  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend <= max" xyz 732 163 2001 to point 714 251
+  line 128823 z 2001 to point 712 150
   line 128951 z 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129335 transition_ref 239543 // INVITE_B(CL,CL) && resend > max
   
-  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 245 198 2001 to ref 129207
+  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 266 185 2001 to ref 129207
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129719 transition_ref 239671 // TRY_B(NTW,CL)
+  decenter_end 600
   
-  from ref 128183 z 2001 label "TRY_B(NTW,CL)" xyz 500 282 2001 to ref 129591
+  from ref 128183 z 2001 label "TRY_B(NTW,CL)" xyz 434 265 2001 to ref 129591
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130231 transition_ref 239799 // DIALOG(NTW,CL)
   
-  from ref 129591 z 2001 label "DIALOG(NTW,CL)" xyz 329.5 466 2001 to point 343 465
+  from ref 129591 z 2001 label "DIALOG(NTW,CL)" xyz 135 456 2001 to point 374 433
   line 133815 z 2001 to ref 130103
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130487 transition_ref 239927 // 180RING(NTW,CL)
   
-  from ref 129591 z 2001 label "180RING(NTW,CL)" xyz 327 323 2001 to point 355 344
+  from ref 129591 z 2001 label "180RING(NTW,CL)" xyz 98 353.5 2001 to point 377 293
   line 130615 z 2001 to ref 130103
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131767 transition_ref 240183 // 200OK(NTW,CL)
   
-  from ref 128183 z 2001 label "200OK(NTW,CL)" xyz 691 308 2001 to ref 131383
+  from ref 128183 z 2001 label "200OK(NTW,CL)" xyz 661 282 2001 to ref 131383
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 132407 transition_ref 240311 // ACK_B(ALO,CL)
   
-  from ref 131383 z 2001 label "ACK_B(ALO,CL)" xyz 822 511 2001 to ref 132279
+  from ref 131383 z 2001 label "ACK_B(ALO,CL)" xyz 812 513 2001 to ref 132279
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 132791 transition_ref 246839 // <transition>

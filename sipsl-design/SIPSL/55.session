@@ -1,6 +1,6 @@
-window_sizes 1399 935 219 1174 866 0
+window_sizes 1347 873 268 1073 804 0
 show_stereotypes
-selected statediagram_ref 167607 // SM_CL_INVITE
+selected state_ref 162487 // 5 ACK
 open
   state_ref 128002 // SM_SL_CL
   state_ref 149431 // SM_CL_V3
