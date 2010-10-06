@@ -1,0 +1,58 @@
+format 73
+
+pseudostatecanvas 128055 pseudostate_ref 154295 // initial
+   xyz 183 98 2000
+end
+statecanvas 128183 state_ref 216759 // 1
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 372 250 2000 40 29
+end
+note 128439 "BYE_A(SV,ALO)
+"
+  xyzwh 107 206 2000 187 47
+statecanvas 128823 state_ref 216887 // 2
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 372 421 2000 40 29
+end
+note 129079 "200OK_A(SV,NTW)
+"
+  xyzwh 116 426 2000 145 37
+pseudostatecanvas 129463 pseudostate_ref 154679 // initial
+   xyz 589 106 2000
+end
+note 130103 "BYE_B(SV,ALO)
+"
+  xyzwh 537 191 2000 149 43
+note 130743 "200OK_B(SV,NTW)"
+  xyzwh 531 397 2000 171 37
+transitioncanvas 128311 transition_ref 253623 // BYE_A(NTW,SV)
+  
+  from ref 128055 z 2001 label "BYE_A(NTW,SV)" xyz 296 165 3000 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 128951 transition_ref 253751 // 200OK_A(ALO,SV)
+  
+  from ref 128183 z 2001 label "200OK_A(ALO,SV)" xyz 132 300 3000 to point 91 349
+  line 130615 z 2001 to ref 128823
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129591 transition_ref 254007 // BYE_B(NTW,SV)
+  
+  from ref 129463 z 2001 label "BYE_B(NTW,SV)" xyz 536.5 170 3000 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130359 transition_ref 254135 // 200OK_B(ALO.SV)
+  
+  from ref 128183 z 2001 label "200OK_B(ALO.SV)" xyz 507 283 3000 to point 614 343
+  line 130487 z 2001 to ref 128823
+  write_horizontally default show_definition default drawing_language default
+end
+line 128695 -_-_
+  from ref 128439 z 2002 to ref 128311
+line 129207 -_-_
+  from ref 129079 z 2002 to ref 128951
+line 130231 -_-_
+  from ref 130103 z 2002 to ref 129591
+line 130871 -_-_
+  from ref 130743 z 2002 to ref 130359
+end

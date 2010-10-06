@@ -1,0 +1,60 @@
+format 73
+
+pseudostatecanvas 128055 pseudostate_ref 154423 // initial
+   xyz 177 111 2000
+end
+statecanvas 128183 state_ref 217143 // 1
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 360 211 2000 40 29
+end
+note 128439 "BYE_B(CL,NTW)
+timer"
+  xyzwh 86 237 2000 189 45
+pseudostatecanvas 128695 pseudostate_ref 154807 // initial
+   xyz 554 106 2000
+end
+statecanvas 129847 state_ref 217271 // 2
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 634 332 2000 40 29
+end
+note 130103 "timer off
+200OK_B(CL,ALO)"
+  xyzwh 498 382 2000 221 45
+statecanvas 130359 state_ref 217399 // 99
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  xyzwh 93 489 2000 40 29
+end
+transitioncanvas 128311 transition_ref 253879 // BYE_B(ALO,CL)
+  
+  from ref 128055 z 2001 label "BYE_B(ALO,CL)" xyz 251 138 3000 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 128823 transition_ref 254263 // BYE_A(ALO,CL)
+  
+  from ref 128695 z 2001 label "BYE_A(ALO,CL)" xyz 438 136 3000 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 128951 transition_ref 254391 // BYE_B(CL,CL)
+  
+  from ref 128183 z 2001 label "BYE_B(CL,CL)" xyz 356 356 3000 to point 310 370
+  line 129463 z 2001 to point 459 370
+  line 129335 z 2001 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 129975 transition_ref 254519 // 200OK_B(NTW,CL)
+  
+  from ref 128183 z 2001 label "200OK_B(NTW,CL)" xyz 484 262 3000 to ref 129847
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 130487 transition_ref 254647 // <transition>
+  
+  from ref 128183 z 2001 to ref 130359
+  write_horizontally default show_definition default drawing_language default
+end
+line 128567 -_-_
+  from ref 128311 z 2002 to ref 128439
+line 129719 -_-_
+  from ref 128439 z 2002 to ref 128951
+line 130231 -_-_
+  from ref 129975 z 2002 to ref 130103
+end

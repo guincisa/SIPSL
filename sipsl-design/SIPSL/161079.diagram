@@ -40,8 +40,10 @@ statecanvas 130743 state_ref 196279 // 4
   xyzwh 432 588 2000 40 29
 end
 note 130999 "ACTION;
-ACK(SV,ALO)"
-  xyzwh 465 448 2000 135 45
+ACK_A(SV,ALO)
+
+ALO generated ACK_B and stores it for retransmissions"
+  xyzwh 467 449 2000 227 91
 note 132151 "ACTION:
 STOREDMESSAGE(SV,NTW)"
   xyzwh 847 309 2000 271 47
@@ -53,7 +55,7 @@ note 133303 "clear call ACK is not arriving anymore"
   xyzwh 184 616 2000 203 45
 transitioncanvas 128311 transition_ref 225335 // INVITE_A(NTW,SV)
   
-  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 369 40.5 2001 to ref 128183
+  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 369 40 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129207 transition_ref 225591 // DIALOG_101(CL,SV) or RING_180(CL,SV)

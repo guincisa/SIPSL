@@ -1125,7 +1125,7 @@ bool pre_1_99_bye_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_BYE_CL pre_1_99_bye_cl","")
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye > MAX_INVITE_RESEND) {

@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 95
+  revision 96
   modified_by 55 "guic"
 
 
@@ -1097,6 +1097,92 @@ correct timer interaction with client state machine"
       end
 
       state 210103 "5"
+	transition 253495 "200OK(NTW,CL)"
+	  on state_ref 210103 // 5
+	end
+      end
+    end
+
+    state 216631 "SM_SV_BYE"
+      stereotype "machine"
+      statediagram 174135 "SM_SV_BYE"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+
+      pseudostate 154295 initial 
+	transition 253623 "BYE_A(NTW,SV)"
+	  on state_ref 216759 // 1
+	  external 
+	end
+      end
+
+      state 216759 "1"
+	transition 253751 "200OK_A(ALO,SV)"
+	  on state_ref 216887 // 2
+	  external 
+	end
+
+	transition 254135 "200OK_B(ALO.SV)"
+	  on state_ref 216887 // 2
+	  external 
+	end
+      end
+
+      state 216887 "2"
+      end
+
+      pseudostate 154679 initial 
+	transition 254007 "BYE_B(NTW,SV)"
+	  on state_ref 216759 // 1
+	  external 
+	end
+      end
+    end
+
+    state 217015 "SM_CL_BYE"
+      stereotype "machine"
+      statediagram 174263 "SM_CL_BYE"
+	package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+	show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+	size A2
+      end
+
+      pseudostate 154423 initial 
+	transition 253879 "BYE_B(ALO,CL)"
+	  on state_ref 217143 // 1
+	  external 
+	end
+      end
+
+      state 217143 "1"
+	transition 254391 "BYE_B(CL,CL)"
+	  on state_ref 217143 // 1
+	end
+
+	transition 254519 "200OK_B(NTW,CL)"
+	  on state_ref 217271 // 2
+	  external 
+	end
+
+	transition 254647 "<transition>"
+	  on state_ref 217399 // 99
+	  external 
+	end
+      end
+
+      pseudostate 154807 initial 
+	transition 254263 "BYE_A(ALO,CL)"
+	  on state_ref 217143 // 1
+	  external 
+	end
+      end
+
+      state 217271 "2"
+      end
+
+      state 217399 "99"
       end
     end
   end

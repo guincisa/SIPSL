@@ -1,8 +1,78 @@
 CHANGES
 
-27 Settembre
 
-1. Retransmission of INVITE_B if 1xx/2xx missing: most be handled by TRNSPRT instead of SM_CL.
+6 ottobre
+
+manca il bye da b???
+
+6 Ottobre
+
+A            SIPSL         B
+|  INVITE_A    |             |
+|------------->|             |
+|   100TRY_A   |             |
+|<-------------|   INVITE_B  |
+|              |------------>|
+|              |             |
+|              |  180RING_B  |
+|              |<------------|
+|  180RING_A   |             |
+|<-------------|             |
+|              |  200_OK_B   |
+|              |<------------|
+|   200A_OK_A  |             |
+|<-------------|             |
+|    ACK_A     |             |
+|------------->|             |
+|              |    ACK_B    |
+|              |------------>|
+|              |             |
+------------------------------
+|  BYE_A       |             |
+|------------->|             |
+|              |   BYE_B     |
+|              |------------>|
+|              |  200_OK_B   |
+|              |<------------|
+|   200OK_A    |             |
+|<-------------|             |
+
+------------------------------
+|              |   BYE_B     |
+|              |<------------|
+|  BYE_A       |             |
+|<-------------|             |
+|   200OK_A    |             |
+|------------->|             |
+|              |  200_OK_B   |
+|              |------------>|
+
+
+
+1. INVITE_A received again when 1xx not arriving to A.
+	Action: resend 1xx.
+	
+	IMPLEM: SIPSL must resend the 1xx try 
+	meglio modificare la sm_sv e rimandare l'ultimo messaggio
+	
+	
+	currently not implemented? SM_SV ignores the INVITE_A
+	
+	Soluzione: Quando la sv_sm manda il 1xx si aspetta che l'invite a sia acknowledged.
+	Se arriva di nuovo un invite_a deve rimandare il 1xx:
+	1. il 1xx viene messo in una tabella delle ritrasmissioni gestita dalla TRNSPRT, con chiave di accesso
+	uguale all'invite_a cosi se arriva allora lo ritrasmette automaticamente.
+	-> come fa a toglierlo? quano arriva l'ack?
+	
+	per ogni messaggio deve controllare la tabella...
+	
+	
+2. Retransmission of INVITE_B if 1xx/2xx missing.
+
+   IMPLEM:SIPSL must resend the INVITE_B
+   va bene cosi: tutto gestito in cl_sm con l'allarme
+		
+   Most be handled by TRNSPRT instead of SM_CL.
    Could this be generic for any outgoing request? (Except ACK_B)
    
    Soluzione: INVITE_B deve portare una informazione concernente al sua ritrasmissione: quando
@@ -16,29 +86,26 @@ CHANGES
    Oppure quando la cl_sm manda giu l'ultimo invite, aggiunge altre info per l'allarme: chiudere
    la call.
    
-   ve bene cosi: tutto gestito in cl_sm
-
-2. INVITE_A received again: resend 1xx: currently not implemented? SM_SV ignores the INVITE_A
+   
+3. 200ok_B is repeated if ACK_B missing
+	Action: resend ACK_B
 	
-	Soluzione: Quando la sv_sm manda il 1xx si aspetta che l'invite a sia acknowledged.
-	Se arriva di nuovo un invite_a deve rimandare il 1xx:
-	1. il 1xx viene messo in una tabella delle ritrasmissioni gestita dalla TRNSPRT, con chiave di accesso
-	uguale all'invite_a cosi se arriva allora lo ritrasmette automaticamente.
-	-> come fa a toglierlo? quano arriva l'ack?
+	IMPLEM: resend ACK_B 
+	ACK_B stored by ALO
 	
-	per ogni messaggio deve controllare la tabella...
+4. 200ok_A is resent if ACK_A is missing:	
+    Action: resend 200ok_A
+    
+    IMPLEM: timer is in SV waits for ACK_A
+    
+5. BYE_A is resent if 200OK_A is missing
+   Action: resend 200ok_A
+   
+   IMPLEM: 
+   
+6. BYE_B resent if 200ok_b missing
+   Action: resend BYE_b    	
 	
-	meglio modificare la sm_sv e rimandare l'ultimo messaggio
-	
-3. ACK B has to be resent if 200OK_B arrives again
-
-	handle with sm_cl
-
-4. Resend the 200_OK_A if ACK_A is not received
-
-	gestire con la SM?
-	
-5. 
 
 
 28 Agosto

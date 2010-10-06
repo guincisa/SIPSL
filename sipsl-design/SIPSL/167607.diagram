@@ -24,7 +24,7 @@ end
 note 129847 "Clear INVITE_B alarm
 
 OverallState_CL = OS_PROCEEDING"
-  xyzwh 515 635 2000 237 69
+  xyzwh 505 634 2000 247 79
 statecanvas 130103 state_ref 209847 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 56 406 2000 43 29
@@ -32,7 +32,7 @@ end
 note 130999 "MESSAGE(CL,SV)
 
 OverallState_CL = OS_PROCEEDING"
-  xyzwh 87 628 2000 251 71
+  xyzwh 88 629 2000 255 75
 statecanvas 131383 state_ref 209975 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 786 407 2000 40 29
@@ -46,7 +46,7 @@ statecanvas 132279 state_ref 210103 // 5
   xyzwh 786 590 2000 40 29
 end
 note 132535 "ACK_B(CL,NTW)"
-  xyzwh 845 404 2000 161 53
+  xyzwh 853 403 2000 161 53
 transitioncanvas 128311 transition_ref 239287 // INVITE_B(ALO,CL)
   
   from ref 128055 z 2001 label "INVITE_B(ALO,CL)" xyz 355 44 2001 to ref 128183
@@ -78,7 +78,7 @@ transitioncanvas 130231 transition_ref 239799 // DIALOG(NTW,CL)
 end
 transitioncanvas 130487 transition_ref 239927 // 180RING(NTW,CL)
   
-  from ref 129591 z 2001 label "180RING(NTW,CL)" xyz 98 353.5 2001 to point 377 293
+  from ref 129591 z 2001 label "180RING(NTW,CL)" xyz 98 353 2001 to point 377 293
   line 130615 z 2001 to ref 130103
   write_horizontally default show_definition default drawing_language default
 end
@@ -101,6 +101,13 @@ end
 transitioncanvas 133047 transition_ref 246967 // <transition>
   
   from ref 128183 z 2001 to ref 130103
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 133943 transition_ref 253495 // 200OK(NTW,CL)
+  
+  from ref 132279 z 2001 label "200OK(NTW,CL)" xyz 876 572 3000 to point 987 657
+  line 134071 z 2001 to point 987 575
+  line 134199 z 2001 to ref 132279
   write_horizontally default show_definition default drawing_language default
 end
 line 128567 -_-_
@@ -131,4 +138,6 @@ line 133559 -_-_
   from ref 130999 z 2002 to ref 133047
 line 133687 -_-_
   from ref 130999 z 2004 to ref 132919
+line 134327 -_-_
+  from ref 132535 z 2006 to ref 134199
 end
