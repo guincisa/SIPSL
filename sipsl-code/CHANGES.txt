@@ -1,5 +1,19 @@
 CHANGES
 
+8 Ottobre
+
+scenari
+
+3pcc??
+
+DONE:
+STOREMESSAGE_1_2 per ritransmettere dialog or 180 ring
+
+TODO:
+STOREMESS_1_2: to be purged
+dove sparisce il message???
+
+---------------------------------------------------------------
 
 6 ottobre
 

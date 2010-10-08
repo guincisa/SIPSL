@@ -1,0 +1,2 @@
+guic@grog:~/DEV/SIP/SIPp$ sipp -sn uac -rsa grog:5060 -p 5061 -m 20 -d 10000 -r 2 -rp 1000 -trace_err grog:5062 
+

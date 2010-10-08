@@ -154,10 +154,12 @@ ACTION* SM::event(MESSAGE* _event){
 		if (tmp->predicate(this, _event)){
 			act = tmp->action(this, _event);
 			RELLOCK(&mutex,"mutex");
+			DEBY
 			return act;
 		}
 	}
 	RELLOCK(&mutex,"mutex");
+	DEBY
 	return(act);
 }
 //**********************************************************************************
@@ -248,7 +250,6 @@ ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 
 }
 //*****************************************************************
-
 bool pre_1_2_inv_sv(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_SV pre_1_2_inv_sv called","")
@@ -268,7 +269,7 @@ bool pre_1_2_inv_sv(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_2_inv_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("act_1_2_inv_sv::act_1_2_sv",  _message->getHeadSipReply().getContent() )
+	DEBOUT("TRSNCT_INV_SV::act_1_2_inv_sv",  _message->getHeadSipReply().getContent() )
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -280,7 +281,12 @@ ACTION* act_1_2_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SL_SM_SV::act_1_2_inv_sv move to state 2","")
+	DEBOUT("TRSNCT_INV_SV::act_1_2_inv_sv move to state 2","")
+
+	//Store the message to use it for retransmission
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 = _message;
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2);
 
 	_sm->State = 2;
 
@@ -291,6 +297,32 @@ ACTION* act_1_2_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	return action;
 }
+//*****************************************************************
+ACTION* act_2_2_inv_sv(SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRSNCT_INV_SV::act_2_2_inv_sv",  _message->getHeadSipReply().getContent() )
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	//Resend stored message
+	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2);
+
+	action->addSingleAction(sa_1);
+
+	DEBOUT("TRSNCT_INV_SV::act_2_2_inv_sv move to state 2","")
+
+	_sm->State = 2;
+
+	//OVERALL
+	//TODO
+	//cancel 64*T1 timer
+	_sm->getSL_CO()->OverallState_SV = OS_PROCEEDING;
+
+	return action;
+
+}
+
+//*****************************************************************
 bool pre_1_3_inv_sv(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_V5 pre_1_3_inv_sv","")
@@ -321,6 +353,13 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	DEBOUT("SM act_1_3_inv_sv move to state 3","")
+
+	if ( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 != 0x0){
+		// remove it
+		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock();
+		_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2);
+	}
+
 	_sm->State = 3;
 
 	//TODO
@@ -379,14 +418,21 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
 		PA_INV_0_1SV((SM*)this),
 		PA_INV_1_2SV((SM*)this),
+		PA_INV_2_2SV((SM*)this),
 		PA_INV_1_3SV((SM*)this),
 		PA_INV_3_4SV((SM*)this){
+
+
+	STOREMESS_1_2 = 0x0;
 
 	PA_INV_0_1SV.action = &act_0_1_inv_sv;
 	PA_INV_0_1SV.predicate = &pre_0_1_inv_sv;
 
 	PA_INV_1_2SV.action = &act_1_2_inv_sv;
 	PA_INV_1_2SV.predicate = &pre_1_2_inv_sv;
+
+	PA_INV_2_2SV.predicate = &pre_0_1_inv_sv;
+	PA_INV_2_2SV.action = &act_2_2_inv_sv;
 
 	PA_INV_1_3SV.action = &act_1_3_inv_sv;
 	PA_INV_1_3SV.predicate = &pre_1_3_inv_sv;
@@ -397,6 +443,7 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 
 	insert_move(0,&PA_INV_0_1SV);
 	insert_move(1,&PA_INV_1_2SV);
+	insert_move(2,&PA_INV_2_2SV);
 	insert_move(1,&PA_INV_1_3SV);
 	insert_move(2,&PA_INV_1_3SV);
 	insert_move(3,&PA_INV_3_4SV);

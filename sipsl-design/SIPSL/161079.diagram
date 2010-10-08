@@ -1,7 +1,7 @@
 format 73
 
 pseudostatecanvas 128055 pseudostate_ref 141239 // initial
-   xyz 315 18 2000
+   xyz 305 24 2000
 end
 statecanvas 128183 state_ref 195895 // 1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
@@ -22,8 +22,9 @@ DIALOG_101(SV,NTW) or RING_180(SV,NTW)
 
 OverallState_SV = OS_PROCEEDING
 
-store one of the two, the last one"
-  xyzwh 772 115 2000 333 113
+STOREMESS_1_2 = message
+"
+  xyzwh 729 115 2000 237 109
 statecanvas 129975 state_ref 196151 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 275 331 2000 40 29
@@ -33,8 +34,10 @@ note 130487 "ACTION
 ALARM for 200OK(SV,NTW)
 OverallState_SV = OS_COMPLETED
 
-If Ack does not arrives, resend 200OK"
-  xyzwh 60 103 2000 315 113
+If Ack does not arrives, resend 200OK
+
+unlock / remove STOREMESS_1_2"
+  xyzwh 26 107 2000 219 131
 statecanvas 130743 state_ref 196279 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 432 588 2000 40 29
@@ -45,8 +48,8 @@ ACK_A(SV,ALO)
 ALO generated ACK_B and stores it for retransmissions"
   xyzwh 467 449 2000 227 91
 note 132151 "ACTION:
-STOREDMESSAGE(SV,NTW)"
-  xyzwh 847 309 2000 271 47
+STOREMESS_1_2(SV,NTW)"
+  xyzwh 848 309 2000 155 69
 statecanvas 133047 state_ref 202807 // 5
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 156 560 2000 40 29
@@ -55,12 +58,12 @@ note 133303 "clear call ACK is not arriving anymore"
   xyzwh 184 616 2000 203 45
 transitioncanvas 128311 transition_ref 225335 // INVITE_A(NTW,SV)
   
-  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 369 40 2001 to ref 128183
+  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 364 43 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129207 transition_ref 225591 // DIALOG_101(CL,SV) or RING_180(CL,SV)
   
-  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 562 152 2001 to ref 128823
+  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 541 180 2001 to ref 128823
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130103 transition_ref 225719 // 200_OK(ALO,SV)
@@ -112,7 +115,8 @@ line 132279 -_-_
 line 132407 -_-_
   from ref 132151 z 2004 to ref 131895
 line 132919 -_-_
-  from ref 130487 z 2004 to ref 132663
+  from ref 130487 z 2004 to point 118 332
+  line 133687 z 2004 to ref 132663
 line 133431 -_-_
   from ref 133303 z 2002 to ref 133175
 end
