@@ -154,6 +154,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 				_mess->setDestEntity(SODE_TRNSCT_CL);
 			}
 
+			//Main entrance to sl_co
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess, modulus) == -1 ){
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
 				if(!_mess->getLock()){

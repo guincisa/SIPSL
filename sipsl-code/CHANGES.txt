@@ -1,5 +1,10 @@
 CHANGES
 
+11 Ottobre
+
+bug quando B non risponde a INVITE_B: non implementato
+Matrix message is locked ma non messo nella tabella...
+
 8 Ottobre
 
 scenari

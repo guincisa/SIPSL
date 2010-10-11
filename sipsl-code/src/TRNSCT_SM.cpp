@@ -100,7 +100,10 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 
 	requestType = _requestType;
 	Matrix = _matrixMess;
+
+	//TODO insert into lock table???
 	Matrix->setLock();
+
 
 	A_Matrix = _a_Matrix;
 	if (_a_Matrix == 0x0){

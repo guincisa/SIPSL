@@ -1,6 +1,5 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2010.4.2)  15 APR 2010 16:51
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2010.5.10)  11 OCT 2010 14:53
 entering extended mode
- Source specials enabled.
  %&-line parsing enabled.
 **DBENGINE.tex
 (./DBENGINE.tex
@@ -55,18 +54,18 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <9> not available
 
 ] [2] [3] [4] [5]
 Overfull \hbox (2.39476pt too wide) in paragraph at lines 437--441
-[]\OT1/cmr/m/n/9 Split the SIPSL be-tween SUDP and SIPENGINE (or be-tween SIPEN
-GINE and SL[]CC)
+\OT1/cmr/m/n/9 Split the SIPSL be-tween SUDP and SIPENGINE (or be-tween SIPENGI
+NE and SL[]CC)
  []
 
 [6] [7] [8] (./DBENGINE.aux) ) 
 Here is how much of TeX's memory you used:
  258 strings out of 95087
- 2858 string characters out of 1183279
+ 2858 string characters out of 1183278
  49030 words of memory out of 1500000
  3498 multiletter control sequences out of 10000+50000
  9269 words of font info for 33 fonts, out of 1200000 for 2000
  28 hyphenation exceptions out of 8191
  23i,6n,19p,191b,247s stack positions out of 5000i,500n,6000p,200000b,5000s
 
-Output written on DBENGINE.dvi (8 pages, 24724 bytes).
+Output written on DBENGINE.dvi (8 pages, 22088 bytes).
