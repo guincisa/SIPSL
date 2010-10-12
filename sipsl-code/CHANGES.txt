@@ -3,7 +3,12 @@ CHANGES
 11 Ottobre
 
 bug quando B non risponde a INVITE_B: non implementato
-Matrix message is locked ma non messo nella tabella...
+attivare la DOA...
+
+bug: INVITE B ritrasmesso che arriva dall'allarme non è cancellato:
+	//TODO implement this like the 0_1 but the incoming message must be unlocked and deleted by SUDP
+
+
 
 8 Ottobre
 

@@ -88,12 +88,39 @@ The table is local to the call. If the message is unlocked it must also be remov
 \end{itemize}
 \end{itemize}
 
+INVITE A is also stored locally in VALO.
+
 The INVITE A is delete at the end of the call when the TRNSCT\_SM\_INVITE\_SV is deleted.
 
 \subsection{100 TRY A - immediate reply by SIPSL to A}
 
-The 100 TRY A is generate using INVITE A and deleted after transmission.
+The 100 TRY A is generated using INVITE A and deleted after transmission.
 
 \subsection{INVITE B - outgoing invite}
+
+\begin {itemize}
+\item INVITE B is created in VALO (pointer si stored locally
+\item message traverses the SL\_CC
+\begin {itemize}
+\item CALL\_OSET is found
+\item message is sent to COMAP which will find the correct SL\_CO
+\item COMAP will execute the SL\_CO::call
+\begin {itemize}
+\item SL\_CO::call will create the Invite Client Transaction State Machine TRNSCT\_SM\_INVITE\_CL
+\item the message is stored into the Matrix and locked.
+\item the invite is duplicated and a copy is sent to ALARM (locked and stored in locked messages)
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\subsection{INVITE B ALARM for retransmission}
+
+\begin {itemize}
+\item INVITE B ALARM arrives at the client state machine it is duplicated and set as operation "timer on"
+\item The new INVITE B timer is locked and stored into the locked messages table
+\item The incoming message is unlocked and sent to SUDP
+\item SUDP will delete the message
+\end{itemize}
+
 
 \end{document}

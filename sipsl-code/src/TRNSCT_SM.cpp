@@ -105,6 +105,7 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	Matrix->setLock();
 
 
+	//This one is locked elswere
 	A_Matrix = _a_Matrix;
 	if (_a_Matrix == 0x0){
 		DEBASSERT("NO")
@@ -549,6 +550,65 @@ bool pre_1_1_inv_cl(SM* _sm, MESSAGE* _message){
 		return false;
 	}
 }
+ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl","")
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	//Message has to be sent
+	_message->setDestEntity(SODE_NTWPOINT);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	_message->typeOfInternal = TYPE_MESS;
+	//This will delete the message in SUDP
+	_message->unSetLock();
+	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	//careful with source message.
+	//Prepare message for Alarm
+	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	__timedmessage->setSourceMessage(_message->getSourceMessage());
+
+	//This is to be sent later, after timer expires
+	//Preconfigure message entity points, the alarm manager cannot do this
+	__timedmessage->setDestEntity(SODE_TRNSCT_CL);
+	__timedmessage->setGenEntity(SODE_TRNSCT_CL);
+
+	SysTime afterT;
+	GETTIME(afterT);
+	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
+	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
+
+	__timedmessage->setFireTime(afterT);
+	__timedmessage->typeOfInternal = TYPE_OP;
+	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
+	__timedmessage->orderOfOperation = "TIMER_A";
+	__timedmessage->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
+	SingleAction sa_2 = SingleAction(__timedmessage);
+
+	action->addSingleAction(sa_2);
+
+	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
+
+	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
+
+	_sm->State = 1;
+
+	//OVERALL
+	//TODO start timer 64*T1
+	//Order of operation = 1
+	//__timedmessage_2->orderOfOperation = "TIMER_B";
+	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
+
+
+	return action;
+}
+
 //*****************************************************************
 bool pre_1_99_inv_cl(SM* _sm, MESSAGE* _message){
 
@@ -568,7 +628,10 @@ bool pre_1_99_inv_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_99_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_INV_CL act_1_99_inv_cl please do something","")
+	DEBOUT("TRNSCT_INV_CL act_1_99_inv_cl *** incomplete *** ","")
+
+	_message->unSetLock();
+	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
 
 	_sm->State = 99;
 
@@ -789,7 +852,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_0_1CL.action = &act_0_1_inv_cl;
 	PA_INV_0_1CL.predicate = &pre_0_1_inv_cl;
 
-	PA_INV_1_1CL.action = &act_0_1_inv_cl;
+	PA_INV_1_1CL.action = &act_1_1_inv_cl;
 	PA_INV_1_1CL.predicate = &pre_1_1_inv_cl;
 
 	PA_INV_1_99CL.action = &act_1_99_inv_cl;
