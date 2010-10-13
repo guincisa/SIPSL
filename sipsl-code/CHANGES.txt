@@ -1,5 +1,8 @@
 CHANGES
 
+13 ottobre 
+crash negli allarmi nella invite_b non corrisposto (
+
 11 Ottobre
 
 bug quando B non risponde a INVITE_B: non implementato
