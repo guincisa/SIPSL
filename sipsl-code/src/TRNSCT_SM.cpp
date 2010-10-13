@@ -633,6 +633,9 @@ ACTION* act_1_99_inv_cl(SM* _sm, MESSAGE* _message) {
 	_message->unSetLock();
 	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
 
+	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
+
+
 	_sm->State = 99;
 
 	return 0x0;

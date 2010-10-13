@@ -1,0 +1,13 @@
+#!/bin/bash 
+COUNTER=0
+echo "COMMAND                       PID %CPU      ESP %MEM   RSS    SZ     ELAPSED NLWP   STACKP     TIME"
+while [  $COUNTER -lt 10 ]; do
+#    ps -L aux | grep SIPSL | grep -v grep
+#    ps aux | grep SIPSL | grep -v grep
+ps -eo args,pid,%cpu,esp,%mem,rss,sz,etime,nlwp,stackp,cputime | grep SIPSL|grep -v grep
+    sleep 1
+#let COUNTER=COUNTER+1 
+#echo
+done
+         
+

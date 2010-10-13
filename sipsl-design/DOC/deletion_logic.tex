@@ -69,7 +69,7 @@ call_oset->insertLockedMessage(message);
 \end{verbatim}
 The table is local to the call. If the message is unlocked it must also be removed from the table.
 
-\section{Messages lifecycle}
+\section{Messages lifecycle cases}
 
 \subsection{INVITE A - incoming invite}
 
@@ -99,7 +99,7 @@ The 100 TRY A is generated using INVITE A and deleted after transmission.
 \subsection{INVITE B - outgoing invite}
 
 \begin {itemize}
-\item INVITE B is created in VALO (pointer si stored locally
+\item INVITE B is created in VALO (pointer is stored locally)
 \item message traverses the SL\_CC
 \begin {itemize}
 \item CALL\_OSET is found
@@ -122,5 +122,11 @@ The 100 TRY A is generated using INVITE A and deleted after transmission.
 \item SUDP will delete the message
 \end{itemize}
 
+\section{Call\_OSet lifecyle}
+
+The deletion of the call\_oset is triggered using:
+\begin{verbatim}
+	COMAP::setDoaRequested(call_oset, message->getModulus());
+\end{verbatim} 
 
 \end{document}

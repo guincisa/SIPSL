@@ -15,7 +15,7 @@ OverallState_CL = OS_CALLING"
   xyzwh 487 35 2000 253 89
 statecanvas 129207 state_ref 209591 // 99
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 162 209 2000 40 29
+  xyzwh 92 156 2000 40 29
 end
 statecanvas 129591 state_ref 209719 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
@@ -47,6 +47,8 @@ statecanvas 132279 state_ref 210103 // 5
 end
 note 132535 "ACK_B(CL,NTW)"
   xyzwh 853 403 2000 161 53
+note 134455 "trigger deletion of call_oset"
+  xyzwh 155 220 2000 169 37
 transitioncanvas 128311 transition_ref 239287 // INVITE_B(ALO,CL)
   
   from ref 128055 z 2001 label "INVITE_B(ALO,CL)" xyz 355 44 2001 to ref 128183
@@ -61,7 +63,7 @@ transitioncanvas 128695 transition_ref 239415 // INVITE_B(CL,CL) && resend <= ma
 end
 transitioncanvas 129335 transition_ref 239543 // INVITE_B(CL,CL) && resend > max
   
-  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 266 185 2001 to ref 129207
+  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 231 158 2001 to ref 129207
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129719 transition_ref 239671 // TRY_B(NTW,CL)
@@ -105,7 +107,7 @@ transitioncanvas 133047 transition_ref 246967 // <transition>
 end
 transitioncanvas 133943 transition_ref 253495 // 200OK(NTW,CL)
   
-  from ref 132279 z 2001 label "200OK(NTW,CL)" xyz 876 572 3000 to point 987 657
+  from ref 132279 z 2001 label "200OK(NTW,CL)" xyz 876 572 2001 to point 987 657
   line 134071 z 2001 to point 987 575
   line 134199 z 2001 to ref 132279
   write_horizontally default show_definition default drawing_language default
@@ -140,4 +142,6 @@ line 133687 -_-_
   from ref 130999 z 2004 to ref 132919
 line 134327 -_-_
   from ref 132535 z 2006 to ref 134199
+line 134583 -_-_
+  from ref 134455 z 2002 to ref 129335
 end

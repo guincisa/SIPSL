@@ -1,0 +1,14 @@
+#!/bin/bash 
+COUNTER=0
+ps -L aux | grep COMMAND | grep -v grep
+while [  $COUNTER -lt 10 ]; do
+ps -L aux | grep COMMAND | grep -v grep
+    ps -L aux | grep SIPSL | grep -v grep
+#    ps aux | grep SIPSL | grep -v grep
+#ps -eo args,pid,%cpu,esp,%mem,rss,sz,etime,nlwp,stackp,cputime | grep SIPSL|grep -v grep
+    sleep 1
+#let COUNTER=COUNTER+1 
+echo
+done
+         
+
