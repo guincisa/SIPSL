@@ -501,6 +501,8 @@ ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 	GETTIME(afterT);
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * (((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
 
+	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl creating alarm ", TIMER_1 * (((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1) << " " << firetime)
+
 	__timedmessage->setFireTime(firetime);
 	__timedmessage->typeOfInternal = TYPE_OP;
 	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
@@ -584,6 +586,8 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 //	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
 //	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
 
+	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl creating alarm ", TIMER_1 * (((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1) << " " << firetime)
+
 	__timedmessage->setFireTime(firetime);
 	__timedmessage->typeOfInternal = TYPE_OP;
 	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
@@ -596,7 +600,7 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
 
-	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
+	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
 
 	_sm->State = 1;
 
@@ -1159,8 +1163,9 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	SysTime afterT;
 	GETTIME(afterT);
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * (((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
+	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * (((TRNSCT_SM_BYE_CL*)_sm)->resend_bye+1);
 
+	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl creating alarm ", TIMER_1 * (((TRNSCT_SM_BYE_CL*)_sm)->resend_bye+1) << " " << firetime)
 	__timedmessage->setFireTime(firetime);
 	__timedmessage->typeOfInternal = TYPE_OP;
 	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;

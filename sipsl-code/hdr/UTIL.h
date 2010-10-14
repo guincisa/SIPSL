@@ -203,6 +203,8 @@ class ThreadWrapper {
 //**********************************************************
 //**********************************************************
 #ifdef LOGDEV
+#undef DEBCODE
+#define DEBCODE(m) {m}
 #undef DEBDEV
 #define DEBDEV(m1,m2)  {stringstream xx ; xx << "DEBDEV [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 #undef DEBY
@@ -216,6 +218,7 @@ class ThreadWrapper {
 #define DEBDEV(m1,m2)
 #define PRINTTIME(starttime,endtime)
 #define PRINTTIMESHORT(m,starttime)
+#define DEBCODE(m)
 #endif
 //**********************************************************
 //**********************************************************

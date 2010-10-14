@@ -127,11 +127,11 @@ void ALMGR::alarmer(void){
 		unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
 		unsigned long long int tcu = 0;
 
-		jumper ++;
+		DEBCODE(jumper ++;
 		if (jumper == 1000){
 			DEBOUT("ALARM tables pq", alarm_pq.size() << "] time_alarm_mumap [" << time_alarm_mumap.size() << "] cidbranch_alm_map [" << cidbranch_alm_map.size())
 		    jumper = 0;
-		}
+		})
 
 		if (!alarm_pq.empty()) {
 
