@@ -113,7 +113,7 @@ void ALMGR::initAlarm(void){
 }
 void ALMGR::alarmer(void){
 
-	int counter;
+	int jumper = 0;
 	DEBOUT("ALMGR::alarmer", "begin")
 	for(;;){
 
@@ -126,10 +126,16 @@ void ALMGR::alarmer(void){
 		GETTIME(mytime);
 		unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
 		unsigned long long int tcu = 0;
+
+		jumper ++;
+		if (jumper == 1000){
+			DEBOUT("ALARM tables pq", alarm_pq.size() << "] time_alarm_mumap [" << time_alarm_mumap.size() << "] cidbranch_alm_map [" << cidbranch_alm_map.size())
+		    jumper = 0;
+		}
+
 		if (!alarm_pq.empty()) {
 
 			tcu = alarm_pq.top();
-
 
 
 			while (!alarm_pq.empty() && curr >= tcu){
@@ -194,20 +200,16 @@ void ALMGR::alarmer(void){
 
 	}
 }
-void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
+void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 
 	//check if message already exists and cancel related alarm
 	//do note remove it from multimap and from mess_alm map
 
-	DEBOUT("ALMGR::insertAlarm", (unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec )
+	DEBOUT("ALMGR::insertAlarm", _fireTime )
 
 	GETLOCK(&mutex,"mutex");
 
-	//DEBOUT("ALMGR::insertAlarm", _fireTime.tv.tv_sec*1000000+_fireTime.tv.tv_usec)
-	SysTime mytime;
-	GETTIME(mytime);
-	unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
-	DEBOUT("ALMGR::insertAlarm in ms", (double) ((unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec  - curr) / 1000000)
+	DEBOUT("ALMGR::insertAlarm in ms", (double) (_fireTime) / 1000000)
 
 
 	map<MESSAGE*, ALARM*>::iterator p;
@@ -238,6 +240,51 @@ void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
 	return;
 
 }
+
+//void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
+//
+//	//check if message already exists and cancel related alarm
+//	//do note remove it from multimap and from mess_alm map
+//
+//	DEBOUT("ALMGR::insertAlarm", (unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec )
+//
+//	GETLOCK(&mutex,"mutex");
+//
+//	//DEBOUT("ALMGR::insertAlarm", _fireTime.tv.tv_sec*1000000+_fireTime.tv.tv_usec)
+//	SysTime mytime;
+//	GETTIME(mytime);
+//	unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
+//	DEBOUT("ALMGR::insertAlarm in ms", (double) ((unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec  - curr) / 1000000)
+//
+//
+//	map<MESSAGE*, ALARM*>::iterator p;
+//
+//	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
+//
+//	// insert into priority q
+//	alarm_pq.push(alm->getTriggerTime());
+//
+//
+//	//insert into map time - alarm
+//	time_alarm_mumap.insert(pair<unsigned long long int const, ALARM*>(alm->getTriggerTime(), alm));
+//
+//
+//	string cidbranch_alarm;
+//	DEBY
+//	((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getContent();
+//	DEBY
+//	DEBOUT("((C_HeadVia&) _message->getSTKHeadVia().top()).getC_AttVia().getContent()",((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getContent())
+//	DEBY
+//	DEBOUT("((C_HeadVia&) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().getContent()",((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().getContent())
+//	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->orderOfOperation+ "#";
+//	DEBOUT("Alarm id (cid+branch", cidbranch_alarm);
+//	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
+//
+//	RELLOCK(&mutex,"mutex");
+//
+//	return;
+//
+//}
 void ALMGR::cancelAlarm(string _cidbranch){
 
 	// alarm is deactivated and the related message may have been
@@ -263,18 +310,17 @@ void ALMGR::cancelAlarm(string _cidbranch){
 
 }
 //**********************************************************************************
-ALARM::ALARM(MESSAGE *_message, SysTime _fireTime){
+ALARM::ALARM(MESSAGE *_message, unsigned long long int _fireTime){
 
 	message = _message;
 	fireTime = _fireTime;
 	active = true;
-	fireTime_c = ((unsigned long long int) fireTime.tv.tv_sec)*1000000+(unsigned long long int)fireTime.tv.tv_usec;
-	DEBOUT("ALARM::ALARM firetime", fireTime_c)
+	DEBOUT("ALARM::ALARM firetime", fireTime)
 	cidbranch = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->orderOfOperation+ "#";
 
 }
 unsigned long long int ALARM::getTriggerTime(void){
-	return fireTime_c;
+	return fireTime;
 }
 string ALARM::getCidbranch(void){
 	return cidbranch;

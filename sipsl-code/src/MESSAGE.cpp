@@ -1054,11 +1054,16 @@ void MESSAGE::addGenericHeader(string _header, string _content){
 
 }
 
-void MESSAGE::setFireTime(SysTime _systime){
+void MESSAGE::setFireTime(unsigned long long int _firetime){
 
-	fireTime = _systime;
+	fireTime = _firetime;
 }
-SysTime MESSAGE::getFireTime(void){
+//
+//void MESSAGE::setFireTime_x(SysTime _systime){
+//
+//	fireTime = _systime;
+//}
+unsigned long long int MESSAGE::getFireTime(void){
 
 	return fireTime;
 }

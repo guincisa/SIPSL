@@ -28,8 +28,7 @@
 class ALARM {
 
 	private:
-		SysTime fireTime;
-		unsigned long long int fireTime_c;
+		unsigned long long int fireTime;
 
 		//fireTime.tv.tv_sec*1000000 + fireTime+endtime.tv.tv_usec
 
@@ -41,7 +40,7 @@ class ALARM {
 		string cidbranch;
 
 	public:
-		ALARM(MESSAGE* message, SysTime fireTime);
+		ALARM(MESSAGE* message, unsigned long long int fireTime);
 		unsigned long long int getTriggerTime(void);
 		void cancel(void);
 		MESSAGE* getMessage(void);
@@ -94,7 +93,7 @@ class ALMGR {
 		ALMGR(SL_CC* sl_cc, __time_t sec, long int nsec);
 
 		void initAlarm(void);
-		void insertAlarm(MESSAGE* message, SysTime fireTime);
+		void insertAlarm(MESSAGE* message, unsigned long long int fireTime);
 
 		void cancelAlarm(string cid_branch);
 		//void cancelAlarm(MESSAGE* message);

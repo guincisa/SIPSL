@@ -15,7 +15,7 @@ OverallState_CL = OS_CALLING"
   xyzwh 487 35 2000 253 89
 statecanvas 129207 state_ref 209591 // 99
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 92 156 2000 40 29
+  xyzwh 99 136 2000 40 29
 end
 statecanvas 129591 state_ref 209719 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
@@ -63,7 +63,7 @@ transitioncanvas 128695 transition_ref 239415 // INVITE_B(CL,CL) && resend <= ma
 end
 transitioncanvas 129335 transition_ref 239543 // INVITE_B(CL,CL) && resend > max
   
-  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 231 158 2001 to ref 129207
+  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 234.5 147.5 2001 to ref 129207
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129719 transition_ref 239671 // TRY_B(NTW,CL)

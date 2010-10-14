@@ -165,9 +165,6 @@ class BASEMESSAGE {
         int sock;
         sockaddr_inX echoClntAddr;
 
-        //Timer support
-        SysTime fireTime;
-
         //V4 workaround to avoid deletion of the sent INVITE
 
     private:
@@ -332,13 +329,17 @@ class MESSAGE : public BASEMESSAGE {
     	vector<string>::iterator getSDPposition(void);
     	void dumpVector(void);
 
-    	void setFireTime(SysTime fireTime);
-    	SysTime getFireTime(void);
+    	void setFireTime(unsigned long long int fireTime);
+    	unsigned long long int getFireTime(void);
 
     	int typeOfInternal; // Message or operation
     	int typeOfOperation; // Type of operation
     	string orderOfOperation; //Alarm id in case more alarms are triggered with the same message
     	//int specialAction; //delete co
+
+        //Timer support
+        unsigned long long int fireTime;
+
 
     	//Needed for ACK
     	int type_trnsct;

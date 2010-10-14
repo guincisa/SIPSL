@@ -1,7 +1,9 @@
 CHANGES
 
 13 ottobre 
-crash negli allarmi nella invite_b non corrisposto (
+crash negli allarmi nella invite_b non corrisposto 
+
+tabelle allarmi non si svuotano
 
 11 Ottobre
 
@@ -20,7 +22,7 @@ scenari
 3pcc??
 
 DONE:
-STOREMESSAGE_1_2 per ritransmettere dialog or 180 ring
+STOREMESSAGE_1_2 per ritrasmettere dialog or 180 ring
 
 TODO:
 STOREMESS_1_2: to be purged

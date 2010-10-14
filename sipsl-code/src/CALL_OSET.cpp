@@ -537,9 +537,7 @@ void SL_CO::actionCall_CL(ACTION* action){
 			if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
 				DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->orderOfOperation+ "#");
 				DEBY
-				SysTime st1 = _tmpMessage->getFireTime();
-				DEBY
-				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, st1);
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
 				DEBY
 
 			} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
