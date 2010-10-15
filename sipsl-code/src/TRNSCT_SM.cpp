@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <map>
 #include <string.h>
+#include <math.h>
 
 #include <assert.h>
 #include <sys/types.h>
@@ -499,9 +500,9 @@ ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	SysTime afterT;
 	GETTIME(afterT);
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * (((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
+	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
 
-	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl creating alarm ", TIMER_1 * (((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1) << " " << firetime)
+	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl creating alarm ", TIMER_1 << " " << firetime)
 
 	__timedmessage->setFireTime(firetime);
 	__timedmessage->typeOfInternal = TYPE_OP;
@@ -512,8 +513,6 @@ ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_2 = SingleAction(__timedmessage);
 
 	action->addSingleAction(sa_2);
-
-	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
 
 	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
 
@@ -542,7 +541,7 @@ bool pre_1_1_inv_cl(SM* _sm, MESSAGE* _message){
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
-			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite <= MAX_INVITE_RESEND) {
+			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite < MAX_INVITE_RESEND) {
 		DEBOUT("TRNSCT_INV_CL pre_1_1_inv_cl","true")
 		return true;
 	}
@@ -582,11 +581,15 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 	SysTime afterT;
 	GETTIME(afterT);
 	//TODO this operation is wrong
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * (((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
+
+	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
+
+
+	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite);
 //	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
 //	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
 
-	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl creating alarm ", TIMER_1 * (((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1) << " " << firetime)
+	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl creating alarm ", pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite) << " " << firetime)
 
 	__timedmessage->setFireTime(firetime);
 	__timedmessage->typeOfInternal = TYPE_OP;
@@ -597,8 +600,6 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_2 = SingleAction(__timedmessage);
 
 	action->addSingleAction(sa_2);
-
-	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
 
 	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
 
@@ -622,7 +623,7 @@ bool pre_1_99_inv_cl(SM* _sm, MESSAGE* _message){
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
-			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite > MAX_INVITE_RESEND) {
+			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite >= MAX_INVITE_RESEND) {
 		DEBOUT("TRNSCT_INV_CL pre_1_99_inv_cl","true")
 		return true;
 	}
@@ -1163,9 +1164,9 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	SysTime afterT;
 	GETTIME(afterT);
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * (((TRNSCT_SM_BYE_CL*)_sm)->resend_bye+1);
+	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl creating alarm ", TIMER_1 * (((TRNSCT_SM_BYE_CL*)_sm)->resend_bye+1) << " " << firetime)
+	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl creating alarm ", TIMER_1  << " " << firetime)
 	__timedmessage->setFireTime(firetime);
 	__timedmessage->typeOfInternal = TYPE_OP;
 	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
@@ -1174,9 +1175,6 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_2 = SingleAction(__timedmessage);
 
 	action->addSingleAction(sa_2);
-
-	//V5 TODO
-	((TRNSCT_SM_BYE_CL*)_sm)->resend_bye++;
 
 	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl","")
 	_sm->State = 1;
@@ -1190,7 +1188,7 @@ bool pre_1_1_bye_cl(SM* _sm, MESSAGE* _message){
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
-			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye <= MAX_INVITE_RESEND) {
+			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye < MAX_INVITE_RESEND) {
 		DEBOUT("TRNSCT_SM_BYE_CL pre_1_1_bye_cl","true")
 		return true;
 	}
@@ -1199,7 +1197,52 @@ bool pre_1_1_bye_cl(SM* _sm, MESSAGE* _message){
 		return false;
 	}
 }
+ACTION* act_1_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
+	DEBOUT("TRNSCT_SM_BYE_CL act_1_1_bye_cl","")
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	_message->setDestEntity(SODE_NTWPOINT);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	_message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	//careful with source message.
+	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	__timedmessage->setSourceMessage(_message->getSourceMessage());
+	//This is to be sent later, after timer expires
+	//Preconfigure message entity points, the alarm manager cannot do this
+
+	//V5?????
+	//???????
+	__timedmessage->setDestEntity(SODE_TRNSCT_CL);
+	__timedmessage->setGenEntity(SODE_TRNSCT_CL);
+
+	SysTime afterT;
+	GETTIME(afterT);
+
+	((TRNSCT_SM_BYE_CL*)_sm)->resend_bye++;
+
+	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye);
+
+	DEBOUT("TRNSCT_SM_BYE_CL act_1_1_bye_cl creating alarm ", TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye) << " " << firetime)
+	__timedmessage->setFireTime(firetime);
+	__timedmessage->typeOfInternal = TYPE_OP;
+	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
+	__timedmessage->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
+	SingleAction sa_2 = SingleAction(__timedmessage);
+
+	action->addSingleAction(sa_2);
+
+	DEBOUT("TRNSCT_SM_BYE_CL act_1_1_bye_cl","")
+	_sm->State = 1;
+
+	return action;
+}
 bool pre_1_2_bye_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_SM_BYE_CL pre_1_2_bye_cl","")
@@ -1249,7 +1292,7 @@ bool pre_1_99_bye_cl(SM* _sm, MESSAGE* _message){
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
-			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye > MAX_INVITE_RESEND) {
+			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye >= MAX_INVITE_RESEND) {
 		DEBOUT("TRNSCT_BYE_CL pre_1_99_bye_cl","true")
 		return true;
 	}
@@ -1260,7 +1303,13 @@ bool pre_1_99_bye_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_99_bye_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_BYE_CL act_1_99_bye_cl please do something","")
+	DEBOUT("TRNSCT_INV_CL act_1_99_bye_cl *** incomplete *** ","")
+
+	_message->unSetLock();
+	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+
+	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
+
 
 	_sm->State = 99;
 
@@ -1279,7 +1328,7 @@ TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 	PA_BYE_0_1CL.action = &act_0_1_bye_cl;
 	PA_BYE_0_1CL.predicate = &pre_0_1_bye_cl;
 
-	PA_BYE_1_1CL.action = &act_0_1_bye_cl;
+	PA_BYE_1_1CL.action = &act_1_1_bye_cl;
 	PA_BYE_1_1CL.predicate = &pre_1_1_bye_cl;
 
 	PA_BYE_1_99CL.action = &act_1_99_bye_cl;

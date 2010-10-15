@@ -1,0 +1,2 @@
+sipp -sf c.xml -rsa grog:5060 -p 5061 -m 20 -d 4000 -r 2 -rp 1000 -trace_err grog:5062 
+
