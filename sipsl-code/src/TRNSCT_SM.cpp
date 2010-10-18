@@ -254,6 +254,30 @@ ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	return action;
 
 }
+//***********************************************************
+//RETRANSMIT THE TRY
+ACTION* act_1_1_inv_sv(SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRSNCT_INV_SV::act_1_1_inv_sv", _message->getHeadSipRequest().getContent())
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV)
+	SipUtil.genTryFromInvite(_message, etry);
+	etry->setDestEntity(SODE_NTWPOINT);
+	etry->typeOfInternal = TYPE_MESS;
+
+	SingleAction sa_1 = SingleAction(etry);
+
+	action->addSingleAction(sa_1);
+
+	DEBOUT("TRSNCT_INV_SV::act_1_1_inv_sv move to state 1","")
+
+	_sm->State = 1;
+
+	return action;
+
+}
 //*****************************************************************
 bool pre_1_2_inv_sv(SM* _sm, MESSAGE* _message){
 
@@ -425,13 +449,17 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 		PA_INV_1_2SV((SM*)this),
 		PA_INV_2_2SV((SM*)this),
 		PA_INV_1_3SV((SM*)this),
-		PA_INV_3_4SV((SM*)this){
+		PA_INV_3_4SV((SM*)this),
+		PA_INV_1_1SV((SM*)this){
 
 
 	STOREMESS_1_2 = 0x0;
 
 	PA_INV_0_1SV.action = &act_0_1_inv_sv;
 	PA_INV_0_1SV.predicate = &pre_0_1_inv_sv;
+
+	PA_INV_1_1SV.action = &act_1_1_inv_sv;
+	PA_INV_1_1SV.predicate = &pre_0_1_inv_sv;
 
 	PA_INV_1_2SV.action = &act_1_2_inv_sv;
 	PA_INV_1_2SV.predicate = &pre_1_2_inv_sv;
@@ -447,6 +475,7 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 
 
 	insert_move(0,&PA_INV_0_1SV);
+	insert_move(1,&PA_INV_1_1SV);
 	insert_move(1,&PA_INV_1_2SV);
 	insert_move(2,&PA_INV_2_2SV);
 	insert_move(1,&PA_INV_1_3SV);
