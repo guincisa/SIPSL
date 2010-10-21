@@ -156,7 +156,11 @@ void VALO::onInvite(MESSAGE* _message){
 	}
 
 	//TODO use Registrar
-	message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
+	stringstream tmps ;
+	tmps << "INVITE sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
+	message->setHeadSipRequest(tmps.str());
+
+	//message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
 	message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
 
@@ -210,7 +214,11 @@ void VALO::onAck(MESSAGE* _message){
 
 	//change request
 	DEBOUT("VALO ", newack->getHeadSipRequest().getContent())
-	newack->setHeadSipRequest("ACK sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
+	stringstream tmps ;
+	tmps << "ACK sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
+	newack->setHeadSipRequest(tmps.str());
+
+	//newack->setHeadSipRequest("ACK sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
 	//don't change CSEQ
 //	char buff[64];
@@ -421,7 +429,11 @@ void VALO::onBye(MESSAGE* _message){
 
 		message->setDestEntity(SODE_TRNSCT_CL);
 
-		message->setHeadSipRequest("BYE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
+		stringstream tmps;
+		tmps << "BYE sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
+		message->setHeadSipRequest(tmps.str());
+
+		//message->setHeadSipRequest("BYE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());

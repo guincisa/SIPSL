@@ -32,10 +32,13 @@
 #include <stdio.h>
 #include <string>
 #include <string.h>
+#include <strings.h>
 #include <sys/socket.h> /* for socket() and bind() */
 #include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
 #include <stdlib.h>     /* for atoi() and exit() */
 #include <netdb.h>
+#include <time.h>
+
 
 
 #ifndef UTIL_H
@@ -261,7 +264,7 @@ void SUDP::sendReply(MESSAGE* _message){
 	host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
 	bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
 	si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
-	if( inet_aton(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
+	if( inet_pton(AF_INET, viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 		DEBASSERT ("can set reply address")
 	}
 	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
