@@ -100,10 +100,10 @@ ENGINE::ENGINE(int _i) {
     DEBOUT("ENGINE::ENGINE()","")
     int res;
 
-    if ( _i > 8)
-    	_i = 8;
+    if ( _i > MAXTHREADS)
+    	_i = MAXTHREADS;
 
-    ENGtuple *t[8];
+    ENGtuple *t[MAXTHREADS];
 
     int i;
     for ( i = 0 ; i < _i ; i++){

@@ -1,0 +1,16 @@
+#!/bin/bash 
+COUNTER=0
+echo "COMMAND    PID %CPU %MEM  RSS   SZ     ELAPSED NLWP"
+while [  $COUNTER -lt 10 ]; do
+#    ps -L aux | grep SIx | grep -v grep
+#    ps aux | grep SIx | grep -v grep
+ps -eo fname,pid,pcpu,pmem,rss,osz,etime,nlwp | grep SIx|grep -v grep
+    sleep 1
+#let COUNTER=COUNTER+1 
+#echo
+done
+
+#  'format' is one or more of:
+#        user ruser group rgroup uid ruid gid rgid pid ppid pgid sid taskid ctid
+#        pri opri pcpu pmem vsz rss osz nice class time etime stime zone zoneid
+#        f s c lwp nlwp psr tty addr wchan fname comm args projid project pset

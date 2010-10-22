@@ -1,0 +1,135 @@
+\documentclass[a4paper]{article}
+\usepackage{graphicx}
+\title{Performance Indexes - SIPSL}
+\author{guic}
+\date{October 2010}
+\begin{document}
+	\small
+	\maketitle
+\section{Message Lifecycle}
+
+\subsection{Creation}
+
+The creation is done in different ways:
+
+\begin{itemize}
+   \item Incoming from network
+   \item Create internally a request, reply or operation
+\end{itemize}
+
+\subsection{Incoming from network}
+
+The buffer is used to create message. The message is inserted into the global message table. 
+The key for the message table is the address of the message.
+
+\begin{verbatim}
+MESSAGE* newmessage=0x0;
+CREATENEWMESSAGE_EXT(newmessage, incomingbuffer, socket,
+    echoclientaddress, networksourcepoint)
+\end{verbatim}
+
+Message key is made by the following information:
+\begin{verbatim}
+
+  key = <address of message integer><creation timestamp>
+  example:
+    85b4d501286797872880071
+
+\end{verbatim}
+	
+\subsection{Create internally a request, reply or operation}
+	
+The message is copied from another exiting message. Only the buffer and other info is copied, the headers are left empty; this means that there are no copy constructors.	
+	
+\begin{verbatim}
+CREATEMESSAGE(newmessage, sourcemessage, generatingpoint)
+\end{verbatim}
+
+The source message can be a request or reply and the new message also (there is not constraint).
+
+\section{Deletion control}
+
+\subsection{Message lock and lock table}
+
+The purpose of the lock and the lock table is because some messages may require to remain allocated during the entire lifecycle of the call,
+other messages can be deleted immediately after being sent.
+
+The transmission layer will check the lock, if the message is locked it will not be deleted. 
+All the message in the lock table will be deleted once the deletion of the call object has been requested, so it is not mandatory to unlock messages an delete once they are not useful
+(but it is recommended though).
+
+The lock must be checked before deleting the message. The deletion is done by PURGEMESSAGE which will also remove it from the global message table:
+\begin{verbatim}
+PURGEMESSAGE(message)
+\end{verbatim}
+
+When the lock is set, the message must also be stored in the locked message table:
+\begin{verbatim}
+message->setLock();
+call_oset->insertLockedMessage(message);
+\end{verbatim}
+The table is local to the call. If the message is unlocked it must also be removed from the table.
+
+\section{Messages lifecycle cases}
+
+\subsection{INVITE A - incoming invite}
+
+\begin {itemize}
+\item invite arrives in SUDP, message is created
+\item message traverses the SIPENGINE
+\item message traverses the SL\_CC
+\begin {itemize}
+\item CALL\_OSET is created
+\item message is sent to COMAP which will find the correct SL\_CO
+\item COMAP will execute the SL\_CO::call
+\begin {itemize}
+\item SL\_CO::call will create the Invite Server Transaction State Machine TRNSCT\_SM\_INVITE\_SV
+\item the message is stored into the Matrix and locked.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+INVITE A is also stored locally in VALO.
+
+The INVITE A is delete at the end of the call when the TRNSCT\_SM\_INVITE\_SV is deleted.
+
+\subsection{100 TRY A - immediate reply by SIPSL to A}
+
+The 100 TRY A is generated using INVITE A and deleted after transmission.
+
+\subsection{INVITE B - outgoing invite}
+
+\begin {itemize}
+\item INVITE B is created in VALO (pointer is stored locally)
+\item message traverses the SL\_CC
+\begin {itemize}
+\item CALL\_OSET is found
+\item message is sent to COMAP which will find the correct SL\_CO
+\item COMAP will execute the SL\_CO::call
+\begin {itemize}
+\item SL\_CO::call will create the Invite Client Transaction State Machine TRNSCT\_SM\_INVITE\_CL
+\item the message is stored into the Matrix and locked.
+\item the invite is duplicated and a copy is sent to ALARM (locked and stored in locked messages)
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\subsection{INVITE B ALARM for retransmission}
+
+\begin {itemize}
+\item INVITE B ALARM arrives at the client state machine it is duplicated and set as operation "timer on"
+\item The new INVITE B timer is locked and stored into the locked messages table
+\item The incoming message is unlocked and sent to SUDP
+\item SUDP will delete the message
+\end{itemize}
+
+\includegraphics[width=90mm]{timerAlogic.eps}
+
+\section{Call\_OSet lifecyle}
+
+The deletion of the call\_oset is triggered using:
+\begin{verbatim}
+	COMAP::setDoaRequested(call_oset, message->getModulus());
+\end{verbatim} 
+
+\end{document}

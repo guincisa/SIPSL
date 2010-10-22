@@ -80,12 +80,12 @@ int main(int argc, const char* argv[]) {
 		TRNSPRT transport;
 
 		//Second stage engine: Call Control
-		SL_CC sl_cc(8);
+		SL_CC sl_cc(64);
 		sl_cc.linkTransport(&transport);
 		sl_cc.linkSUDP(&mystack);
 
 		//First stage engine: Lazy parser
-		SIPENGINE gg(2);
+		SIPENGINE gg(10);
 		gg.setSL_CC(&sl_cc);
 		gg.linkSUDP(&mystack);
 

@@ -49,7 +49,7 @@ class ENGINE {
 
 	private:
 
-		ThreadWrapper* parsethread[8];
+		ThreadWrapper* parsethread[64];
 
         SUDP* sudp;
 

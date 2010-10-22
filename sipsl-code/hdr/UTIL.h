@@ -62,14 +62,16 @@ class ThreadWrapper {
 
 #define COMAPS 2
 
-#define LOGSIP
-#define LOGINF
-#define LOGMIN
-#define LOGDEV
-#define LOGMEM
-#define LOGNTW
+#define MAXTHREADS 64
 
+//#define LOGSIP
+//#define LOGINF
+#define LOGMIN
+//#define LOGDEV
+//#define LOGMEM
+//#define LOGNTW
 //#define LOGLOK
+
 //Mandatory
 //**********************************************************
 #undef DEBASSERT
@@ -164,12 +166,18 @@ class ThreadWrapper {
 #undef DEBMESSAGESHORT
 #define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" << m2 << "]\n[" <<m2->getKey() << "]\n["<< m2->getLine(0) << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
 	//**********************************************************
+#else
+#define DEBSIP(m1,m2)
+#define DEBMESSAGE(m1,m2)
+#define DEBMESSAGESHORT(m1,m2)
 #endif
 //**********************************************************
 //**********************************************************
 #ifdef LOGNTW
 #undef DEBNTW
 #define DEBNTW(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#else
+#define DEBNTW(m1,m2)
 #endif
 //**********************************************************
 //**********************************************************
@@ -184,6 +192,10 @@ class ThreadWrapper {
 #undef DEBOUT_UTIL
 #define DEBOUT_UTIL(m1,m2)  {stringstream xx ; xx << "DEBOUT_UTIL " <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 	//**********************************************************
+#else
+#define DEBOUT(m1,m2)
+#define DEBOUT_UTIL(m1,m2)
+#define DEBINF(m1,m2)
 #endif
 //**********************************************************
 //**********************************************************
@@ -257,6 +269,9 @@ class ThreadWrapper {
 		DEBOUT("DELPTR",mess<<"]["<<m1)\
 		delete m1;
 
+#else
+#define DEBMEM(m1,m2)
+#define DUMPMESSTABLE
 #endif
 //**********************************************************
 //**********************************************************
