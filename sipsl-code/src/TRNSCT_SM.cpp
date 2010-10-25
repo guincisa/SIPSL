@@ -383,11 +383,26 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_1_3_inv_sv move to state 3","")
 
-	if ( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 != 0x0){
-		// remove it
-		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock();
-		_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2);
-	}
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
+
+	CREATEMESSAGE(ack_timer, _message, SODE_TRNSCT_SV)
+	SysTime afterT;
+	GETTIME(afterT);
+	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
+
+	DEBOUT("TRNSCT_INV_CL act_1_3_inv_sv creating alarm for AC", TIMER_1 << " " << firetime)
+
+	//TODO this
+	//design the ACK request
+//	ack_timer->setFireTime(firetime);
+//	ack_timer->typeOfInternal = TYPE_OP;
+//	ack_timer->typeOfOperation = TYPE_OP_TIMER_ON;
+//	ack_timer->orderOfOperation = "TIMER_A";
+//	ack_timer->setLock();
+//	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
+//
+//	SingleAction sa_2 = SingleAction(ack_timer);
 
 	_sm->State = 3;
 
@@ -454,6 +469,8 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 
 
 	STOREMESS_1_2 = 0x0;
+	STOREMESS_1_3 = 0x0;
+
 
 	PA_INV_0_1SV.action = &act_0_1_inv_sv;
 	PA_INV_0_1SV.predicate = &pre_0_1_inv_sv;
@@ -704,11 +721,12 @@ ACTION* act_1_2_inv_cl(SM* _sm, MESSAGE* _message) {
 	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	_message->orderOfOperation = "TIMER_A";
 
-	_message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
-
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
+
+	//TODO the message has no esplicit destination because type is OP
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	//_message->setGenEntity(SODE_TIMERPOINT);
 
 	_sm->State = 2;
 
@@ -765,17 +783,23 @@ ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 
-	//Clear alam here in case the b did not send any trying
-	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
-	___message->typeOfInternal = TYPE_OP;
-	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	___message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
+//	//Clear alarm here in case the b did not send any trying
+//	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+//	___message->typeOfInternal = TYPE_OP;
+//	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
+//	___message->setLock();
+//	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
+//
+//	SingleAction sa_2 = SingleAction(___message);
+//	action->addSingleAction(sa_2);
+//
+//	PURGEMESSAGE(_message);
 
-	SingleAction sa_2 = SingleAction(___message);
+	//Clear alarm here in case the b did not send any trying
+	_message->typeOfInternal = TYPE_OP;
+	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	SingleAction sa_2 = SingleAction(_message);
 	action->addSingleAction(sa_2);
-
-	PURGEMESSAGE(_message);
 
 	_sm->State = 3;
 
@@ -817,18 +841,21 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
+//	//Clear alam here in case the b did not send any trying
+//	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+//	___message->typeOfInternal = TYPE_OP;
+//	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
+//	___message->setLock();
+//	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
+//
+//	_message->setLock();
+//	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+
 	//Clear alam here in case the b did not send any trying
-	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
-	___message->typeOfInternal = TYPE_OP;
-	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	___message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
+	_message->typeOfInternal = TYPE_OP;
+	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
 
-	_message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
-
-
-	SingleAction sa_2 = SingleAction(___message);
+	SingleAction sa_2 = SingleAction(_message);
 	action->addSingleAction(sa_2);
 
 	_sm->State = 4;

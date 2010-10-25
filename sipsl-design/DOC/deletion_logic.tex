@@ -125,6 +125,58 @@ The 100 TRY A is generated using INVITE A and deleted after transmission.
 
 \includegraphics[width=90mm]{timerAlogic.eps}
 
+\subsection{100 Try B}
+\begin {itemize}
+\item Message is modified to cancel the alarm
+\item Message is sent to alarm
+\item Message is deleted
+\end{itemize}
+
+\subsection{101 DIALOG ESTABLISHED B or 180 RINGING B}
+\begin {itemize}
+\item Message is duplicated into and changed into A side reply
+\item Message is modified to cancel the alarm
+\item Message is sent to alarm
+\item Message is deleted
+\end{itemize}
+
+\subsection{101 DIALOG ESTABLISHED A or 180 RINGING A}
+\begin {itemize}
+\item Message is locked stored into the state machine as STOREMESS\_1\_2 for retransmission 
+\item Message is sent
+\end{itemize}
+
+\subsection{200 OK B}
+\begin {itemize}
+\item Message is sent to ALO
+\item Message is duplicated modified to cancel the alarm
+\item Message is sent to alarm
+\item Message is deleted
+\item The copy is sent to ALO
+\item ALO accesses the A\_Matrix of client state machine (INVITE A)
+\item Message is duplicated
+\item Message is modified to be a 200OK A with the 200OKB sdp part
+\item Message is sent to sv
+\item 200 OK B is deleted
+\end{itemize}
+
+IMPLEMENT THE resend to 200ok if ACK missing
+
+
+\subsection{200 OK A}
+\begin {itemize}
+\item Message is stored into STOREMESS\_1\_3 for retranmission in case the INVITE A arrives again
+\item Message is duplicated and sent to alarm in case the ACK A does not arrives
+\item Massage is sent to A
+\end{itemize}
+
+\subsection{ACK A}
+\begin {itemize}
+\item Message 
+\end{itemize}
+
+IMPLEMENT THE resend to 200ok if ACK missing
+
 \section{Call\_OSet lifecyle}
 
 The deletion of the call\_oset is triggered using:

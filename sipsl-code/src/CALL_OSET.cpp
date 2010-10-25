@@ -530,7 +530,7 @@ void SL_CO::actionCall_CL(ACTION* action){
 			actionList.pop();
 			continue;
 		}
-		else if (_tmpMessage->typeOfInternal == TYPE_OP){ // to alarm
+		else if (_tmpMessage->typeOfInternal == TYPE_OP ){ // to alarm
 
 			DEBOUT("SL_CO:: TYPE_OP","")
 
@@ -546,6 +546,9 @@ void SL_CO::actionCall_CL(ACTION* action){
 				string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->orderOfOperation+ "#";
 				DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
+				if(!_tmpMessage->getLock()){
+					PURGEMESSAGE(_tmpMessage)
+				}
 			}
 			else {
 				DEBASSERT("SL_CO client operation type inconsistency")

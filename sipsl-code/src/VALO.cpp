@@ -584,11 +584,11 @@ void VALO::on200Ok(MESSAGE* _message){
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 	}
 
+	//TODO the 200 OK B for now is deleted
+	PURGEMESSAGE(_message)
+
 	ok_x->dumpVector();
 
-	//TODO move this into state machines
-	_message->setLock();
-	call_oset->insertLockedMessage(_message);
 	sl_cc->p_w(ok_x);
 
 }

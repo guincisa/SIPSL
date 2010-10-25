@@ -37,7 +37,7 @@ OverallState_SV = OS_COMPLETED
 If Ack does not arrives, resend 200OK
 
 unlock / remove STOREMESS_1_2"
-  xyzwh 26 107 2000 219 131
+  xyzwh 60 62 2000 219 131
 statecanvas 130743 state_ref 196279 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 432 588 2000 40 29
@@ -90,7 +90,7 @@ transitioncanvas 131767 transition_ref 232503 // INVITE_A(NTW,SV)
 end
 transitioncanvas 132535 transition_ref 232631 // TIMER 200OK
   
-  from ref 129975 z 2001 label "TIMER 200OK" xyz 189 309 2001 to point 151 327
+  from ref 129975 z 2001 label "TIMER 200OK" xyz 171 311 2001 to point 151 327
   line 132663 z 2001 to point 151 431
   line 132791 z 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
