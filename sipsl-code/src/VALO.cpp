@@ -192,8 +192,8 @@ void VALO::onInvite(MESSAGE* _message){
 
 }
 void VALO::onAck(MESSAGE* _message){
-	DEBOUT("VALO::onAck",_message->getHeadSipRequest().getContent())
 
+	DEBOUT("VALO::onAck",_message->getHeadSipRequest().getContent())
 
 	//V5 trying to build the ACK using the ACK_A instead of INVITE b
 	CREATEMESSAGE(newack, _message, SODE_ALOPOINT)

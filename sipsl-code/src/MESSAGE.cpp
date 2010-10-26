@@ -430,7 +430,7 @@ void MESSAGE::compileMessage(void){
 
 }
 MESSAGE* MESSAGE::getSourceMessage(void){
-	DEBMESSAGE("MESSAGE::getSourceMessage",source)
+	DEBMESSAGESHORT("MESSAGE::getSourceMessage",source)
 	return source;
 }
 void MESSAGE::setSourceMessage(MESSAGE* _source){

@@ -30,5 +30,9 @@
 #define TIMER_1 500000
 #define TIMER_zero 0
 
+#ifdef SPARC
 #define BPHONE "10.21.99.79"
+#else
+#define BPHONE "grog"
+#endif
 

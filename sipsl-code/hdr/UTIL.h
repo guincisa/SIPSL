@@ -36,6 +36,7 @@
 #include <vector>
 #include <algorithm>
 
+//#define SPARC
 
 using namespace std;
 
@@ -60,17 +61,27 @@ class ThreadWrapper {
         ThreadWrapper();
 };
 
-#define COMAPS 2
-
 #define MAXTHREADS 64
 
-//#define LOGSIP
-//#define LOGINF
+#ifdef SPARC
+#define COMAPS 5
+#define SIPENGINETH 10
+#define SL_CCTH 64
 #define LOGMIN
-//#define LOGDEV
-//#define LOGMEM
-//#define LOGNTW
+#else
+#define COMAPS 2
+#define SIPENGINETH 3
+#define SL_CCTH 10
+#define LOGSIP
+#define LOGINF
+#define LOGMIN
+#define LOGDEV
+#define LOGMEM
+#define LOGNTW
 //#define LOGLOK
+#endif
+
+
 
 //Mandatory
 //**********************************************************

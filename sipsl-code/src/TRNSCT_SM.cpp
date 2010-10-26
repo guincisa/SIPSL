@@ -105,7 +105,6 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	//TODO insert into lock table???
 	Matrix->setLock();
 
-
 	//This one is locked elswere
 	A_Matrix = _a_Matrix;
 	if (_a_Matrix == 0x0){
@@ -288,8 +287,8 @@ bool pre_1_2_inv_sv(SM* _sm, MESSAGE* _message){
 				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
-			return true;
 			DEBOUT("SM_SV pre_1_2_inv_sv","true")
+			return true;
 		}
 		else {
 			DEBOUT("SM_SV pre_1_2_inv_sv","false")
@@ -381,8 +380,7 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SM act_1_3_inv_sv move to state 3","")
-
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 = _message;
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
 
@@ -405,6 +403,7 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 //	SingleAction sa_2 = SingleAction(ack_timer);
 
 	_sm->State = 3;
+	DEBOUT("SM act_1_3_inv_sv move to state 3","")
 
 	//TODO
 	// resend 200 ok until ack arrived which is state = OS_CONFIRMED
@@ -798,6 +797,7 @@ ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 	//Clear alarm here in case the b did not send any trying
 	_message->typeOfInternal = TYPE_OP;
 	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	_message->orderOfOperation = "TIMER_A";
 	SingleAction sa_2 = SingleAction(_message);
 	action->addSingleAction(sa_2);
 
@@ -842,7 +842,6 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 //	//Clear alam here in case the b did not send any trying
-//	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
 //	___message->typeOfInternal = TYPE_OP;
 //	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
 //	___message->setLock();
@@ -852,10 +851,14 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 //	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 
 	//Clear alam here in case the b did not send any trying
-	_message->typeOfInternal = TYPE_OP;
-	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+	___message->typeOfInternal = TYPE_OP;
+	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	___message->orderOfOperation = "TIMER_A";
+	___message->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
 
-	SingleAction sa_2 = SingleAction(_message);
+	SingleAction sa_2 = SingleAction(___message);
 	action->addSingleAction(sa_2);
 
 	_sm->State = 4;
@@ -870,6 +873,33 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	return action;
 }
+bool pre_4_4_inv_cl(SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM pre_1_4_inv_cl","")
+
+	if (_message->getReqRepType() == REPSUPP
+		&&_message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getDestEntity() == SODE_TRNSCT_CL
+		&& _message->getGenEntity() ==  SODE_NTWPOINT
+		&& _sm->getSL_CO()->OverallState_CL == OS_CONFIRMED){
+			DEBOUT("SM pre_4_4_inv_cl","true")
+			return true;
+		}
+		else {
+			DEBOUT("SM pre_4_4_inv_cl","false")
+			return false;
+		}
+}
+ACTION* act_4_4_inv_cl(SM* _sm, MESSAGE* _message) {
+
+	//take the 200OK change the CSEQ to ACK
+	//send to state machine client
+	//so it will be sent to TRNSCT_SM_ACK_CL
+	//TRNSCT_SM_ACK_CL will need to take action and resend the ACK to B
+	//TRNSCT_SM_ACK_CL will delete the 200 OK
+	DEBASSERT("pre_4_4_inv_cl")
+}
+
 bool pre_4_5_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM pre_4_5_inv_cl","")
@@ -912,7 +942,8 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 		PA_INV_1_3CL((SM*)this),
 		PA_INV_1_4CL((SM*)this),
 		PA_INV_4_5CL((SM*)this),
-		PA_INV_1_99CL((SM*)this){
+		PA_INV_1_99CL((SM*)this),
+		PA_INV_4_4CL((SM*)this){
 
 	PA_INV_0_1CL.action = &act_0_1_inv_cl;
 	PA_INV_0_1CL.predicate = &pre_0_1_inv_cl;
@@ -937,6 +968,8 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_4_5CL.action = &act_4_5_inv_cl;
 	PA_INV_4_5CL.predicate = &pre_4_5_inv_cl;
 
+	PA_INV_4_4CL.action = &act_4_4_inv_cl;
+	PA_INV_4_4CL.predicate = &pre_4_4_inv_cl;
 
 	resend_invite = 0;
 
@@ -959,6 +992,8 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	insert_move(4,&PA_INV_4_5CL);
 
 	//manca 3 a 3 con dialoge
+
+	insert_move(4,&PA_INV_4_4CL);
 
 
 	//Resend max reached

@@ -162,7 +162,6 @@ The 100 TRY A is generated using INVITE A and deleted after transmission.
 
 IMPLEMENT THE resend to 200ok if ACK missing
 
-
 \subsection{200 OK A}
 \begin {itemize}
 \item Message is stored into STOREMESS\_1\_3 for retranmission in case the INVITE A arrives again
@@ -171,11 +170,30 @@ IMPLEMENT THE resend to 200ok if ACK missing
 \end{itemize}
 
 \subsection{ACK A}
+Ack comes to SL\_CC and a new state machine is created.
 \begin {itemize}
-\item Message 
+\item Message is stored in the Matrix 
+\item Message is sent to ALO
+\item ALO creates the Ack B
+\item Ack B arrives at client sm
 \end{itemize}
 
-IMPLEMENT THE resend to 200ok if ACK missing
+\subsection{ACK B}
+Ack comes to SL\_CC and a new state machine is created.
+\begin {itemize}
+\item Message is stored in the Matrix 
+\item Message is sent to network
+\end{itemize}
+
+\subsection{200 OK B resend by B}
+The 200 OK is repeated by B, the ACK b must be resent
+\begin{itemize}
+\item 200 OK arrives to INVITE client SM
+\item the sm changes the CSEQ to ACK
+\item the 200 ok is resent to client
+\item ack client SM receives the 200 OK
+\item the sm ack client resend the ack
+\end{itemize}
 
 \section{Call\_OSet lifecyle}
 

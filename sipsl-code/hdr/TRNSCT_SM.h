@@ -127,6 +127,7 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 		PREDICATE_ACTION PA_INV_1_99CL; //resend invite max reached
 		PREDICATE_ACTION PA_INV_1_4CL; //200OK
 		PREDICATE_ACTION PA_INV_4_5CL; //Non transactional ACK
+		PREDICATE_ACTION PA_INV_4_4CL; //200OK B incoming again, need to resend ACK
 
 
 		int resend_invite;
@@ -140,6 +141,7 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 class TRNSCT_SM_ACK_SV : public TRNSCT_SM {
 
 	public:
+
 
 		PREDICATE_ACTION PA_ACK_0_1SV;
 
