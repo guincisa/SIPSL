@@ -114,7 +114,13 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 TRNSCT_SM::~TRNSCT_SM(void){
 
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this)
-	PURGEMESSAGE(Matrix)
+	if (Matrix == A_Matrix){
+		PURGEMESSAGE(Matrix)
+	}else{
+		PURGEMESSAGE(Matrix)
+		PURGEMESSAGE(A_Matrix)
+	}
+
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
 
 }
@@ -376,20 +382,22 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
 
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 = _message;
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
 
-	CREATEMESSAGE(ack_timer, _message, SODE_TRNSCT_SV)
-	SysTime afterT;
-	GETTIME(afterT);
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
+	SingleAction sa_1 = SingleAction(_message);
 
-	DEBOUT("TRNSCT_INV_CL act_1_3_inv_sv creating alarm for AC", TIMER_1 << " " << firetime)
+	action->addSingleAction(sa_1);
+
+	//TODO
+//	CREATEMESSAGE(ack_timer, _message, SODE_TRNSCT_SV)
+//	SysTime afterT;
+//	GETTIME(afterT);
+//	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
+//
+//	DEBOUT("TRNSCT_INV_CL act_1_3_inv_sv creating alarm for AC", TIMER_1 << " " << firetime)
 
 	//TODO this
 	//design the ACK request
@@ -468,7 +476,7 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 
 
 	STOREMESS_1_2 = 0x0;
-	STOREMESS_1_3 = 0x0;
+//	STOREMESS_1_3 = 0x0;
 
 
 	PA_INV_0_1SV.action = &act_0_1_inv_sv;
@@ -875,13 +883,13 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 }
 bool pre_4_4_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_1_4_inv_cl","")
+	DEBOUT("SM pre_4_4_inv_cl",_message->getReqRepType() <<"]["<<_message->getHeadSipReply().getReply().getCode() <<"]["<<_message->getDestEntity() <<"]["<<_sm->getSL_CO()->OverallState_CL)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT
-		&& _sm->getSL_CO()->OverallState_CL == OS_CONFIRMED){
+		&& _sm->getSL_CO()->OverallState_CL == OS_COMPLETED){
 			DEBOUT("SM pre_4_4_inv_cl","true")
 			return true;
 		}
@@ -892,12 +900,26 @@ bool pre_4_4_inv_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_4_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	//take the 200OK change the CSEQ to ACK
-	//send to state machine client
-	//so it will be sent to TRNSCT_SM_ACK_CL
-	//TRNSCT_SM_ACK_CL will need to take action and resend the ACK to B
-	//TRNSCT_SM_ACK_CL will delete the 200 OK
-	DEBASSERT("pre_4_4_inv_cl")
+	//take the 200OK change to send it to ack_cl
+
+	DEBOUT("SM act_4_4_inv_cl","")
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+	_message->setDestEntity(SODE_TRNSCT_CL);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	_message->typeOfInternal = TYPE_OP;
+	_message->typeOfOperation = TYPE_OP_SMCOMMAND;
+
+	_message->replaceHeadCSeq(1,"ACK");
+
+	_message->compileMessage();
+	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
+	SingleAction sa_1 = SingleAction(_message);
+
+	action->addSingleAction(sa_1);
+
+	return action;
+
 }
 
 bool pre_4_5_inv_cl(SM* _sm, MESSAGE* _message){
@@ -942,8 +964,8 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 		PA_INV_1_3CL((SM*)this),
 		PA_INV_1_4CL((SM*)this),
 		PA_INV_4_5CL((SM*)this),
-		PA_INV_1_99CL((SM*)this),
-		PA_INV_4_4CL((SM*)this){
+		PA_INV_4_4CL((SM*)this),
+		PA_INV_1_99CL((SM*)this){
 
 	PA_INV_0_1CL.action = &act_0_1_inv_cl;
 	PA_INV_0_1CL.predicate = &pre_0_1_inv_cl;
@@ -971,6 +993,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_4_4CL.action = &act_4_4_inv_cl;
 	PA_INV_4_4CL.predicate = &pre_4_4_inv_cl;
 
+
 	resend_invite = 0;
 
 	//INVITE in
@@ -991,10 +1014,10 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	//ACK will be sent in the other SM.
 	insert_move(4,&PA_INV_4_5CL);
 
-	//manca 3 a 3 con dialoge
-
 	insert_move(4,&PA_INV_4_4CL);
+	insert_move(5,&PA_INV_4_4CL);
 
+	//manca 3 a 3 con dialoge
 
 	//Resend max reached
 	insert_move(1,&PA_INV_1_99CL);
@@ -1085,6 +1108,9 @@ ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
+	// to test put this:
+	//_message->setDestEntity(SODE_NOPOINT);
+
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->typeOfInternal = TYPE_MESS;
@@ -1098,20 +1124,67 @@ ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 	// store this ack and retransmit is 200 ok arrives again
 	_sm->getSL_CO()->OverallState_CL = OS_COMPLETED;
 
+	DEBMESSAGE("FIRST ACK B", _message)
 
 	return action;
 
 }
+bool pre_1_1_ack_cl(SM* _sm, MESSAGE* _message){
+
+	DEBOUT("SM pre_1_1_ack_cl", _message->getReqRepType() << "]["<<_message->getHeadSipReply().getReply().getCode()<< "]["<<_message->getDestEntity()<< "]["<<_message->getGenEntity())
+	if (_message->getReqRepType() == REPSUPP
+			&&_message->getHeadSipReply().getReply().getCode() == OK_200
+			&& _message->getDestEntity() == SODE_TRNSCT_CL
+			&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
+		DEBOUT("SM pre_1_1_ack_cl","true")
+		return true;
+	}
+	else {
+		DEBOUT("SM pre_1_1_ack_cl","false")
+		return false;
+	}
+}
+ACTION* act_1_1_ack_cl(SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM act_1_1_ack_cl","resend ACK")
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	CREATEMESSAGE(__message, ((TRNSCT_SM*)_sm)->getMatrixMessage(), SODE_TRNSCT_CL)
+
+	__message->setDestEntity(SODE_NTWPOINT);
+	__message->setGenEntity(SODE_TRNSCT_CL);
+	__message->typeOfInternal = TYPE_MESS;
+	SingleAction sa_1 = SingleAction(__message);
+
+	action->addSingleAction(sa_1);
+
+	DEBMESSAGE("SECOND ACK B", __message)
+
+	PURGEMESSAGE(_message)
+
+	return action;
+
+}
+
 //**********************************************************************************
 TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
-		PA_ACK_0_1CL((SM*)this){
+		PA_ACK_0_1CL((SM*)this),
+		PA_ACK_1_1CL((SM*)this){
 
 	PA_ACK_0_1CL.action = &act_0_1_ack_cl;
 	PA_ACK_0_1CL.predicate = &pre_0_1_ack_cl;
 
+	PA_ACK_1_1CL.action = &act_1_1_ack_cl;
+	PA_ACK_1_1CL.predicate = &pre_1_1_ack_cl;
+
+
 	insert_move(0,&PA_ACK_0_1CL);
+	insert_move(1,&PA_ACK_1_1CL);
+
 }
+
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************

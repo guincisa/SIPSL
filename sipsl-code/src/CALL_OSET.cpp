@@ -116,7 +116,6 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call){
 
 	transport = _transport;
 
-
 	DEBOUT("CALL_OSET sequenceMap", &sequenceMap)
 	DEBOUT("CALL_OSET trnsctSmMap", &trnsctSmMap)
 
@@ -305,7 +304,12 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode, _branch.c_str());
 
 	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(t_key, _trnsctSm));
-	return;
+
+	// special for client sm Ack
+	if (_method.substr(0,3).compare("ACK") == 0 && _sode == SODE_TRNSCT_CL ){
+		DEBOUT_UTIL("CALL_OSET::addTrnsctSm special Ack sm cl pointer",_method <<"#"<< _sode <<"#"<<_branch <<"#"<<_trnsctSm)
+		lastTRNSCT_SM_ACK_CL = _trnsctSm;
+	}	return;
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -395,8 +399,21 @@ void SL_CO::call(MESSAGE* _message){
 		string callidys = _message->getHeadCallId().getContent();
 	    DEBOUT("SL_CO::call client state machine", callidys)
 
-		//Replies are recognized here
-		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
+
+		TRNSCT_SM* trnsct_cl = 0x0;
+		//Get into the ack cl state machine
+		if (_message->typeOfInternal == TYPE_OP && _message->typeOfOperation == TYPE_OP_SMCOMMAND){
+			DEBOUT("lastTRNSCT_SM_ACK_CL", call_oset->lastTRNSCT_SM_ACK_CL)
+			trnsct_cl = call_oset->lastTRNSCT_SM_ACK_CL;
+			if ( trnsct_cl == 0x0){
+				DEBASSERT("call_oset->lastTRNSCT_SM_ACK_CL NULL")
+			}
+
+		}else {
+			DEBY
+			//Replies are recognized here
+			trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
+		}
 
 		if (trnsct_cl == 0x0){
 
@@ -495,9 +512,10 @@ void SL_CO::actionCall_SV(ACTION* action){
 void SL_CO::actionCall_CL(ACTION* action){
 
 	// now read actions
+
 	stack<SingleAction> actionList;
 	actionList = action->getActionList();
-
+	DEBY
 	while (!actionList.empty()){
 
 		MESSAGE* _tmpMessage = actionList.top().getMessage();
@@ -550,11 +568,18 @@ void SL_CO::actionCall_CL(ACTION* action){
 					PURGEMESSAGE(_tmpMessage)
 				}
 			}
+			else if (_tmpMessage->typeOfOperation == TYPE_OP_SMCOMMAND){
+				DEBOUT("SL_CO::call action is internal send to some SM", _tmpMessage->getHeadSipRequest().getContent() )
+				((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+			}
 			else {
 				DEBASSERT("SL_CO client operation type inconsistency")
 			}
 			actionList.pop();
 			continue;
+		}
+		else if (_tmpMessage->getDestEntity() == SODE_NOPOINT){
+			DEBOUT("SL_CO::TEST, message is abandoned",_tmpMessage->getLine(0))
 		}
 		else {
 			//TODO

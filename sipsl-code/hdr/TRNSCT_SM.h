@@ -105,12 +105,15 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 		PREDICATE_ACTION PA_INV_3_4SV;
 		PREDICATE_ACTION PA_INV_2_2SV;
 
+		//This is the 200ok a to be resent if invite a arrives again
+		//TODO
 		MESSAGE* STOREMESS_1_3;
+		//This is the try  a to be resent if invite a arrives again
+		//TODO
 		MESSAGE* STOREMESS_1_2;
 
 
 		TRNSCT_SM_INVITE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
-
 };
 //**********************************************************************************
 // TRANSACTION STATE MACHINE INVITE CLIENT
@@ -128,6 +131,7 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 		PREDICATE_ACTION PA_INV_1_4CL; //200OK
 		PREDICATE_ACTION PA_INV_4_5CL; //Non transactional ACK
 		PREDICATE_ACTION PA_INV_4_4CL; //200OK B incoming again, need to resend ACK
+
 
 
 		int resend_invite;
@@ -155,13 +159,11 @@ class TRNSCT_SM_ACK_SV : public TRNSCT_SM {
 class TRNSCT_SM_ACK_CL : public TRNSCT_SM {
 
 	private:
-		//TODO move this to upper class
-		MESSAGE* A_Matrix;
 
 	public:
 
 		PREDICATE_ACTION PA_ACK_0_1CL;
-
+		PREDICATE_ACTION PA_ACK_1_1CL;
 
 		TRNSCT_SM_ACK_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 

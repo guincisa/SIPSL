@@ -84,6 +84,8 @@ using namespace std;
 #define TYPE_OP_NOOP 0
 #define TYPE_OP_TIMER_ON 3
 #define TYPE_OP_TIMER_OFF 4
+//Used to send command to a state machine
+#define TYPE_OP_SMCOMMAND 5
 
 
 //#define SODE_SMSVCALLPOINT 8

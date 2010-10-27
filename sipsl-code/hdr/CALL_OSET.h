@@ -71,6 +71,10 @@ class CALL_OSET {
 		// get transaction state machine
 		TRNSCT_SM* getTrnsctSm(string method, int sode, string branch);
 
+		//Trick to access the ack client state machine without branch
+		//it is needed when the 200OK comes again from b and should trigger the ack b again
+		TRNSCT_SM* lastTRNSCT_SM_ACK_CL;
+
 		// Sequence map
 		// used to store used sequences and return new unused sequences
 		map<string, int> sequenceMap;
