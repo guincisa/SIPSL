@@ -491,7 +491,7 @@ void SL_CO::actionCall_SV(ACTION* action){
 		}
 		else if (_tmpMessage->typeOfInternal == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 			//To network
-			DEBDEV("Send to trnasport", _tmpMessage)
+			DEBDEV("Send to transport", _tmpMessage)
 				call_oset->getTRNSPRT()->downCall(_tmpMessage, call_oset);
 //			if (_tmpMessage->getReqRepType() == REPSUPP) {
 //				//TODO Check if there is a ROUTE header
@@ -501,7 +501,26 @@ void SL_CO::actionCall_SV(ACTION* action){
 //				DEBASSERT("Unexpected SM_SV sending a Request to network")
 //			}
 
-		} else {
+		} else if (_tmpMessage->typeOfInternal == TYPE_OP){
+
+			if ( _tmpMessage->typeOfOperation == TYPE_OP_TIMER_ON){
+				DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->orderOfOperation+ "#");
+				DEBY
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
+				DEBY
+
+			} else if (_tmpMessage->typeOfOperation == TYPE_OP_TIMER_OFF){
+
+				DEBOUT("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->orderOfOperation+ "#")
+				string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->orderOfOperation+ "#";
+				DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
+				if(!_tmpMessage->getLock()){
+					PURGEMESSAGE(_tmpMessage)
+				}
+			}
+		}
+		else {
 			//TODO
 			DEBASSERT("SL_CO::call action is unexpected")
 		}

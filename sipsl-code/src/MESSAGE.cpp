@@ -114,9 +114,9 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 
 	return;
 }
-BASEMESSAGE::BASEMESSAGE(const BASEMESSAGE& x){
-	DEBASSERT("BASEMESSAGE copy constructor");
-}
+//BASEMESSAGE::BASEMESSAGE(const BASEMESSAGE& x){
+//	DEBASSERT("BASEMESSAGE copy constructor");
+//}
 
 
 vector<string> BASEMESSAGE::getLines(void){
@@ -273,9 +273,9 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headRoute = NULL;
 
 }
-MESSAGE::MESSAGE(const MESSAGE& x){
-	DEBASSERT("MESSAGE copy constructor");
-}
+//MESSAGE::MESSAGE(const MESSAGE& x){
+//	DEBASSERT("MESSAGE copy constructor");
+//}
 
 MESSAGE::~MESSAGE(){
 

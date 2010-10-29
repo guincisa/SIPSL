@@ -119,7 +119,7 @@ class BASEMESSAGE {
 
         BASEMESSAGE(BASEMESSAGE*, int genEntity, SysTime creaTime);
 
-        BASEMESSAGE(const BASEMESSAGE& x);
+//        BASEMESSAGE(const BASEMESSAGE& x);
 
 
         string &getLine(int);
@@ -255,7 +255,7 @@ class MESSAGE : public BASEMESSAGE {
 
         ~MESSAGE();
 
-        MESSAGE(const MESSAGE& x);
+//        MESSAGE(const MESSAGE& x);
 
 
     	// also use for getting the callIDx to retrieve CALL_OSET SV side

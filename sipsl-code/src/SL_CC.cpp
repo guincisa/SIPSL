@@ -221,11 +221,13 @@ void SL_CC::parse(MESSAGE* _mess) {
 			return;
 		}
 	}
-	else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_TRNSCT_CL){
+	else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_TRNSCT_CL || _mess->getGenEntity() == SODE_TRNSCT_SV){
 
-		DEBINF("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_TRNSCT_CL (4)", _mess->getGenEntity() )
+		DEBINF("SL_CC::parse entity from SODE_ALOPOINT (3) or SODE_TRNSCT_CL (4) or SODE_TRNSCT_SV (5)", _mess->getGenEntity() )
 
 		//Careful with source message
+		//Ok if coming from server: its the retransmission of 200ok for A
+		DEBOUT("SL_CC::parse _mess->getSourceMessage()", _mess->getSourceMessage())
 		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
 		int modulus = _mess->getSourceMessage()->getModulus();
 

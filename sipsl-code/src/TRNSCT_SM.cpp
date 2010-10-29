@@ -407,6 +407,7 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
 
 	SingleAction sa_2 = SingleAction(ack_timer);
+	action->addSingleAction(sa_2);
 
 	DEBOUT("SM act_1_3_inv_sv move to state 3","")
 	_sm->State = 3;
@@ -460,8 +461,6 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 	ack_timer_clear->typeOfInternal = TYPE_OP;
 	ack_timer_clear->typeOfOperation = TYPE_OP_TIMER_OFF;
 	ack_timer_clear->orderOfOperation = "TIMER_A";
-	ack_timer_clear->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer_clear);
 
 	SingleAction sa_3 = SingleAction(ack_timer_clear);
 	action->addSingleAction(sa_3);
@@ -636,6 +635,8 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 	insert_move(2,&PA_INV_1_3SV);
 	insert_move(3,&PA_INV_3_4SV);
 	insert_move(3,&PA_INV_3_3aSV);
+	insert_move(3,&PA_INV_3_3bSV);
+
 
 
 }
@@ -1015,7 +1016,7 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 }
 bool pre_4_4_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_4_4_inv_cl",_message->getReqRepType() <<"]["<<_message->getHeadSipReply().getReply().getCode() <<"]["<<_message->getDestEntity() <<"]["<<_sm->getSL_CO()->OverallState_CL)
+	DEBOUT("SM pre_4_4_inv_cl message type:",_message->getReqRepType() <<"] reply type code:["<<_message->getHeadSipReply().getReply().getCode() <<"] destination:["<<_message->getDestEntity() <<"] Overall:["<<_sm->getSL_CO()->OverallState_CL)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200

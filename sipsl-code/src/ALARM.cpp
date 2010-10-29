@@ -171,7 +171,7 @@ void ALMGR::alarmer(void){
 
 							sl_cc->p_w(_tmpMess);
 						} else {
-							DEBOUT("ALMGR::alarmer operation TYPE_OP", _tmpMess)
+							DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", _tmpMess)
 
 							RELLOCK(&mutex,"mutex");
 
