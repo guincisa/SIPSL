@@ -104,6 +104,8 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 		PREDICATE_ACTION PA_INV_1_3SV;
 		PREDICATE_ACTION PA_INV_3_4SV;
 		PREDICATE_ACTION PA_INV_2_2SV;
+		PREDICATE_ACTION PA_INV_3_3aSV;
+		PREDICATE_ACTION PA_INV_3_3bSV;
 
 		//This is the 200ok a to be resent if invite a arrives again
 		//TODO
@@ -112,6 +114,7 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 		//TODO
 		MESSAGE* STOREMESS_1_2;
 
+		int resend_200ok;
 
 		TRNSCT_SM_INVITE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 };

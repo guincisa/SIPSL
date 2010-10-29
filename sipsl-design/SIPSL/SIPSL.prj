@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 101
+  revision 102
   modified_by 55 "guic"
 
 
@@ -1011,6 +1011,10 @@ correct timer interaction with client state machine"
 	transition 232759 "MAX 200OK sent"
 	  on state_ref 202807 // 5
 	  external 
+	end
+
+	transition 261175 "INVITE_A(NTW,SV)"
+	  on state_ref 196151 // 3
 	end
       end
 

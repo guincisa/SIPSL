@@ -119,6 +119,9 @@ class BASEMESSAGE {
 
         BASEMESSAGE(BASEMESSAGE*, int genEntity, SysTime creaTime);
 
+        BASEMESSAGE(const BASEMESSAGE& x);
+
+
         string &getLine(int);
         int getTotLines(void);
 
@@ -251,6 +254,9 @@ class MESSAGE : public BASEMESSAGE {
         MESSAGE(MESSAGE*, int genEntity, SysTime creaTime);
 
         ~MESSAGE();
+
+        MESSAGE(const MESSAGE& x);
+
 
     	// also use for getting the callIDx to retrieve CALL_OSET SV side
     	MESSAGE* getSourceMessage(void);

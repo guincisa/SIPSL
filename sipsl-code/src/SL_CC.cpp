@@ -184,6 +184,13 @@ void SL_CC::parse(MESSAGE* _mess) {
 				}
 				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 					DEBINF("SL_CC::parse rejected by COMAP", callids)
+					if(!_mess->getLock()){
+						PURGEMESSAGE(_mess)
+					}
+					else {
+						DEBINF("Put this message into the locked messages table",_mess)
+						DEBASSERT("")
+					}
 				}
 				return;
 			}
@@ -206,6 +213,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			DEBINF("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
+				//TODO delete message
 			}
 			return;
 		}else {
@@ -233,6 +241,13 @@ void SL_CC::parse(MESSAGE* _mess) {
 				DEBINF("SL_CC::parse", "B SIDE call_oset exists")
 				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 					DEBINF("SL_CC::parse rejected by COMAP", callids)
+					if(!_mess->getLock()){
+						PURGEMESSAGE(_mess)
+					}
+					else {
+						DEBINF("Put this message into the locked messages table",_mess)
+						DEBASSERT("")
+					}
 				}
 				return;
 			}else{
@@ -243,6 +258,13 @@ void SL_CC::parse(MESSAGE* _mess) {
 		else {
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
+				if(!_mess->getLock()){
+					PURGEMESSAGE(_mess)
+				}
+				else {
+					DEBINF("Put this message into the locked messages table",_mess)
+					DEBASSERT("")
+				}
 			}
 			return;
 		}

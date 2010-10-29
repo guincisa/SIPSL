@@ -1,21 +1,21 @@
 format 73
 
 pseudostatecanvas 128055 pseudostate_ref 141239 // initial
-   xyz 305 24 2000
+   xyz 399 27 2000
 end
 statecanvas 128183 state_ref 195895 // 1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 490 115 2000 40 29
+  xyzwh 584 118 2000 40 29
 end
 note 128567 "ACTION:
 TRY(SM,NTW)
 INVITE_A(SM,ALO)
 
 OverallState_SV = OS_PROCEEDING"
-  xyzwh 519 18 2006 197 85
+  xyzwh 613 21 2006 197 85
 statecanvas 128823 state_ref 196023 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 588 332 2000 40 29
+  xyzwh 682 335 2000 40 29
 end
 note 129719 "ACTION:
 DIALOG_101(SV,NTW) or RING_180(SV,NTW)
@@ -24,88 +24,103 @@ OverallState_SV = OS_PROCEEDING
 
 STOREMESS_1_2 = message
 "
-  xyzwh 729 115 2000 237 109
+  xyzwh 823 118 2000 237 109
 statecanvas 129975 state_ref 196151 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 275 331 2000 40 29
+  xyzwh 384 311 2000 40 29
 end
 note 130487 "ACTION
 200_OK(SV,NTW)
 ALARM for 200OK(SV,NTW)
 OverallState_SV = OS_COMPLETED
 
-If Ack does not arrives, resend 200OK
-
-unlock / remove STOREMESS_1_2"
-  xyzwh 60 62 2000 219 131
+STOREMESS_1_3=200OK"
+  xyzwh 115 17 2000 277 103
 statecanvas 130743 state_ref 196279 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 432 588 2000 40 29
+  xyzwh 526 591 2000 40 29
 end
 note 130999 "ACTION;
 ACK_A(SV,ALO)
-
+clear alarm
+delete STOREDMESSAGE_1_3
+delete STOREDMESSAGE_1_2
 ALO generated ACK_B and stores it for retransmissions"
-  xyzwh 467 449 2000 227 91
+  xyzwh 564 453 2000 299 113
 note 132151 "ACTION:
-STOREMESS_1_2(SV,NTW)"
-  xyzwh 848 309 2000 155 69
+send STOREMESS_1_2(SV,NTW)"
+  xyzwh 972 322 2000 245 61
 statecanvas 133047 state_ref 202807 // 5
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 156 560 2000 40 29
+  xyzwh 242 563 2000 40 29
 end
 note 133303 "clear call ACK is not arriving anymore"
-  xyzwh 184 616 2000 203 45
+  xyzwh 296 622 2000 203 45
+note 134711 "ACTION: 3_3a
+resend STOREMESSAGE_1_3
+clear alarm 200ok
+ALARM 200OK(SV,NTW)
+"
+  xyzwh 42 141 2006 197 73
+note 134967 "ACTION:
+resend 200OK
+ALARM 200OK"
+  xyzwh 65 473 2000 147 69
 transitioncanvas 128311 transition_ref 225335 // INVITE_A(NTW,SV)
   
-  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 364 43 2001 to ref 128183
+  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 458 46 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129207 transition_ref 225591 // DIALOG_101(CL,SV) or RING_180(CL,SV)
   
-  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 541 180 2001 to ref 128823
+  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 635 183 2001 to ref 128823
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130103 transition_ref 225719 // 200_OK(ALO,SV)
   
-  from ref 128183 z 2001 label "200_OK(ALO,SV)" xyz 421 226 2001 to ref 129975
+  from ref 128183 z 2001 label "200_OK(ALO,SV)" xyz 523 217.5 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130871 transition_ref 225847 // ACK_A(NTW,SV)
   
-  from ref 129975 z 2001 label "ACK_A(NTW,SV)" xyz 361 435 2001 to ref 130743
+  from ref 129975 z 2001 label "ACK_A(NTW,SV)" xyz 463.5 426.5 2001 to ref 130743
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131383 transition_ref 225975 // 200_OK(ALO,SV)
   
-  from ref 128823 z 2001 label "200_OK(ALO,SV)" xyz 474 351 2001 to ref 129975
+  from ref 128823 z 2001 label "200_OK(ALO,SV)" xyz 575.5 342 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131767 transition_ref 232503 // INVITE_A(NTW,SV)
   
-  from ref 128823 z 2001 label "INVITE_A(NTW,SV)" xyz 809 285 2001 to point 798 278
-  line 131895 z 2001 to point 800 391
+  from ref 128823 z 2001 label "INVITE_A(NTW,SV)" xyz 903 288 2001 to point 892 281
+  line 131895 z 2001 to point 894 394
   line 132023 z 2001 to ref 128823
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 132535 transition_ref 232631 // TIMER 200OK
   
-  from ref 129975 z 2001 label "TIMER 200OK" xyz 171 311 2001 to point 151 327
-  line 132663 z 2001 to point 151 431
+  from ref 129975 z 2001 label "TIMER 200OK" xyz 209.5 364.5 2001 to point 197 405
+  line 132663 z 2001 to point 204 457
   line 132791 z 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 133175 transition_ref 232759 // MAX 200OK sent
   
-  from ref 129975 z 2001 label "MAX 200OK sent" xyz 138 484 2001 to ref 133047
+  from ref 129975 z 2001 label "MAX 200OK sent" xyz 236 475.5 2001 to ref 133047
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 134071 transition_ref 261175 // INVITE_A(NTW,SV)
+  
+  from ref 129975 z 2001 label "INVITE_A(NTW,SV)" xyz 292 262 3000 to point 187 233
+  line 134455 z 2001 to point 170 292
+  line 134327 z 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 line 128695 -_-_
   from ref 128567 z 2007 to ref 128311
 line 130359 -_-_
   from ref 129719 z 2002 to ref 129207
-line 130615 -_-_ decenter_begin 915
-  from ref 130487 z 2002 to ref 130103
 line 131255 -_-_
   from ref 130871 z 2002 to ref 130999
 line 131511 -_-_
@@ -114,9 +129,12 @@ line 132279 -_-_
   from ref 132151 z 2001 to ref 129719
 line 132407 -_-_
   from ref 132151 z 2004 to ref 131895
-line 132919 -_-_
-  from ref 130487 z 2004 to point 118 332
-  line 133687 z 2004 to ref 132663
 line 133431 -_-_
   from ref 133303 z 2002 to ref 133175
+line 133943 -_-_
+  from ref 130487 z 2002 to ref 130103
+line 134839 -_-_
+  from ref 134071 z 2007 to ref 134711
+line 135095 -_-_
+  from ref 134967 z 2002 to ref 132663
 end
