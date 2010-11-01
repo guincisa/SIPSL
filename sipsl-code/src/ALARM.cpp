@@ -171,7 +171,7 @@ void ALMGR::alarmer(void){
 
 							sl_cc->p_w(_tmpMess);
 						} else {
-							DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", _tmpMess)
+							DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", _tmpMess->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _tmpMess->orderOfOperation << "#")
 
 							RELLOCK(&mutex,"mutex");
 
@@ -205,12 +205,16 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 	//check if message already exists and cancel related alarm
 	//do note remove it from multimap and from mess_alm map
 
-	DEBOUT("ALMGR::insertAlarm", _fireTime )
+	DEBCODE(
+			SysTime afterT;
+			GETTIME(afterT);
+			unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec;
+			DEBOUT("ALMGR::insertAlarm", _fireTime )
+			DEBOUT("ALMGR::insertAlarm delta", (unsigned long long int) (_fireTime  - firetime) )
+			)
+
 
 	GETLOCK(&mutex,"mutex");
-
-	DEBOUT("ALMGR::insertAlarm in ms", (double) (_fireTime) / 1000000)
-
 
 	map<MESSAGE*, ALARM*>::iterator p;
 

@@ -237,9 +237,8 @@ ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	_message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(_message);
 
-	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV)
+	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
 	SipUtil.genTryFromInvite(_message, etry);
-	etry->setDestEntity(SODE_NTWPOINT);
 	etry->typeOfInternal = TYPE_MESS;
 
 	SingleAction sa_2 = SingleAction(etry);
@@ -267,9 +266,8 @@ ACTION* act_1_1_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV)
+	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
 	SipUtil.genTryFromInvite(_message, etry);
-	etry->setDestEntity(SODE_NTWPOINT);
 	etry->typeOfInternal = TYPE_MESS;
 
 	SingleAction sa_1 = SingleAction(etry);
@@ -389,10 +387,10 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//TODO
-	CREATEMESSAGE(ack_timer, _message, SODE_TRNSCT_SV)
-	ack_timer->setDestEntity(SODE_TRNSCT_SV);
+	CREATEMESSAGE(ack_timer, _message, SODE_TRNSCT_SV, SODE_TRNSCT_SV)
 	SysTime afterT;
 	GETTIME(afterT);
+	// T1 and not 2+T1
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
 //
 //	DEBOUT("TRNSCT_INV_CL act_1_3_inv_sv creating alarm for AC", TIMER_1 << " " << firetime)
@@ -402,7 +400,7 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	ack_timer->setFireTime(firetime);
 	ack_timer->typeOfInternal = TYPE_OP;
 	ack_timer->typeOfOperation = TYPE_OP_TIMER_ON;
-	ack_timer->orderOfOperation = "TIMER_A";
+	ack_timer->orderOfOperation = "TIMER_G";
 	ack_timer->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
 
@@ -425,6 +423,8 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 
+	//Invite from A coming again
+
 	DEBOUT("SM act_3_3a_inv_sv called","")
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -441,15 +441,14 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	//Alarm retransmissions of 200OK to get the ACK A
 	//TODO
-	CREATEMESSAGE(ack_timer, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV)
-	ack_timer->setDestEntity(SODE_TRNSCT_SV);
+	CREATEMESSAGE(ack_timer, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
 	SysTime afterT;
 	GETTIME(afterT);
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
 	ack_timer->setFireTime(firetime);
 	ack_timer->typeOfInternal = TYPE_OP;
 	ack_timer->typeOfOperation = TYPE_OP_TIMER_ON;
-	ack_timer->orderOfOperation = "TIMER_A";
+	ack_timer->orderOfOperation = "TIMER_G";
 	ack_timer->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
 
@@ -457,10 +456,10 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_2);
 
 	//TODO needed???
-	CREATEMESSAGE(ack_timer_clear, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV)
+	CREATEMESSAGE(ack_timer_clear, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
 	ack_timer_clear->typeOfInternal = TYPE_OP;
 	ack_timer_clear->typeOfOperation = TYPE_OP_TIMER_OFF;
-	ack_timer_clear->orderOfOperation = "TIMER_A";
+	ack_timer_clear->orderOfOperation = "TIMER_G";
 
 	SingleAction sa_3 = SingleAction(ack_timer_clear);
 	action->addSingleAction(sa_3);
@@ -520,19 +519,17 @@ ACTION* act_3_3b_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	//TODO
 	((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok++;
-	CREATEMESSAGE(ack_timer, _message, SODE_TRNSCT_SV)
+	CREATEMESSAGE(ack_timer, _message, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
 	SysTime afterT;
 	GETTIME(afterT);
+	//Shoudl be T1 and not 2xT1
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok);
-//
-//	DEBOUT("TRNSCT_INV_CL act_1_3_inv_sv creating alarm for AC", TIMER_1 << " " << firetime)
-
 	//TODO this
 	//design the ACK request
 	ack_timer->setFireTime(firetime);
 	ack_timer->typeOfInternal = TYPE_OP;
 	ack_timer->typeOfOperation = TYPE_OP_TIMER_ON;
-	ack_timer->orderOfOperation = "TIMER_A";
+	ack_timer->orderOfOperation = "TIMER_G";
 	ack_timer->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
 
@@ -676,13 +673,8 @@ ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	//careful with source message.
 	//Prepare message for Alarm
-	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL,SODE_TRNSCT_CL)
 	__timedmessage->setSourceMessage(_message->getSourceMessage());
-
-	//This is to be sent later, after timer expires
-	//Preconfigure message entity points, the alarm manager cannot do this
-	__timedmessage->setDestEntity(SODE_TRNSCT_CL);
-	__timedmessage->setGenEntity(SODE_TRNSCT_CL);
 
 	SysTime afterT;
 	GETTIME(afterT);
@@ -756,13 +748,8 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	//careful with source message.
 	//Prepare message for Alarm
-	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
 	__timedmessage->setSourceMessage(_message->getSourceMessage());
-
-	//This is to be sent later, after timer expires
-	//Preconfigure message entity points, the alarm manager cannot do this
-	__timedmessage->setDestEntity(SODE_TRNSCT_CL);
-	__timedmessage->setGenEntity(SODE_TRNSCT_CL);
 
 	SysTime afterT;
 	GETTIME(afterT);
@@ -907,13 +894,11 @@ ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 	MESSAGE* __message = ((TRNSCT_SM*)_sm)->getA_Matrix();
 	DEBOUT("MESSAGE GENERATOR", __message)
 
-	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_SV)
+	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_CL, SODE_TRNSCT_SV)
 	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
 	reply_x->purgeSDP();
 	reply_x->compileMessage();
 	reply_x->dumpVector();
-	reply_x->setDestEntity(SODE_TRNSCT_SV);
-	reply_x->setGenEntity(SODE_TRNSCT_CL);
 	reply_x->typeOfInternal = TYPE_MESS;
 
 	DEBOUT("CONTACT", reply_x->getHeadContact()->getContent())
@@ -992,7 +977,7 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 //	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 
 	//Clear alam here in case the b did not send any trying
-	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
 	___message->typeOfInternal = TYPE_OP;
 	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	___message->orderOfOperation = "TIMER_A";
@@ -1283,10 +1268,8 @@ ACTION* act_1_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	CREATEMESSAGE(__message, ((TRNSCT_SM*)_sm)->getMatrixMessage(), SODE_TRNSCT_CL)
+	CREATEMESSAGE(__message, ((TRNSCT_SM*)_sm)->getMatrixMessage(), SODE_TRNSCT_CL,SODE_NTWPOINT)
 
-	__message->setDestEntity(SODE_NTWPOINT);
-	__message->setGenEntity(SODE_TRNSCT_CL);
 	__message->typeOfInternal = TYPE_MESS;
 	SingleAction sa_1 = SingleAction(__message);
 
@@ -1449,15 +1432,10 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//careful with source message.
-	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
 	__timedmessage->setSourceMessage(_message->getSourceMessage());
 	//This is to be sent later, after timer expires
 	//Preconfigure message entity points, the alarm manager cannot do this
-
-	//V5?????
-	//???????
-	__timedmessage->setDestEntity(SODE_TRNSCT_CL);
-	__timedmessage->setGenEntity(SODE_TRNSCT_CL);
 
 	SysTime afterT;
 	GETTIME(afterT);
@@ -1508,15 +1486,11 @@ ACTION* act_1_1_bye_cl(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//careful with source message.
-	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
 	__timedmessage->setSourceMessage(_message->getSourceMessage());
 	//This is to be sent later, after timer expires
 	//Preconfigure message entity points, the alarm manager cannot do this
 
-	//V5?????
-	//???????
-	__timedmessage->setDestEntity(SODE_TRNSCT_CL);
-	__timedmessage->setGenEntity(SODE_TRNSCT_CL);
 
 	SysTime afterT;
 	GETTIME(afterT);
@@ -1568,7 +1542,7 @@ ACTION* act_1_2_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
-	CREATEMESSAGE(__message, _message, SODE_TRNSCT_CL)
+	CREATEMESSAGE(__message, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
 	__message->typeOfInternal = TYPE_OP;
 	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
 	__message->setLock();

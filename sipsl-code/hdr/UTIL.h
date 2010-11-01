@@ -125,10 +125,11 @@ class ThreadWrapper {
 		DELPTR(m1,"MESSAGE");\
 	}\
 	pthread_mutex_unlock(&messTableMtx);}
-#define CREATEMESSAGE(m1, m2, m3) MESSAGE* m1=0x0; {char bu[512];\
+#define CREATEMESSAGE(m1, m2, gen, dest) MESSAGE* m1=0x0; {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
-				NEWPTR2(m1, MESSAGE(m2, m3, inTime),"MESSAGE");\
+				NEWPTR2(m1, MESSAGE(m2, gen, inTime),"MESSAGE");\
+				m1->setDestEntity(dest);\
 				int i= m1->getTotLines();\
 				DEBDEV("New MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\

@@ -142,8 +142,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 	DEBOUT("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
-	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
-	message->setDestEntity(SODE_TRNSCT_CL);
+	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
 
 	try {
 		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute()->getRoute().getHostName())
@@ -196,10 +195,9 @@ void VALO::onAck(MESSAGE* _message){
 	DEBOUT("VALO::onAck",_message->getHeadSipRequest().getContent())
 
 	//V5 trying to build the ACK using the ACK_A instead of INVITE b
-	CREATEMESSAGE(newack, _message, SODE_ALOPOINT)
+	CREATEMESSAGE(newack, _message, SODE_ALOPOINT, SODE_SMCLPOINT)
 	//set as source the original ack, needed to identify call_oset_x when back to call control
 	newack->setSourceMessage(_message);
-	newack->setDestEntity(SODE_SMCLPOINT);
 
 	//Remove route
 	try {
@@ -421,13 +419,13 @@ void VALO::onBye(MESSAGE* _message){
 //
 //	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
 
-	CREATEMESSAGE(message, _message, SODE_ALOPOINT)
+	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
 
 	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
 
 	if (_message->getRequestDirection() == SODE_FWD ) {
 
-		message->setDestEntity(SODE_TRNSCT_CL);
+		//message->setDestEntity(SODE_TRNSCT_CL);
 
 		stringstream tmps;
 		tmps << "BYE sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
@@ -472,7 +470,7 @@ void VALO::onBye(MESSAGE* _message){
 		MESSAGE* __message = (MESSAGE*)p->second;
 
 		DEBOUT("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
-		message->setDestEntity(SODE_TRNSCT_CL);
+		//message->setDestEntity(SODE_TRNSCT_CL);
 
 		//Request has to be made using INVITE_A via address
 		C_HeadVia& viatmps= (C_HeadVia&) __message->getSTKHeadVia().top();
@@ -549,9 +547,8 @@ void VALO::on200Ok(MESSAGE* _message){
 	}
 
 	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
-	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT)
+	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT , SODE_TRNSCT_SV)
 
-	ok_x->setDestEntity(SODE_TRNSCT_SV);
 	ok_x->typeOfInternal = TYPE_MESS;
 
 	DEBOUT("ok_x","SIP/2.0 200 OK")
