@@ -93,6 +93,7 @@ class ThreadWrapper {
 	sleep_time.tv_nsec = 0;\
 	nanosleep(&sleep_time,NULL);}
 
+
 #define GETTIME(mytime) gettimeofday(&mytime.tv, &mytime.tz);
 
 #undef NEWPTR
@@ -168,6 +169,7 @@ class ThreadWrapper {
 //**********************************************************
 //**********************************************************
 #ifdef LOGSIP
+
 	//**********************************************************
 #undef DEBSIP
 #define DEBSIP(m1,m2)  {stringstream xx ; xx << "DEBSIP [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
@@ -186,6 +188,16 @@ class ThreadWrapper {
 //**********************************************************
 //**********************************************************
 #ifdef LOGNTW
+//1 288 696 804 323 901
+//1.288.696.804.323.901
+#undef PRTIME
+#define PRTIME {SysTime mytime; gettimeofday(&mytime.tv, &mytime.tz);\
+		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
+		char bu[128];\
+		sprintf(bu, "%llu",num);\
+		string time(bu);\
+		stringstream xx ; xx << "TIME [" << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3)<<"]\n"; cout << xx.str();cout.flush();}
+
 #undef DEBNTW
 #define DEBNTW(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 #else

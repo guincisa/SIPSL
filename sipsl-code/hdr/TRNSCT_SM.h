@@ -106,6 +106,7 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 		PREDICATE_ACTION PA_INV_2_2SV;
 		PREDICATE_ACTION PA_INV_3_3aSV;
 		PREDICATE_ACTION PA_INV_3_3bSV;
+		PREDICATE_ACTION PA_INV_3_3cSV;
 
 		//This is the 200ok a to be resent if invite a arrives again
 		//TODO

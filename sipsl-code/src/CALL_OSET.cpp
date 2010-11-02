@@ -329,6 +329,7 @@ void SL_CO::call(MESSAGE* _message){
 
 	//TODO if we use this mutex we can remove mutexes in state machines
 	GETLOCK(&mutex,"mutex");
+	PRTIME
 	DEBMESSAGE("SL_CO::call incoming", _message)
 
     ACTION* action = 0x0;
