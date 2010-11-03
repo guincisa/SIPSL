@@ -244,6 +244,103 @@ Timer K  T4 for UDP       Section 17.1.2.2     Wait time for
 
 \end{verbatim}
 
+\pagebreak
+\section{Call States}
+
+\begin{verbatim}
+
+                               |INVITE
+                               |pass INV to TU
+            INVITE             V send 100 if TU won't in 200ms
+            send response+-----------+
+                +--------|           |--------+101-199 from TU
+                |        | Proceeding|        |send response
+                +------->|           |<-------+
+                         |           |          Transport Err.
+                         |           |          Inform TU
+                         |           |--------------->+
+                         +-----------+                |
+            300-699 from TU |     |2xx from TU        |
+            send response   |     |send response      |
+                            |     +------------------>+
+                            |                         |
+            INVITE          V          Timer G fires  |
+            send response+-----------+ send response  |
+                +--------|           |--------+       |
+                |        | Completed |        |       |
+                +------->|           |<-------+       |
+                         +-----------+                |
+                            |     |                   |
+                        ACK |     |                   |
+                        -   |     +------------------>+
+                            |        Timer H fires    |
+                            V        or Transport Err.|
+                         +-----------+  Inform TU     |
+                         |           |                |
+                         | Confirmed |                |
+                         |           |                |
+                         +-----------+                |
+                               |                      |
+                               |Timer I fires         |
+                               |-                     |
+                               |                      |
+                               V                      |
+                         +-----------+                |
+                         |           |                |
+                         | Terminated|<---------------+
+                         |           |
+                         +-----------+
+
+                     INVITE server transaction
+                     
+\end{verbatim}
+\pagebreak
+\begin{verbatim}
+
+                               |INVITE from TU
+             Timer A fires     |INVITE sent
+             Reset A,          V                      Timer B fires
+             INVITE sent +-----------+                or Transport Err.
+               +---------|           |---------------+inform TU
+               |         |  Calling  |               |
+               +-------->|           |-------------->|
+                         +-----------+ 2xx           |
+                            |  |       2xx to TU     |
+                            |  |1xx                  |
+    300-699 +---------------+  |1xx to TU            |
+   ACK sent |                  |                     |
+resp. to TU |  1xx             V                     |
+            |  1xx to TU  -----------+               |
+            |  +---------|           |               |
+            |  |         |Proceeding |-------------->|
+            |  +-------->|           | 2xx           |
+            |            +-----------+ 2xx to TU     |
+            |       300-699    |                     |
+            |       ACK sent,  |                     |
+            |       resp. to TU|                     |
+            |                  |                     |      NOTE:
+            |  300-699         V                     |
+            |  ACK sent  +-----------+Transport Err. |  transitions
+            |  +---------|           |Inform TU      |  labeled with
+            |  |         | Completed |-------------->|  the event
+            |  +-------->|           |               |  over the action
+            |            +-----------+               |  to take
+            |              ^   |                     |
+            |              |   | Timer D fires       |
+            +--------------+   | -                   |
+                               |                     |
+                               V                     |
+                         +-----------+               |
+                         |           |               |
+                         | Terminated|<--------------+
+                         |           |
+                         +-----------+
+
+                     INVITE client transaction
+
+end{verbatim}
+
+
 \section{Call\_OSet lifecyle}
 
 The deletion of the call\_oset is triggered using:
