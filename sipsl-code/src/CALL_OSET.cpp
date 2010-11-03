@@ -385,6 +385,7 @@ void SL_CO::call(MESSAGE* _message){
 				} else {
 					//TODO
 					//The message is locked for some reason but did not trigger any action...
+					DEBMESSAGESHORT("The message is locked for some reason but did not trigger any action...",_message)
 					DEBASSERT("Check this case out")
 				}
 
