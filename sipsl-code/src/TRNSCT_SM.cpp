@@ -410,7 +410,6 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	DEBOUT("SM act_1_3_inv_sv move to state 3","")
 	_sm->State = 3;
 
-	//TODO???? in when 200ok comes in 3_3d
 	_sm->getSL_CO()->OverallState_SV = OS_COMPLETED;
 
 	return action;
@@ -487,7 +486,7 @@ bool pre_3b_3b_inv_sv(SM* _sm, MESSAGE* _message){
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  ((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok < MAX_INVITE_RESEND
-		&& _sm->getSL_CO()->OverallState_SV == OS_PROCEEDING) {
+		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
 			DEBOUT("SM_V5 pre_3b_3b_inv_sv","true")
 			return true;
 	}
