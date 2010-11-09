@@ -1,7 +1,7 @@
-window_sizes 1914 1006 317 1591 932 0
+window_sizes 1602 906 317 1279 832 0
 diagrams
   active  statediagram_ref 161079 // SM_SV_INVITE
-    1597 934 100 2 0 0
+    1279 832 100 2 0 0
 end
 show_stereotypes
 selected statediagram_ref 161079 // SM_SV_INVITE

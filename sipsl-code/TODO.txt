@@ -1,4 +1,10 @@
 TODO
+
+Finire ritrasmissioni e deletion logic
+fatta la INV_SV
+test
+
+
 ************************************************************************************
 La global message table è unica. E' possible usarne di piu?
 Controllare se impedisce la concorrenza.

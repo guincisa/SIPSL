@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 102
+  revision 103
   modified_by 55 "guic"
 
 
@@ -981,6 +981,10 @@ correct timer interaction with client state machine"
 	  on state_ref 196151 // 3
 	  external 
 	end
+
+	transition 267703 "INVITE_A(NTW,SV)"
+	  on state_ref 195895 // 1
+	end
       end
 
       stateaction 134839
@@ -999,16 +1003,16 @@ correct timer interaction with client state machine"
       end
 
       state 196151 "3"
-	transition 225847 "ACK_A(NTW,SV)"
+	transition 225847 "TIMER 200OK & OVERALL = CONFIRMED"
 	  on state_ref 196279 // 4
 	  external 
 	end
 
-	transition 232631 "TIMER 200OK"
+	transition 232631 "TIMER 200OK & OVERALL <> CONFIRMED & resend < MAX"
 	  on state_ref 196151 // 3
 	end
 
-	transition 232759 "MAX 200OK sent"
+	transition 232759 "TIMER 200OK & OVERALL <> CONFIRMED & resend >= MAX"
 	  on state_ref 202807 // 5
 	  external 
 	end

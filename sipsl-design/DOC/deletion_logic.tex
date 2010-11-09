@@ -74,6 +74,16 @@ The table is local to the call. If the message is unlocked it must also be remov
 
 \subsection{INVITE A - incoming invite}
 
+\subsubsection{INVITE A - Actions}
+\begin {itemize}
+\item INVITE A sent to ALO
+\item New 100 Try sent to NTW unlocked
+\item State = 1
+\item Overall\_State\_SV = OS\_PROCEEDING
+\end{itemize}
+
+\subsubsection{INVITE A - Memory}
+
 \begin {itemize}
 \item invite arrives in SUDP, message is created
 \item message traverses the SIPENGINE
@@ -95,9 +105,11 @@ The INVITE A is delete at the end of the call when the TRNSCT\_SM\_INVITE\_SV is
 
 \subsection{100 TRY A - immediate reply by SIPSL to A}
 
-The 100 TRY A is generated using INVITE A and deleted after transmission.
+\subsubsection{100 TRY A: Memory}
+The 100 TRY A is generated using INVITE A. 100 TRY is not locked so it is deleted after transmission.
 
 \subsection{INVITE B - outgoing invite}
+\subsubsection{INVITE b - Actions}
 
 \begin {itemize}
 \item INVITE B is created in VALO (pointer is stored locally)
