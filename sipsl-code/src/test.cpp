@@ -79,7 +79,7 @@ int main(int argc, const char* argv[]) {
 		string empty="EMPTY";
 		sockaddr_inX echoClntAddr;
 		CREATENEWMESSAGE_EXT(MainMessage, empty.c_str(), 0, echoClntAddr, SODE_NOPOINT)
-		MainMessage->setValid(0);
+		MainMessage->setValid(1);
 
 		SUDP mystack;
 

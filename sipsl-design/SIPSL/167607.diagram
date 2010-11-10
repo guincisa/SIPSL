@@ -35,18 +35,12 @@ OverallState_CL = OS_PROCEEDING"
   xyzwh 88 629 2000 255 75
 statecanvas 131383 state_ref 209975 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 786 407 2000 40 29
+  xyzwh 810 408 2000 40 29
 end
 note 132023 "200OK(CL,ALO)
 
 OverallState_CL = OS_PROCEEDING"
-  xyzwh 786 312 2000 257 57
-statecanvas 132279 state_ref 210103 // 5
-  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 786 590 2000 40 29
-end
-note 132535 "ACK_B(CL,NTW)"
-  xyzwh 853 403 2000 161 53
+  xyzwh 874 225 2000 257 57
 note 134455 "trigger deletion of call_oset"
   xyzwh 155 220 2000 169 37
 transitioncanvas 128311 transition_ref 239287 // INVITE_B(ALO,CL)
@@ -86,12 +80,7 @@ transitioncanvas 130487 transition_ref 239927 // 180RING(NTW,CL)
 end
 transitioncanvas 131767 transition_ref 240183 // 200OK(NTW,CL)
   
-  from ref 128183 z 2001 label "200OK(NTW,CL)" xyz 661 282 2001 to ref 131383
-  write_horizontally default show_definition default drawing_language default
-end
-transitioncanvas 132407 transition_ref 240311 // ACK_B(ALO,CL)
-  
-  from ref 131383 z 2001 label "ACK_B(ALO,CL)" xyz 812 513 2001 to ref 132279
+  from ref 128183 z 2001 label "200OK(NTW,CL)" xyz 673.5 282.5 2001 to ref 131383
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 132791 transition_ref 246839 // <transition>
@@ -105,11 +94,12 @@ transitioncanvas 133047 transition_ref 246967 // <transition>
   from ref 128183 z 2001 to ref 130103
   write_horizontally default show_definition default drawing_language default
 end
-transitioncanvas 133943 transition_ref 253495 // 200OK(NTW,CL)
+transitioncanvas 134711 transition_ref 274231 // 200OK(NTW,CL),
+  decenter_end 689
   
-  from ref 132279 z 2001 label "200OK(NTW,CL)" xyz 876 572 2001 to point 987 657
-  line 134071 z 2001 to point 987 575
-  line 134199 z 2001 to ref 132279
+  from ref 131383 z 2001 label "200OK(NTW,CL)," xyz 850 367 3000 to point 1028 366
+  line 134839 z 2001 to point 1029 444
+  line 134967 z 2001 to ref 131383
   write_horizontally default show_definition default drawing_language default
 end
 line 128567 -_-_
@@ -130,8 +120,6 @@ line 131895 -_-_
   from ref 129847 z 2002 to ref 131767
 line 132151 -_-_
   from ref 132023 z 2002 to ref 131767
-line 132663 -_-_
-  from ref 132535 z 2002 to ref 132407
 line 133175 -_-_
   from ref 129847 z 2004 to ref 132919
 line 133303 -_-_
@@ -140,8 +128,6 @@ line 133559 -_-_
   from ref 130999 z 2002 to ref 133047
 line 133687 -_-_
   from ref 130999 z 2004 to ref 132919
-line 134327 -_-_
-  from ref 132535 z 2006 to ref 134199
 line 134583 -_-_
   from ref 134455 z 2002 to ref 129335
 end

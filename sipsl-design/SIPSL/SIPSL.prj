@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 104
+  revision 105
   modified_by 55 "guic"
 
 
@@ -1101,6 +1101,10 @@ correct timer interaction with client state machine"
 	transition 240311 "ACK_B(ALO,CL)"
 	  on state_ref 210103 // 5
 	  external 
+	end
+
+	transition 274231 "200OK(NTW,CL),"
+	  on state_ref 209975 // 4
 	end
       end
 

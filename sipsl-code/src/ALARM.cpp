@@ -304,6 +304,8 @@ void ALMGR::cancelAlarm(string _cidbranch){
 	if (p != cidbranch_alm_map.end()){
 		DEBOUT("ALMGR::cancelAlarm", "found")
 		tmp = (ALARM*)p->second;
+		if(!tmp->isActive()){
+			DEBOUT("ALMGR::cancelAlarm", _cidbranch <<  " is not active")}
 		tmp->cancel();
 	}
 	else {

@@ -100,7 +100,7 @@ void ALO::call(MESSAGE* _message) {
 	}
 	else if (_message->getReqRepType() == REPSUPP){
 		if (_message->getHeadSipReply().getReply().getCode() == OK_200){
-			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBOUT("ALO Dispatches ",_message->getHeadSipReply().getContent())
 			on200Ok(_message);
 		}
 		else {

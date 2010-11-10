@@ -134,8 +134,9 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 		PREDICATE_ACTION PA_INV_1_3CL; //100 try not arriving, 180 ring or Diag Estab instead
 		PREDICATE_ACTION PA_INV_1_99CL; //resend invite max reached
 		PREDICATE_ACTION PA_INV_1_4CL; //200OK
-		//PREDICATE_ACTION PA_INV_4_5CL; //Non transactional ACK
-		PREDICATE_ACTION PA_INV_4_4CL; //200OK B incoming again, need to resend ACK
+		PREDICATE_ACTION PA_INV_4_4aCL;
+		PREDICATE_ACTION PA_INV_4_4bCL; //200OK B incoming again, need to resend ACK
+		PREDICATE_ACTION PA_INV_4_4cCL;
 
 
 
