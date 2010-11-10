@@ -86,7 +86,7 @@ class ThreadWrapper {
 //Mandatory
 //**********************************************************
 #undef DEBASSERT
-#define DEBASSERT(m1) cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; cout.flush();assert(0);
+#define DEBASSERT(m1) {cout << "DEBASSERT " << __FILE__ << " " << __LINE__<< " " << m1 << endl; cout.flush();assert(0);}
 //**********************************************************
 #define WAITTIME { timespec sleep_time; \
 	sleep_time.tv_sec = 20;\
@@ -124,6 +124,7 @@ class ThreadWrapper {
 	if (p !=globalMessTable.end()) {\
 		globalMessTable.erase(m1);\
 		DELPTR(m1,"MESSAGE");\
+		m1 = MainMessage; \
 	}\
 	pthread_mutex_unlock(&messTableMtx);}
 #define CREATEMESSAGE(m1, m2, gen, dest) MESSAGE* m1=0x0; {char bu[512];\
@@ -158,6 +159,7 @@ class ThreadWrapper {
 				SysTime inTime;\
 				GETTIME(inTime);\
 				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
+				DEBY \
 				if (__mess != 0x0 ) {long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
 				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
 				string key(bu);\

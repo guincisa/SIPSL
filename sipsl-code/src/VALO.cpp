@@ -549,7 +549,7 @@ void VALO::on200Ok(MESSAGE* _message){
 	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT , SODE_TRNSCT_SV)
 
-	ok_x->typeOfInternal = TYPE_MESS;
+	ok_x->setTypeOfInternal(TYPE_MESS);
 
 	DEBOUT("ok_x","SIP/2.0 200 OK")
 

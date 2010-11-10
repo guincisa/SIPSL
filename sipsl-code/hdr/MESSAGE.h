@@ -126,7 +126,6 @@ class BASEMESSAGE {
         int getTotLines(void);
 
 
-        int id; //Used in spin buffer
 
         string &getIncBuffer(void);
 
@@ -150,6 +149,8 @@ class BASEMESSAGE {
 
         SysTime getCreationTime(void);
 
+        void setValid(int);
+
 
     protected:
         int genEntity;
@@ -162,6 +163,9 @@ class BASEMESSAGE {
 
         void removeHeader(int pos);
 
+        int id; //Used in spin buffer
+
+
     protected:
         string  incMessBuff;
 
@@ -172,6 +176,10 @@ class BASEMESSAGE {
 
         //V4 workaround to avoid deletion of the sent INVITE
 
+    protected:
+        //Memory protection
+        int invalid;
+
     private:
     	//used to store in message map
     	string key;
@@ -181,6 +189,8 @@ class BASEMESSAGE {
         bool arrayFilled;
 
         vector<int> linePosition;
+
+
 
 
 
@@ -240,6 +250,19 @@ class MESSAGE : public BASEMESSAGE {
     	// if true then it has been generated internally and
     	// can be modified
     	bool isInternal;
+
+    	int typeOfInternal; // Message or operation
+    	int typeOfOperation; // Type of operation
+    	string orderOfOperation; //Alarm id in case more alarms are triggered with the same message
+    	//int specialAction; //delete co
+
+        //Timer support
+        unsigned long long int fireTime;
+
+
+    	//Needed for ACK
+    	int type_trnsct;
+
 
     public:
 
@@ -340,23 +363,25 @@ class MESSAGE : public BASEMESSAGE {
     	void setFireTime(unsigned long long int fireTime);
     	unsigned long long int getFireTime(void);
 
-    	int typeOfInternal; // Message or operation
-    	int typeOfOperation; // Type of operation
-    	string orderOfOperation; //Alarm id in case more alarms are triggered with the same message
-    	//int specialAction; //delete co
-
-        //Timer support
-        unsigned long long int fireTime;
-
-
-    	//Needed for ACK
-    	int type_trnsct;
 
     	int getModulus(void);
 
     	void setLock(void);
     	bool getLock(void);
     	void unSetLock(void);
+
+    	string getOrderOfOperation(void);
+    	void setOrderOfOperation(string);
+
+    	int getTypeOfInternal(void);
+    	void setTypeOfInternal(int);
+
+    	int getType_trnsct(void);
+    	void setType_trnsct(int);
+
+    	int getTypeOfOperation(void);
+    	void setTypeOfOperation(int);
+
 
 };
 ///////////////////////////////////////////////////////////////////////////////
@@ -367,5 +392,6 @@ class MESSAGE : public BASEMESSAGE {
 //static multimap<const string, MESSAGE *> globalMessTable;
 extern map<const MESSAGE*, MESSAGE *> globalMessTable;
 extern pthread_mutex_t messTableMtx;
+extern MESSAGE* MainMessage;
 
 

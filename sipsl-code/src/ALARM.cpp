@@ -161,7 +161,7 @@ void ALMGR::alarmer(void){
 						//ALMGR shall not care about message or internalop
 						//SL_CC does it but here if for debug purposes
 
-						if ( _tmpMess->typeOfInternal == TYPE_MESS ){
+						if ( _tmpMess->getTypeOfInternal() == TYPE_MESS ){
 							DEBOUT("ALMGR::alarmer operation TYPE_MESS", _tmpMess)
 							_tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
 							_tmpMess->compileMessage();
@@ -171,7 +171,7 @@ void ALMGR::alarmer(void){
 
 							sl_cc->p_w(_tmpMess);
 						} else {
-							DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", _tmpMess->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _tmpMess->orderOfOperation << "#")
+							DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", _tmpMess->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _tmpMess->getOrderOfOperation() << "#")
 
 							RELLOCK(&mutex,"mutex");
 
@@ -235,7 +235,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 	DEBOUT("((C_HeadVia&) _message->getSTKHeadVia().top()).getC_AttVia().getContent()",((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getContent())
 	DEBY
 	DEBOUT("((C_HeadVia&) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().getContent()",((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().getContent())
-	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->orderOfOperation+ "#";
+	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->getOrderOfOperation()+ "#";
 	DEBOUT("Alarm id (cid+branch", cidbranch_alarm);
 	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
 
@@ -320,7 +320,7 @@ ALARM::ALARM(MESSAGE *_message, unsigned long long int _fireTime){
 	fireTime = _fireTime;
 	active = true;
 	DEBOUT("ALARM::ALARM firetime", fireTime)
-	cidbranch = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->orderOfOperation+ "#";
+	cidbranch = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->getOrderOfOperation()+ "#";
 
 }
 unsigned long long int ALARM::getTriggerTime(void){

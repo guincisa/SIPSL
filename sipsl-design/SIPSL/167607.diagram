@@ -63,7 +63,7 @@ transitioncanvas 128695 transition_ref 239415 // INVITE_B(CL,CL) && resend <= ma
 end
 transitioncanvas 129335 transition_ref 239543 // INVITE_B(CL,CL) && resend > max
   
-  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 234.5 147.5 2001 to ref 129207
+  from ref 128183 z 2001 label "INVITE_B(CL,CL) && resend > max" xyz 234 147 2001 to ref 129207
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129719 transition_ref 239671 // TRY_B(NTW,CL)
@@ -74,13 +74,13 @@ transitioncanvas 129719 transition_ref 239671 // TRY_B(NTW,CL)
 end
 transitioncanvas 130231 transition_ref 239799 // DIALOG(NTW,CL)
   
-  from ref 129591 z 2001 label "DIALOG(NTW,CL)" xyz 135 456 2001 to point 374 433
+  from ref 129591 z 2001 label "DIALOG(NTW,CL)" xyz 107 442 2001 to point 320 411
   line 133815 z 2001 to ref 130103
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130487 transition_ref 239927 // 180RING(NTW,CL)
   
-  from ref 129591 z 2001 label "180RING(NTW,CL)" xyz 98 353 2001 to point 377 293
+  from ref 129591 z 2001 label "180RING(NTW,CL)" xyz 101 372 2001 to point 383 325
   line 130615 z 2001 to ref 130103
   write_horizontally default show_definition default drawing_language default
 end

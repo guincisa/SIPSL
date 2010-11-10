@@ -1,7 +1,7 @@
 format 73
 
 pseudostatecanvas 128055 pseudostate_ref 141239 // initial
-   xyz 434 22 2000
+   xyz 502 25 2000
 end
 statecanvas 128183 state_ref 195895 // 1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
@@ -69,18 +69,18 @@ TRY(SM,NTW)"
   xyzwh 749 131 2000 131 47
 transitioncanvas 128311 transition_ref 225335 // INVITE_A(NTW,SV)
   
-  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 501 85.5 2001 to ref 128183
+  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 535.5 86.5 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129207 transition_ref 225591 // DIALOG_101(CL,SV) or RING_180(CL,SV)
-  decenter_begin 524
+  decenter_begin 523
   
-  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 620.5 290 2001 to ref 128823
+  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 620 290 2001 to ref 128823
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130103 transition_ref 225719 // 200_OK(ALO,SV)
   
-  from ref 128183 z 2001 label "200_OK(ALO,SV)" xyz 501.5 297 2001 to ref 129975
+  from ref 128183 z 2001 label "200_OK(ALO,SV)" xyz 501 297 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130871 transition_ref 225847 // TIMER 200OK & OVERALL = CONFIRMED
@@ -90,7 +90,7 @@ transitioncanvas 130871 transition_ref 225847 // TIMER 200OK & OVERALL = CONFIRM
 end
 transitioncanvas 131383 transition_ref 225975 // 200_OK(ALO,SV)
   
-  from ref 128823 z 2001 label "200_OK(ALO,SV)" xyz 534.5 393 2001 to ref 129975
+  from ref 128823 z 2001 label "200_OK(ALO,SV)" xyz 534 393 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131767 transition_ref 232503 // INVITE_A(NTW,SV)
@@ -114,14 +114,14 @@ transitioncanvas 133175 transition_ref 232759 // TIMER 200OK & OVERALL <> CONFIR
 end
 transitioncanvas 134071 transition_ref 261175 // INVITE_A(NTW,SV)
   
-  from ref 129975 z 2001 label "INVITE_A(NTW,SV)" xyz 279 355.5 2001 to point 176 346
+  from ref 129975 z 2001 label "INVITE_A(NTW,SV)" xyz 279 355 2001 to point 176 346
   line 134455 z 2001 to point 172 379
   line 134327 z 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 135223 transition_ref 267703 // INVITE_A(NTW,SV)
   
-  from ref 128183 z 2001 label "INVITE_A(NTW,SV)" xyz 616 162 3000 to point 722 228
+  from ref 128183 z 2001 label "INVITE_A(NTW,SV)" xyz 616 162 2001 to point 722 228
   line 135351 z 2001 to point 719 172
   line 135479 z 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default

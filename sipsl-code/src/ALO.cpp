@@ -82,11 +82,11 @@ void ALO::call(MESSAGE* _message) {
 			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 			onInvite(_message);
 		}
-		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && _message->typeOfInternal == TYPE_MESS && _message->type_trnsct == TYPE_TRNSCT){
+		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && _message->getTypeOfInternal() == TYPE_MESS && _message->getType_trnsct() == TYPE_TRNSCT){
 			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 			onAck(_message);
 		}
-		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && _message->typeOfInternal == TYPE_MESS && _message->type_trnsct == TYPE_NNTRNSCT ){
+		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && _message->getTypeOfInternal() == TYPE_MESS && _message->getType_trnsct() == TYPE_NNTRNSCT ){
 			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 			onAckNoTrnsct(_message);
 		}

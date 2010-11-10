@@ -70,11 +70,17 @@
 
 map<const MESSAGE*, MESSAGE *> globalMessTable;
 pthread_mutex_t messTableMtx;
-
+MESSAGE* MainMessage;
 
 int main(int argc, const char* argv[]) {
 
 	if (argc == 1){
+
+		string empty="EMPTY";
+		sockaddr_inX echoClntAddr;
+		CREATENEWMESSAGE_EXT(MainMessage, empty.c_str(), 0, echoClntAddr, SODE_NOPOINT)
+		MainMessage->setValid(0);
+
 		SUDP mystack;
 
 		TRNSPRT transport;

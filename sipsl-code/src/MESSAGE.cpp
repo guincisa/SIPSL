@@ -72,6 +72,8 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, i
     totLines=0;
     arrayFilled=false;
 
+    invalid = 0;
+
 	return;
 }
 BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
@@ -84,6 +86,8 @@ BASEMESSAGE::BASEMESSAGE(string _incMessBuff, SysTime _inc_ts):
 	arrayFilled = false;
 
 	requestDirection = 0;
+
+    invalid = 0;
 
 	return;
 }
@@ -111,6 +115,7 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 
 	requestDirection = _basemessage->getRequestDirection();
 
+    invalid = 0;
 
 	return;
 }
@@ -118,12 +123,20 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 //	DEBASSERT("BASEMESSAGE copy constructor");
 //}
 
-
+void BASEMESSAGE::setValid(int _valid){
+	invalid = _valid;
+}
 vector<string> BASEMESSAGE::getLines(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getLines invalid")
+
 	return flex_line;
 }
 
 void BASEMESSAGE::fillLineArray(void){
+
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::fillLineArray invalid")
 
     if (arrayFilled)
         return;
@@ -156,6 +169,8 @@ void BASEMESSAGE::fillLineArray(void){
 // *****************************************************************************************
 // *****************************************************************************************
 int BASEMESSAGE::getTotLines() {
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getTotLines invalid")
 
     if (!arrayFilled){
     	fillLineArray();
@@ -166,6 +181,9 @@ int BASEMESSAGE::getTotLines() {
 // *****************************************************************************************
 // *****************************************************************************************
 string &BASEMESSAGE::getLine(int pos){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getLine invalid")
+
     // no copia REFERRENCE
 
     if (!arrayFilled)
@@ -179,47 +197,89 @@ string &BASEMESSAGE::getLine(int pos){
     return(flex_line[pos]);
 }
 string &BASEMESSAGE::getIncBuffer(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getIncBuffer invalid")
+
 	return incMessBuff;
 }
 int BASEMESSAGE::getGenEntity(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getGenEntity invalid")
+
 	return genEntity;
 }
 void BASEMESSAGE::setGenEntity(int _genEntity){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::setGenEntity invalid")
+
 	genEntity = _genEntity;
 }
 int BASEMESSAGE::getRequestDirection(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getRequestDirection invalid")
+
 	return requestDirection;
 }
 void BASEMESSAGE::setRequestDirection(int _genEntity){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::setRequestDirection invalid")
+
 	requestDirection = _genEntity;
 }
 int BASEMESSAGE::getDestEntity(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getDestEntity invalid")
+
 	return destEntity;
 }
 void BASEMESSAGE::setDestEntity(int _destEntity){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::setDestEntity invalid")
+
 	destEntity = _destEntity;
 }
 void BASEMESSAGE::setEndPoints(int _genEntity, int _destEntity){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::setEndPoints invalid")
+
 	destEntity = _destEntity;
 	genEntity = _genEntity;
 }
 
 string &BASEMESSAGE::getKey(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getKey invalid")
+
 	return key;
 }
 void BASEMESSAGE::setKey(string _key){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::setKey invalid")
+
 	key = _key;
 }
 SysTime BASEMESSAGE::getCreationTime(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getCreationTime invalid")
+
 	return inc_ts;
 }
 struct sockaddr_in BASEMESSAGE::getAddress(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getAddress invalid")
+
 	return echoClntAddr;
 }
 int BASEMESSAGE::getSock(void){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::getSock invalid")
+
 	return sock;
 }
 void BASEMESSAGE::removeHeader(int _pos){
+	if (invalid == 1)
+		DEBASSERT("BASEMESSAGE::removeHeader invalid")
+
 	flex_line[_pos] = "xxDxx";
 }
 // *****************************************************************************************
@@ -368,6 +428,9 @@ MESSAGE::MESSAGE(string _incMessBuff, SysTime _inc_ts):
  * position in the array of the <empty> line
  */
 vector<string>::iterator MESSAGE::getSDPposition(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getSDPposition invalid")
+
 
 	vector<string>::iterator theIterator;
 
@@ -379,12 +442,18 @@ vector<string>::iterator MESSAGE::getSDPposition(void){
     return theIterator;
 }
 void MESSAGE::dumpVector(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::dumpVector invalid")
+
 	vector<string>::iterator theIterator;
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
     	DEBOUT("Message vector", *theIterator)
     }
 }
 int MESSAGE::getReqRepType(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getReqRepType invalid")
+
 
 	if (reqRep != 0) {
 		return reqRep;
@@ -417,6 +486,9 @@ int MESSAGE::getReqRepType(void){
 	return reqRep;
 }
 void MESSAGE::compileMessage(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::compileMessage invalid")
+
 
 	// first look for xxDxx and remove it
 	vector<string>::iterator theIterator;
@@ -438,10 +510,16 @@ void MESSAGE::compileMessage(void){
 
 }
 MESSAGE* MESSAGE::getSourceMessage(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getSourceMessage invalid")
+
 	DEBMESSAGESHORT("MESSAGE::getSourceMessage",source)
 	return source;
 }
 void MESSAGE::setSourceMessage(MESSAGE* _source){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setSourceMessage invalid")
+
 	source = _source;
 }
 
@@ -450,6 +528,9 @@ void MESSAGE::setSourceMessage(MESSAGE* _source){
  * Request
  */
 C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipRequest invalid")
+
 	if(reqRep == 0){
 		reqRep = getReqRepType();
 	}
@@ -461,16 +542,25 @@ C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
     return headSipRequest;
 }
 void MESSAGE::setHeadSipRequest(string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setHeadSipRequest invalid")
+
 	reqRep = 0;
 	flex_line[0] = _content;
 	headSipRequest.setContent(_content);
 }
 void MESSAGE::setHeadSipReply(string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setHeadSipReply invalid")
+
 	reqRep = 0;
 	flex_line[0] = _content;
 	headSipReply.setContent(_content);
 }
 C_HeadSipReply &MESSAGE::getHeadSipReply(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipReply invalid")
+
 
 	if(reqRep == 0){
 		reqRep = getReqRepType();
@@ -486,6 +576,9 @@ C_HeadSipReply &MESSAGE::getHeadSipReply(void){
  * Via
  */
 stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getSTKHeadVia invalid")
+
 
 	if(s_headVia_p){
 		return s_headVia;
@@ -506,6 +599,9 @@ stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 	return s_headVia;
 }
 void MESSAGE::popSTKHeadVia(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::popSTKHeadVia invalid")
+
 
 	DEBASSERT("popSTKHeadVia")
 //	if(s_headVia_p){
@@ -530,6 +626,9 @@ void MESSAGE::popSTKHeadVia(void){
 }
 //
 void MESSAGE::purgeSTKHeadVia(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::purgeSTKHeadVia invalid")
+
 
 	unsigned int i;
 
@@ -556,6 +655,9 @@ void MESSAGE::purgeSTKHeadVia(void){
 	}
 }
 void MESSAGE::pushHeadVia(string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::pushHeadVia invalid")
+
 
 	NEWPTR(C_HeadVia*, s, C_HeadVia(_content),"New via")
 	s_headVia.push(s);
@@ -581,6 +683,9 @@ void MESSAGE::pushHeadVia(string _content){
 	}
 }
 void MESSAGE::purgeSDP(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::purgeSDP invalid")
+
 
 	DEBOUT("MESSAGE::purgeSDP","" )
 
@@ -608,6 +713,9 @@ void MESSAGE::purgeSDP(void){
 	flex_line.erase(theIterator, theIteratorEnd);
 }
 vector<string> MESSAGE::getSDP(void) {
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getSDP invalid")
+
 
 
 	if ( sdpVector_p )  {
@@ -632,6 +740,9 @@ vector<string> MESSAGE::getSDP(void) {
 	}
 }
 int MESSAGE::getSDPSize(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getSDPSize invalid")
+
 
 	if ( sdpVector_p )  {
 		return sdpSize;
@@ -643,6 +754,9 @@ int MESSAGE::getSDPSize(void){
 
 }
 void MESSAGE::importSDP(vector<string> _sdp){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::importSDP invalid")
+
 
 	vector<string>::iterator theIterator;
 
@@ -672,6 +786,9 @@ void MESSAGE::importSDP(vector<string> _sdp){
  * MaxFwd
  */
 S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadMaxFwd invalid")
+
 
 	if(headMaxFwd_p){
 		return headMaxFwd;
@@ -689,6 +806,9 @@ S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
 		return headMaxFwd;
 }
 C_HeadTo* MESSAGE::getHeadTo(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadTo invalid")
+
 
 	if (headTo == 0x0){
 		NEWPTR2(headTo, C_HeadTo(""), "C_HeadTo")
@@ -713,6 +833,9 @@ C_HeadTo* MESSAGE::getHeadTo(void){
  * From
  */
 C_HeadFrom* MESSAGE::getHeadFrom(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadFrom invalid")
+
 
 	if (headFrom == 0x0){
 		NEWPTR2(headFrom, C_HeadFrom(""), "C_HeadFrom")
@@ -735,6 +858,9 @@ C_HeadFrom* MESSAGE::getHeadFrom(void){
 	return headFrom;
 }
 void MESSAGE::replaceHeadFrom(string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::replaceHeadFrom invalid")
+
 
 	headFrom_p = false;
 
@@ -759,6 +885,9 @@ void MESSAGE::replaceHeadFrom(string _content){
 	}
 }
 void MESSAGE::replaceHeadTo(string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::replaceHeadTo invalid")
+
 
 	headTo_p = false;
 
@@ -787,6 +916,9 @@ void MESSAGE::replaceHeadTo(string _content){
  * Call Id
  */
 C_HeadCallId &MESSAGE::getHeadCallId(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadCallId invalid")
+
 
 	if(headCallId_p){
 		DEBOUT("CALL ID already parsed", headCallId.getContent())
@@ -808,6 +940,9 @@ C_HeadCallId &MESSAGE::getHeadCallId(void){
  * CSeq
  */
 C_HeadCSeq &MESSAGE::getHeadCSeq(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadCSeq invalid")
+
 
 	if(headCSeq_p){
 		return headCSeq;
@@ -825,6 +960,9 @@ C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 	return headCSeq;
 }
 void MESSAGE::replaceHeadCSeq(string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::replaceHeadCSeq invalid")
+
 
 	headCSeq_p = false;
 	headCSeq.setContent(_content);
@@ -844,6 +982,9 @@ void MESSAGE::replaceHeadCSeq(string _content){
 	}
 }
 void MESSAGE::replaceHeadCSeq(int _cseq, string _method){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::replaceHeadCSeq invalid")
+
 
 	char tt[128];
 	sprintf(tt, "%d %s", _cseq, _method.c_str());
@@ -869,6 +1010,9 @@ void MESSAGE::replaceHeadCSeq(int _cseq, string _method){
  * Route
  */
 C_HeadRoute* MESSAGE::getHeadRoute(void) throw (HeaderException){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadRoute invalid")
+
 
 	if (headRoute == 0x0){
 		NEWPTR2(headRoute, C_HeadRoute(""),"C_HeadRoute")
@@ -905,6 +1049,9 @@ C_HeadRoute* MESSAGE::getHeadRoute(void) throw (HeaderException){
 	}
 }
 void MESSAGE::removeHeadRoute(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::removeHeadRoute invalid")
+
 	headRoute_p = false;
 	unsigned int i;
 	for(i = 1; i < flex_line.size(); i ++){
@@ -921,6 +1068,9 @@ void MESSAGE::removeHeadRoute(void){
  * Contact
  */
 C_HeadContact* MESSAGE::getHeadContact(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadContact invalid")
+
 
 	if (headContact == 0x0){
 		NEWPTR2(headContact, C_HeadContact(""),"C_HeadContact")
@@ -943,6 +1093,9 @@ C_HeadContact* MESSAGE::getHeadContact(void){
 }
 
 void MESSAGE::replaceHeadContact(string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::replaceHeadContact invalid")
+
 
 	if (headContact == 0x0){
 		NEWPTR2(headContact, C_HeadContact(""),"C_HeadContact")
@@ -966,6 +1119,9 @@ void MESSAGE::replaceHeadContact(string _content){
 	}
 }
 void MESSAGE::removeMaxForwards(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::removeMaxForwards invalid")
+
 
 	headMaxFwd_p = false;
 	headMaxFwd.setContent("");
@@ -986,10 +1142,16 @@ void MESSAGE::removeMaxForwards(void){
 
 }
 void MESSAGE::increaseMaxForwards(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::increaseMaxForwards invalid")
+	DEBASSERT("MESSAGE::increaseMaxForwards for what?")
 	return ;
 }
 
 void MESSAGE::dropHeader(string _header){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::dropHeader invalid")
+
 
 	unsigned int i;
 	bool found = false;
@@ -1005,6 +1167,9 @@ void MESSAGE::dropHeader(string _header){
 	}
 }
 void MESSAGE::setGenericHeader(string _header, string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setGenericHeader invalid")
+
 
 	DEBOUT("MESSAGE::setGenericHeader", _header + " " + _content)
 	if (_header.compare("To:") == 0){
@@ -1035,6 +1200,9 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 	}
 }
 string MESSAGE::getGenericHeader(string _header){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getGenericHeader invalid")
+
 
 	DEBOUT("MESSAGE::getGenericHeader", _header)
 	unsigned int i;
@@ -1055,6 +1223,9 @@ string MESSAGE::getGenericHeader(string _header){
 
 
 void MESSAGE::addGenericHeader(string _header, string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::addGenericHeader invalid")
+
 
 	DEBOUT("MESSAGE::addGenericHeader",_header << " " << _content)
 
@@ -1063,6 +1234,9 @@ void MESSAGE::addGenericHeader(string _header, string _content){
 }
 
 void MESSAGE::setFireTime(unsigned long long int _firetime){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setFireTime invalid")
+
 
 	fireTime = _firetime;
 }
@@ -1072,31 +1246,101 @@ void MESSAGE::setFireTime(unsigned long long int _firetime){
 //	fireTime = _systime;
 //}
 unsigned long long int MESSAGE::getFireTime(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getFireTime invalid")
+
 
 	return fireTime;
 }
 string MESSAGE::getTransactionExtendedCID(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getTransactionExtendedCID invalid")
+
 
 	return getHeadCallId().getNormCallId() + getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 
 }
 string MESSAGE::getDialogExtendedCID(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getDialogExtendedCID invalid")
+
 	//Call id and FromTag
 	DEBY
 	DEBOUT_UTIL("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag"))
 	return getHeadCallId().getNormCallId() + getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag");
 }
 void MESSAGE::setLock(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setLock invalid")
+
 	lock = true;
 }
 bool MESSAGE::getLock(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getLock invalid")
+
 	return lock;
 }
 void MESSAGE::unSetLock(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::unSetLock invalid")
+
 	lock=false;
 }
 
+string MESSAGE::getOrderOfOperation(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getOrderOfOperation invalid")
+
+	return orderOfOperation;
+}
+void MESSAGE::setOrderOfOperation(string _s){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setOrderOfOperation invalid")
+
+	orderOfOperation = _s;
+}
+int MESSAGE::getTypeOfInternal(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getTypeOfInternal invalid")
+
+	return typeOfInternal;
+}
+void MESSAGE::setTypeOfInternal(int _i){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setTypeOfInternal invalid")
+
+	typeOfInternal = _i;
+}
+int MESSAGE::getType_trnsct(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getType_trnsct invalid")
+
+	return type_trnsct;
+}
+void MESSAGE::setType_trnsct(int _t){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setType_trnsct invalid")
+
+	type_trnsct = _t;
+}
+int MESSAGE::getTypeOfOperation(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getTypeOfOperation invalid")
+
+	return typeOfOperation;
+}
+void MESSAGE::setTypeOfOperation(int _t){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setTypeOfOperation invalid")
+
+	typeOfOperation = _t;
+}
+
 int MESSAGE::getModulus(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getModulus invalid")
+
 
 	//is calculated in two ways:
 	// if first 5 chars of call id is "CoMap" then

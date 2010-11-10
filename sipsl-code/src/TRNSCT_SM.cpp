@@ -237,7 +237,7 @@ ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	//_message changes its dest and gen
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 
@@ -245,7 +245,7 @@ ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	//Action 2: 100 TRY is created and sent to NTW
 	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
 	SipUtil.genTryFromInvite(_message, etry);
-	etry->typeOfInternal = TYPE_MESS;
+	etry->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_2 = SingleAction(etry);
 	action->addSingleAction(sa_2);
 
@@ -284,7 +284,7 @@ ACTION* act_1_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	//Action 1: Retransmit the 100 TRY
 	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
 	SipUtil.genTryFromInvite(_message, etry);
-	etry->typeOfInternal = TYPE_MESS;
+	etry->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(etry);
 	action->addSingleAction(sa_1);
 
@@ -330,7 +330,7 @@ ACTION* act_1_2_inv_sv(SM* _sm, MESSAGE* _message) {
 	// The message ha been prepared by client so it's ready to be sent back
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 
@@ -405,7 +405,7 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	//Action 1: Forward 200 OK to A
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	//replace with 200ok A
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 = _message;
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock();
@@ -422,9 +422,9 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	// T1 and not 2+T1
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
 	ack_timer->setFireTime(firetime);
-	ack_timer->typeOfInternal = TYPE_OP;
-	ack_timer->typeOfOperation = TYPE_OP_TIMER_ON;
-	ack_timer->orderOfOperation = "TIMER_G";
+	ack_timer->setTypeOfInternal(TYPE_OP);
+	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
+	ack_timer->setOrderOfOperation("TIMER_G");
 	ack_timer->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
 	SingleAction sa_2 = SingleAction(ack_timer);
@@ -462,7 +462,7 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 	//Action 1: Send stored 200 OK to A
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setDestEntity(SODE_NTWPOINT);
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setGenEntity(SODE_TRNSCT_SV);
-	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->typeOfInternal = TYPE_MESS;
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
 	action->addSingleAction(sa_1);
 
@@ -474,9 +474,9 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 	GETTIME(afterT);
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
 	ack_timer->setFireTime(firetime);
-	ack_timer->typeOfInternal = TYPE_OP;
-	ack_timer->typeOfOperation = TYPE_OP_TIMER_ON;
-	ack_timer->orderOfOperation = "TIMER_G";
+	ack_timer->setTypeOfInternal(TYPE_OP);
+	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
+	ack_timer->setOrderOfOperation("TIMER_G");
 	ack_timer->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
 	SingleAction sa_2 = SingleAction(ack_timer);
@@ -486,9 +486,9 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 3: Clear alarm for 200 OK to A (created in 1_3)
 	CREATEMESSAGE(ack_timer_clear, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
-	ack_timer_clear->typeOfInternal = TYPE_OP;
-	ack_timer_clear->typeOfOperation = TYPE_OP_TIMER_OFF;
-	ack_timer_clear->orderOfOperation = "TIMER_G";
+	ack_timer_clear->setTypeOfInternal(TYPE_OP);
+	ack_timer_clear->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+	ack_timer_clear->setOrderOfOperation("TIMER_G");
 	SingleAction sa_3 = SingleAction(ack_timer_clear);
 	action->addSingleAction(sa_3);
 
@@ -527,7 +527,7 @@ ACTION* act_3_3b_inv_sv(SM* _sm, MESSAGE* _message) {
 	//Action 1: 200ok from alarm send it
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 
@@ -541,9 +541,9 @@ ACTION* act_3_3b_inv_sv(SM* _sm, MESSAGE* _message) {
 	//Shoudl be T1 and not 2xT1
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok);
 	ack_timer->setFireTime(firetime);
-	ack_timer->typeOfInternal = TYPE_OP;
-	ack_timer->typeOfOperation = TYPE_OP_TIMER_ON;
-	ack_timer->orderOfOperation = "TIMER_G";
+	ack_timer->setTypeOfInternal(TYPE_OP);
+	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
+	ack_timer->setOrderOfOperation("TIMER_G");
 	ack_timer->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
 	SingleAction sa_2 = SingleAction(ack_timer);
@@ -621,6 +621,8 @@ ACTION* act_3_3d_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Nothing
+	_message->unSetLock();
+	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
 	return ((ACTION*) 0x0);
 }
 ////*****************************************************************
@@ -711,7 +713,7 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_3_3bSV.action = &act_3_3b_inv_sv;
 	PA_INV_3_3bSV.predicate = &pre_3_3b_inv_sv;
 
-	PA_INV_3_3cSV.action = &act_3_3c_inv_sv;
+	PA_INV_3_3cSV.action = &act_3_5_inv_sv;
 	PA_INV_3_3cSV.predicate = &pre_3_5_inv_sv;
 
 	PA_INV_3_3dSV.action = &act_3_3d_inv_sv;
@@ -734,7 +736,7 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 //*****************************************************************
 // client transaction
 //*****************************************************************
-// INVITE B
+// INVITE B from ALO
 //*****************************************************************
 bool pre_0_1_inv_cl(SM* _sm, MESSAGE* _message){
 
@@ -757,45 +759,42 @@ ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	//Message has to be sent
+	//**************************************
+	//Action 1: send message to NTW
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
-
 	action->addSingleAction(sa_1);
 
-	//careful with source message.
-	//Prepare message for Alarm
+	//**************************************
+	//Action 2: send message to ALARM
 	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL,SODE_TRNSCT_CL)
 	__timedmessage->setSourceMessage(_message->getSourceMessage());
-
 	SysTime afterT;
 	GETTIME(afterT);
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
-
 	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl creating alarm ", TIMER_1 << " " << firetime)
-
 	__timedmessage->setFireTime(firetime);
-	__timedmessage->typeOfInternal = TYPE_OP;
-	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
-	__timedmessage->orderOfOperation = "TIMER_A";
+	__timedmessage->setTypeOfInternal(TYPE_OP);
+	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
+	__timedmessage->setOrderOfOperation("TIMER_A");
 	__timedmessage->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
 	SingleAction sa_2 = SingleAction(__timedmessage);
-
 	action->addSingleAction(sa_2);
 
 	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
 
+	DEBOUT("SM act_0_1_inv_cl move to state","1")
 	_sm->State = 1;
+	DEBOUT("SM act_0_1_inv_cl move OverallState_CL","OS_CALLING")
+	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
 
 	//OVERALL
 	//TODO start timer 64*T1
 	//Order of operation = 1
 	//__timedmessage_2->orderOfOperation = "TIMER_B";
-	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
-
 
 	return action;
 
@@ -822,66 +821,60 @@ bool pre_1_1_inv_cl(SM* _sm, MESSAGE* _message){
 		return false;
 	}
 }
+//*****************************************************************
 ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl","")
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	//Message has to be sent
+	//**************************************
+	//Action 1: send message to NTW
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_MESS;
-	//This will delete the message in SUDP
+	_message->setTypeOfInternal(TYPE_MESS);
 	_message->unSetLock();
 	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
-
 	SingleAction sa_1 = SingleAction(_message);
-
 	action->addSingleAction(sa_1);
 
-	//careful with source message.
-	//Prepare message for Alarm
+	//**************************************
+	//Action 2: send message to ALARM
 	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
 	__timedmessage->setSourceMessage(_message->getSourceMessage());
-
 	SysTime afterT;
 	GETTIME(afterT);
 	//TODO this operation is wrong
-
 	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
-
-
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite);
-//	afterT.tv.tv_sec = afterT.tv.tv_sec + TIMER_1_sc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
-//	afterT.tv.tv_usec = afterT.tv.tv_usec + TIMER_1_mc*(((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite+1);
-
 	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl creating alarm ", pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite) << " " << firetime)
-
 	__timedmessage->setFireTime(firetime);
-	__timedmessage->typeOfInternal = TYPE_OP;
-	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
-	__timedmessage->orderOfOperation = "TIMER_A";
+	__timedmessage->setTypeOfInternal(TYPE_OP);
+	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
+	__timedmessage->setOrderOfOperation("TIMER_A");
 	__timedmessage->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
 	SingleAction sa_2 = SingleAction(__timedmessage);
-
 	action->addSingleAction(sa_2);
 
 	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
 
+	DEBOUT("SM act_1_1_inv_cl move to state","1")
 	_sm->State = 1;
+	DEBOUT("SM act_1_1_inv_cl move OverallState_CL","OS_CALLING")
+	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
+
 
 	//OVERALL
 	//TODO start timer 64*T1
 	//Order of operation = 1
 	//__timedmessage_2->orderOfOperation = "TIMER_B";
-	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
 
 
 	return action;
 }
-
+//*****************************************************************
+// INVITE B from ALARM max resend reached
 //*****************************************************************
 bool pre_1_99_inv_cl(SM* _sm, MESSAGE* _message){
 
@@ -903,17 +896,19 @@ ACTION* act_1_99_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_INV_CL act_1_99_inv_cl *** incomplete *** ","")
 
+	//**************************************
+	//trigger call_oset deletion:
 	_message->unSetLock();
 	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
-
 	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
-
 
 	_sm->State = 99;
 
 	return 0x0;
 
 }
+//*****************************************************************
+// 100 Try B
 //*****************************************************************
 bool pre_1_2_inv_cl(SM* _sm, MESSAGE* _message){
 
@@ -931,34 +926,38 @@ bool pre_1_2_inv_cl(SM* _sm, MESSAGE* _message){
 			return false;
 		}
 }
+//*****************************************************************
 ACTION* act_1_2_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_INV_CL act_1_2_inv_cl",_message->getHeadSipReply().getReply().getCode())
 
-	// TODO clear timer ad create new timer for the ringing ?
-
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
-	_message->typeOfInternal = TYPE_OP;
-	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	_message->orderOfOperation = "TIMER_A";
 
+	//**************************************
+	//Action 1: clear INVITE B alarm
+	_message->setTypeOfInternal(TYPE_OP);
+	_message->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+	_message->setOrderOfOperation("TIMER_A");
+	_message->setGenEntity(SODE_TRNSCT_CL);
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
+	//The message has no esplicit destination because type is OP
 
-	//TODO the message has no esplicit destination because type is OP
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	//_message->setGenEntity(SODE_TIMERPOINT);
-
+	DEBOUT("SM act_1_2_inv_cl move to state","2")
 	_sm->State = 2;
+	DEBOUT("SM act_1_2_inv_cl move OverallState_CL to ","OS_PROCEEDING")
+	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
 	//OVERALL
 	//TODO  clear 64*T1
 	//__timedmessage_2->orderOfOperation = "TIMER_B";
-	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
 
 	return action;
 }
+//*****************************************************************
+// 101 DE B - 180 RING B
+//*****************************************************************
 bool pre_1_3_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_CL pre_1_3_inv_cl","")
@@ -976,62 +975,55 @@ bool pre_1_3_inv_cl(SM* _sm, MESSAGE* _message){
 			return false;
 		}
 }
+//*****************************************************************
 ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM_CL act_1_3_inv_cl","")
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
+	//**************************************
+	//Action 1: create reply using A_Matrix
 	// the message contains the to tag that we must save
 	// or store it in valo during 200ok
-
 	MESSAGE* __message = ((TRNSCT_SM*)_sm)->getA_Matrix();
 	DEBOUT("MESSAGE GENERATOR", __message)
-
 	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_CL, SODE_TRNSCT_SV)
 	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
 	reply_x->purgeSDP();
 	reply_x->compileMessage();
 	reply_x->dumpVector();
-	reply_x->typeOfInternal = TYPE_MESS;
-
+	reply_x->setTypeOfInternal(TYPE_MESS);
 	DEBOUT("CONTACT", reply_x->getHeadContact()->getContent())
-
 	SingleAction sa_1 = SingleAction(reply_x);
-
 	action->addSingleAction(sa_1);
 
 
-//	//Clear alarm here in case the b did not send any trying
-//	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL)
-//	___message->typeOfInternal = TYPE_OP;
-//	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
-//	___message->setLock();
-//	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
-//
-//	SingleAction sa_2 = SingleAction(___message);
-//	action->addSingleAction(sa_2);
-//
-//	PURGEMESSAGE(_message);
-
-	//Clear alarm here in case the b did not send any trying
-	_message->typeOfInternal = TYPE_OP;
-	_message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	_message->orderOfOperation = "TIMER_A";
+	//**************************************
+	//Action 2: clear INVITE B alarm
+	_message->setTypeOfInternal(TYPE_OP);
+	_message->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+	_message->setOrderOfOperation("TIMER_A");
 	SingleAction sa_2 = SingleAction(_message);
 	action->addSingleAction(sa_2);
 
+	DEBOUT("SM act_1_3_inv_cl move to state","3")
 	_sm->State = 3;
+
+	DEBOUT("SM act_1_3_inv_cl move OverallState_CL to","OS_PROCEEDING")
+	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
 	//OVERALL
 	//TODO  clear 64*T1
 	//__timedmessage_2->orderOfOperation = "TIMER_B";
-	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
 	return action;
 
 
 }
+//*****************************************************************
+// 200 OK B
+//*****************************************************************
 bool pre_1_4_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM pre_1_4_inv_cl","")
@@ -1048,18 +1040,32 @@ bool pre_1_4_inv_cl(SM* _sm, MESSAGE* _message){
 			return false;
 		}
 }
+//*****************************************************************
 ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_1_4_inv_cl","")
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
+	//**************************************
+	//Action 1: Clear alarm here in case the b did not send any trying
+	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
+	___message->setTypeOfInternal(TYPE_OP);
+	___message->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+	___message->setOrderOfOperation("TIMER_A");
+//	___message->setLock();
+//	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
+	SingleAction sa_1 = SingleAction(___message);
+	action->addSingleAction(sa_1);
+
+	//**************************************
+	//Action 2: 200 OK B to ALO
+	//Alo will delete it
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
+	_message->setTypeOfInternal(TYPE_MESS);
+	SingleAction sa_2 = SingleAction(_message);
+	action->addSingleAction(sa_2);
 
 //	//Clear alam here in case the b did not send any trying
 //	___message->typeOfInternal = TYPE_OP;
@@ -1070,29 +1076,25 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 //	_message->setLock();
 //	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 
-	//Clear alam here in case the b did not send any trying
-	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
-	___message->typeOfInternal = TYPE_OP;
-	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
-	___message->orderOfOperation = "TIMER_A";
-	___message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
-
-	SingleAction sa_2 = SingleAction(___message);
-	action->addSingleAction(sa_2);
-
+	DEBOUT("SM act_1_4_inv_cl move to state","4")
 	_sm->State = 4;
+	DEBOUT("SM act_1_4_inv_cl move OverallState_CL to","OS_PROCEEDING")
+	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
+
 
 	//OVERALL
 	//TODO  clear 64*T1
 	//__timedmessage_2->orderOfOperation = "TIMER_B";
-	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 	//resend ACK in case:
 	//create a fake client ACK and sent it to client transqaction
 	//machine to retrigger the ack towards b
 
 	return action;
 }
+//*****************************************************************
+// 200 OK B in OS_COMPLETED
+// Need to resend the ACK
+//*****************************************************************
 bool pre_4_4_inv_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM pre_4_4_inv_cl message type:",_message->getReqRepType() <<"] reply type code:["<<_message->getHeadSipReply().getReply().getCode() <<"] destination:["<<_message->getDestEntity() <<"] Overall:["<<_sm->getSL_CO()->OverallState_CL)
@@ -1112,16 +1114,18 @@ bool pre_4_4_inv_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_4_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	//take the 200OK change to send it to ack_cl
 
 	DEBOUT("SM act_4_4_inv_cl","")
-
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	//**************************************
+	//Action 1: take the 200OK change to send it to ack_cl
 	_message->setDestEntity(SODE_TRNSCT_CL);
 	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_OP;
-	_message->typeOfOperation = TYPE_OP_SMCOMMAND;
+	_message->setTypeOfInternal(TYPE_OP);
+	_message->setTypeOfOperation(TYPE_OP_SMCOMMAND);
 
+	//TODO need the branch!!!
 	_message->replaceHeadCSeq(1,"ACK");
 
 	_message->compileMessage();
@@ -1130,43 +1134,44 @@ ACTION* act_4_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	action->addSingleAction(sa_1);
 
+	DEBASSERT("ACTION* act_4_4_inv_cl need to send this to ACK-CL")
 	return action;
 
 }
 
-bool pre_4_5_inv_cl(SM* _sm, MESSAGE* _message){
-
-	DEBOUT("SM pre_4_5_inv_cl","")
-	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
-			&& _message->getDestEntity() == SODE_TRNSCT_CL
-			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-		DEBOUT("SM pre_4_5_inv_cl","true")
-		return true;
-	}
-	else {
-		DEBOUT("SM pre_4_5_inv_cl","false")
-		return false;
-	}
-}
-ACTION* act_4_5_inv_cl(SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("SM act_4_5_inv_cl","")
-
-	NEWPTR(ACTION*, action, ACTION(),"ACTION")
-
-	_message->setDestEntity(SODE_NTWPOINT);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_MESS;
-	SingleAction sa_1 = SingleAction(_message);
-
-	action->addSingleAction(sa_1);
-
-	_sm->State = 5;
-
-	return action;
-
-}
+//bool pre_4_5_inv_cl(SM* _sm, MESSAGE* _message){
+//
+//	DEBOUT("SM pre_4_5_inv_cl","")
+//	if (_message->getReqRepType() == REQSUPP
+//			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
+//			&& _message->getDestEntity() == SODE_TRNSCT_CL
+//			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
+//		DEBOUT("SM pre_4_5_inv_cl","true")
+//		return true;
+//	}
+//	else {
+//		DEBOUT("SM pre_4_5_inv_cl","false")
+//		return false;
+//	}
+//}
+//ACTION* act_4_5_inv_cl(SM* _sm, MESSAGE* _message) {
+//
+//	DEBOUT("SM act_4_5_inv_cl","")
+//
+//	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+//
+//	_message->setDestEntity(SODE_NTWPOINT);
+//	_message->setGenEntity(SODE_TRNSCT_CL);
+//	_message->typeOfInternal = TYPE_MESS;
+//	SingleAction sa_1 = SingleAction(_message);
+//
+//	action->addSingleAction(sa_1);
+//
+//	_sm->State = 5;
+//
+//	return action;
+//
+//}
 //**********************************************************************************
 TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
@@ -1175,7 +1180,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 		PA_INV_1_2CL((SM*)this),
 		PA_INV_1_3CL((SM*)this),
 		PA_INV_1_4CL((SM*)this),
-		PA_INV_4_5CL((SM*)this),
+		//PA_INV_4_5CL((SM*)this),
 		PA_INV_4_4CL((SM*)this),
 		PA_INV_1_99CL((SM*)this){
 
@@ -1199,8 +1204,8 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_4CL.action = &act_1_4_inv_cl;
 	PA_INV_1_4CL.predicate = &pre_1_4_inv_cl;
 
-	PA_INV_4_5CL.action = &act_4_5_inv_cl;
-	PA_INV_4_5CL.predicate = &pre_4_5_inv_cl;
+//	PA_INV_4_5CL.action = &act_4_5_inv_cl;
+//	PA_INV_4_5CL.predicate = &pre_4_5_inv_cl;
 
 	PA_INV_4_4CL.action = &act_4_4_inv_cl;
 	PA_INV_4_4CL.predicate = &pre_4_4_inv_cl;
@@ -1224,7 +1229,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	insert_move(3,&PA_INV_1_4CL);
 
 	//ACK will be sent in the other SM.
-	insert_move(4,&PA_INV_4_5CL);
+	//insert_move(4,&PA_INV_4_5CL);
 
 	insert_move(4,&PA_INV_4_4CL);
 	insert_move(5,&PA_INV_4_4CL);
@@ -1267,8 +1272,8 @@ ACTION* act_0_1_ack_sv(SM* _sm, MESSAGE* _message) {
 	//_message changes its dest and gen
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->typeOfInternal = TYPE_MESS;
-	_message->type_trnsct = TYPE_TRNSCT;
+	_message->setTypeOfInternal(TYPE_MESS);
+	_message->setType_trnsct(TYPE_TRNSCT);
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
@@ -1325,7 +1330,7 @@ ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
@@ -1364,7 +1369,7 @@ ACTION* act_1_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
 	CREATEMESSAGE(__message, ((TRNSCT_SM*)_sm)->getMatrixMessage(), SODE_TRNSCT_CL,SODE_NTWPOINT)
 
-	__message->typeOfInternal = TYPE_MESS;
+	__message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(__message);
 
 	action->addSingleAction(sa_1);
@@ -1428,7 +1433,7 @@ ACTION* act_0_1_bye_sv(SM* _sm, MESSAGE* _message) {
 	// remember initial generation  is used for backward messagges like bye coming from B
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
@@ -1465,7 +1470,7 @@ ACTION* act_1_2_bye_sv(SM* _sm, MESSAGE* _message) {
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
@@ -1519,7 +1524,7 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
@@ -1536,8 +1541,8 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl creating alarm ", TIMER_1  << " " << firetime)
 	__timedmessage->setFireTime(firetime);
-	__timedmessage->typeOfInternal = TYPE_OP;
-	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
+	__timedmessage->setTypeOfInternal(TYPE_OP);
+	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	__timedmessage->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
 	SingleAction sa_2 = SingleAction(__timedmessage);
@@ -1573,7 +1578,7 @@ ACTION* act_1_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
@@ -1594,8 +1599,8 @@ ACTION* act_1_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_SM_BYE_CL act_1_1_bye_cl creating alarm ", TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye) << " " << firetime)
 	__timedmessage->setFireTime(firetime);
-	__timedmessage->typeOfInternal = TYPE_OP;
-	__timedmessage->typeOfOperation = TYPE_OP_TIMER_ON;
+	__timedmessage->setTypeOfInternal(TYPE_OP);
+	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	__timedmessage->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
 	SingleAction sa_2 = SingleAction(__timedmessage);
@@ -1630,14 +1635,14 @@ ACTION* act_1_2_bye_cl(SM* _sm, MESSAGE* _message) {
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->typeOfInternal = TYPE_MESS;
+	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
 
 	action->addSingleAction(sa_1);
 
 	CREATEMESSAGE(__message, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
-	__message->typeOfInternal = TYPE_OP;
-	__message->typeOfOperation = TYPE_OP_TIMER_OFF;
+	__message->setTypeOfInternal(TYPE_OP);
+	__message->setTypeOfOperation(TYPE_OP_TIMER_OFF);
 	__message->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(__message);
 
