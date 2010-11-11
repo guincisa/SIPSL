@@ -123,7 +123,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 	//Maybe it has been delete by DOA when outside the call_oset
 	//TODO needed???
-	if (_mess == 0x0){
+	if (_mess == MainMessage){
 		return;
 	}
 

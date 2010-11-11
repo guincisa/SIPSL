@@ -76,9 +76,14 @@ int main(int argc, const char* argv[]) {
 
 	if (argc == 1){
 
+		//This message is used for consitency checks
+		//When a message is deleted, his pointer to set to MainMessage
+		//any method call to the main message generates assert
 		string empty="EMPTY";
 		sockaddr_inX echoClntAddr;
-		CREATENEWMESSAGE_EXT(MainMessage, empty.c_str(), 0, echoClntAddr, SODE_NOPOINT)
+		SysTime inTime;\
+		GETTIME(inTime);\
+		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
 		MainMessage->setValid(1);
 
 		SUDP mystack;

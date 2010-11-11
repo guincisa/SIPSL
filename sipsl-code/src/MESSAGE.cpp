@@ -538,8 +538,7 @@ C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
 	if (reqRep == REQSUPP || reqRep == REQUNSUPP){
 		return headSipRequest;
 	}
-    assert("MESSAGE::getHeadSipRequest illegal instruction");
-    return headSipRequest;
+    DEBASSERT("MESSAGE::getHeadSipRequest illegal instruction");
 }
 void MESSAGE::setHeadSipRequest(string _content){
 	if (invalid == 1)
@@ -569,8 +568,7 @@ C_HeadSipReply &MESSAGE::getHeadSipReply(void){
 	if (reqRep == REPSUPP || reqRep == REPUNSUPP){
 		return headSipReply;
 	}
-    assert("MESSAGE::getHeadSipReply illegal instruction");
-    return headSipReply;
+	DEBASSERT("MESSAGE::getHeadSipReply illegal instruction");
 }
 /*
  * Via

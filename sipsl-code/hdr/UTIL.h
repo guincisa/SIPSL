@@ -86,7 +86,7 @@ class ThreadWrapper {
 //Mandatory
 //**********************************************************
 #undef DEBASSERT
-#define DEBASSERT(m1) {cout << "\n\nDEBASSERT " << __FILE__ << " " << __LINE__<< " ******" << m1 << "*****" << endl<<endl<< endl; cout.flush();assert(0);}
+#define DEBASSERT(m1) {cout << "\n\nDEBASSERT [" << pthread_self() << "] "<< __FILE__ << " " << __LINE__<< " ******" << m1 << "*****" << endl<<endl<< endl; cout.flush();assert(0);}
 //**********************************************************
 #define WAITTIME { timespec sleep_time; \
 	sleep_time.tv_sec = 20;\

@@ -149,29 +149,21 @@ ACTION* SM::event(MESSAGE* _event){
 	ACTION* act=0x0;
 
 	DEBOUT("SM::event Look for state", State)
-	DEBY
 	pair<multimap<const int,PREDICATE_ACTION*>::iterator,multimap<const int,PREDICATE_ACTION*>::iterator> ret;
-	DEBY
 	multimap<const int,PREDICATE_ACTION*>::iterator iter;
-	DEBY
 	ret = move_sm.equal_range(State);
 
 	GETLOCK(&mutex,"mutex");
-	DEBY
     for (iter=ret.first; iter!=ret.second; ++iter){
 		tmp  = iter->second;
 		DEBOUT("SM::event tmp  = iter->second;", iter->second)
 		if (tmp->predicate(this, _event)){
-			DEBY
 			act = tmp->action(this, _event);
-			DEBY
 			RELLOCK(&mutex,"mutex");
-			DEBY
 			return act;
 		}
 	}
 	RELLOCK(&mutex,"mutex");
-	DEBY
 	return(act);
 }
 //**********************************************************************************
@@ -1131,7 +1123,6 @@ ACTION* act_4_4a_inv_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_4_4b_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBY
 	DEBOUT("SM_CL pre_4_4b_inv_cl","")
 	//DEBOUT("SM pre_4_4b_inv_cl message type:",_message->getReqRepType() <<"] reply type code:["<<_message->getHeadSipReply().getReply().getCode() <<"] destination:["<<_message->getDestEntity() <<"] Overall:["<<_sm->getSL_CO()->OverallState_CL)
 
@@ -1176,7 +1167,6 @@ ACTION* act_4_4b_inv_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_4_4c_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBY
 	DEBOUT("TRNSCT_INV_CL pre_4_4c_inv_cl","")
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
@@ -1423,7 +1413,8 @@ ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 }
 bool pre_1_1_ack_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_1_1_ack_cl", _message->getReqRepType() << "]["<<_message->getHeadSipReply().getReply().getCode()<< "]["<<_message->getDestEntity()<< "]["<<_message->getGenEntity())
+	DEBOUT("SM pre_1_1_ack_cl","")
+
 	if (_message->getReqRepType() == REPSUPP
 			&&_message->getHeadSipReply().getReply().getCode() == OK_200
 			&& _message->getDestEntity() == SODE_TRNSCT_CL

@@ -591,7 +591,7 @@ void SL_CO::actionCall_CL(ACTION* action){
 				}
 			}
 			else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
-				DEBOUT("SL_CO::call action is internal send to some SM", _tmpMessage->getHeadSipRequest().getContent() )
+				DEBMESSAGESHORT("SL_CO::call action is internal send to some SM", _tmpMessage )
 				((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 			}
 			else {
