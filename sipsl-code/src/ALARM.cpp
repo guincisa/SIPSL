@@ -178,6 +178,7 @@ void ALMGR::alarmer(void){
 							sl_cc->p_w(_tmpMess);
 						}
 					}
+					//The alarm if inactive may carry a deleted message, don't access it
 					//mess_alm_map.erase(tmal->getMessage());
 					delmap.insert(pair<ALARM*,int>(tmal,0));
 					DEBOUT("ALARM CHECK INTERVAL", tmal << "][curr " << (unsigned long long int)curr << "][tcu " <<  (unsigned long long int)tcu)
@@ -337,6 +338,7 @@ void ALARM::cancel(void){
 }
 MESSAGE* ALARM::getMessage(void){
 	if (!active)
+		DEBASSERT("Break rule: accessing the message of an inactive ALARM")
 		return 0x0;
 	else
 		return message;

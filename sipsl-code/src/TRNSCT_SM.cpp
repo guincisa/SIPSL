@@ -784,11 +784,6 @@ ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 	DEBOUT("SM act_0_1_inv_cl move OverallState_CL","OS_CALLING")
 	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
 
-	//OVERALL
-	//TODO start timer 64*T1
-	//Order of operation = 1
-	//__timedmessage_2->orderOfOperation = "TIMER_B";
-
 	return action;
 
 }
@@ -838,7 +833,6 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 	SysTime afterT;
 	GETTIME(afterT);
 	//TODO this operation is wrong
-	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite);
 	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl creating alarm ", pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite) << " " << firetime)
 	__timedmessage->setFireTime(firetime);
@@ -850,19 +844,14 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_2 = SingleAction(__timedmessage);
 	action->addSingleAction(sa_2);
 
+	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
+
 	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
 
 	DEBOUT("SM act_1_1_inv_cl move to state","1")
 	_sm->State = 1;
 	DEBOUT("SM act_1_1_inv_cl move OverallState_CL","OS_CALLING")
 	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
-
-
-	//OVERALL
-	//TODO start timer 64*T1
-	//Order of operation = 1
-	//__timedmessage_2->orderOfOperation = "TIMER_B";
-
 
 	return action;
 }
@@ -942,11 +931,6 @@ ACTION* act_1_2_inv_cl(SM* _sm, MESSAGE* _message) {
 	DEBOUT("SM act_1_2_inv_cl move OverallState_CL to ","OS_PROCEEDING")
 	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
-	//OVERALL
-	//TODO  clear 64*T1
-	//__timedmessage_2->orderOfOperation = "TIMER_B";
-
-
 	return action;
 }
 //*****************************************************************
@@ -1007,9 +991,6 @@ ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 	DEBOUT("SM act_1_3_inv_cl move OverallState_CL to","OS_PROCEEDING")
 	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
-	//OVERALL
-	//TODO  clear 64*T1
-	//__timedmessage_2->orderOfOperation = "TIMER_B";
 
 	return action;
 
@@ -1143,55 +1124,56 @@ ACTION* act_4_4b_inv_cl(SM* _sm, MESSAGE* _message) {
 
 
 	DEBOUT("SM act_4_4b_inv_cl","")
-	NEWPTR(ACTION*, action, ACTION(),"ACTION")
-
-	//**************************************
-	//Action 1: take the 200OK change to send it to ack_cl
-	_message->setDestEntity(SODE_TRNSCT_CL);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->setTypeOfInternal(TYPE_OP);
-	_message->setTypeOfOperation(TYPE_OP_SMCOMMAND);
-	//TODO need the branch!!!
-	_message->replaceHeadCSeq(1,"ACK");
-	_message->compileMessage();
-	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
-	SingleAction sa_1 = SingleAction(_message);
-	action->addSingleAction(sa_1);
-
-	//DEBASSERT("ACTION* act_4_4b_inv_cl need to send this to ACK-CL")
-	return action;
-
-}
-//*****************************************************************
-// INVITE B from ALARM max resend reached
-//*****************************************************************
-bool pre_4_4c_inv_cl(SM* _sm, MESSAGE* _message){
-
-	DEBOUT("TRNSCT_INV_CL pre_4_4c_inv_cl","")
-	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
-			&& _message->getDestEntity() == SODE_TRNSCT_CL
-			&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
-		DEBOUT("TRNSCT_INV_CL pre_4_4c_inv_cl","true")
-		return true;
-	}
-	else {
-		DEBOUT("TRNSCT_INV_CL pre_4_4c_inv_cl","false")
-		return false;
-	}
-}
-ACTION* act_4_4c_inv_cl(SM* _sm, MESSAGE* _message) {
-
-	DEBOUT("TRNSCT_INV_CL act_4_4c_inv_cl Invite unexpected ","")
-
-	//**************************************
-	//trigger call_oset deletion:
-	_message->unSetLock();
-	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
-
+//	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+//
+//	//**************************************
+//	//Action 1: take the 200OK change to send it to ack_cl
+//	_message->setDestEntity(SODE_TRNSCT_CL);
+//	_message->setGenEntity(SODE_TRNSCT_CL);
+//	_message->setTypeOfInternal(TYPE_OP);
+//	_message->setTypeOfOperation(TYPE_OP_SMCOMMAND);
+//	//TODO need the branch!!!
+//	_message->replaceHeadCSeq(1,"ACK");
+//	_message->compileMessage();
+//	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
+//	SingleAction sa_1 = SingleAction(_message);
+//	action->addSingleAction(sa_1);
+//
+//	//DEBASSERT("ACTION* act_4_4b_inv_cl need to send this to ACK-CL")
+//	//return action;
 	return 0x0;
 
 }
+////*****************************************************************
+//// INVITE B from ALARM max resend reached
+////*****************************************************************
+//bool pre_4_4c_inv_cl(SM* _sm, MESSAGE* _message){
+//
+//	DEBOUT("TRNSCT_INV_CL pre_4_4c_inv_cl","")
+//	if (_message->getReqRepType() == REQSUPP
+//			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+//			&& _message->getDestEntity() == SODE_TRNSCT_CL
+//			&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
+//		DEBOUT("TRNSCT_INV_CL pre_4_4c_inv_cl","true")
+//		return true;
+//	}
+//	else {
+//		DEBOUT("TRNSCT_INV_CL pre_4_4c_inv_cl","false")
+//		return false;
+//	}
+//}
+//ACTION* act_4_4c_inv_cl(SM* _sm, MESSAGE* _message) {
+//
+//	DEBOUT("TRNSCT_INV_CL act_4_4c_inv_cl Invite unexpected ","")
+//
+//	//**************************************
+//	//trigger call_oset deletion:
+//	_message->unSetLock();
+//	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+//
+//	return 0x0;
+//
+//}
 
 //bool pre_4_5_inv_cl(SM* _sm, MESSAGE* _message){
 //
@@ -1236,7 +1218,6 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 		PA_INV_1_4CL((SM*)this),
 		PA_INV_4_4aCL((SM*)this),
 		PA_INV_4_4bCL((SM*)this),
-		PA_INV_4_4cCL((SM*)this),
 		PA_INV_1_99CL((SM*)this){
 
 	PA_INV_0_1CL.action = &act_0_1_inv_cl;
@@ -1259,17 +1240,12 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_4CL.action = &act_1_4_inv_cl;
 	PA_INV_1_4CL.predicate = &pre_1_4_inv_cl;
 
-//	PA_INV_4_5CL.action = &act_4_5_inv_cl;
-//	PA_INV_4_5CL.predicate = &pre_4_5_inv_cl;
-
 	PA_INV_4_4aCL.action = &act_4_4a_inv_cl;
 	PA_INV_4_4aCL.predicate = &pre_4_4a_inv_cl;
 
 	PA_INV_4_4bCL.action = &act_4_4b_inv_cl;
 	PA_INV_4_4bCL.predicate = &pre_4_4b_inv_cl;
 
-	PA_INV_4_4cCL.action = &act_4_4c_inv_cl;
-	PA_INV_4_4cCL.predicate = &pre_4_4c_inv_cl;
 
 	resend_invite = 0;
 
@@ -1281,11 +1257,12 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	insert_move(1,&PA_INV_1_2CL);
 	//180 RING or 101 DIALOG EST
 	insert_move(1,&PA_INV_1_3CL);
+	insert_move(2,&PA_INV_1_3CL);
+
 
 	//Resend max reached
 	insert_move(1,&PA_INV_1_99CL);
 
-	insert_move(2,&PA_INV_1_3CL);
 
 	//200 OK
 	insert_move(1,&PA_INV_1_4CL);
@@ -1293,15 +1270,10 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	insert_move(3,&PA_INV_1_4CL);
 
 	//ACK will be sent in the other SM.
-	//insert_move(4,&PA_INV_4_5CL);
 
 	insert_move(4,&PA_INV_4_4bCL);
 	insert_move(4,&PA_INV_4_4aCL);
-	insert_move(4,&PA_INV_4_4cCL);
 
-
-
-	//manca 3 a 3 con dialoge
 
 
 

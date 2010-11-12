@@ -166,6 +166,11 @@ CALL_OSET::~CALL_OSET(void){
 	while (m != 0x0){
 		DEBY
 		DEBMESSAGESHORT("DOA locked message", m)
+		if (m->getTypeOfInternal() == TYPE_OP){
+			string callid_alarm = m->getHeadCallId().getContent() +  ((C_HeadVia*) m->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + m->getOrderOfOperation()+ "#";
+			DEBOUT("CALL_OSET::~CALL_OSET::cancel alarm, callid", callid_alarm)
+			getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
+		}
 		PURGEMESSAGE(m);
 		DEBY
 		m = getNextLockedMessage();
@@ -334,6 +339,16 @@ void SL_CO::call(MESSAGE* _message){
 
     ACTION* action = 0x0;
 
+	if(_message->getTypeOfInternal() == TYPE_OP){
+		if (_message->getLock()){
+			_message->unSetLock();
+			call_oset->removeLockedMessage(_message);
+		}else {
+			DEBASSERT("Break rule: a message from alarm is found unlocked")
+		}
+	}
+
+
 	//Message is going to Server SM
 	if (_message->getDestEntity() == SODE_TRNSCT_SV) {
 
@@ -386,14 +401,14 @@ void SL_CO::call(MESSAGE* _message){
 					//TODO
 					//The message is locked for some reason but did not trigger any action...
 					//can be the 200 ok A
-					DEBMESSAGESHORT("The message is locked for some reason but did not trigger any action...",_message)
+					DEBMESSAGESHORT("Breaks rule: the message is locked for some reason but did not trigger any action...",_message)
 					DEBASSERT("Check this case out")
 				}
 
 			}
 		}
     	else {
-
+    		DEBASSERT("trnsctSM == 0x0 Check this case out")
     	}
 	}
 	//Message is going to Client SM
@@ -404,8 +419,10 @@ void SL_CO::call(MESSAGE* _message){
 
 
 		TRNSCT_SM* trnsct_cl = 0x0;
+
 		//Get into the ack cl state machine
 		if (_message->getTypeOfInternal() == TYPE_OP && _message->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
+			DEBASSERT("STILL NOT IMPLEMENTED")
 			DEBOUT("lastTRNSCT_SM_ACK_CL", call_oset->lastTRNSCT_SM_ACK_CL)
 			trnsct_cl = call_oset->lastTRNSCT_SM_ACK_CL;
 			if ( trnsct_cl == 0x0){
@@ -461,7 +478,12 @@ void SL_CO::call(MESSAGE* _message){
 			//so the sm has ignored it
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 			if (!_message->getLock()){
+				_message->unSetLock();
+				call_oset->removeLockedMessage(_message);
 				PURGEMESSAGE(_message)
+			}
+			else {
+				DEBASSERT("Rule break: a message with no associated actions has been found locked")
 			}
 		}
 	}
@@ -490,27 +512,19 @@ void SL_CO::actionCall_SV(ACTION* action){
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
 			//server sm sending to client sm should not happen
-			DEBASSERT("Server sm sending to client sm should not happen should not happen")
+			DEBOUT("SL_CO::call action SV to CL directly","")
+			DEBASSERT("Server sm sending to client sm should not happen ")
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 			//To network
 			DEBDEV("Send to transport", _tmpMessage)
-				call_oset->getTRNSPRT()->downCall(_tmpMessage, call_oset);
-//			if (_tmpMessage->getReqRepType() == REPSUPP) {
-//				//TODO Check if there is a ROUTE header
-//				call_oset->getENGINE()->getSUDP()->sendReply(_tmpMessage);
-//			}
-//			else {
-//				DEBASSERT("Unexpected SM_SV sending a Request to network")
-//			}
+			call_oset->getTRNSPRT()->downCall(_tmpMessage, call_oset);
 
 		} else if (_tmpMessage->getTypeOfInternal() == TYPE_OP){
 
 			if ( _tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_ON){
 				DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#");
-				DEBY
 				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
-				DEBY
 
 			} else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_OFF){
 
@@ -520,6 +534,9 @@ void SL_CO::actionCall_SV(ACTION* action){
 				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 				if(!_tmpMessage->getLock()){
 					PURGEMESSAGE(_tmpMessage)
+				}
+				else{
+					DEBASSERT("Rule break: a timer off message found locked")
 				}
 			}
 		}

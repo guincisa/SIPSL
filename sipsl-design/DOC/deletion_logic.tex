@@ -17,6 +17,21 @@ The creation is done in different ways:
    \item Create internally a request, reply or operation
 \end{itemize}
 
+\subsection{Deletion}
+
+\subsubsection{Rule: ALARM MANAGER}
+ Messages sent to ALARM MAMAGER are always locked. If the CALL_OSET is deleted the desctructor checks if the message is a TYPE\_OP and cancel alarm before deleting it.
+ ALARM MANAGER will never touch a message in a non active ALARM.
+ 
+ A message which cancel alarm is never locked and deleted after clearing alarm.
+ 
+ A triggered message must be unlocked.
+ 
+ \subsubsection{Rule: Unmapped message}
+ 
+ A message that does not match any predicate or triggers null action is deleted.
+ 
+
 \subsection{Incoming from network}
 
 The buffer is used to create message. The message is inserted into the global message table. 

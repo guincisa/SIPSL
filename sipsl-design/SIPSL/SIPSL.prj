@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 105
+  revision 106
   modified_by 55 "guic"
 
 
@@ -1064,12 +1064,12 @@ correct timer interaction with client state machine"
 	  external 
 	end
 
-	transition 246839 "<transition>"
+	transition 246967 "RING OR DIALOG (2)"
 	  on state_ref 209847 // 3
 	  external 
 	end
 
-	transition 246967 "<transition>"
+	transition 280887 "RING or DIALOG (2)"
 	  on state_ref 209847 // 3
 	  external 
 	end
@@ -1079,19 +1079,28 @@ correct timer interaction with client state machine"
       end
 
       state 209719 "2"
-	transition 239799 "DIALOG(NTW,CL)"
+	transition 239927 "RING or DIALOG"
 	  on state_ref 209847 // 3
 	  external 
 	end
 
-	transition 239927 "180RING(NTW,CL)"
-	  on state_ref 209847 // 3
+	transition 281015 "200OK_B"
+	  on state_ref 209975 // 4
 	  external 
+	end
+
+	transition 281143 "INVITE_B(CL,CL) 2"
+	  on state_ref 209719 // 2
 	end
       end
 
       state 209847 "3"
 	transition 240055 "<transition>"
+	  on state_ref 209975 // 4
+	  external 
+	end
+
+	transition 280759 "200OK(NTW,CL)"
 	  on state_ref 209975 // 4
 	  external 
 	end
@@ -1103,7 +1112,11 @@ correct timer interaction with client state machine"
 	  external 
 	end
 
-	transition 274231 "200OK(NTW,CL),"
+	transition 274231 "200OK(NTW,CL) CL=OS_PROCEEDING"
+	  on state_ref 209975 // 4
+	end
+
+	transition 281271 "200OK(NTW,CL) CL=OS_COMPLETED"
 	  on state_ref 209975 // 4
 	end
       end
