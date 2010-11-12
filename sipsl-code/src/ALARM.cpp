@@ -182,6 +182,8 @@ void ALMGR::alarmer(void){
 					//mess_alm_map.erase(tmal->getMessage());
 					delmap.insert(pair<ALARM*,int>(tmal,0));
 					DEBOUT("ALARM CHECK INTERVAL", tmal << "][curr " << (unsigned long long int)curr << "][tcu " <<  (unsigned long long int)tcu)
+					PRTIME
+					PRTIME_F((unsigned long long int)tcu)
 					cidbranch_alm_map.erase(tmal->getCidbranch());
 					DEBY
 				}
@@ -337,11 +339,13 @@ void ALARM::cancel(void){
 	active = false;
 }
 MESSAGE* ALARM::getMessage(void){
-	if (!active)
+	if (!active){
 		DEBASSERT("Break rule: accessing the message of an inactive ALARM")
 		return 0x0;
-	else
+	}
+	else{
 		return message;
+	}
 }
 bool ALARM::isActive(void){
 	return active;

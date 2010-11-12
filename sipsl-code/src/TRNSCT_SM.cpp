@@ -113,7 +113,7 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
-	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this)
+	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this << "id [" <<id<<"]")
 	if (Matrix == A_Matrix){
 		PURGEMESSAGE(Matrix)
 	}else{
@@ -138,6 +138,12 @@ MESSAGE* TRNSCT_SM::getA_Matrix(void){
 		DEBASSERT("NO")
 	}
 	return A_Matrix;
+}
+void TRNSCT_SM::setId(string _id){
+	id = _id;
+}
+string TRNSCT_SM::getId(void){
+	return id;
 }
 
 //**********************************************************************************
@@ -402,6 +408,7 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	_message->setTypeOfInternal(TYPE_MESS);
 	//replace with 200ok A
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 = _message;
+	DEBOUT("STORED_MESSAGE_1_3", ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3)
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
 	SingleAction sa_1 = SingleAction(_message);
@@ -411,6 +418,8 @@ ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 	//Action 2: copy the 200 OK and send to ALARM
 	//This will be sent to A which will resend the ACK
 	CREATEMESSAGE(ack_timer, _message, SODE_TRNSCT_SV, SODE_TRNSCT_SV)
+	//source is correct
+	//ack_timer->setSourceMessage(_message->getSourceMessage());
 	SysTime afterT;
 	GETTIME(afterT);
 	// T1 and not 2+T1
@@ -464,6 +473,7 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 2: alarm for resending the 200 OK to A
 	CREATEMESSAGE(ack_timer, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
+	//ack_timer->setSourceMessage(_message->getSourceMessage());
 	SysTime afterT;
 	GETTIME(afterT);
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
@@ -534,6 +544,8 @@ ACTION* act_3_3b_inv_sv(SM* _sm, MESSAGE* _message) {
 	GETTIME(afterT);
 	//Shoudl be T1 and not 2xT1
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok);
+	//Set the correct source
+	ack_timer->setSourceMessage(_message->getSourceMessage());
 	ack_timer->setFireTime(firetime);
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
@@ -615,8 +627,8 @@ ACTION* act_3_3d_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Nothing
-	_message->unSetLock();
-	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+//	_message->unSetLock();
+//	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
 	return ((ACTION*) 0x0);
 }
 ////*****************************************************************

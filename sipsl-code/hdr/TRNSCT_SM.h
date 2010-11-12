@@ -65,7 +65,12 @@ class TRNSCT_SM  :  public SM{
 		//it differs from the above message only in case of client sm
 		MESSAGE* A_Matrix;
 
+		string id;
+
 	public:
+
+		string getId(void);
+		void setId(string);
 
 		MESSAGE* getMatrixMessage(void);
 

@@ -162,6 +162,9 @@ CALL_OSET::~CALL_OSET(void){
 		DEBY
 		DELPTR((VALO*)alo, "ALO");
 	}
+
+	//TODO if the message is a source message for a message which in ALARM
+	//and this one triggers it, it will crash?
 	MESSAGE* m = getNextLockedMessage();
 	while (m != 0x0){
 		DEBY
@@ -296,6 +299,7 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 	map<string, TRNSCT_SM*> ::iterator p;
 	p = trnsctSmMap.find(t_key);
 	if (p != trnsctSmMap.end()){
+		DEBOUT_UTIL("CALL_OSET::getTrnsctSm found",_method <<"#"<< _sode <<"#"<<_branch << "["<<(TRNSCT_SM*)p->second<<"]")
 		return ((TRNSCT_SM*)p->second);
 	}else {
 		return 0x0;
@@ -304,9 +308,11 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 //**********************************************************************************
 void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm){
 
-	DEBOUT_UTIL("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch)
+	DEBOUT_UTIL("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << " ["<<_trnsctSm<<"]")
 	char t_key[512];
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode, _branch.c_str());
+
+	_trnsctSm->setId(t_key);
 
 	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(t_key, _trnsctSm));
 
@@ -362,16 +368,22 @@ void SL_CO::call(MESSAGE* _message){
     	DEBY
     	//There are no sm, create it
 		if (trnsctSM == 0x0 ){
-			if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST && OverallState_SV == OS_INIT){
+			if (_message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST && OverallState_SV == OS_INIT){
 				call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
 				NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_SV")
 			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && OverallState_SV == OS_COMPLETED){
+			else if (_message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && OverallState_SV == OS_COMPLETED){
 				NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
 			}
-			else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && (OverallState_SV == OS_CONFIRMED)){
+			else if (_message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && (OverallState_SV == OS_CONFIRMED)){
 				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
-			} else {
+			} else if (_message->getReqRepType() == REPSUPP ){
+				// but the call object has been recognized!!!
+				DEBOUT("A unrecognized reply directed to server has reached the call object","")
+				DEBASSERT("Unrecognized Reply message sent to SV machine")
+			}
+
+			else {
 				// SL_CO no in correct state
 				DEBOUT("Unexpected message ignored", _message)
 				//DEBASSERT("OVERALL STATE ERROR")
@@ -451,8 +463,7 @@ void SL_CO::call(MESSAGE* _message){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_BYE_CL")
 				}
 			}else{
-			    // Do per scontato che da questa parte i reply trovano la sm
-			    // ma potrebbe non essere?
+				// but the call object has been recognized!!!
 				DEBOUT("A unexpected reply directed to client has reached the call object","")
 				DEBASSERT("Check this")
 			}

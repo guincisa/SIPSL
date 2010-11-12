@@ -27,9 +27,13 @@ The creation is done in different ways:
  
  A triggered message must be unlocked.
  
- \subsubsection{Rule: Unmapped message}
+\subsubsection{Rule: Unmapped message}
  
- A message that does not match any predicate or triggers null action is deleted.
+A message that does not match any predicate or triggers null action is deleted.
+ 
+\subsubsection{Rule: An alarm must not be a source message}
+If an alarm(1) generates a new alarm(2), the new alarm(2) must get the source of alarm(1).
+The CREATEMESSAGE macro will set automatically the source = alarm(1).
  
 
 \subsection{Incoming from network}

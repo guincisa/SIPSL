@@ -314,7 +314,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	lock = false;
 
-	source=0x0;
+	source=MainMessage;
 
 	isInternal = false;
 
@@ -513,7 +513,6 @@ MESSAGE* MESSAGE::getSourceMessage(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getSourceMessage invalid")
 
-	DEBMESSAGESHORT("MESSAGE::getSourceMessage",source)
 	return source;
 }
 void MESSAGE::setSourceMessage(MESSAGE* _source){
@@ -1280,8 +1279,10 @@ bool MESSAGE::getLock(void){
 	return lock;
 }
 void MESSAGE::unSetLock(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::unSetLock invalid")
+	if (invalid == 1){
+		DEBASSERT("MESSAGE::unSetLock invalid")}
+
+	DEBOUT("MESSAGE::unSetLock ", this)
 
 	lock=false;
 }

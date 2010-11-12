@@ -36,6 +36,9 @@
 #include <vector>
 #include <algorithm>
 
+#include <stdio.h>
+
+
 //#define SPARC
 
 using namespace std;
@@ -199,6 +202,13 @@ class ThreadWrapper {
 		sprintf(bu, "%llu",num);\
 		string time(bu);\
 		stringstream xx ; xx << "TIME [" << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3)<<"]\n"; cout << xx.str();cout.flush();}
+#undef PRTIME_F
+#define PRTIME_F(m) {\
+		char bu[128];\
+		sprintf(bu, "%llu",m);\
+		string time(bu);\
+		stringstream xx ; xx << "TIME [" << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3)<<"]\n"; cout << xx.str();cout.flush();}
+
 
 #undef DEBNTW
 #define DEBNTW(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
