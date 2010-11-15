@@ -107,7 +107,7 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 
 	//This one is locked elswere
 	A_Matrix = _a_Matrix;
-	if (_a_Matrix == 0x0){
+	if (_a_Matrix == 0x0 || _a_Matrix == MainMessage){
 		DEBASSERT("NO")
 	}
 }
@@ -127,14 +127,14 @@ TRNSCT_SM::~TRNSCT_SM(void){
 
 
 MESSAGE* TRNSCT_SM::getMatrixMessage(void){
-	if (Matrix == 0x0){
+	if (Matrix == 0x0 || Matrix == MainMessage){
 		DEBASSERT("NO")
 	}
 
 	return Matrix;
 }
 MESSAGE* TRNSCT_SM::getA_Matrix(void){
-	if (A_Matrix == 0x0){
+	if (A_Matrix == 0x0 || A_Matrix == MainMessage){
 		DEBASSERT("NO")
 	}
 	return A_Matrix;
@@ -1136,24 +1136,25 @@ ACTION* act_4_4b_inv_cl(SM* _sm, MESSAGE* _message) {
 
 
 	DEBOUT("SM act_4_4b_inv_cl","")
-//	NEWPTR(ACTION*, action, ACTION(),"ACTION")
-//
-//	//**************************************
-//	//Action 1: take the 200OK change to send it to ack_cl
-//	_message->setDestEntity(SODE_TRNSCT_CL);
-//	_message->setGenEntity(SODE_TRNSCT_CL);
-//	_message->setTypeOfInternal(TYPE_OP);
-//	_message->setTypeOfOperation(TYPE_OP_SMCOMMAND);
-//	//TODO need the branch!!!
-//	_message->replaceHeadCSeq(1,"ACK");
-//	_message->compileMessage();
-//	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
-//	SingleAction sa_1 = SingleAction(_message);
-//	action->addSingleAction(sa_1);
-//
-//	//DEBASSERT("ACTION* act_4_4b_inv_cl need to send this to ACK-CL")
-//	//return action;
-	return 0x0;
+	//Need to resend ACK
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	//**************************************
+	//Action 1: take the 200OK change to send it to ack_cl
+	_message->setDestEntity(SODE_TRNSCT_CL);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	_message->setTypeOfInternal(TYPE_OP);
+	_message->setTypeOfOperation(TYPE_OP_SMCOMMAND);
+	//TODO need the branch!!!
+	_message->replaceHeadCSeq(1,"ACK");
+	_message->compileMessage();
+	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
+	SingleAction sa_1 = SingleAction(_message);
+	action->addSingleAction(sa_1);
+
+	//DEBASSERT("ACTION* act_4_4b_inv_cl need to send this to ACK-CL")
+	return action;
 
 }
 ////*****************************************************************
@@ -1314,39 +1315,54 @@ ACTION* act_0_1_ack_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_0_1_ack_sv called","")
 
-	DEBOUT("SM::event move to state 1", _message->getHeadSipRequest().getContent())
-
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	//_message changes its dest and gen
+	//**************************************
+	//Action 1: ack is to ALO
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->setTypeOfInternal(TYPE_MESS);
 	_message->setType_trnsct(TYPE_TRNSCT);
 	SingleAction sa_1 = SingleAction(_message);
-
 	action->addSingleAction(sa_1);
 
 	DEBOUT("SM act_0_1_ack_sv move to state 1","")
 	_sm->State = 1;
+	DEBOUT("SM act_0_1_ack_sv move OverallState_SV to 1","OS_CONFIRMED")
+	_sm->getSL_CO()->OverallState_SV = OS_CONFIRMED;
 
 	//TODO
 	// clear 200 ok alarm sent by invite sv
 	//move to confirmed
-	_sm->getSL_CO()->OverallState_SV = OS_CONFIRMED;
 
 	return action;
 
 }
+ACTION* act_1_1_ack_sv(SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("SM act_1_1_ack_sv called","")
+
+	//**************************************
+	//Action 1: ACK has been resent by A : ignore
+
+	return 0x0;
+}
+
 //**********************************************************************************
 TRNSCT_SM_ACK_SV::TRNSCT_SM_ACK_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
-		PA_ACK_0_1SV((SM*)this){
+		PA_ACK_0_1SV((SM*)this),
+		PA_ACK_1_1SV((SM*)this){
 
 	PA_ACK_0_1SV.action = &act_0_1_ack_sv;
 	PA_ACK_0_1SV.predicate = &pre_0_1_ack_sv;
 
+	PA_ACK_1_1SV.action = &act_1_1_ack_sv;
+	PA_ACK_1_1SV.predicate = &pre_0_1_ack_sv;
+
 	insert_move(0,&PA_ACK_0_1SV);
+	insert_move(1,&PA_ACK_1_1SV);
+
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -1377,20 +1393,23 @@ ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 	// to test put this:
 	//_message->setDestEntity(SODE_NOPOINT);
 
+	DEBMESSAGE("FIRST ACK B", _message)
+
+	//**************************************
+	//Action 1: ack is to ALO
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(_message);
-
 	action->addSingleAction(sa_1);
 
+	DEBOUT("SM act_0_1_ack_cl move to state","1")
 	_sm->State = 1;
-
-	//TODO
-	// store this ack and retransmit is 200 ok arrives again
+	DEBOUT("SM act_0_1_ack_cl move OverallState_CL to","OS_COMPLETED")
 	_sm->getSL_CO()->OverallState_CL = OS_COMPLETED;
 
-	DEBMESSAGE("FIRST ACK B", _message)
+	//TODO
+	// store this ack and retransmit if 200 ok arrives again
 
 	return action;
 

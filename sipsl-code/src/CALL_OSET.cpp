@@ -107,6 +107,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call){
 
 	sl_co = 0x0;
 	alo = 0x0;
+	lastTRNSCT_SM_ACK_CL = 0x0;
 
 	NEWPTR2(sl_co, SL_CO(this), "SL_CO(this)")
 	NEWPTR2(alo, VALO(_engine, this), "VALO(_engine, this)")
@@ -166,7 +167,7 @@ CALL_OSET::~CALL_OSET(void){
 	//TODO if the message is a source message for a message which in ALARM
 	//and this one triggers it, it will crash?
 	MESSAGE* m = getNextLockedMessage();
-	while (m != 0x0){
+	while (m != MainMessage){
 		DEBY
 		DEBMESSAGESHORT("DOA locked message", m)
 		if (m->getTypeOfInternal() == TYPE_OP){
@@ -274,7 +275,7 @@ MESSAGE* CALL_OSET::getNextLockedMessage(void){
 		return t;
 	}
 	DEBY
-	return 0x0;
+	return MainMessage;
 
 }
 void CALL_OSET::removeLockedMessage(MESSAGE* _message){
@@ -332,7 +333,6 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
     OverallState_SV = OS_INIT;
     OverallState_CL = OS_INIT;
 
-
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -345,7 +345,7 @@ void SL_CO::call(MESSAGE* _message){
 
     ACTION* action = 0x0;
 
-	if(_message->getTypeOfInternal() == TYPE_OP){
+	if(_message->getTypeOfInternal() == TYPE_OP && 	_message->getTypeOfOperation() !=  TYPE_OP_SMCOMMAND){
 		if (_message->getLock()){
 			_message->unSetLock();
 			call_oset->removeLockedMessage(_message);
@@ -382,20 +382,22 @@ void SL_CO::call(MESSAGE* _message){
 				DEBOUT("A unrecognized reply directed to server has reached the call object","")
 				DEBASSERT("Unrecognized Reply message sent to SV machine")
 			}
-
 			else {
-				// SL_CO no in correct state
+				// SL_CO not in correct state
 				DEBOUT("Unexpected message ignored", _message)
 				//DEBASSERT("OVERALL STATE ERROR")
 				//Message is purged here...
 				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, _message->getModulus());
 			}
+		}
+    	if (trnsctSM != 0x0 ){
+
 			//Add the sm to the map
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
 			DEBOUT("call_oset->addTrnsctSm","done")
-		}
-    	if (trnsctSM != 0x0 ){
+
+
 			//send the message to sm
 			action = trnsctSM->event(_message);
 
@@ -420,7 +422,7 @@ void SL_CO::call(MESSAGE* _message){
 			}
 		}
     	else {
-    		DEBASSERT("trnsctSM == 0x0 Check this case out")
+    		DEBMESSAGE("SL_CO::call the message has no SM clients *****", _message)
     	}
 	}
 	//Message is going to Client SM
@@ -434,7 +436,6 @@ void SL_CO::call(MESSAGE* _message){
 
 		//Get into the ack cl state machine
 		if (_message->getTypeOfInternal() == TYPE_OP && _message->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
-			DEBASSERT("STILL NOT IMPLEMENTED")
 			DEBOUT("lastTRNSCT_SM_ACK_CL", call_oset->lastTRNSCT_SM_ACK_CL)
 			trnsct_cl = call_oset->lastTRNSCT_SM_ACK_CL;
 			if ( trnsct_cl == 0x0){
@@ -458,6 +459,10 @@ void SL_CO::call(MESSAGE* _message){
 				}
 				else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
+					if (call_oset->lastTRNSCT_SM_ACK_CL != 0x0){
+						DEBASSERT("An ACK CL SM already exists")
+					}
+					call_oset->lastTRNSCT_SM_ACK_CL = trnsct_cl;
 				}
 				else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_BYE_CL")

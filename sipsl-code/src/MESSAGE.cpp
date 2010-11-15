@@ -340,7 +340,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 MESSAGE::~MESSAGE(){
 
 	while (!s_headVia.empty()){
-		DELPTR(s_headVia.top(), "Delete via")
+		DELPTR((C_HeadVia*)(s_headVia.top()), "Delete via")
 		s_headVia.pop();
 	}
 	if (headTo != NULL){

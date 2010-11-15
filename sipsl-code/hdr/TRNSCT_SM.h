@@ -158,6 +158,7 @@ class TRNSCT_SM_ACK_SV : public TRNSCT_SM {
 
 
 		PREDICATE_ACTION PA_ACK_0_1SV;
+		PREDICATE_ACTION PA_ACK_1_1SV;
 
 
 		TRNSCT_SM_ACK_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);

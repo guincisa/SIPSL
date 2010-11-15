@@ -124,7 +124,7 @@ void ROTQ::put(MESSAGE* m) {
     top = top % ARR;
     if (top == bot) {
         //DEBASSERT("FULL TRASHING")
-        DEBOUT("FULL TRASHING","")
+        DEBOUT("QUEUE FULL, TRASHING MESSAGES","")
         GETLOCK(&(sb->mudim),"sb->mudim");
         (sb->DIM)--;
         RELLOCK(&(sb->mudim),"sb->mudim");
