@@ -27,6 +27,8 @@
 #define SPIN_RR  1
 #define SPIN_FF  0
 #define ARR 50
+#define SPIN_TRASH 1
+#define SPIN_BLOCK 2
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,7 +52,9 @@ class ROTQ {
         void setState(int);
         int getState(void);
         void put(MESSAGE*);
-        void put_old(MESSAGE*);
+        void put_trashing(MESSAGE*);
+        void put_block(MESSAGE*);
+
 
         MESSAGE* get(void);
         bool isEmpty(void);
@@ -65,6 +69,8 @@ class SPINB {
     //int state[3]; // 0 free, 1 write, 2 read
     int readbuff, writebuff, freebuff;
 
+    int type;
+
     public:
 
     int DIM;
@@ -75,7 +81,8 @@ class SPINB {
     pthread_mutex_t condvarmutex;
     pthread_cond_t condvar;
 
-    SPINB(void);
+    //Type can be trashing = 1 or blocking = 2
+    SPINB(int type);
     void put(MESSAGE*);
     MESSAGE* get(void);
     void move(void);

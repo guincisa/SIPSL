@@ -1542,7 +1542,7 @@ ACTION* act_0_1_bye_sv(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1:
 	//_message changes its dest and gen
-	// remember initial generation  is used for backward messagges like bye coming from B
+	// remember initial generation  is used for backward messages like bye coming from B
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->setTypeOfInternal(TYPE_MESS);

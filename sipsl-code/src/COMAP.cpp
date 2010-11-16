@@ -457,8 +457,9 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
 	GETLOCK(&unique[_mod],"unique"<<_mod);
 
 	if (getDoa(_call_oset,_mod) == DOA_DELETED || getDoa(_call_oset,_mod) == DOA_CONFIRMED) {
-		DEBY
+		DEBOUT("COMAP::setDoaRequested already deleted (-1) or confirmed (2)", getDoa(_call_oset,_mod))
 	}else {
+		DEBOUT("COMAP::setDoaRequested to DOA_REQUESTED (1)", DOA_REQUESTED)
 		setDoa(_call_oset, DOA_REQUESTED, _mod);
 	}
 	RELLOCK(&unique[_mod],"unique"<<_mod);

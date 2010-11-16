@@ -175,6 +175,7 @@ CALL_OSET::~CALL_OSET(void){
 			DEBOUT("CALL_OSET::~CALL_OSET::cancel alarm, callid", callid_alarm)
 			getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 		}
+		//TODO what if the message is being triggered now?
 		PURGEMESSAGE(m);
 		DEBY
 		m = getNextLockedMessage();

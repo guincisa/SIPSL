@@ -91,12 +91,12 @@ int main(int argc, const char* argv[]) {
 		TRNSPRT transport;
 
 		//Second stage engine: Call Control
-		SL_CC sl_cc(SL_CCTH);
+		SL_CC sl_cc(SL_CCTH,SPIN_BLOCK);
 		sl_cc.linkTransport(&transport);
 		sl_cc.linkSUDP(&mystack);
 
 		//First stage engine: Lazy parser
-		SIPENGINE gg(SIPENGINETH);
+		SIPENGINE gg(SIPENGINETH, SPIN_TRASH);
 		gg.setSL_CC(&sl_cc);
 		gg.linkSUDP(&mystack);
 

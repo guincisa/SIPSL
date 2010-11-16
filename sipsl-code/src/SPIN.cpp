@@ -116,7 +116,7 @@ int ROTQ::getState() {
 void ROTQ::setState(int s) {
     state = s;
 }
-void ROTQ::put_old(MESSAGE* m) {
+void ROTQ::put_trashing(MESSAGE* m) {
 
     if (state != SPIN_WW) {
         DEBOUT("ERROR not write buffer","")
@@ -137,7 +137,7 @@ void ROTQ::put_old(MESSAGE* m) {
     }
 }
 //New
-void ROTQ::put(MESSAGE* m) {
+void ROTQ::put_block(MESSAGE* m) {
 
     if (state != SPIN_WW) {
         DEBOUT("ERROR not write buffer","")
@@ -182,10 +182,11 @@ bool ROTQ::isEmpty(void) {
     return bot == top;
 }
 
-SPINB::SPINB(void) {
+SPINB::SPINB(int _type) {
 
     DEBOUT("SPINB::SPINB",this)
 
+	type = _type;
 
     Q[0].setSpinb(this);
     Q[1].setSpinb(this);
@@ -219,7 +220,13 @@ void SPINB::put(MESSAGE* m) {
     nextbuff = nextbuff % 3;
 
     GETLOCK(&writemu,"writemu");
-    Q[writebuff].put(m);
+    if (type == SPIN_TRASH ){
+        Q[writebuff].put_trashing(m);
+
+    }else if (type == SPIN_BLOCK ){
+        Q[writebuff].put_block(m);
+    }
+
 
     if (Q[nextbuff].getState() == SPIN_FF) {
         //cout <<" PUT spin" << endl;

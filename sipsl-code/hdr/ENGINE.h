@@ -68,7 +68,7 @@ class ENGINE {
 
     	SPINB sb;
 
-		ENGINE(int numthreads);
+		ENGINE(int numthreads, int spintype);
 };
 
 
