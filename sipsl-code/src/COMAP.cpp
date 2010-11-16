@@ -416,7 +416,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 	if (getDoa(_call_oset, _mod) == DOA_DELETED || getDoa(_call_oset, _mod) == DOA_CONFIRMED) {
 		DEBOUT("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa deleted", _call_oset )
 		_message->setDestEntity(SODE_KILL);
-		RELLOCK(&unique[_mod],"unique"<_mod);
+		RELLOCK(&unique[_mod],"unique"<<_mod);
 		return -1;
 	}
 	if (getDoa(_call_oset,_mod) == DOA_REQUESTED && _message->getGenEntity() == SODE_NTWPOINT) {

@@ -228,7 +228,6 @@ void VALO::onAck(MESSAGE* _message){
 	newack->purgeSDP();
 	newack->addGenericHeader("Content-Length:","0");
 
-//
 	//TOTAG
 	char toTmp[512];
 	map<string, void*> ::iterator p;
@@ -549,7 +548,7 @@ void VALO::on200Ok(MESSAGE* _message){
 	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT , SODE_TRNSCT_SV)
 
-	ok_x->setTypeOfInternal(TYPE_MESS);
+	//ok_x->setTypeOfInternal(TYPE_MESS);
 
 	DEBOUT("ok_x","SIP/2.0 200 OK")
 
@@ -581,8 +580,8 @@ void VALO::on200Ok(MESSAGE* _message){
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 	}
 
-	//TODO the 200 OK B for now is deleted
-	PURGEMESSAGE(_message)
+//	//TODO the 200 OK B for now is deleted
+//	PURGEMESSAGE(_message)
 
 	ok_x->dumpVector();
 

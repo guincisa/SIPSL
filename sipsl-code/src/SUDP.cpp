@@ -232,6 +232,7 @@ void SUDP::sendRequest(MESSAGE* _message){
 	memset((char *) &si_part, 0, sizeof(si_part));
 
 	DEBSIP("Request address ", _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName() <<":"<< _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort())
+	DEBSIP("Request message ", _message->getLine(0))
 
 	si_part.sin_family = AF_INET;
 	host = gethostbyname(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str());
@@ -252,13 +253,13 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	//Reply uses topmost Via header
 	C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
-	DEBSIP("Reply to ",  viatmp->getC_AttVia().getS_HostHostPort().getHostName() << " : " << viatmp->getC_AttVia().getS_HostHostPort().getPort())
 
 	struct sockaddr_in si_part;
 	struct hostent *host;
 	memset((char *) &si_part, 0, sizeof(si_part));
 
 	DEBSIP("Reply address ", viatmp->getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp->getC_AttVia().getS_HostHostPort().getPort())
+	DEBSIP("Reply message ", _message->getLine(0))
 
 	si_part.sin_family = AF_INET;
 	host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());

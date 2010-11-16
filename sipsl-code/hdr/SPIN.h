@@ -26,7 +26,7 @@
 #define SPIN_WW  2
 #define SPIN_RR  1
 #define SPIN_FF  0
-#define ARR 150
+#define ARR 50
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,6 +41,8 @@ class ROTQ {
         int top,bot; // da scrivere, da leggere
         int state;
         SPINB *sb;
+        bool full;
+        pthread_mutex_t fullq;
 
     public:
         ROTQ(void);
@@ -48,6 +50,8 @@ class ROTQ {
         void setState(int);
         int getState(void);
         void put(MESSAGE*);
+        void put_old(MESSAGE*);
+
         MESSAGE* get(void);
         bool isEmpty(void);
 };

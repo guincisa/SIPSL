@@ -147,7 +147,7 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 	}
 	else if ( type == REPSUPP) {
 
-		DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply().getReply().getContent())
+		DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply().getContent())
 		int reply_id = _mess->getHeadSipReply().getReply().getReplyID();
 		int code = _mess->getHeadSipReply().getReply().getCode();
 		DEBSIP("SIPENGINE::reply type and code", reply_id << " " << code)

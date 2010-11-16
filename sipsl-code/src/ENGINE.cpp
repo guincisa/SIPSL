@@ -98,6 +98,8 @@ ThreadWrapper::ThreadWrapper(void) {
 ENGINE::ENGINE(int _i) {
 
     DEBOUT("ENGINE::ENGINE()","")
+    DEBOUT("ENGINE::ENGINE() spin buffer ",&sb)
+
     int res;
 
     if ( _i > MAXTHREADS)

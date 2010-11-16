@@ -494,6 +494,7 @@ void SL_CO::call(MESSAGE* _message){
 			//so the sm has ignored it
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 			if (!_message->getLock()){
+				//TODO why I do this?
 				_message->unSetLock();
 				call_oset->removeLockedMessage(_message);
 				PURGEMESSAGE(_message)
