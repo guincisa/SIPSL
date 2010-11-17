@@ -184,6 +184,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 				}
 				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 					DEBINF("SL_CC::parse rejected by COMAP", callids)
+					//DEST = SODE_KILL !
 					if(!_mess->getLock()){
 						PURGEMESSAGE(_mess)
 					}

@@ -64,6 +64,7 @@ class ThreadWrapper {
         ThreadWrapper();
 };
 
+
 #define MAXTHREADS 64
 
 #ifdef SPARC

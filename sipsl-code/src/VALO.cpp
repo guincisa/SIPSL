@@ -473,9 +473,12 @@ void VALO::onBye(MESSAGE* _message){
 
 		//Request has to be made using INVITE_A via address
 		C_HeadVia& viatmps= (C_HeadVia&) __message->getSTKHeadVia().top();
-		DEBOUT("BYE and rest of request", "BYE sip:ceppadim@"+viatmps.getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent())
+		DEBOUT("1",viatmps.getC_AttVia().getS_HostHostPort().getContent())
+		DEBOUT("2",__message->getHeadSipRequest().getS_AttSipVersion().getContent())
+		DEBOUT("BYE and rest of request", "BYE sip:ceppadim@" << viatmps.getC_AttVia().getS_HostHostPort().getContent() << " " << __message->getHeadSipRequest().getS_AttSipVersion().getContent())
+		DEBY
 		message->setHeadSipRequest("BYE sip:ceppadim@"+viatmps.getC_AttVia().getS_HostHostPort().getContent() + " " +__message->getHeadSipRequest().getS_AttSipVersion().getContent());
-
+//
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
 		string viatmpS(viatmp);

@@ -1,10 +1,12 @@
-window_sizes 1273 659 317 950 585 0
+window_sizes 1280 753 139 1135 677 0
 diagrams
-  active  statediagram_ref 167607 // SM_CL_INVITE
-    950 585 70 2 12 0
+  statediagram_ref 167607 // SM_CL_INVITE
+    950 585 69 2 12 0
+  active  statediagram_ref 161079 // SM_SV_INVITE
+    1135 677 100 2 132 0
 end
 show_stereotypes
-selected statediagram_ref 167607 // SM_CL_INVITE
+selected statediagram_ref 161079 // SM_SV_INVITE
 open
   state_ref 128002 // SM_SL_CL
   state_ref 149431 // SM_CL_V3

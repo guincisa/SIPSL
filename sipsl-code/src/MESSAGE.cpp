@@ -1347,10 +1347,7 @@ int MESSAGE::getModulus(void){
 	// otherwise is calculated
 
 	string s = getHeadCallId().getContent();
-	DEBDEV("s.substr(0,5)", s.substr(0,5) )
-	DEBDEV("s.substr(5,1)", s.substr(5,1) )
 	if (s.substr(0,5).compare("CoMap") == 0){
-		DEBY
 		modulus = atoi(s.substr(5,1).c_str());
 	}else {
 		DEBY
@@ -1359,7 +1356,6 @@ int MESSAGE::getModulus(void){
 		sprintf(x,"%s", s.substr(0,k).c_str());
 		long long int tot=0;
 		for (int i = 0; i < k; i++){
-			DEBDEV("substring ", "k [" << k << "][" <<  s.substr(i,1))
 			tot = (long long int) atol(s.substr(i,1).c_str()) + tot;
 		}
 		modulus = (tot+COMAPS)%COMAPS;

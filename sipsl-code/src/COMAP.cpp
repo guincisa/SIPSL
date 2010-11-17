@@ -374,6 +374,9 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 	}
 
 	//if no messages inside and in doa_requested then switch to doa_confirmed
+
+	//TODO don't delete here but set the timer = now + 4 seconds
+
 	if (i == 0 && getDoa(_call_oset, _mod)==DOA_REQUESTED){
 		DEBOUT("COMAP::decCALL_OSET_MsgCnt DOA_CONFIRMED", _call_oset )
 		setDoa(_call_oset, DOA_CONFIRMED, _mod);
@@ -390,7 +393,9 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 		call_oset_msg_cnt[_mod].erase(_call_oset);
 
 		comap_mm[_mod].erase(_call_oset->callId_X);
-		DELPTR(_call_oset,"call_oset");
+
+		//TODO
+		//DELPTR(_call_oset,"call_oset");
 		RELLOCK(&unique[_mod],"unique"<<_mod);
 
 		return;
@@ -420,6 +425,9 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 		return -1;
 	}
 	if (getDoa(_call_oset,_mod) == DOA_REQUESTED && _message->getGenEntity() == SODE_NTWPOINT) {
+
+		//Accept ntw and reset the timer for deletion
+
 		DEBOUT("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa_requested", _call_oset )
 		_message->setDestEntity(SODE_KILL);
 		RELLOCK(&unique[_mod],"unique"<<_mod);
@@ -488,6 +496,9 @@ void COMAP::purgeDOA(void){
 			call_oset = (CALL_OSET*)p_comap_mm->second;
 			DEBOUT("COMAP::purgeDOA", call_oset)
 			if ( getDoa(call_oset,mod) == DOA_CONFIRMED){
+
+				//TODO check here the timer if expired delete
+
 				DEBOUT("COMAP::purgeDOA deleted", call_oset)
 				setDoa(call_oset, DOA_DELETED,mod);
 				DEBY

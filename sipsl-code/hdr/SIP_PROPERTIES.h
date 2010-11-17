@@ -27,7 +27,11 @@
 //#define TIMER_1_sc 0
 ////microseconds 1.000.000
 //#define TIMER_1_mc 500000
+
 #define TIMER_1 500000
+//To remove alarms put this timer
+//#define TIMER_1 500000000
+
 #define TIMER_zero 0
 
 #ifdef SPARC
