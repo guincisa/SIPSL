@@ -54,6 +54,9 @@ class COMAP {
 		//doa can't be stored into call_oset
 		map<CALL_OSET*, int> call_oset_doa_state[COMAPS];
 
+		//Time to live
+		map<CALL_OSET*, unsigned long long int> call_oset_ttl[COMAPS];
+
 		void setDoa(CALL_OSET*, int,int);
 		int getDoa(CALL_OSET*,int);
 

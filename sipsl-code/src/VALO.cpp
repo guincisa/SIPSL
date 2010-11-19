@@ -410,8 +410,6 @@ void VALO::onBye(MESSAGE* _message){
 
 	DEBMESSAGE("VALO::onBye", _message)
 
-	//The direction of the bye is recognized by the CSEQ
-
 //	map<string, void*> ::iterator p;
 //	p = ctxt_store.find("invite_b");
 //	MESSAGE* invite_b = ((MESSAGE*)p->second);
@@ -429,8 +427,6 @@ void VALO::onBye(MESSAGE* _message){
 		stringstream tmps;
 		tmps << "BYE sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
 		message->setHeadSipRequest(tmps.str());
-
-		//message->setHeadSipRequest("BYE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
 		char viatmp[512];
 		sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());

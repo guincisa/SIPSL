@@ -89,8 +89,17 @@ class ThreadWrapper {
 
 //Mandatory
 
+#define TIME_S {SysTime mytime; gettimeofday(&mytime.tv, &mytime.tz);\
+		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
+		sprintf(bu, "%llu",num);}
 
-
+#define BDEBUG(m1, m2) {stringstream xx ; \
+		char bu[128];\
+		TIME_S\
+		string time(bu);\
+		xx << m1 << " [" << pthread_self() << " " << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3) << "]"\
+		<<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
+		cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBASSERT
 #define DEBASSERT(m1)  {stringstream xx ; xx << "\n\nDEBASSERT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< "\n ************ \n"<< m1 << "\n ************ \n"; cout << xx.str();cout.flush();assert(0);}
@@ -127,6 +136,8 @@ class ThreadWrapper {
 #define TRYCATCH(m) try { m; } catch (exception& e) { DEBASSERT("Exception" << e.what())}
 #undef PURGEMESSAGE
 #define PURGEMESSAGE(m1)  { \
+	if (m1 == MainMessage){DEBASSERT("Puring MainMessage")}\
+	if (m1->getLock()) {DEBASSERT("Puring a locaked message")}\
 	map<const MESSAGE*, MESSAGE*>::iterator p; \
 	pthread_mutex_lock(&messTableMtx);\
 	p = globalMessTable.find(m1);\
@@ -229,7 +240,8 @@ class ThreadWrapper {
 #define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 	//**********************************************************
 #undef DEBOUT
-#define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+//#define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#define DEBOUT(m1,m2) BDEBUG("DEBOUT", m1 << "[" << m2)
 	//**********************************************************
 #undef DEBOUT_UTIL
 #define DEBOUT_UTIL(m1,m2)  {stringstream xx ; xx << "DEBOUT_UTIL [" << pthread_self() << "]"<<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
@@ -260,9 +272,9 @@ class ThreadWrapper {
 #undef DEBCODE
 #define DEBCODE(m) {m}
 #undef DEBDEV
-#define DEBDEV(m1,m2)  {stringstream xx ; xx << "DEBDEV [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#define DEBDEV(m1,m2) BDEBUG("DEBDEV", m1 << "[" << m2)
 #undef DEBY
-#define DEBY  {stringstream xx ; xx << "DEBY [" << pthread_self() << "]" << __FILE__ <<" " <<__LINE__<< "\n";cout << xx.str();cout.flush();}
+#define DEBY  BDEBUG("DEBY", "")
 #undef PRINTTIME
 #define PRINTTIME(starttime,endtime){char bu[1024];sprintf(bu, "init %lld end %lld diff %lld",(lli)starttime.tv.tv_sec*1000000+(lli)starttime.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec, (lli)endtime.tv.tv_sec*1000000+(lli)bbb.tv.tv_usec - (lli)starttime.tv.tv_sec*1000000-(lli)starttime.tv.tv_usec );DEBOUT("TIME INTERVAL", bu )}
 #undef PRINTTIMESHORT
@@ -282,7 +294,8 @@ class ThreadWrapper {
 #ifdef LOGMEM
 	//**********************************************************
 
-#define DEBMEM(m1,m2)  {stringstream xx ; xx << "DEBMEM [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#define DEBMEM(m1,m2) BDEBUG("DEBMEM", m1 << "[" << m2)
+
 #undef DUMPMESSTABLE
 #define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
 	pthread_mutex_lock(&messTableMtx);\

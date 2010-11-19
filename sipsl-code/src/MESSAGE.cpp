@@ -318,7 +318,7 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 
 	isInternal = false;
 
-	modulus = 0;
+	modulus = -1;
 
 	typeOfInternal = TYPE_MESS; // Message or operation
 	typeOfOperation = TYPE_OP_NOOP; // Type of operation
@@ -386,7 +386,7 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 
 	type_trnsct = TYPE_TRNSCT;
 
-	modulus = 0;
+	modulus = -1;
 	typeOfInternal = TYPE_MESS; // Message or operation
 	typeOfOperation = TYPE_OP_NOOP; // Type of operation
 	orderOfOperation = ""; //Alarm id in case more alarms are triggered with the same message
@@ -1340,7 +1340,9 @@ int MESSAGE::getModulus(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getModulus invalid")
 
-
+	if (modulus != -1){
+		return modulus;
+	}
 	//is calculated in two ways:
 	// if first 5 chars of call id is "CoMap" then
 	// the modulus is the number after it (single digit)

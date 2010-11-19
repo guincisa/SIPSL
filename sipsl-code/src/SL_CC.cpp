@@ -165,7 +165,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 					DEBASSERT("")
 				}
 			}
-
+			//MEssage has been worked by SL_CO
 			return;
 		}
 		// Then try to get call object using y side params
@@ -206,7 +206,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			//////////////////////////////
 			//Start - Initialization block
-			NEWPTR2(call_oset, CALL_OSET(this, transport, callids),"CALL_OSET(this, callids)")
+			NEWPTR2(call_oset, CALL_OSET(this, transport, callids),"CALL_OSET ACCESS CALL_OSET(this, callids)")
 			comap->setCALL_OSET(callids, call_oset, modulus);
 			//End
 			//////////////////////////////
@@ -234,12 +234,17 @@ void SL_CC::parse(MESSAGE* _mess) {
 		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
 		int modulus = _mess->getSourceMessage()->getModulus();
 
+		DEBCODE(
+		if (modulus != _mess->getModulus()){
+			DEBASSERT("Modulus inconsistency")
+		})
+
 		DEBSIP("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callids)
 
 		CALL_OSET* call_oset = 0x0;
 
 		call_oset = comap->getCALL_OSET_XMain(callids,modulus);
-
+		//TODO may be deleted here?
 		if (call_oset == 0x0) {
 			call_oset = comap->getCALL_OSET_YDerived(callids,modulus);
 			if (call_oset != 0x0){

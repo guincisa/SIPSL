@@ -123,7 +123,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call){
 }
 CALL_OSET::~CALL_OSET(void){
 
-	DEBOUT("CALL_OSET::~CALL_OSET begin", this)
+	DEBOUT("CALL_OSET ACCESS CALL_OSET::~CALL_OSET begin", this)
 	if (sl_co != 0x0){
 		DEBY
 		//purge states machines
@@ -176,6 +176,7 @@ CALL_OSET::~CALL_OSET(void){
 			getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 		}
 		//TODO what if the message is being triggered now?
+		m->unSetLock();
 		PURGEMESSAGE(m);
 		DEBY
 		m = getNextLockedMessage();
@@ -357,7 +358,9 @@ void SL_CO::call(MESSAGE* _message){
 
 
 	//Message is going to Server SM
-	if (_message->getDestEntity() == SODE_TRNSCT_SV) {
+	int dest = _message->getDestEntity();
+
+	if (dest == SODE_TRNSCT_SV) {
 
 		DEBOUT("SL_CO::search for transaction state machine", _message->getHeadCallId().getContent())
 
@@ -376,9 +379,14 @@ void SL_CO::call(MESSAGE* _message){
 			else if (_message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && OverallState_SV == OS_COMPLETED){
 				NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
 			}
-			else if (_message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && (OverallState_SV == OS_CONFIRMED)){
+			else if (_message->getRequestDirection() == SODE_FWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && OverallState_SV == OS_CONFIRMED){
 				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
-			} else if (_message->getReqRepType() == REPSUPP ){
+			}
+			//TODO To test
+			else if (_message->getRequestDirection() == SODE_BKWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && OverallState_CL == OS_COMPLETED){
+				NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
+			}
+			else if (_message->getReqRepType() == REPSUPP ){
 				// but the call object has been recognized!!!
 				DEBOUT("A unrecognized reply directed to server has reached the call object","")
 				DEBASSERT("Unrecognized Reply message sent to SV machine")
@@ -427,7 +435,7 @@ void SL_CO::call(MESSAGE* _message){
     	}
 	}
 	//Message is going to Client SM
-	else if (_message->getDestEntity() == SODE_TRNSCT_CL){
+	else if (dest == SODE_TRNSCT_CL){
 
 		string callidys = _message->getHeadCallId().getContent();
 	    DEBOUT("SL_CO::call client state machine", callidys)

@@ -32,6 +32,7 @@
 //To remove alarms put this timer
 //#define TIMER_1 500000000
 
+#define TIMER_DOA 15000000
 #define TIMER_zero 0
 
 #ifdef SPARC

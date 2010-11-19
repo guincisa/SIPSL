@@ -96,7 +96,7 @@ int main(int argc, const char* argv[]) {
 		sl_cc.linkSUDP(&mystack);
 
 		//First stage engine: Lazy parser
-		SIPENGINE gg(SIPENGINETH, SPIN_TRASH);
+		SIPENGINE gg(SIPENGINETH, SPIN_BLOCK);
 		gg.setSL_CC(&sl_cc);
 		gg.linkSUDP(&mystack);
 

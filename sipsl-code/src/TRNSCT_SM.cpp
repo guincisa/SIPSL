@@ -115,9 +115,12 @@ TRNSCT_SM::~TRNSCT_SM(void){
 
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this << "id [" <<id<<"]")
 	if (Matrix == A_Matrix){
+		Matrix->unSetLock();
 		PURGEMESSAGE(Matrix)
 	}else{
+		Matrix->unSetLock();
 		PURGEMESSAGE(Matrix)
+		A_Matrix->unSetLock();
 		PURGEMESSAGE(A_Matrix)
 	}
 
@@ -1532,10 +1535,7 @@ bool pre_0_1_bye_sv(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_0_1_bye_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv", _message->getHeadSipRequest().getContent())
-
-	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv CSeq", _message->getHeadCSeq().getContent())
-	DEBOUT("TRSNCT_INV_SV::act_0_1_bye_sv CSeq", _message->getHeadCSeq().getSequence())
+	DEBOUT("SM act_0_1_bye_sv called","")
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1660,6 +1660,9 @@ TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGIN
 
 
 }
+//**********************************************************************************
+//**********************************************************************************
+
 bool pre_0_1_bye_cl(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("TRNSCT_SM_BYE_CL pre_0_1_bye_cl","")
