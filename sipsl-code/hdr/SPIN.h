@@ -26,7 +26,7 @@
 #define SPIN_WW  2
 #define SPIN_RR  1
 #define SPIN_FF  0
-#define ARR 50
+#define ARR 5
 #define SPIN_TRASH 1
 #define SPIN_BLOCK 2
 

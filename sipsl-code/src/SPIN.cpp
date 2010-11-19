@@ -116,7 +116,50 @@ int ROTQ::getState() {
 void ROTQ::setState(int s) {
     state = s;
 }
-void ROTQ::put_trashing(MESSAGE* m) {
+//void ROTQ::put_trashing(MESSAGE* m) {
+//
+//    if (state != SPIN_WW) {
+//        DEBOUT("ERROR not write buffer","")
+//        return;
+//    }
+//    Q[top] = m;
+//
+//    top ++ ;
+//    top = top % ARR;
+//    if (top == bot) {
+//        //DEBASSERT("FULL TRASHING")
+//        DEBOUT("QUEUE FULL, TRASHING MESSAGES",sb)
+//        GETLOCK(&(sb->mudim),"sb->mudim");
+//        (sb->DIM)--;
+//        RELLOCK(&(sb->mudim),"sb->mudim");
+//        bot ++;
+//        bot = bot % ARR;
+//    }
+//}
+//New
+//void ROTQ::put_block(MESSAGE* m) {
+//
+//    if (state != SPIN_WW) {
+//        DEBOUT("ERROR not write buffer","")
+//        return;
+//    }
+//    Q[top] = m;
+//
+//    top ++ ;
+//    top = top % ARR;
+//    if (top == bot) {
+//        //DEBASSERT("FULL TRASHING")
+//        DEBOUT("QUEUE FULL, WAITING",sb)
+//        full = true;
+//		GETLOCK(&fullq,"fullq")
+////        GETLOCK(&(sb->mudim),"sb->mudim");
+////        (sb->DIM)--;
+////        RELLOCK(&(sb->mudim),"sb->mudim");
+////        bot ++;
+////        bot = bot % ARR;
+//    }
+//}
+void ROTQ::put(MESSAGE* m) {
 
     if (state != SPIN_WW) {
         DEBOUT("ERROR not write buffer","")
@@ -128,7 +171,7 @@ void ROTQ::put_trashing(MESSAGE* m) {
     top = top % ARR;
     if (top == bot) {
         //DEBASSERT("FULL TRASHING")
-        DEBOUT("QUEUE FULL, TRASHING MESSAGES",sb)
+        DEBOUT("FULL TRASHING","")
         GETLOCK(&(sb->mudim),"sb->mudim");
         (sb->DIM)--;
         RELLOCK(&(sb->mudim),"sb->mudim");
@@ -136,48 +179,44 @@ void ROTQ::put_trashing(MESSAGE* m) {
         bot = bot % ARR;
     }
 }
-//New
-void ROTQ::put_block(MESSAGE* m) {
 
-    if (state != SPIN_WW) {
-        DEBOUT("ERROR not write buffer","")
-        return;
-    }
-    Q[top] = m;
-
-    top ++ ;
-    top = top % ARR;
-    if (top == bot) {
-        //DEBASSERT("FULL TRASHING")
-        DEBOUT("QUEUE FULL, WAITING",sb)
-        full = true;
-		GETLOCK(&fullq,"fullq")
-//        GETLOCK(&(sb->mudim),"sb->mudim");
-//        (sb->DIM)--;
-//        RELLOCK(&(sb->mudim),"sb->mudim");
+//MESSAGE* ROTQ::get_old(void) {
+//
+//    if (state != SPIN_RR) {
+//        DEBOUT("ERROR not read buffer","")
+//        return NULL;
+//    }
+//    if (bot == top && !full) {
+//        DEBOUT(" top = bot, empty", "");
+//        return NULL;
+//    }else {
+//    	MESSAGE* m = Q[bot];
 //        bot ++;
 //        bot = bot % ARR;
-    }
-}
-
+//        full = false;
+//        RELLOCK(&fullq,"fullq")
+//        return m;
+//    }
+//}
 MESSAGE* ROTQ::get(void) {
 
     if (state != SPIN_RR) {
         DEBOUT("ERROR not read buffer","")
         return NULL;
     }
-    if (bot == top && !full) {
-        DEBOUT(" top = bot, empty", "");
+    if (bot == top ) {
+        DEBOUT(" top = bot ", "");
         return NULL;
-    }else {
+    }
+    else {
+
     	MESSAGE* m = Q[bot];
         bot ++;
         bot = bot % ARR;
-        full = false;
-        RELLOCK(&fullq,"fullq")
         return m;
     }
 }
+
 bool ROTQ::isEmpty(void) {
     return bot == top;
 }
@@ -220,12 +259,14 @@ void SPINB::put(MESSAGE* m) {
     nextbuff = nextbuff % 3;
 
     GETLOCK(&writemu,"writemu");
-    if (type == SPIN_TRASH ){
-        Q[writebuff].put_trashing(m);
-
-    }else if (type == SPIN_BLOCK ){
-        Q[writebuff].put_block(m);
-    }
+    Q[writebuff].put(m);
+    
+//    if (type == SPIN_TRASH ){
+//        Q[writebuff].put_trashing(m);
+//
+//    }else if (type == SPIN_BLOCK ){
+//        Q[writebuff].put_block(m);
+//    }
 
 
     if (Q[nextbuff].getState() == SPIN_FF) {
