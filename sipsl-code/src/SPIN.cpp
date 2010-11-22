@@ -336,11 +336,17 @@ SPINC::SPINC(int _type){
     pthread_mutex_init(&writemu,NULL);
     pthread_mutex_init(&dimmu,NULL);
     pthread_mutex_init(&full,NULL);
-    for (int i = 0; i++ ;i < SPINC_MOD)
+    for (int i = 0 ;i < SPINC_MOD; i++)
     	pthread_mutex_init(&buffmu[i],NULL);
 
     pthread_mutex_init(&condvarmutex, NULL);
     pthread_cond_init(&condvar, NULL);
+
+    for (int i = 0 ;i < ARR; i++)
+    	BUFF[i] = MainMessage;
+
+
+    //GETLOCK(&full, "full")
 
 
 }
@@ -354,6 +360,13 @@ void SPINC::put(MESSAGE* _message){
 		GETLOCK(&full, "full")
 	}
 	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	if(BUFF[s] != MainMessage){
+		//GETLOCK(&full, "full")
+		GETLOCK(&readmu,"readmu")
+		l++;
+		l = l % ARR;
+		RELLOCK(&readmu, "readmu")
+	}
 	BUFF[s] = _message;
 	RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
 	if (l == -1)
@@ -367,17 +380,22 @@ void SPINC::put(MESSAGE* _message){
 }
 MESSAGE* SPINC::get(void){
 
-	RELLOCK(&full,"full")
 	GETLOCK(&readmu,"readmu")
 	int n = l % SPINC_MOD;
 	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
 	MESSAGE* m = BUFF[l];
+	if(BUFF[l] == MainMessage){
+		//DEBASSERT("BUFF[l] == MainMessage")
+	}
+
+	BUFF[l] = MainMessage;
 	RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
 	l++;
 	l = l % ARR;
 	GETLOCK(&dimmu, "dimmu")
 	DIM--;
 	RELLOCK(&dimmu, "dimmu")
+	//RELLOCK(&full,"full")
 	RELLOCK(&readmu, "readmu")
 
 	return m;
