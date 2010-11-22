@@ -73,7 +73,7 @@ class ENGINE {
     	SPINC sb;
 #endif
 
-		ENGINE(int numthreads, int spintype);
+		ENGINE(int numthreads);
 };
 
 

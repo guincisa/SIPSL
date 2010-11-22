@@ -76,8 +76,6 @@ class SPINB {
     //int state[3]; // 0 free, 1 write, 2 read
     int readbuff, writebuff, freebuff;
 
-    int type;
-
     public:
 
     int DIM;
@@ -89,7 +87,7 @@ class SPINB {
     pthread_cond_t condvar;
 
     //Type can be trashing = 1 or blocking = 2
-    SPINB(int type);
+    SPINB(void);
     void put(MESSAGE*);
     MESSAGE* get(void);
     void move(void);

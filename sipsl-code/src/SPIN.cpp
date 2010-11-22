@@ -166,16 +166,13 @@ void ROTQ::put(MESSAGE* m) {
         return;
     }
     MESSAGE* local = 0x0;
-    DEBCODE(\
-    local = Q[top];)
+    DEBCODE(local = Q[top];)
     Q[top] = m;
 
     top ++ ;
     top = top % ARR;
     if (top == bot) {
-    	DEBCODE(\
-    			DEBOUT("ROTQ::put trashing message", local)
-    			)
+    	DEBCODE(DEBOUT("ROTQ::put trashing message", local))
         //DEBASSERT("FULL TRASHING")
     	//If trashing message will may leak...
         DEBOUT("FULL TRASHING","")
@@ -228,11 +225,9 @@ bool ROTQ::isEmpty(void) {
     return bot == top;
 }
 
-SPINB::SPINB(int _type) {
+SPINB::SPINB(void) {
 
     DEBOUT("SPINB::SPINB",this)
-
-	type = _type;
 
     Q[0].setSpinb(this);
     Q[1].setSpinb(this);
@@ -258,9 +253,6 @@ bool SPINB::isEmpty(void) {
     return (Q[0].isEmpty() && Q[1].isEmpty() && Q[2].isEmpty());
 }
 void SPINB::put(MESSAGE* m) {
-    // mutex if multi thread
-    //
-    //cout << "         PUT writebuff " << writebuff << " mess " << m.id << endl;
 
     int nextbuff = (writebuff +1);
     nextbuff = nextbuff % 3;
@@ -268,13 +260,6 @@ void SPINB::put(MESSAGE* m) {
     GETLOCK(&writemu,"writemu");
     Q[writebuff].put(m);
     
-//    if (type == SPIN_TRASH ){
-//        Q[writebuff].put_trashing(m);
-//
-//    }else if (type == SPIN_BLOCK ){
-//        Q[writebuff].put_block(m);
-//    }
-
 
     if (Q[nextbuff].getState() == SPIN_FF) {
         //cout <<" PUT spin" << endl;
@@ -344,9 +329,6 @@ SPINC::SPINC(int _type){
 
     for (int i = 0 ;i < ARR; i++)
     	BUFF[i] = MainMessage;
-
-
-    //GETLOCK(&full, "full")
 
 
 }

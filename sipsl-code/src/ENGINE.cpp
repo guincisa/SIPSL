@@ -95,7 +95,7 @@ ThreadWrapper::ThreadWrapper(void) {
 
 //**********************************************************************************
 //**********************************************************************************
-ENGINE::ENGINE(int _i, int _spintype):sb(_spintype) {
+ENGINE::ENGINE(int _i) {
 
     DEBOUT("ENGINE::ENGINE()","")
     DEBOUT("ENGINE::ENGINE() spin buffer ",&sb)
