@@ -33,6 +33,8 @@ using namespace std;
 class ENGINE;
 class SUDP;
 class SPINB;
+class SPINC;
+
 
 //**********************************************************************************
 typedef struct _ENGtuple {
@@ -65,8 +67,11 @@ class ENGINE {
         SUDP* getSUDP(void);
 
     	void p_w(MESSAGE* message);
-
+#ifdef USE_SPINB
     	SPINB sb;
+#else
+    	SPINC sb;
+#endif
 
 		ENGINE(int numthreads, int spintype);
 };

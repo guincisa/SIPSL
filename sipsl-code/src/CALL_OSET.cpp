@@ -394,18 +394,16 @@ void SL_CO::call(MESSAGE* _message){
 			else {
 				// SL_CO not in correct state
 				DEBOUT("Unexpected message ignored", _message)
-				//DEBASSERT("OVERALL STATE ERROR")
+				DEBASSERT("OVERALL STATE ERROR")
 				//Message is purged here...
 				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, _message->getModulus());
 			}
-		}
-    	if (trnsctSM != 0x0 ){
-
-			//Add the sm to the map
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
 			DEBOUT("call_oset->addTrnsctSm","done")
 
+		}
+    	if (trnsctSM != 0x0){
 
 			//send the message to sm
 			action = trnsctSM->event(_message);
@@ -432,6 +430,7 @@ void SL_CO::call(MESSAGE* _message){
 		}
     	else {
     		DEBMESSAGE("SL_CO::call the message has no SM clients *****", _message)
+			DEBASSERT("Check this case out")
     	}
 	}
 	//Message is going to Client SM

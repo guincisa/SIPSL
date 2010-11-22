@@ -169,6 +169,7 @@ void * threadparser (void * _pt){
         }
         DEBOUT("ENGINE thread freed", _pt)
         MESSAGE* m = ps->sb.get();
+#ifdef USE_SPINB
         if (m == NULL)  {
             DEBOUT("ENGINE thread NULL",_pt)
             ps->sb.move();
@@ -176,8 +177,11 @@ void * threadparser (void * _pt){
             RELLOCK(&(ps->sb.condvarmutex),"ps->sb.condvarmutex");
         }
         else {
+#endif
             pt->ps->parse(m);
+#ifdef USE_SPINB
         }
+#endif
     }
     return (NULL);
 }

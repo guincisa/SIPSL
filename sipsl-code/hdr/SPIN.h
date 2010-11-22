@@ -26,9 +26,15 @@
 #define SPIN_WW  2
 #define SPIN_RR  1
 #define SPIN_FF  0
-#define ARR 5
+#define ARR 30
+#define SPINC_MOD 10
 #define SPIN_TRASH 1
 #define SPIN_BLOCK 2
+
+#define USE_SPINB
+
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,4 +93,28 @@ class SPINB {
     MESSAGE* get(void);
     void move(void);
     bool isEmpty(void);
+};
+class SPINC {
+
+	private:
+		MESSAGE* BUFF[ARR];
+
+		int l, s, DIM;
+
+	    pthread_mutex_t readmu;
+	    pthread_mutex_t writemu;
+	    pthread_mutex_t dimmu;
+	    pthread_mutex_t full;
+	    pthread_mutex_t buffmu[SPINC_MOD];
+
+	public:
+	    void put(MESSAGE*);
+	    MESSAGE* get(void);
+	    bool isEmpty(void);
+	    SPINC(int type);
+
+	    pthread_mutex_t condvarmutex;
+	    pthread_cond_t condvar;
+
+
 };

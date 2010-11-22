@@ -237,11 +237,12 @@ class ThreadWrapper {
 #ifdef LOGINF
 	//**********************************************************
 #undef DEBINF
-#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#define DEBINF(m1,m2) BDEBUG("DEBINF", m1 << "[" << m2)
+//#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 	//**********************************************************
 #undef DEBOUT
 //#define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
-#define DEBOUT(m1,m2) BDEBUG("DEBOUT", m1 << "[" << m2)
+#define DEBOUT(m1,m2) BDEBUG("DEBOUT", m1 << "[" << m2 << "]")
 	//**********************************************************
 #undef DEBOUT_UTIL
 #define DEBOUT_UTIL(m1,m2)  {stringstream xx ; xx << "DEBOUT_UTIL [" << pthread_self() << "]"<<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}

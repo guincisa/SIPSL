@@ -105,11 +105,17 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	//TODO insert into lock table???
 	Matrix->setLock();
 
-	//This one is locked elswere
+	//This one is locked elsewere
 	A_Matrix = _a_Matrix;
-	if (_a_Matrix == 0x0 || _a_Matrix == MainMessage){
-		DEBASSERT("NO")
-	}
+
+	DEBCODE(\
+		if (!A_Matrix->getLock()){\
+			DEBASSERT("A_Matrix is unlocked")\
+		}\
+		if (_a_Matrix == 0x0 || _a_Matrix == MainMessage){\
+			DEBASSERT("NO")\
+		}\
+	)
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
@@ -215,7 +221,7 @@ PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
 //*****************************************************************
 bool pre_0_1_inv_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_SV pre_0_1_inv_sv called","")
+	DEBOUT("TRNSCT_INV_SV pre_0_1_inv_sv called",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
@@ -231,6 +237,7 @@ bool pre_0_1_inv_sv(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 
+	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv", _message)
 	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv", _message->getHeadSipRequest().getContent())
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -275,7 +282,7 @@ ACTION* act_1_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	//***********************************************************
 	//RETRANSMIT THE TRY
 	//***********************************************************
-
+	DEBOUT("TRSNCT_INV_SV::act_1_1_inv_sv", _message)
 	DEBOUT("TRSNCT_INV_SV::act_1_1_inv_sv", _message->getHeadSipRequest().getContent())
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -291,11 +298,11 @@ ACTION* act_1_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(etry);
 	action->addSingleAction(sa_1);
 
-	DEBOUT("TRSNCT_INV_SV::act_1_1_inv_sv move to state 1","")
 
 
 	//**************************************
 	//Local state 1
+	DEBOUT("TRSNCT_INV_SV::act_1_1_inv_sv move to state 1","")
 	_sm->State = 1;
 
 	return action;
@@ -306,7 +313,7 @@ ACTION* act_1_1_inv_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_1_2_inv_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_1_2_inv_sv called","")
+	DEBOUT("TRSNCT_INV_SV pre_1_2_inv_sv called",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
@@ -324,6 +331,7 @@ bool pre_1_2_inv_sv(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_1_2_inv_sv(SM* _sm, MESSAGE* _message) {
 
+	DEBOUT("TRSNCT_INV_SV::act_1_2_inv_sv",  _message)
 	DEBOUT("TRSNCT_INV_SV::act_1_2_inv_sv",  _message->getHeadSipReply().getContent() )
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -362,6 +370,7 @@ ACTION* act_1_2_inv_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 ACTION* act_2_2_inv_sv(SM* _sm, MESSAGE* _message) {
 
+	DEBOUT("TRSNCT_INV_SV::act_2_2_inv_sv",  _message )
 	DEBOUT("TRSNCT_INV_SV::act_2_2_inv_sv",  _message->getHeadSipReply().getContent() )
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -383,7 +392,7 @@ ACTION* act_2_2_inv_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_1_3_inv_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_1_3_inv_sv","")
+	DEBOUT("TRSNCT_INV_SV pre_1_3_inv_sv",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
@@ -400,7 +409,7 @@ bool pre_1_3_inv_sv(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_1_3_inv_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_1_3_inv_sv called","")
+	DEBOUT("TRSNCT_INV_SV act_1_3_inv_sv called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -457,7 +466,7 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	//Invite from A coming again
 
-	DEBOUT("TRSNCT_INV_SV act_3_3a_inv_sv called","")
+	DEBOUT("TRSNCT_INV_SV act_3_3a_inv_sv called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -507,7 +516,7 @@ ACTION* act_3_3a_inv_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_3_3b_inv_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_3_3b_inv_sv","")
+	DEBOUT("TRSNCT_INV_SV pre_3_3b_inv_sv",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
@@ -526,7 +535,7 @@ bool pre_3_3b_inv_sv(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_3_3b_inv_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_3_3b_inv_sv called","")
+	DEBOUT("TRSNCT_INV_SV act_3_3b_inv_sv called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -568,7 +577,7 @@ ACTION* act_3_3b_inv_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_3_5_inv_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_3b_3b_inv_sv","")
+	DEBOUT("TRSNCT_INV_SV pre_3b_3b_inv_sv",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
@@ -587,7 +596,7 @@ bool pre_3_5_inv_sv(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_3_5_inv_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_3_3c_inv_sv called no actions","")
+	DEBOUT("TRSNCT_INV_SV act_3_3c_inv_sv called no actions",_message)
 
 	//**************************************
 	//Purge it
@@ -611,7 +620,7 @@ ACTION* act_3_5_inv_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_3_3d_inv_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_3_3d_inv_sv","")
+	DEBOUT("TRSNCT_INV_SV pre_3_3d_inv_sv",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
@@ -629,7 +638,7 @@ bool pre_3_3d_inv_sv(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_3_3d_inv_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_3_3d_inv_sv","")
+	DEBOUT("TRSNCT_INV_SV act_3_3d_inv_sv",_message)
 
 	//**************************************
 	//Nothing
@@ -713,11 +722,16 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 	STOREMESS_1_3 = 0x0;
 
 
-	PA_INV_0_1SV.action = &act_0_1_inv_sv;
+	//First Invite_A
+	//Try_A is sent
+	//Invite_A is sent to ALO
 	PA_INV_0_1SV.predicate = &pre_0_1_inv_sv;
+	PA_INV_0_1SV.action = &act_0_1_inv_sv;
 
-	PA_INV_1_1SV.action = &act_1_1_inv_sv;
+	//Second Invite_A
+	//Try_a lost
 	PA_INV_1_1SV.predicate = &pre_0_1_inv_sv;
+	PA_INV_1_1SV.action = &act_1_1_inv_sv;
 
 	PA_INV_1_2SV.action = &act_1_2_inv_sv;
 	PA_INV_1_2SV.predicate = &pre_1_2_inv_sv;
@@ -774,7 +788,7 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 //*****************************************************************
 bool pre_0_1_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_0_1_inv_cl","")
+	DEBOUT("TRNSCT_INV_CL pre_0_1_inv_cl",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
@@ -789,7 +803,7 @@ bool pre_0_1_inv_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl","")
+	DEBOUT("TRNSCT_INV_CL act_0_1_inv_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -836,7 +850,7 @@ ACTION* act_0_1_inv_cl(SM* _sm, MESSAGE* _message) {
 // This invite could be deleted, currently is inserted into insertLockedMessage table
 bool pre_1_1_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_1_1_inv_cl","")
+	DEBOUT("TRNSCT_INV_CL pre_1_1_inv_cl",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
@@ -853,7 +867,7 @@ bool pre_1_1_inv_cl(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl","")
+	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -862,8 +876,9 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->setTypeOfInternal(TYPE_MESS);
-	_message->unSetLock();
-	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+	//TODO already done in call_oset::call
+//	_message->unSetLock();
+//	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 
@@ -887,7 +902,7 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 
 	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
 
-	DEBOUT("TRNSCT_INV_CL act_1_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
+	DEBOUT("TRNSCT_SM_INVITE_CL act_1_1_inv_cl resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
 
 	DEBOUT("SM act_1_1_inv_cl move to state","1")
 	_sm->State = 1;
@@ -901,7 +916,7 @@ ACTION* act_1_1_inv_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_1_99_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_1_99_inv_cl","")
+	DEBOUT("TRNSCT_INV_CL pre_1_99_inv_cl",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
@@ -917,13 +932,13 @@ bool pre_1_99_inv_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_99_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_INV_CL act_1_99_inv_cl *** incomplete *** ","")
+	DEBOUT("TRNSCT_INV_CL act_1_99_inv_cl *** incomplete *** ",_message)
 
 	//**************************************
 	//trigger call_oset deletion:
 	_message->unSetLock();
 	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
-	//TODO
+	//TODO this leaks
 	DEBOUT("setDoaRequested","")
 	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 
@@ -937,7 +952,7 @@ ACTION* act_1_99_inv_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_1_2_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_1_1b_inv_cl","")
+	DEBOUT("TRNSCT_INV_CL pre_1_1b_inv_cl",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == TRYING_100
@@ -953,6 +968,8 @@ bool pre_1_2_inv_cl(SM* _sm, MESSAGE* _message){
 }
 //*****************************************************************
 ACTION* act_1_2_inv_cl(SM* _sm, MESSAGE* _message) {
+
+	DEBOUT("TRNSCT_INV_CL act_1_2_inv_cl",_message)
 
 	DEBOUT("TRNSCT_INV_CL act_1_2_inv_cl",_message->getHeadSipReply().getReply().getCode())
 
@@ -980,7 +997,7 @@ ACTION* act_1_2_inv_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_1_3_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_1_3_inv_cl","")
+	DEBOUT("SM_CL pre_1_3_inv_cl",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
@@ -998,7 +1015,7 @@ bool pre_1_3_inv_cl(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_CL act_1_3_inv_cl","")
+	DEBOUT("SM_CL act_1_3_inv_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1043,7 +1060,7 @@ ACTION* act_1_3_inv_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_1_4_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_1_4_inv_cl","")
+	DEBOUT("SM pre_1_4_inv_cl",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
@@ -1060,7 +1077,7 @@ bool pre_1_4_inv_cl(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_1_4_inv_cl","")
+	DEBOUT("SM act_1_4_inv_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1081,6 +1098,7 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->setTypeOfInternal(TYPE_MESS);
+	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
 	_message->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 	SingleAction sa_2 = SingleAction(_message);
@@ -1116,7 +1134,7 @@ ACTION* act_1_4_inv_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_4_4a_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_4_4a_inv_cl","")
+	DEBOUT("SM_CL pre_4_4a_inv_cl",_message)
 
 	//DEBOUT("SM pre_4_4a_inv_cl message type:",_message->getReqRepType() <<"] reply type code:["<<_message->getHeadSipReply().getReply().getCode() <<"] destination:["<<_message->getDestEntity() <<"] Overall:["<<_sm->getSL_CO()->OverallState_CL)
 
@@ -1137,7 +1155,7 @@ bool pre_4_4a_inv_cl(SM* _sm, MESSAGE* _message){
 ACTION* act_4_4a_inv_cl(SM* _sm, MESSAGE* _message) {
 
 
-	DEBOUT("SM act_4_4a_inv_cl","")
+	DEBOUT("SM act_4_4a_inv_cl",_message)
 	return 0x0;
 
 }
@@ -1148,7 +1166,7 @@ ACTION* act_4_4a_inv_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_4_4b_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_4_4b_inv_cl","")
+	DEBOUT("SM_CL pre_4_4b_inv_cl",_message)
 	//DEBOUT("SM pre_4_4b_inv_cl message type:",_message->getReqRepType() <<"] reply type code:["<<_message->getHeadSipReply().getReply().getCode() <<"] destination:["<<_message->getDestEntity() <<"] Overall:["<<_sm->getSL_CO()->OverallState_CL)
 
 	if (_message->getReqRepType() == REPSUPP
@@ -1167,7 +1185,7 @@ bool pre_4_4b_inv_cl(SM* _sm, MESSAGE* _message){
 ACTION* act_4_4b_inv_cl(SM* _sm, MESSAGE* _message) {
 
 
-	DEBOUT("SM act_4_4b_inv_cl","")
+	DEBOUT("SM act_4_4b_inv_cl",_message)
 	//Need to resend ACK
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -1345,7 +1363,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 //**********************************************************************************
 bool pre_0_1_ack_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_0_1_ack_sv called","")
+	DEBOUT("SM pre_0_1_ack_sv called",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
@@ -1360,7 +1378,7 @@ bool pre_0_1_ack_sv(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_0_1_ack_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_0_1_ack_sv called","")
+	DEBOUT("SM act_0_1_ack_sv called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1387,7 +1405,7 @@ ACTION* act_0_1_ack_sv(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_1_1_ack_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_1_1_ack_sv called","")
+	DEBOUT("SM act_1_1_ack_sv called",_message)
 
 	//**************************************
 	//Action 1: ACK has been resent by A : ignore
@@ -1418,7 +1436,7 @@ TRNSCT_SM_ACK_SV::TRNSCT_SM_ACK_SV(int _requestType, MESSAGE* _matrixMess, ENGIN
 //**********************************************************************************
 bool pre_0_1_ack_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_0_1_ack_cl","")
+	DEBOUT("SM pre_0_1_ack_cl",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
@@ -1433,7 +1451,7 @@ bool pre_0_1_ack_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_0_1_ack_cl","")
+	DEBOUT("SM act_0_1_ack_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1455,15 +1473,12 @@ ACTION* act_0_1_ack_cl(SM* _sm, MESSAGE* _message) {
 	DEBOUT("SM act_0_1_ack_cl move OverallState_CL to","OS_COMPLETED")
 	_sm->getSL_CO()->OverallState_CL = OS_COMPLETED;
 
-	//TODO
-	// store this ack and retransmit if 200 ok arrives again
-
 	return action;
 
 }
 bool pre_1_1_ack_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_1_1_ack_cl","")
+	DEBOUT("SM pre_1_1_ack_cl",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 			&&_message->getHeadSipReply().getReply().getCode() == OK_200
@@ -1479,7 +1494,7 @@ bool pre_1_1_ack_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_1_ack_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_1_1_ack_cl","resend ACK")
+	DEBOUT("SM act_1_1_ack_cl","resend ACK [" << _message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1520,7 +1535,7 @@ TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 //**********************************************************************************
 bool pre_0_1_bye_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_SV pre_0_1_bye_sv called","")
+	DEBOUT("TRNSCT_INV_SV pre_0_1_bye_sv called",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
@@ -1535,7 +1550,7 @@ bool pre_0_1_bye_sv(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_0_1_bye_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_0_1_bye_sv called","")
+	DEBOUT("SM act_0_1_bye_sv called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1557,7 +1572,7 @@ ACTION* act_0_1_bye_sv(SM* _sm, MESSAGE* _message) {
 }
 bool pre_1_2_bye_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_1_2_bye_sv","")
+	DEBOUT("SM pre_1_2_bye_sv",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
@@ -1573,7 +1588,7 @@ bool pre_1_2_bye_sv(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_2_bye_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_1_2_bye_sv called","")
+	DEBOUT("SM act_1_2_bye_sv called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1603,14 +1618,14 @@ ACTION* act_1_2_bye_sv(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_1_1_bye_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_1_1_bye_sv called","")
+	DEBOUT("SM act_1_1_bye_sv called",_message)
 
 	return 0x0;
 }
 
 ACTION* act_2_2_bye_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_2_2_bye_sv called","")
+	DEBOUT("SM act_2_2_bye_sv called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	//**************************************
@@ -1665,7 +1680,7 @@ TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGIN
 
 bool pre_0_1_bye_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_SM_BYE_CL pre_0_1_bye_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL pre_0_1_bye_cl",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
@@ -1681,7 +1696,7 @@ bool pre_0_1_bye_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL act_0_1_bye_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1721,7 +1736,7 @@ ACTION* act_0_1_bye_cl(SM* _sm, MESSAGE* _message) {
 }
 bool pre_1_1_bye_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_SM_BYE_CL pre_1_1_bye_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL pre_1_1_bye_cl",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
@@ -1737,7 +1752,7 @@ bool pre_1_1_bye_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_1_bye_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_1_1_bye_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL act_1_1_bye_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	//**************************************
@@ -1776,7 +1791,7 @@ ACTION* act_1_1_bye_cl(SM* _sm, MESSAGE* _message) {
 }
 bool pre_1_2_bye_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_SM_BYE_CL pre_1_2_bye_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL pre_1_2_bye_cl",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
@@ -1792,7 +1807,7 @@ bool pre_1_2_bye_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_2_bye_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_1_2_bye_cl","")
+	DEBOUT("TRNSCT_SM_BYE_CL act_1_2_bye_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1823,7 +1838,7 @@ ACTION* act_1_2_bye_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_1_99_bye_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_BYE_CL pre_1_99_bye_cl","")
+	DEBOUT("TRNSCT_BYE_CL pre_1_99_bye_cl",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
@@ -1839,7 +1854,7 @@ bool pre_1_99_bye_cl(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_1_99_bye_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_INV_CL act_1_99_bye_cl *** incomplete *** ","")
+	DEBOUT("TRNSCT_INV_CL act_1_99_bye_cl *** incomplete *** ",_message)
 
 	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 

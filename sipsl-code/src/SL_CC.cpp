@@ -124,9 +124,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 	//Maybe it has been delete by DOA when outside the call_oset
 	//TODO needed???
 	if (_mess == MainMessage){
-		return;
+		DEBASSERT("_mess == MainMessage")
 	}
-
 
 	if (_mess->getGenEntity() == SODE_NTWPOINT){
 
@@ -219,6 +218,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 			return;
 		}else {
 			DEBMESSAGE("Unexpected message ignored", _mess)
+			if(!_mess->getLock()){
+				PURGEMESSAGE(_mess)
+			}else {
+				DEBASSERT ("Unexpected message ignored found locked")
+			}
 			return;
 		}
 	}
@@ -230,7 +234,12 @@ void SL_CC::parse(MESSAGE* _mess) {
 		//Ok if coming from server: its the retransmission of 200ok for A
 		DEBY
 		DEBOUT("SL_CC::parse _mess->getSourceMessage()", _mess->getSourceMessage())
-		DEBY
+		if (_mess->getSourceMessage() == MainMessage){
+			DEBOUT("_mess", _mess)
+			DEBOUT("_mess->getGenEntity", _mess->getGenEntity())
+			DEBOUT("_mess->getDestEntity", _mess->getDestEntity())
+			DEBASSERT("_mess->getSourceMessage() == MainMessage")
+		}
 		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
 		int modulus = _mess->getSourceMessage()->getModulus();
 
@@ -273,7 +282,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 				}
 				else {
 					DEBINF("Put this message into the locked messages table",_mess)
-					DEBASSERT("")
 				}
 			}
 			return;

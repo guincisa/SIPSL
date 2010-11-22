@@ -175,8 +175,8 @@ void VALO::onInvite(MESSAGE* _message){
 
 	//TODO ???
 	DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
-	NEWPTR(int*, CSeqB2BINIVTE, int(message->getHeadCSeq().getSequence()),"CSeqB2BINIVTE")
-	ctxt_store.insert(pair<string, void*>("CSeqB2BINIVTE", (void*) CSeqB2BINIVTE ));
+	NEWPTR(int*, CSeqB2BINVITE, int(message->getHeadCSeq().getSequence()),"CSeqB2BINVITE")
+	ctxt_store.insert(pair<string, void*>("CSeqB2BINVITE", (void*) CSeqB2BINVITE ));
 
 
 	DEBOUT("STORING now call id", message->getHeadCallId().getContent())
@@ -260,14 +260,14 @@ void VALO::onAck(MESSAGE* _message){
 	string fromhead_200ok_b = *((string*)p->second);
 	p = ctxt_store.find("callid_200ok_b");
 	string callid_200ok_b = *((string*)p->second);
-	p = ctxt_store.find("CSeqB2BINIVTE");
+	p = ctxt_store.find("CSeqB2BINVITE");
 
 	//TODO cseq for ACK
-	int CSeqB2BINIVTE = *((int*)p->second);
+	int CSeqB2BINVITE = *((int*)p->second);
 
 	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
 	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
-	DEBOUT("CHECK THIS CSeq  +++++++++++", CSeqB2BINIVTE);
+	DEBOUT("CHECK THIS CSeq  +++++++++++", CSeqB2BINVITE);
 
 	DEBOUT("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
 	DEBOUT("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
@@ -279,7 +279,7 @@ void VALO::onAck(MESSAGE* _message){
 	newack->replaceHeadTo(tohead_200ok_b);
 	newack->replaceHeadFrom(fromhead_200ok_b);
 	newack->setGenericHeader("Call-ID:", call_oset->getCallId_Y());
-	newack->getHeadCSeq().setSequence(CSeqB2BINIVTE);
+	newack->getHeadCSeq().setSequence(CSeqB2BINVITE);
 
 	char viatmp[512];
 	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),newack->getKey().c_str());
@@ -509,6 +509,9 @@ void VALO::onBye(MESSAGE* _message){
 void VALO::on200Ok(MESSAGE* _message){
 
 	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
+	if (trnsct_cl == 0x0){
+		DEBASSERT("TRNSCT_SM* trnsct_cl == 0x0")
+	}
 	MESSAGE* __message = ((TRNSCT_SM*)trnsct_cl)->getA_Matrix();
 
 	//The 200OK is called twice so we are leaking

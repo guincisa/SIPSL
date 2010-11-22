@@ -165,12 +165,19 @@ void ROTQ::put(MESSAGE* m) {
         DEBOUT("ERROR not write buffer","")
         return;
     }
+    MESSAGE* local = 0x0;
+    DEBCODE(\
+    local = Q[top];)
     Q[top] = m;
 
     top ++ ;
     top = top % ARR;
     if (top == bot) {
+    	DEBCODE(\
+    			DEBOUT("ROTQ::put trashing message", local)
+    			)
         //DEBASSERT("FULL TRASHING")
+    	//If trashing message will may leak...
         DEBOUT("FULL TRASHING","")
         GETLOCK(&(sb->mudim),"sb->mudim");
         (sb->DIM)--;
@@ -317,5 +324,72 @@ void SPINB::move(void) {
     }
     RELLOCK(&writemu,"writemu");
     DEBOUT("MOVE","")
+
+}
+
+SPINC::SPINC(int _type){
+	s = 0;
+	l = -1;
+	DIM = 0;
+
+    pthread_mutex_init(&readmu, NULL);
+    pthread_mutex_init(&writemu,NULL);
+    pthread_mutex_init(&dimmu,NULL);
+    pthread_mutex_init(&full,NULL);
+    for (int i = 0; i++ ;i < SPINC_MOD)
+    	pthread_mutex_init(&buffmu[i],NULL);
+
+    pthread_mutex_init(&condvarmutex, NULL);
+    pthread_cond_init(&condvar, NULL);
+
+
+}
+void SPINC::put(MESSAGE* _message){
+
+	GETLOCK(&writemu, "writemu")
+	s++;
+	s = s % ARR;
+	int n = s % SPINC_MOD;
+	if ( s == l){
+		GETLOCK(&full, "full")
+	}
+	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	BUFF[s] = _message;
+	RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	if (l == -1)
+		l = 1;
+
+	GETLOCK(&dimmu, "dimmu")
+	DIM++;
+	RELLOCK(&dimmu, "dimmu")
+	RELLOCK(&writemu, "writemu")
+
+}
+MESSAGE* SPINC::get(void){
+
+	RELLOCK(&full,"full")
+	GETLOCK(&readmu,"readmu")
+	int n = l % SPINC_MOD;
+	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	MESSAGE* m = BUFF[l];
+	RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	l++;
+	l = l % ARR;
+	GETLOCK(&dimmu, "dimmu")
+	DIM--;
+	RELLOCK(&dimmu, "dimmu")
+	RELLOCK(&readmu, "readmu")
+
+	return m;
+
+}
+
+bool SPINC::isEmpty(void){
+
+	GETLOCK(&dimmu, "dimmu")
+	bool ise = (DIM == 0);
+	RELLOCK(&dimmu, "dimmu")
+
+	return ise;
 
 }
