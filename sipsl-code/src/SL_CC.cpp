@@ -112,7 +112,13 @@ COMAP* SL_CC::getCOMAP(void){
 void SL_CC::linkTransport(TRNSPRT* _transport){
 	transport = _transport;
 }
-
+//**********************************************************************************
+//**********************************************************************************
+void SL_CC::parse_s(MESSAGE* _mess) {
+	DEBOUT("SL_CC::parse_s", _mess)
+	RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+	return;
+}
 //**********************************************************************************
 //**********************************************************************************
 void SL_CC::parse(MESSAGE* _mess) {

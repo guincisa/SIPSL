@@ -75,7 +75,7 @@ class ThreadWrapper {
 #define LOGMIN
 #else
 #define COMAPS 2
-#define SIPENGINETH 3
+#define SIPENGINETH 6
 #define SL_CCTH 8
 #define LOGSIP
 #define LOGINF

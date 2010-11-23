@@ -87,6 +87,7 @@
 #endif
 
 extern "C" void* threadparser (void*);
+extern "C" void* threadparser_s (void*);
 
 ThreadWrapper::ThreadWrapper(void) {
     pthread_mutex_init(&mutex, NULL);
@@ -121,6 +122,22 @@ ENGINE::ENGINE(int _i) {
 
 
     }
+    ENGtuple *ts[2];
+
+    int j;
+    for ( j = 0 ; j < 2 ; j++){
+
+    	NEWPTR2(ts[j], ENGtuple, "ENGtuple")
+
+        ts[j]->ps = this;
+        ts[j]->id = 0;
+
+    	NEWPTR2(parsethread_s[j], ThreadWrapper(), "ThreadWrapper()")
+
+        res = pthread_create(&(parsethread_s[j]->thread), NULL, threadparser_s, (void *) ts[j]);
+
+
+    }
 
     sudp = 0x0;
 }
@@ -142,17 +159,32 @@ SUDP* ENGINE::getSUDP(void){
 }
 //**********************************************************************************
 //**********************************************************************************
-void ENGINE::p_w(MESSAGE* _m) {
+bool ENGINE::p_w(MESSAGE* _m) {
 
     GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
     bool r = sb.put(_m);
     DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
     if (!r){
-    	DEBASSERT("ENGINE::p_w put returned false")
+    	DEBOUT("ENGINE::p_w put returned false","")
     }
     pthread_cond_signal(&(sb.condvar));
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-    return;
+    return r;
+
+}
+//**********************************************************************************
+//**********************************************************************************
+bool ENGINE::p_w_s(MESSAGE* _m) {
+
+    GETLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+    bool r = rej.put(_m);
+    DEBOUT("ENGINE::p_w_s put returned",_m << " "<<r)
+    if (!r){
+    	DEBASSERT("ENGINE::p_w_s put returned false")
+    }
+    pthread_cond_signal(&(rej.condvar));
+    RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+    return r;
 
 }
 
@@ -181,6 +213,37 @@ void * threadparser (void * _pt){
         else {
 #endif
             pt->ps->parse(m);
+#ifdef USE_SPINB
+        }
+#endif
+    }
+    return (NULL);
+}
+//**********************************************************************************
+//**********************************************************************************
+void * threadparser_s (void * _pt){
+
+    ENGtuple *pt = (ENGtuple *)  _pt;
+    ENGINE * ps = pt->ps;
+    while(true) {
+        DEBOUT("ENGINE thread",_pt)
+		GETLOCK(&(ps->rej.condvarmutex),"ps->rej.condvarmutex");
+        while(ps->rej.isEmpty() ) {
+            DEBOUT("ENGINE thread is empty",_pt)
+            pthread_cond_wait(&(ps->rej.condvar), &(ps->rej.condvarmutex));
+        }
+        DEBOUT("ENGINE thread freed", _pt)
+        MESSAGE* m = ps->rej.get();
+#ifdef USE_SPINB
+        if (m == NULL)  {
+            DEBOUT("ENGINE thread NULL",_pt)
+            ps->sb.move();
+            //aggiunta il 30 luglio 2010
+            RELLOCK(&(ps->sb.condvarmutex),"ps->rej.condvarmutex");
+        }
+        else {
+#endif
+            pt->ps->parse_s(m);
 #ifdef USE_SPINB
         }
 #endif

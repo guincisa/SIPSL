@@ -396,3 +396,87 @@ bool SPINC::isEmpty(void){
 	return ise;
 
 }
+SPINS::SPINS(){
+	s = 0;
+	l = -1;
+	DIM = 0;
+
+    pthread_mutex_init(&readmu, NULL);
+    pthread_mutex_init(&writemu,NULL);
+    pthread_mutex_init(&dimmu,NULL);
+    for (int i = 0 ;i < SPINC_MOD; i++)
+    	pthread_mutex_init(&buffmu[i],NULL);
+
+    pthread_mutex_init(&condvarmutex, NULL);
+    pthread_cond_init(&condvar, NULL);
+
+    for (int i = 0 ;i < ARR_SHORT; i++)
+    	BUFF[i] = MainMessage;
+
+
+}
+bool SPINS::put(MESSAGE* _message){
+
+	GETLOCK(&writemu, "writemu")
+	int ts = s+1;
+	ts = ts % ARR_SHORT;
+	int n = ts % SPINC_MOD;
+
+	GETLOCK(&dimmu, "dimmu")
+	int dim = DIM;
+	RELLOCK(&dimmu, "dimmu")
+
+	if ( ts == l && dim != 0){
+		DEBOUT("SPINS::put", "ts "<<ts<<"l "<<l)
+		return false;
+	}
+	if(BUFF[ts] != MainMessage){
+		DEBASSERT("BUFF[s] != MainMessage")
+	}
+	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	BUFF[ts] = _message;
+	s = ts;
+	RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	if (l == -1)
+		l = 1;
+
+	GETLOCK(&dimmu, "dimmu")
+	DIM++;
+	RELLOCK(&dimmu, "dimmu")
+	RELLOCK(&writemu, "writemu")
+	return true;
+
+}
+MESSAGE* SPINS::get(void){
+
+	GETLOCK(&readmu,"readmu")
+	int n = l % SPINC_MOD;
+	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	MESSAGE* m = BUFF[l];
+	if(BUFF[l] == MainMessage){
+		DEBASSERT("BUFF[l] == MainMessage")
+	}
+
+	BUFF[l] = MainMessage;
+	RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
+	l++;
+	l = l % ARR_SHORT;
+	GETLOCK(&dimmu, "dimmu")
+	DIM--;
+	RELLOCK(&dimmu, "dimmu")
+	//RELLOCK(&full,"full")
+	RELLOCK(&readmu, "readmu")
+
+	return m;
+
+}
+
+bool SPINS::isEmpty(void){
+
+	GETLOCK(&dimmu, "dimmu")
+	bool ise = (DIM == 0);
+	RELLOCK(&dimmu, "dimmu")
+
+	return ise;
+
+}

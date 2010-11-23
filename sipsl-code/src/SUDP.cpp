@@ -205,7 +205,11 @@ void SUDP::listen() {
         	if (message != 0x0 ){
     			DEBMESSAGE("New message from buffer ", message)
 
-    			engine->p_w(message);
+    			bool r = engine->p_w(message);
+    			if (!r){
+    				DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
+    				engine->p_w_s(message);
+    			}
         	}else {
         		DEBERROR("SUDP::listen() could not allocate memory for incoming message")
         	}

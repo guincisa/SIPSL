@@ -34,6 +34,7 @@ class ENGINE;
 class SUDP;
 class SPINB;
 class SPINC;
+class SPINS;
 
 
 //**********************************************************************************
@@ -52,6 +53,7 @@ class ENGINE {
 	private:
 
 		ThreadWrapper* parsethread[MAXTHREADS];
+		ThreadWrapper* parsethread_s[2];
 
         SUDP* sudp;
 
@@ -61,16 +63,22 @@ class ENGINE {
 		virtual void parse(MESSAGE* message);
 #else
 		virtual void parse(MESSAGE* message) = 0;
+		virtual void parse_s(MESSAGE* message) = 0;
+
 #endif
 
         void linkSUDP(SUDP*);
         SUDP* getSUDP(void);
 
-    	void p_w(MESSAGE* message);
+    	bool p_w(MESSAGE* message);
+    	bool p_w_s(MESSAGE* message);
+
 #ifdef USE_SPINB
     	SPINB sb;
 #else
     	SPINC sb;
+    	SPINS rej;
+
 #endif
 
 		ENGINE(int numthreads);

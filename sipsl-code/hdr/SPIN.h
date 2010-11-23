@@ -28,6 +28,7 @@
 #define SPIN_FF  0
 //#define USE_SPINB
 #define ARR 30
+#define ARR_SHORT 10
 #define SPINC_MOD 10
 #define SPIN_TRASH 1
 //Block mode will block the sl_co because it constantly back feeds itself
@@ -110,6 +111,29 @@ class SPINC {
 	    MESSAGE* get(void);
 	    bool isEmpty(void);
 	    SPINC(void);
+
+	    pthread_mutex_t condvarmutex;
+	    pthread_cond_t condvar;
+
+
+};
+class SPINS {
+
+	private:
+		MESSAGE* BUFF[ARR_SHORT];
+
+		int l, s, DIM;
+
+	    pthread_mutex_t readmu;
+	    pthread_mutex_t writemu;
+	    pthread_mutex_t dimmu;
+	    pthread_mutex_t buffmu[SPINC_MOD];
+
+	public:
+	    bool put(MESSAGE*);
+	    MESSAGE* get(void);
+	    bool isEmpty(void);
+	    SPINS(void);
 
 	    pthread_mutex_t condvarmutex;
 	    pthread_cond_t condvar;
