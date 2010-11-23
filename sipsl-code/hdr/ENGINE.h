@@ -51,7 +51,7 @@ class ENGINE {
 
 	private:
 
-		ThreadWrapper* parsethread[64];
+		ThreadWrapper* parsethread[MAXTHREADS];
 
         SUDP* sudp;
 

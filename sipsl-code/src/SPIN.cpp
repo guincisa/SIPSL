@@ -312,7 +312,7 @@ void SPINB::move(void) {
 
 }
 
-SPINC::SPINC(int _type){
+SPINC::SPINC(){
 	s = 0;
 	l = -1;
 	DIM = 0;
@@ -338,17 +338,20 @@ void SPINC::put(MESSAGE* _message){
 	s++;
 	s = s % ARR;
 	int n = s % SPINC_MOD;
-	if ( s == l){
+
+	GETLOCK(&dimmu, "dimmu")
+	int dim = DIM;
+	RELLOCK(&dimmu, "dimmu")
+
+	if ( s == l && dim != 0){
+		DEBOUT("SPINC::put", "s "<<s<<"l "<<l)
+		DEBASSERT("")
 		GETLOCK(&full, "full")
 	}
-	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
 	if(BUFF[s] != MainMessage){
-		//GETLOCK(&full, "full")
-		GETLOCK(&readmu,"readmu")
-		l++;
-		l = l % ARR;
-		RELLOCK(&readmu, "readmu")
+		DEBASSERT("BUFF[s] != MainMessage")
 	}
+	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
 	BUFF[s] = _message;
 	RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
 	if (l == -1)
@@ -367,7 +370,7 @@ MESSAGE* SPINC::get(void){
 	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
 	MESSAGE* m = BUFF[l];
 	if(BUFF[l] == MainMessage){
-		//DEBASSERT("BUFF[l] == MainMessage")
+		DEBASSERT("BUFF[l] == MainMessage")
 	}
 
 	BUFF[l] = MainMessage;

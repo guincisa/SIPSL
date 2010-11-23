@@ -65,9 +65,10 @@ class ThreadWrapper {
 };
 
 
-#define MAXTHREADS 64
+#define MAXTHREADS 8
 
 #ifdef SPARC
+#define MAXTHREADS 64
 #define COMAPS 5
 #define SIPENGINETH 10
 #define SL_CCTH 64
@@ -75,7 +76,7 @@ class ThreadWrapper {
 #else
 #define COMAPS 2
 #define SIPENGINETH 3
-#define SL_CCTH 10
+#define SL_CCTH 8
 #define LOGSIP
 #define LOGINF
 #define LOGMIN

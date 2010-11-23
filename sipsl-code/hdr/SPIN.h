@@ -26,7 +26,7 @@
 #define SPIN_WW  2
 #define SPIN_RR  1
 #define SPIN_FF  0
-#define USE_SPINB
+//#define USE_SPINB
 #define ARR 30
 #define SPINC_MOD 10
 #define SPIN_TRASH 1
@@ -110,7 +110,7 @@ class SPINC {
 	    void put(MESSAGE*);
 	    MESSAGE* get(void);
 	    bool isEmpty(void);
-	    SPINC(int type);
+	    SPINC(void);
 
 	    pthread_mutex_t condvarmutex;
 	    pthread_cond_t condvar;
