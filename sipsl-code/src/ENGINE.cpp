@@ -145,10 +145,12 @@ SUDP* ENGINE::getSUDP(void){
 void ENGINE::p_w(MESSAGE* _m) {
 
     GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-    DEBY
-    sb.put(_m);
+    bool r = sb.put(_m);
+    DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
+    if (!r){
+    	DEBASSERT("ENGINE::p_w put returned false")
+    }
     pthread_cond_signal(&(sb.condvar));
-    DEBY
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
     return;
 

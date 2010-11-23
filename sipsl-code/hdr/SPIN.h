@@ -103,11 +103,10 @@ class SPINC {
 	    pthread_mutex_t readmu;
 	    pthread_mutex_t writemu;
 	    pthread_mutex_t dimmu;
-	    pthread_mutex_t full;
 	    pthread_mutex_t buffmu[SPINC_MOD];
 
 	public:
-	    void put(MESSAGE*);
+	    bool put(MESSAGE*);
 	    MESSAGE* get(void);
 	    bool isEmpty(void);
 	    SPINC(void);

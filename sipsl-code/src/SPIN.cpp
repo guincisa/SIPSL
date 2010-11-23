@@ -320,7 +320,6 @@ SPINC::SPINC(){
     pthread_mutex_init(&readmu, NULL);
     pthread_mutex_init(&writemu,NULL);
     pthread_mutex_init(&dimmu,NULL);
-    pthread_mutex_init(&full,NULL);
     for (int i = 0 ;i < SPINC_MOD; i++)
     	pthread_mutex_init(&buffmu[i],NULL);
 
@@ -332,27 +331,27 @@ SPINC::SPINC(){
 
 
 }
-void SPINC::put(MESSAGE* _message){
+bool SPINC::put(MESSAGE* _message){
 
 	GETLOCK(&writemu, "writemu")
-	s++;
-	s = s % ARR;
-	int n = s % SPINC_MOD;
+	int ts = s+1;
+	ts = ts % ARR;
+	int n = ts % SPINC_MOD;
 
 	GETLOCK(&dimmu, "dimmu")
 	int dim = DIM;
 	RELLOCK(&dimmu, "dimmu")
 
-	if ( s == l && dim != 0){
-		DEBOUT("SPINC::put", "s "<<s<<"l "<<l)
-		DEBASSERT("")
-		GETLOCK(&full, "full")
+	if ( ts == l && dim != 0){
+		DEBOUT("SPINC::put", "ts "<<ts<<"l "<<l)
+		return false;
 	}
-	if(BUFF[s] != MainMessage){
+	if(BUFF[ts] != MainMessage){
 		DEBASSERT("BUFF[s] != MainMessage")
 	}
 	GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
-	BUFF[s] = _message;
+	BUFF[ts] = _message;
+	s = ts;
 	RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
 	if (l == -1)
 		l = 1;
@@ -361,6 +360,7 @@ void SPINC::put(MESSAGE* _message){
 	DIM++;
 	RELLOCK(&dimmu, "dimmu")
 	RELLOCK(&writemu, "writemu")
+	return true;
 
 }
 MESSAGE* SPINC::get(void){
