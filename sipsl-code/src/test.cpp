@@ -100,7 +100,7 @@ int main(int argc, const char* argv[]) {
 		gg.setSL_CC(&sl_cc);
 		gg.linkSUDP(&mystack);
 
-		DOA doa(&sl_cc, 30, 0);
+		DOA doa(&sl_cc, DOA_CLEANUP, 0);
 		doa.init();
 
 		//Alarm setup

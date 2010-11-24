@@ -32,8 +32,10 @@
 //To remove alarms put this timer
 //#define TIMER_1 500000000
 
-#define TIMER_DOA 15000000
+#define TIMER_DOA 10000000
 #define TIMER_zero 0
+
+#define DOA_CLEANUP 10
 
 #ifdef SPARC
 #define BPHONE "10.21.99.79"

@@ -129,10 +129,8 @@ void DOA::init(void) {
 	for(;;) {
 		nanosleep(&sleep_time,NULL);
 		DEBOUT("DOA::doa", "started")
-		DUMPMESSTABLE
+		//DUMPMESSTABLE
 		sl_cc->getCOMAP()->purgeDOA();
-		DUMPMESSTABLE
-
 	}
 
 }

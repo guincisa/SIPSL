@@ -528,9 +528,8 @@ void COMAP::purgeDOA(void){
 		GETLOCK(&unique[mod],"unique"<<mod);
 
 		DEBMEM("COMAP::purgeDOA comap entries",comap_mm[mod].size())
-		for( p_comap_mm = comap_mm[mod].begin(); p_comap_mm != comap_mm[mod].end() && iter < 5; ++p_comap_mm){
+		for( p_comap_mm = comap_mm[mod].begin(); p_comap_mm != comap_mm[mod].end() ; ++p_comap_mm){
 			DEBY
-			iter++;
 			call_oset = (CALL_OSET*)p_comap_mm->second;
 			DEBOUT("COMAP::purgeDOA", call_oset)
 			if ( getDoa(call_oset,mod) == DOA_CONFIRMED){
