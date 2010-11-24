@@ -296,11 +296,16 @@ void CALL_OSET::removeLockedMessage(MESSAGE* _message){
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
-	DEBOUT_UTIL("CALL_OSET::getTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch)
+	DEBOUT_UTIL("CALL_OSET::getTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] call_oset ["<<this)
 	char t_key[512];
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode,_branch.c_str());
+
+	string stmp = t_key;
+
+	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", stmp)
+
 	map<string, TRNSCT_SM*> ::iterator p;
-	p = trnsctSmMap.find(t_key);
+	p = trnsctSmMap.find(stmp);
 	if (p != trnsctSmMap.end()){
 		DEBOUT_UTIL("CALL_OSET::getTrnsctSm found",_method <<"#"<< _sode <<"#"<<_branch << "["<<(TRNSCT_SM*)p->second<<"]")
 		return ((TRNSCT_SM*)p->second);
@@ -311,13 +316,16 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 //**********************************************************************************
 void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm){
 
-	DEBOUT_UTIL("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << " ["<<_trnsctSm<<"]")
+	DEBOUT_UTIL("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] ["<<_trnsctSm<<"] call_oset ["<<this)
 	char t_key[512];
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode, _branch.c_str());
 
-	_trnsctSm->setId(t_key);
+	string stmp = t_key;
+	DEBOUT_UTIL("CALL_OSET::addTrnsctSm", stmp)
 
-	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(t_key, _trnsctSm));
+	_trnsctSm->setId(stmp);
+
+	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(stmp, _trnsctSm));
 
 	// special for client sm Ack
 	if (_method.substr(0,3).compare("ACK") == 0 && _sode == SODE_TRNSCT_CL ){

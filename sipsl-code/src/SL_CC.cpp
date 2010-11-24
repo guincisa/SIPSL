@@ -177,7 +177,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		else {
 			call_oset = comap->getCALL_OSET_YDerived(callids,modulus);
 			if (call_oset != 0x0){
-				DEBINF("SL_CC::parse", "B SIDE call_oset exists")
+				DEBINF("SL_CC::parse", "B SIDE call_oset exists "<< call_oset)
 
 				//to SV if Request to CL if Reply
 				if (_mess->getReqRepType() == REQSUPP) {
