@@ -1,0 +1,21 @@
+#!/bin/bash 
+let COUNTER=COUNTER+1 
+while [  $COUNTER -lt 10 ]; do
+EXIST=`ps -eo args| grep SIPSL|grep -v grep`
+echo $EXIST
+if [[ "$EXIST" != "./SIPSL_svn" ]] 
+	then
+	exit
+fi
+    sleep 60
+    echo "Rotate"
+    cp log3 log4
+    cp log2 log3
+    cp log1 log2
+    cp log log1
+    cp empty log
+#let COUNTER=COUNTER+1 
+#echo
+done
+         
+
