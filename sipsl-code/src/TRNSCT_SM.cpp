@@ -260,6 +260,25 @@ ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_2);
 
 	//**************************************
+	//Action 3: TIMER_S
+	CREATEMESSAGE(timer_s, _message, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
+	//ack_timer->setSourceMessage(_message->getSourceMessage());
+	//TODO
+	//Modify to 503 Server Unavailable
+	SysTime afterT;
+	GETTIME(afterT);
+	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_S;
+	timer_s->setFireTime(firetime);
+	timer_s->setTypeOfInternal(TYPE_OP);
+	timer_s->setTypeOfOperation(TYPE_OP_TIMER_ON);
+	timer_s->setOrderOfOperation("TIMER_S");
+	timer_s->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(timer_s);
+	SingleAction sa_3 = SingleAction(timer_s);
+	action->addSingleAction(sa_3);
+
+
+	//**************************************
 	//Local state 1
 	DEBOUT("TRSNCT_INV_SV::act_0_1_inv_sv move to state 1","")
 	_sm->State = 1;

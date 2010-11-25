@@ -1,96 +1,110 @@
 format 73
 
 pseudostatecanvas 128055 pseudostate_ref 141239 // initial
-   xyz 502 25 2000
+   xyz 642 11 2000
 end
 statecanvas 128183 state_ref 195895 // 1
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 557 208 2000 40 29
+  xyzwh 643 168 2000 40 29
 end
 note 128567 "ACTION:
 TRY(SM,NTW)
 INVITE_A(SM,ALO)
+ALARM for state (TIMER_S)
 
 OverallState_SV = OS_PROCEEDING"
-  xyzwh 690 37 2006 197 85
+  xyzwh 793 10 2006 219 101
 statecanvas 128823 state_ref 196023 // 2
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
   xyzwh 652 403 2000 40 29
 end
 note 129719 "ACTION:
 DIALOG_101(SV,NTW) or RING_180(SV,NTW)
+CLEAR ALARM TIMER_S
+ALARM for state (TIMER_S)
 
 OverallState_SV = OS_PROCEEDING
 
 set STOREMESS_1_2 = message
 "
-  xyzwh 904 159 2000 237 109
+  xyzwh 882 207 2000 237 109
 statecanvas 129975 state_ref 196151 // 3
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 369 381 2000 40 29
+  xyzwh 345 398 2000 40 29
 end
 note 130487 "ACTION
 200_OK(SV,NTW)
 ALARM for 200OK(SV,NTW)
+CLEAR ALARM TIMER_S
+ALARM for state (TIMER_S)
 OverallState_SV = OS_COMPLETED
 
 STOREMESS_1_3=200OK"
-  xyzwh 178 129 2000 277 103
+  xyzwh 37 72 2000 211 135
 statecanvas 130743 state_ref 196279 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 891 637 2000 40 29
+  xyzwh 765 719 2000 40 29
 end
 note 130999 "ACTION;
 nothing
 the alarm is not retriggered"
-  xyzwh 837 495 2000 299 113
+  xyzwh 415 731 2000 299 113
 note 132151 "ACTION:
+CLEAR ALARM TIMER_S
+ALARM for state (TIMER_S)
 send STOREMESS_1_2(SV,NTW)"
   xyzwh 889 380 2000 245 61
-statecanvas 133047 state_ref 202807 // 5
+statecanvas 133047 state_ref 202807 // 99
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 344 675 2000 40 29
+  xyzwh 404 549 2000 40 29
 end
 note 133303 "clear call ACK is not arriving anymore"
-  xyzwh 318 709 2000 203 45
+  xyzwh 176 655 2000 203 45
 note 134711 "ACTION: 3_3a
 resend STOREMESSAGE_1_3
 clear alarm 200ok
 ALARM 200OK(SV,NTW)
+CLEAR ALARM TIMER_S
+ALARM for state (TIMER_S)
 "
-  xyzwh 134 259 2006 197 73
+  xyzwh 28 250 2006 199 101
 note 134967 "ACTION:
 resend 200OK
 ALARM 200OK
-resend ++"
-  xyzwh 15 537 2000 191 75
+resend ++
+CLEAR ALARM TIMER_S
+ALARM for state (TIMER_S)"
+  xyzwh 6 535 2000 199 101
 note 135735 "ACTION:
-TRY(SM,NTW)"
-  xyzwh 749 131 2000 131 47
+TRY(SM,NTW)
+CLEAR ALARM TIMER_S
+ALARM for state (TIMER_S)"
+  xyzwh 826 125 2000 181 71
 transitioncanvas 128311 transition_ref 225335 // INVITE_A(NTW,SV)
+  decenter_end 224
   
-  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 535.5 86.5 2001 to ref 128183
+  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 684.5 27 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129207 transition_ref 225591 // DIALOG_101(CL,SV) or RING_180(CL,SV)
   decenter_begin 523
   
-  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 620 290 2001 to ref 128823
+  from ref 128183 z 2001 label "DIALOG_101(CL,SV) or RING_180(CL,SV)" xyz 692.5 257 2001 to ref 128823
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130103 transition_ref 225719 // 200_OK(ALO,SV)
   
-  from ref 128183 z 2001 label "200_OK(ALO,SV)" xyz 501 297 2001 to ref 129975
+  from ref 128183 z 2001 label "200_OK(ALO,SV)" xyz 462 247.5 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 130871 transition_ref 225847 // TIMER 200OK & OVERALL = CONFIRMED
   
-  from ref 129975 z 2001 label "TIMER 200OK & OVERALL = CONFIRMED" xyz 526 564 2001 to ref 130743
+  from ref 129975 z 2001 label "TIMER 200OK & OVERALL = CONFIRMED" xyz 604 552 2001 to ref 130743
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131383 transition_ref 225975 // 200_OK(ALO,SV)
   
-  from ref 128823 z 2001 label "200_OK(ALO,SV)" xyz 534 393 2001 to ref 129975
+  from ref 128823 z 2001 label "200_OK(ALO,SV)" xyz 522 402 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131767 transition_ref 232503 // INVITE_A(NTW,SV)
@@ -102,28 +116,45 @@ transitioncanvas 131767 transition_ref 232503 // INVITE_A(NTW,SV)
 end
 transitioncanvas 132535 transition_ref 232631 // TIMER 200OK & OVERALL <> CONFIRMED & resend < MAX
   
-  from ref 129975 z 2001 label "TIMER 200OK & OVERALL <> CONFIRMED & resend < MAX" xyz 40 418 2001 to point 182 475
-  line 132663 z 2001 to point 189 527
+  from ref 129975 z 2001 label "TIMER 200OK & OVERALL <> CONFIRMED & resend < MAX" xyz 16.5 431 2001 to point 159 468
+  line 132663 z 2001 to point 164 519
   line 132791 z 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 133175 transition_ref 232759 // TIMER 200OK & OVERALL <> CONFIRMED & resend >= MAX
+  decenter_begin 550
   
-  from ref 129975 z 2001 label "TIMER 200OK & OVERALL <> CONFIRMED & resend >= MAX" xyz 64 660 2001 to ref 133047
+  from ref 129975 z 2001 label "TIMER 200OK & OVERALL <> CONFIRMED & resend >= MAX" xyz 269 606.5 2001 to ref 133047
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 134071 transition_ref 261175 // INVITE_A(NTW,SV)
   
-  from ref 129975 z 2001 label "INVITE_A(NTW,SV)" xyz 279 355 2001 to point 176 346
-  line 134455 z 2001 to point 172 379
+  from ref 129975 z 2001 label "INVITE_A(NTW,SV)" xyz 255 372 2001 to point 152 363
+  line 134455 z 2001 to point 148 396
   line 134327 z 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 135223 transition_ref 267703 // INVITE_A(NTW,SV)
   
-  from ref 128183 z 2001 label "INVITE_A(NTW,SV)" xyz 616 162 2001 to point 722 228
-  line 135351 z 2001 to point 719 172
+  from ref 128183 z 2001 label "INVITE_A(NTW,SV)" xyz 688 127 2001 to point 808 188
+  line 135351 z 2001 to point 805 132
   line 135479 z 2001 to ref 128183
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 138167 transition_ref 288311 // expired TIMER_S
+  
+  from ref 129975 z 2001 label "expired TIMER_S" xyz 510.5 448 3000 to point 512 468
+  line 138295 z 2001 to ref 133047
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 138423 transition_ref 288439 // <transition>
+  
+  from ref 128823 z 2001 to ref 133047
+  write_horizontally default show_definition default drawing_language default
+end
+transitioncanvas 138551 transition_ref 288567 // <transition>
+  
+  from ref 128183 z 2001 to ref 133047
   write_horizontally default show_definition default drawing_language default
 end
 line 128695 -_-_
@@ -132,11 +163,11 @@ line 130359 -_-_
   from ref 129719 z 2002 to ref 129207
 line 131255 -_-_
   from ref 130871 z 2002 to ref 130999
-line 131511 -_-_
+line 131511 -_-_ decenter_begin 955
   from ref 130487 z 2002 to ref 131383
 line 132407 -_-_
   from ref 132151 z 2004 to ref 131895
-line 133431 -_-_
+line 133431 -_-_ decenter_end 476
   from ref 133303 z 2002 to ref 133175
 line 133943 -_-_
   from ref 130487 z 2002 to ref 130103

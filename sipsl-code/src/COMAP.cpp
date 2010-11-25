@@ -531,7 +531,7 @@ void COMAP::purgeDOA(void){
 		for( p_comap_mm = comap_mm[mod].begin(); p_comap_mm != comap_mm[mod].end() ; ++p_comap_mm){
 			DEBY
 			call_oset = (CALL_OSET*)p_comap_mm->second;
-			DEBOUT("COMAP::purgeDOA", call_oset)
+			DEBOUT("COMAP::purgeDOA", call_oset << "] DOA state ["<<getDoa(call_oset,mod) )
 			if ( getDoa(call_oset,mod) == DOA_CONFIRMED){
 
 				//check time

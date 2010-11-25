@@ -29,6 +29,8 @@
 //#define TIMER_1_mc 500000
 
 #define TIMER_1 500000
+#define TIMER_S 5000000
+
 //To remove alarms put this timer
 //#define TIMER_1 500000000
 

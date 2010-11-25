@@ -1,6 +1,6 @@
 format 73
 "SIPSL"
-  revision 106
+  revision 107
   modified_by 55 "guic"
 
 
@@ -985,6 +985,11 @@ correct timer interaction with client state machine"
 	transition 267703 "INVITE_A(NTW,SV)"
 	  on state_ref 195895 // 1
 	end
+
+	transition 288567 "<transition>"
+	  on state_ref 202807 // 99
+	  external 
+	end
       end
 
       stateaction 134839
@@ -1000,6 +1005,11 @@ correct timer interaction with client state machine"
 	transition 232503 "INVITE_A(NTW,SV)"
 	  on state_ref 196023 // 2
 	end
+
+	transition 288439 "<transition>"
+	  on state_ref 202807 // 99
+	  external 
+	end
       end
 
       state 196151 "3"
@@ -1013,20 +1023,26 @@ correct timer interaction with client state machine"
 	end
 
 	transition 232759 "TIMER 200OK & OVERALL <> CONFIRMED & resend >= MAX"
-	  on state_ref 202807 // 5
+	  on state_ref 202807 // 99
 	  external 
 	end
 
 	transition 261175 "INVITE_A(NTW,SV)"
 	  on state_ref 196151 // 3
 	end
+
+	transition 288311 "expired TIMER_S"
+	  on state_ref 202807 // 99
+	  external 
+	end
       end
 
       state 196279 "4"
       end
 
-      state 202807 "5"
+      state 202807 "99"
       end
+
     end
 
     state 209335 "SM_CL_INVITE"
