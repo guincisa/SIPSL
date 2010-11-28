@@ -597,6 +597,13 @@ inline bool S_AttReply::compare_it(string _reply) {
         correct = true;
         return true;
     }
+    else if (_reply.compare("Server Unavailable") == 0){
+            reply = "Server Unavailable";
+            replyID = SU_RESPONSE;
+            parsed = true;
+            correct = true;
+            return true;
+    }
     else {
     	return false;
     }
@@ -643,6 +650,12 @@ void S_AttReply::setReplyID(int _replyID){
         replyID = TRY_RESPONSE;
         contentReady = false;
     }
+    if (_replyID == SU_RESPONSE){
+        reply = "SU";
+        replyID = SU_RESPONSE;
+        contentReady = false;
+    }
+
 }
 string &S_AttReply::getReply(void){
 
@@ -679,6 +692,14 @@ void S_AttReply::setReply(string _reply){
         correct = true;
         contentReady = false;
     }
+    if (_reply.compare("SU") == 0){
+        reply = "SU";
+        replyID = SU_RESPONSE;
+        parsed = true;
+        correct = true;
+        contentReady = false;
+    }
+
 }
 string S_AttReply::copyReply(void){
 

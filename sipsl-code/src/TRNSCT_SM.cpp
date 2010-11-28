@@ -262,9 +262,16 @@ ACTION* act_0_1_inv_sv(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 3: TIMER_S
 	CREATEMESSAGE(timer_s, _message, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
+	SipUtil.genQuickReplyFromInvite(_message, timer_s, "SIP/2.0 503 Server Unavailable");
 	//ack_timer->setSourceMessage(_message->getSourceMessage());
 	//TODO
 	//Modify to 503 Server Unavailable
+	//SIP/2.0 503 Server Unavailable
+	//Via: <via>
+	//From: A
+	//To: B
+	//Call-ID: <call id>
+	//CSeq: 1 INVITE
 	SysTime afterT;
 	GETTIME(afterT);
 	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_S;
@@ -619,6 +626,7 @@ ACTION* act_3_5_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Purge it
+	//TODO needed ?
 	_message->unSetLock();
 	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
 
@@ -675,6 +683,40 @@ ACTION* act_3_3e_inv_sv(SM* _sm, MESSAGE* _message) {
 //	_message->unSetLock();
 //	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
 	return ((ACTION*) 0x0);
+}
+//*****************************************************************
+// 503 from Alarm state machine timeout
+//*****************************************************************
+bool pre_N_99_inv_sv(SM* _sm, MESSAGE* _message){
+
+	DEBOUT("TRSNCT_INV_SV pre_N_99_inv_sv",_message)
+
+	if (_message->getReqRepType() == REPSUPP
+		&& _message->getHeadSipReply().getReply().getCode() == SU_503
+		&& _message->getDestEntity() == SODE_TRNSCT_SV
+		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
+		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
+			DEBOUT("SM_V5 pre_N_99_inv_sv","true")
+			return true;
+	}
+	else {
+		DEBOUT("SM pre_N_99_inv_sv","false")
+		return false;
+	}
+}
+ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
+
+
+	//Send temination signal to client machine
+	DEBOUT("TRSNCT_INV_SV act_N_99_inv_sv",_message)
+
+	DEBOUT("SM act_N_99_inv_sv move to state 99","")
+	_sm->State = 99;
+
+	DEBOUT("SM act_N_99_inv_sv move OverallState_SV","OS_TERMINATED")
+	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
+
+
 }
 
 ////*****************************************************************

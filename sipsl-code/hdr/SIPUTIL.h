@@ -38,5 +38,7 @@ class SIPUTIL {
 		void genBInvitefromAInvite(MESSAGE* gtor, MESSAGE* getd, SUDP* sudp);
 
 		void genTryFromInvite(MESSAGE* invite, MESSAGE* etry);
+		void genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header);
+
 
 };

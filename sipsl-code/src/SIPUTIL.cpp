@@ -238,4 +238,16 @@ void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 	_etry->dumpVector();
 
 }
+void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header){
+
+	DEBOUT("Reply",_header)
+		_qrep->setHeadSipReply(_header);
+
+	_qrep->dropHeader("Contact:");
+
+	genASideReplyFromRequest(_invite, _qrep);
+	_qrep->compileMessage();
+	_qrep->dumpVector();
+
+}
 

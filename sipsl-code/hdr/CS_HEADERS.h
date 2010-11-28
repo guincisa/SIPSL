@@ -38,6 +38,7 @@ using namespace std;
 #define DIAEST_RESPONSE 54
 #define DECLINE_RESPONSE 55
 #define BUSY_HERE 56
+#define SU_RESPONSE 57
 
 #define TRYING_100 100
 #define DIALOGE_101 101
@@ -45,6 +46,7 @@ using namespace std;
 #define RINGING_180 180
 #define OK_200 200
 #define BUSYH_486 486
+#define SU_503 503
 
 
 
