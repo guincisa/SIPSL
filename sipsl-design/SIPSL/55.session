@@ -1,15 +1,14 @@
-window_sizes 1280 753 213 1061 677 0
+window_sizes 1553 886 231 1316 812 0
 diagrams
   statediagram_ref 167607 // SM_CL_INVITE
     950 585 68 2 12 0
   active  statediagram_ref 161079 // SM_SV_INVITE
-    1061 677 100 2 0 639
+    1061 677 100 2 384 304
 end
 show_stereotypes
 selected 
 package_ref 129 // SIPSL
 open
-  state_ref 128002 // SM_SL_CL
   state_ref 149431 // SM_CL_V3
   state_ref 195767 // SM_SV_INVITE
   state_ref 209335 // SM_CL_INVITE
