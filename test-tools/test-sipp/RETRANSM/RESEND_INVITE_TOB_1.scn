@@ -1,0 +1,6 @@
+SIPSL sends INVITE
+B does not reply for 10 seconds
+SIPSL resends INVITE
+
+sipp -sf RETRINVITE_B_10sec.xml -p 5062
+sipp -sf c.xml -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062

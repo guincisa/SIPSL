@@ -1,0 +1,9 @@
+SIPSL sends INVITE to B
+B does not reply for 80 seconds
+SIPSL sends cancel to B
+and 503 to A
+
+the scripts need to be updated 
+
+sipp -sf RETRINVITE_B_80sec.xml -p 5062
+sipp -sf c.xml -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062

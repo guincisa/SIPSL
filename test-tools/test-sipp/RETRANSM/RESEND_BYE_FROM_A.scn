@@ -1,0 +1,11 @@
+b does not reply to the BYE from SIPSL
+so SIPSL does not send back the 200ok to A
+A resends then BYE
+SIPSL ignores the retransmission
+
+Variant: SIPSL may send the 200ok immediately to close the session with A?
+
+
+
+sipp -sf RETRBYE_B_never.xml  -p 5062
+sipp -sf c.xml -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062

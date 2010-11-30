@@ -1,0 +1,1 @@
+A does not send the ack to SIPSL and SIPSL request it by resending the 200ok

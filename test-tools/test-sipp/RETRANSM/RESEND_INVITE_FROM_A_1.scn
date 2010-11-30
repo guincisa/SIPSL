@@ -1,0 +1,7 @@
+This scenario loses the 100 try from SIPSL and A resend the INVITE many times
+SIPSL should resend the 100TRY or the provisional reply if available or the 200 if available
+
+This script has to be changed
+
+sipp -sf s.xml -p 5062
+sipp -sf RETRINVITE_A.xml -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
