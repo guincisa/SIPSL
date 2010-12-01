@@ -1,0 +1,4 @@
+The 200ok that the sipsl sends for the bye is lost
+A resend the bye.
+SIPSL resends 200ok.
+
