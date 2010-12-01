@@ -174,7 +174,6 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
 void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 
 	DEBINF("COMAP::setCALL_OSET inserting ", _callId_X << "] [" << _call_oset << " comap [" << _mod)
-	DEBOUT("CALL_OSET ACCESS COMAP::setCALL_OSET", _call_oset)
 
 	//need to look for call_oset in call_oset_doa_state
 	//need to look for call_id_x in comap_mm
@@ -204,11 +203,9 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 	if (p_doamap != call_oset_doa_state[_mod].end()){
 		if ((int)(p_doamap->second) != DOA_DELETED) {
 			RELLOCK(&unique[_mod],"unique"<<_mod);
-			DEBY
 			DEBASSERT("COMAP::setCALL_OSET invalid call_oset")
 			return;
 		}else {
-			DEBY
 			call_oset_doa_state[_mod].erase(p_doamap);
 			call_oset_ttl[_mod].erase(p_ttl);
 		}
@@ -227,7 +224,6 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 	//call_y2x just delete it
 	p_cally2x = call_id_y2x[_mod].find(_callId_X);
 	if (p_cally2x != call_id_y2x[_mod].end()){
-		DEBY
 		call_id_y2x[_mod].erase(p_cally2x);
 	}
 
@@ -239,7 +235,6 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 	}
 	call_oset_msg_cnt[_mod].insert(pair<CALL_OSET*, int>(_call_oset, 0));
 	RELLOCK(&unique[_mod],"unique"<<_mod);
-	DEBY
 	return;
 }
 //**********************************************************************************
@@ -257,7 +252,6 @@ void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
 	GETLOCK(&unique[_mod],"unique"<<_mod);
 	p_cally2x = call_id_y2x[_mod].find(_callId_Y);
 	if (p_cally2x != call_id_y2x[_mod].end()){
-		DEBY
 		call_id_y2x[_mod].erase(p_cally2x);
 	}
 	call_id_y2x[_mod].insert(pair<string, string>(_callId_Y, _callId_X));
@@ -332,10 +326,8 @@ int COMAP::getCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 
 	p_msgcnt = call_oset_msg_cnt[_mod].find(_call_oset);
 	if (p_msgcnt != call_oset_msg_cnt[_mod].end()){
-		DEBY
 		i = (int)p_msgcnt->second;
 	}else {
-		DEBY
 		i = -1;
 	}
 	RELLOCK(&unique[_mod],"unique"<<_mod);
@@ -358,14 +350,11 @@ void COMAP::incCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 
 	p_msgcnt = call_oset_msg_cnt[_mod].find(_call_oset);
 	if (p_msgcnt != call_oset_msg_cnt[_mod].end()){
-		DEBY
 		i = (int)p_msgcnt->second;
 		i++;
 		call_oset_msg_cnt[_mod].erase(p_msgcnt);
 		call_oset_msg_cnt[_mod].insert(pair<CALL_OSET*, int>(_call_oset, i));
-		DEBY
 	}else {
-		DEBY
 	}
 	return;
 
@@ -390,9 +379,7 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 		DEBOUT("COMAP::decCALL_OSET_MsgCnt new value", _call_oset << "] [" << i)
 		call_oset_msg_cnt[_mod].erase(p_msgcnt);
 		call_oset_msg_cnt[_mod].insert(pair<CALL_OSET*, int>(_call_oset, i));
-		DEBY
 	}else {
-		DEBY
 	}
 
 	//if no messages inside and in doa_requested then switch to doa_confirmed
@@ -434,7 +421,6 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 //**********************************************************************************
 int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, int _mod){
 
-	DEBOUT("CALL_OSET ACCESS COMAP::use_CALL_OSET_SL_CO_call", _call_oset)
 	DEBOUT("COMAP::use_CALL_OSET_SL_CO_call", _call_oset << "] [" << _message->getKey() << " comap [" << _mod)
 
 	if (_mod >= COMAPS){
@@ -477,15 +463,12 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 	// if getDoa(_call_oset,_mod) == NOT_DOA)
 	DEBOUT("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
 	incCALL_OSET_MsgCnt(_call_oset,_mod);
-	DEBY
 	RELLOCK(&unique[_mod],"unique"<<_mod);
 	_call_oset->getSL_CO()->call(_message);
 	GETLOCK(&unique[_mod],"unique"<<_mod);
-	DEBY
 	decCALL_OSET_MsgCnt(_call_oset,_mod);
 	RELLOCK(&unique[_mod],"unique"<<_mod);
 
-	DEBY
 	return 0;
 //
 //	RELLOCK(&unique[_mod],"unique"<<_mod);
@@ -551,16 +534,12 @@ void COMAP::purgeDOA(void){
 
 					DEBOUT("COMAP::purgeDOA time expired", call_oset)
 					setDoa(call_oset, DOA_DELETED,mod);
-					DEBY
 
 					todel_cx.push((string)p_comap_mm->first);
 
-					DEBY
 					call_oset_doa_state[mod].erase(call_oset);
 
-					DEBY
 					call_id_y2x[mod].erase(call_oset->getCallId_Y());
-					DEBY
 					call_oset_msg_cnt[mod].erase(call_oset);
 
 					DELPTR(call_oset,"call_oset");
@@ -570,10 +549,8 @@ void COMAP::purgeDOA(void){
 				}
 
 			}else{
-				DEBY
 			}
 		}
-		DEBY
 		string tops;
 		while (!todel_cx.empty()){
 			tops = todel_cx.top();
@@ -581,7 +558,6 @@ void COMAP::purgeDOA(void){
 			comap_mm[mod].erase(tops);
 			todel_cx.pop();
 		}
-		DEBY
 		RELLOCK(&unique[mod],"unique"<<mod);
 	}
 

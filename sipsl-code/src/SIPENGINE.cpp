@@ -125,12 +125,9 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 
 	//Check if Request or Reply
 	int tl = _mess->getTotLines();
-	DEBSIP("SIPENGINE::parse",_mess->getLine(0) << "] [" <<_mess->getKey())
-
-	DEBSIP("SIPENGINE::parse tot lines",tl)
+	DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getLine(0) << "] [" <<_mess->getKey())
 
 	int type = _mess->getReqRepType();
-	DEBSIP("SIPENGINE::parse request type",type)
 
 	if (type == REQSUPP) {
 
@@ -147,20 +144,17 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 			return;
 
 		} else {
-			DEBDEV("SIPENGINE::parse transport->upCall", _mess)
-			//sl_cc->p_w(_mess);
 			transport->upCall(_mess, (SL_CC*)sl_cc);
 		}
 	}
 	else if ( type == REPSUPP) {
 
 		DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply().getContent())
-		int reply_id = _mess->getHeadSipReply().getReply().getReplyID();
-		int code = _mess->getHeadSipReply().getReply().getCode();
-		DEBSIP("SIPENGINE::reply type and code", reply_id << " " << code)
+//		int reply_id = _mess->getHeadSipReply().getReply().getReplyID();
+//		int code = _mess->getHeadSipReply().getReply().getCode();
+//		DEBSIP("SIPENGINE::reply type and code", reply_id << " " << code)
 
 		//All replies must be considered
-		DEBDEV("SIPENGINE::parse transport->upCall", _mess)
 		transport->upCall(_mess, (SL_CC*)sl_cc);
 //		sl_cc->p_w(_mess);
 
