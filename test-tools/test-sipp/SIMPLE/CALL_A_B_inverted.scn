@@ -1,2 +1,5 @@
 A calls B
 B closes the call
+
+sipp -sf BYEBKWDi_c.xml -rsa grog:5060 -p 5061 -m 1 grog:5062
+sipp -sf BYEBKWD_s.xml -d 5000 -p 5062
