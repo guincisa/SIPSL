@@ -1,1 +1,3 @@
 A does not send the ack to SIPSL and SIPSL request it by resending the 200ok
+sipp -sf ACKNOTSENT_A.xml -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062

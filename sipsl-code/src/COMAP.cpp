@@ -268,7 +268,7 @@ void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
 //**********************************************************************************
 void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
 
-	DEBY
+	DEBOUT("COMAP::setDoa",_call_oset << "] ["<<_doa )
 
 	if (_mod >= COMAPS){
 		DEBASSERT("invalid comap index "<<_mod)
@@ -444,15 +444,17 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 	GETLOCK(&unique[_mod],"unique"<<_mod);
 
 	//Check the call_oset doa
-	if (getDoa(_call_oset, _mod) == DOA_DELETED || getDoa(_call_oset, _mod) == DOA_CONFIRMED) {
+	//if (getDoa(_call_oset, _mod) == DOA_DELETED || getDoa(_call_oset, _mod) == DOA_CONFIRMED) {
+	if (getDoa(_call_oset, _mod) == DOA_DELETED) {
 		DEBOUT("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa deleted", _call_oset )
 		_message->setDestEntity(SODE_KILL);
 		RELLOCK(&unique[_mod],"unique"<<_mod);
 		return -1;
 	}
-	if (getDoa(_call_oset,_mod) == DOA_REQUESTED && _message->getGenEntity() == SODE_NTWPOINT) {
-
+	//if (getDoa(_call_oset,_mod) == DOA_REQUESTED  && _message->getGenEntity() == SODE_NTWPOINT) {
+	if ((getDoa(_call_oset,_mod) == DOA_REQUESTED || getDoa(_call_oset, _mod) == DOA_CONFIRMED) && _message->getGenEntity() == SODE_NTWPOINT) {
 		//Accept ntw and reset the timer for deletion
+		//TODO switch back to DOA_REQUESTED??
 
 		map<CALL_OSET*, unsigned long long int>::iterator p_ttl;
 		p_ttl = call_oset_ttl[_mod].find(_call_oset);

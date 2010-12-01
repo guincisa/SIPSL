@@ -2,6 +2,7 @@ b does not reply to the BYE from SIPSL
 so SIPSL does not send back the 200ok to A
 A resends then BYE
 SIPSL ignores the retransmission
+SIPSL resend the BYE using alarm
 
 Variant: SIPSL may send the 200ok immediately to close the session with A?
 

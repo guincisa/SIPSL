@@ -1640,24 +1640,6 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	return action;
 
 }
-//pre_1_2_bye_sv
-//bool pre_200ok_from_alo(SM* _sm, MESSAGE* _message){
-//
-//	DEBOUT("SM pre_200ok_from_alo",_message)
-//
-//	if (_message->getReqRepType() == REPSUPP
-//		&& _message->getHeadSipReply().getReply().getCode() == OK_200
-//		&& _message->getDestEntity() == SODE_TRNSCT_SV
-//		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-//			DEBOUT("SM pre_200ok_from_alo","true")
-//			return true;
-//		}
-//		else {
-//			DEBOUT("SM pre_200ok_from_alo","false")
-//			return false;
-//		}
-//}
-//act_1_2_bye_sv
 ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_200ok_bye_to_a called",_message)
@@ -1691,14 +1673,6 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 	return action;
 
 }
-//act_1_1_bye_sv
-//ACTION* act_null(SM* _sm, MESSAGE* _message) {
-//
-//	DEBOUT("SM act_1_1_bye_sv called",_message)
-//
-//	return 0x0;
-//}
-//act_2_2_bye_sv
 ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_resend_200ok_to_a called",_message)
