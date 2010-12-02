@@ -101,9 +101,9 @@ VALO::~VALO(void){
 		ctxt_store.erase(p);
 	}
 
-	p = ctxt_store.find("CSeqB2BINIVTE");
+	p = ctxt_store.find("CSeqB2BINVITE");
 	if (p != ctxt_store.end()){
-		DELPTR((int*)p->second,"CSeqB2BINIVTE");
+		DELPTR((int*)p->second,"CSeqB2BINVITE");
 		ctxt_store.erase(p);
 	}
 

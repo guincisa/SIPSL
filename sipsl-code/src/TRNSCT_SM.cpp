@@ -461,6 +461,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 2: copy the 200 OK and send to ALARM
 	//This will be sent to A which will resend the ACK
+	//TODO This leaks
 	CREATEMESSAGE(ack_timer, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_TRNSCT_SV)
 	//source is correct
 	//ack_timer->setSourceMessage(_message->getSourceMessage());
@@ -504,6 +505,13 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
+	// This message arrives from alarm and is copy of STOREDMESSAGE_1_3
+	//deletion here is forbidden
+	if(!_message->getLock()){
+		_message->setLock();
+		_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+	}
+
 	//**************************************
 	//Action 1: Forward stored 200 OK to A
 	if( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 == MainMessage){
@@ -515,6 +523,7 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 2: copy the 200 OK and send to ALARM
 	//This will be sent to A which will resend the ACK
+	//TODO this message leaks
 	CREATEMESSAGE(ack_timer, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_TRNSCT_SV)
 	//source is correct
 	//ack_timer->setSourceMessage(_message->getSourceMessage());
@@ -660,8 +669,10 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Purge it
 	//TODO needed ?
-	_message->unSetLock();
-	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+	if(_message->getLock()){
+		_message->unSetLock();
+		_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+	}
 
 	DEBOUT("SM act_200ok_to_a move to state 5","")
 	_sm->State = 5;
@@ -699,6 +710,12 @@ bool pre_200ok_from_alarm_confirm(SM* _sm, MESSAGE* _message){
 ACTION* act_null(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRSNCT_INV_SV act_3_3d_inv_sv",_message)
+
+	//no action the unlock message will be deleted by the calloset
+	if(_message->getLock()){
+		_message->unSetLock();
+		_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+	}
 
 	//**************************************
 	//Nothing
@@ -1574,7 +1591,10 @@ ACTION* act_resend_ack_to_b(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 	DEBMESSAGE("SECOND ACK B", __message)
 
-	PURGEMESSAGE(_message)
+	if(!_message->getLock()){
+		_message->setLock();
+		_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+	}
 
 	return action;
 

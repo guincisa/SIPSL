@@ -542,7 +542,7 @@ void COMAP::purgeDOA(void){
 					call_id_y2x[mod].erase(call_oset->getCallId_Y());
 					call_oset_msg_cnt[mod].erase(call_oset);
 
-					DELPTR(call_oset,"call_oset");
+					DELPTR(call_oset,"CALL_OSET");
 
 				}else{
 					DEBOUT("COMAP::purgeDOA not time to delete ", call_oset)

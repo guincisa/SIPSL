@@ -86,32 +86,37 @@ int main(int argc, const char* argv[]) {
 		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
 		MainMessage->setValid(1);
 
-		SUDP mystack;
+		NEWPTR(SUDP*, mystack, SUDP(),"SUDP")
+		//SUDP* mystack ;
 
-		TRNSPRT transport;
+		NEWPTR(TRNSPRT*, transport, TRNSPRT(),"TRNSPRT")
 
 		//Second stage engine: Call Control
-		SL_CC sl_cc(SL_CCTH);
-		sl_cc.linkTransport(&transport);
-		sl_cc.linkSUDP(&mystack);
+		NEWPTR(SL_CC*, sl_cc, SL_CC(SL_CCTH),"SL_CC")
+		//SL_CC sl_cc(SL_CCTH);
+		sl_cc->linkTransport(transport);
+		sl_cc->linkSUDP(mystack);
 
 		//First stage engine: Lazy parser
-		SIPENGINE gg(SIPENGINETH);
-		gg.setSL_CC(&sl_cc);
-		gg.linkSUDP(&mystack);
+		NEWPTR(SIPENGINE*, gg, SIPENGINE(SIPENGINETH), "SIPENGINE")
+//		SIPENGINE gg(SIPENGINETH);
+		gg->setSL_CC(sl_cc);
+		gg->linkSUDP(mystack);
 
-		DOA doa(&sl_cc, DOA_CLEANUP, 0);
-		doa.init();
+		NEWPTR(DOA*, doa, DOA(sl_cc, DOA_CLEANUP, 0),"DOA")
+//		DOA doa(&sl_cc, DOA_CLEANUP, 0);
+		doa->init();
 
 		//Alarm setup
 		//sec , nsec
-		ALMGR alarm(&sl_cc, 0, 10000000);
-		alarm.initAlarm();
+		NEWPTR(ALMGR*, alarm, ALMGR(sl_cc, 0, 10000000), "ALMGR")
+//		ALMGR alarm(&sl_cc, 0, 10000000);
+		alarm->initAlarm();
 
 
 
-		mystack.init(5060, &gg, &doa, "sipsl.gugli.com", &alarm);
-		mystack.start();
+		mystack->init(5060, gg, doa, "sipsl.gugli.com", alarm);
+		mystack->start();
 
 		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
 		int res = pthread_mutex_lock(&gu);

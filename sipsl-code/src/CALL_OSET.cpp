@@ -161,7 +161,7 @@ CALL_OSET::~CALL_OSET(void){
 	}
 	if (alo != 0x0){
 		DEBY
-		DELPTR((VALO*)alo, "ALO");
+		DELPTR((VALO*)alo, "VALO");
 	}
 
 	//TODO if the message is a source message for a message which in ALARM
