@@ -402,8 +402,10 @@ void SL_CO::call(MESSAGE* _message){
 			else {
 				// SL_CO not in correct state
 				DEBOUT("Unexpected message ignored", _message)
-				//DEBASSERT("OVERALL STATE ERROR")
-				//Message is purged here...
+				if(_message->getLock()){
+					DEBASSERT("Unexpected message to be ignored found locked")
+				}
+				PURGEMESSAGE(_message)
 				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, _message->getModulus());
 				return;
 			}

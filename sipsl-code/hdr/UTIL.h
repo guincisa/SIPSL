@@ -115,6 +115,13 @@ class ThreadWrapper {
 
 #define GETTIME(mytime) gettimeofday(&mytime.tv, &mytime.tz);
 
+//HANDLER - Reference to Pointer
+#define MKHANDMESSAGE(pointer,reference) \
+		MESSAGE* pointer;\
+		MESSAGE*& reference = pointer;
+
+#define MESSAGEH MESSAGE*&
+
 #undef NEWPTR
 #define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
 	m1 = new (nothrow) m2;\
@@ -137,8 +144,8 @@ class ThreadWrapper {
 #define TRYCATCH(m) try { m; } catch (exception& e) { DEBASSERT("Exception" << e.what())}
 #undef PURGEMESSAGE
 #define PURGEMESSAGE(m1)  { \
-	if (m1 == MainMessage){DEBASSERT("Puring MainMessage")}\
-	if (m1->getLock()) {DEBASSERT("Puring a locaked message")}\
+	if (m1 == MainMessage){DEBASSERT("Purging MainMessage")}\
+	if (m1->getLock()) {DEBASSERT("Purging a locked message")}\
 	map<const MESSAGE*, MESSAGE*>::iterator p; \
 	pthread_mutex_lock(&messTableMtx);\
 	p = globalMessTable.find(m1);\

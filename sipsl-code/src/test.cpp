@@ -126,13 +126,76 @@ int main(int argc, const char* argv[]) {
 		return 0;
 	}
 	else {
-		cout << "test" << endl;
+		cout << "test 1 Via" << endl;
 
 		string s = "SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bKb0a1b1f81282750073027419;rport";
 
 		C_HeadVia c = C_HeadVia(s);
 
 		DEBOUT("Test",c.getC_AttVia().getViaParms().findRvalue("branch"));
+
+//		cout << "test 2 Message Handle" << endl;
+//
+//		string empty="EMPTY";
+//		sockaddr_inX echoClntAddr;
+//		SysTime inTime;\
+//		GETTIME(inTime);\
+//		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
+//		MainMessage->setValid(1);
+//
+//		//Nuovo messaggio h
+//		MESSAGE* h;
+//		CREATENEWMESSAGE_EXT(h, empty, 0, echoClntAddr, SODE_NTWPOINT)
+//		cout << "Nuovo h " << h << endl;
+//
+//		//copio il puntatore al messaggio
+//		MESSAGE* k = h;
+//		cout << "Copio k " << k << endl;
+//
+//		//cancello h
+//		PURGEMESSAGE(h)
+//		cout << "Purgo h " << h << endl;
+//		cout << "Invalido k " << k << endl;
+
+		//ma k ha adesso un indirizzo invalido
+
+		/////////////////////////////////////////////////////////////////
+		cout << "test 2 Message Handle" << endl;
+
+		string empty="EMPTY";
+		sockaddr_inX echoClntAddr;
+		SysTime inTime;
+		GETTIME(inTime);
+		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
+		MainMessage->setValid(1);
+
+		string empty2="EMPTY\nEMPTY";
+		MKHANDMESSAGE(y,_2_z)
+		CREATENEWMESSAGE_EXT(y, empty2, 0, echoClntAddr, SODE_NTWPOINT)
+		cout << "Handler _2_z " << _2_z << endl;
+
+		MESSAGEH _2_k = _2_z;
+		cout << "Handler _2_k " << _2_k << endl;
+
+		cout << "Access message using _2_z (getTotLines)" << _2_z->getTotLines() << endl;
+
+		//Since _k is also a reference to _z
+		//also _k will get modified by PURGEMESSAGE
+		PURGEMESSAGE(_2_z)
+		cout << "Purged Handler _2_z " << _2_z << endl;
+
+		//Adesso _k punta anche esso al MainMessage!!!
+		cout << "Handler is not purged but pints now to MainMessage_2_k " << _2_k << endl;
+		//Will assert here!!!
+		//cout << "Access message using _2_k (getTotLines)" << _2_k->getTotLines() << endl;
+
+		cout << "test 3 Message Handle" << endl;
+
+		MKHANDMESSAGE(m,_2_m)
+		m = 0x0;
+		cout << "_2_m " << _2_m << endl;
+
+
 
 	}
 
