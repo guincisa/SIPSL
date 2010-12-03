@@ -160,6 +160,7 @@ int main(int argc, const char* argv[]) {
 		//ma k ha adesso un indirizzo invalido
 
 		/////////////////////////////////////////////////////////////////
+		{
 		cout << "test 2 Message Handle" << endl;
 
 		string empty="EMPTY";
@@ -194,7 +195,42 @@ int main(int argc, const char* argv[]) {
 		MKHANDMESSAGE(m,_2_m)
 		m = 0x0;
 		cout << "_2_m " << _2_m << endl;
+		}
+		/////////////////////////////////////////////////////////////////
+		{
+		cout << "test 4 Message Handle" << endl;
 
+		string empty="EMPTY";
+		sockaddr_inX echoClntAddr;
+		SysTime inTime;
+		GETTIME(inTime);
+		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
+		MainMessage->setValid(1);
+
+		string empty2="EMPTY\nEMPTY";
+		MESSAGE* y;
+		MESSAGE** _2_z = &y;
+		CREATENEWMESSAGE_EXT(y, empty2, 0, echoClntAddr, SODE_NTWPOINT)
+		cout << "Handler _2_z " << *_2_z << endl;
+
+		MESSAGE** _2_k = _2_z;
+		cout << "Handler _2_k " << *_2_k << endl;
+
+		cout << "Access message using _2_z (getTotLines)" << (*_2_z)->getTotLines() << endl;
+
+		//Since _k is also a reference to _z
+		//also _k will get modified by PURGEMESSAGE
+		PURGEMESSAGE((*_2_z))
+		cout << "Purged Handler _2_z " << *_2_z << endl;
+
+		//Adesso _k punta anche esso al MainMessage!!!
+		cout << "Handler is not purged but pints now to MainMessage_2_k " << *_2_k << endl;
+		//Will assert here!!!
+		cout << "Access message using _2_k (getTotLines)" << (*_2_k)->getTotLines() << endl;
+
+		cout << "test 4 Message Handle" << endl;
+
+		}
 
 
 	}
