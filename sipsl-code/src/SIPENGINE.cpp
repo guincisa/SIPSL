@@ -112,6 +112,40 @@ void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
 //**********************************************************************************
 //**********************************************************************************
 void SIPENGINE::parse_s(MESSAGE* _mess) {
+	//Message from network cannot be managed since main buffer is full
+	//Cases:
+	// INVITE
+	// Replies
+	// ACK
+	// BYE
+	//
+	//  INVITE
+	//  - new invite
+	//  - retransmission
+	// New INVITE
+	// resend a 503 Server Unavailable
+	// do not allocate any call_oset
+	//
+	// Retransmission INVITE
+	// The call_oset may already exist, two possibilities
+	// 1. Ignore the INVITE and let the call continue
+	// 2. Reply 503 Server Unavailable and trigger the deletion of the call_oset
+	//    also send a CANCEL to B
+	//
+	// Reply from B (100 Trying, 180 Ringing, 200 Ok
+	// 1. Send a CANCEL to B
+	//    Send a 503 Server Unavailable to A
+	//    Trigger deletion of call_oset
+	//
+	// ACK from A, BYE from A or B
+	// 1. Reply 503 Server Unavailable and trigger the deletion of the call_oset
+	//    also send a CANCEL to B
+	//
+	//
+
+
+
+
 	DEBOUT("SIPENGINE::parse_s", _mess)
 	RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
 	return;
