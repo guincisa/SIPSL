@@ -284,8 +284,9 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	timer_s->setOrderOfOperation("TIMER_S");
 	timer_s->setLock();
 	_sm->getSL_CO()->call_oset->insertLockedMessage(timer_s);
-	SingleAction sa_3 = SingleAction(timer_s);
-	action->addSingleAction(sa_3);
+	//TIMER S implement!
+//	SingleAction sa_3 = SingleAction(timer_s);
+//	action->addSingleAction(sa_3);
 
 
 	//**************************************
@@ -564,13 +565,20 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_200ok_to_a called",_message)
+	DEBOUT("TRSNCT_INV_SV act_200ok_resendto_a called",_message)
+
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	//INVITE from A
 	//resend stored 200ok
 	//reset alarm
 
-	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+	//This INVITE LEAKS
+	//in this way it will be deleted by calloset
+	_message->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+
 
 	//**************************************
 	//Action 1: Forward stored 200 OK to A

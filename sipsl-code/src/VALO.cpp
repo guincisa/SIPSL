@@ -187,7 +187,8 @@ void VALO::onInvite(MESSAGE* _message){
 	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message ));
 	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
 
-	sl_cc->p_w(message);
+	bool ret = sl_cc->p_w(message);
+	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
 
 }
 void VALO::onAck(MESSAGE* _message){
@@ -297,7 +298,9 @@ void VALO::onAck(MESSAGE* _message){
 
 
 	DEBMESSAGE("New outgoing b2b message", newack)
-	sl_cc->p_w(newack);
+	bool ret = sl_cc->p_w(newack);
+	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+
 }
 void VALO::onAckNoTrnsct(MESSAGE* _message){
 
@@ -455,7 +458,9 @@ void VALO::onBye(MESSAGE* _message){
 		message->dumpVector();
 		//done in the client sm
 		//message->setLock();
-		sl_cc->p_w(message);
+		bool ret = sl_cc->p_w(message);
+		DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+
 
 	}
 	else if (_message->getRequestDirection() == SODE_BKWD ) {
@@ -500,7 +505,9 @@ void VALO::onBye(MESSAGE* _message){
 		//done in client sm
 		//message->setLock();
 		//call_oset->insertLockedMessage(message);
-		sl_cc->p_w(message);
+		bool ret = sl_cc->p_w(message);
+		DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+
 	}
 
 }
@@ -585,7 +592,9 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	ok_x->dumpVector();
 
-	sl_cc->p_w(ok_x);
+	bool ret = sl_cc->p_w(ok_x);
+	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+
 
 }
 

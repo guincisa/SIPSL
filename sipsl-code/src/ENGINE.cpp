@@ -161,6 +161,7 @@ SUDP* ENGINE::getSUDP(void){
 //**********************************************************************************
 bool ENGINE::p_w(MESSAGE* _m) {
 
+	DEBOUT("bool ENGINE::p_w(MESSAGE* _m) ", _m)
     GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
     bool r = sb.put(_m);
     DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
@@ -169,6 +170,7 @@ bool ENGINE::p_w(MESSAGE* _m) {
     }
     pthread_cond_signal(&(sb.condvar));
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+    DEBY
     return r;
 
 }

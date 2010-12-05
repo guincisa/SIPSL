@@ -129,6 +129,7 @@ void ALMGR::alarmer(void){
 
 		DEBCODE(jumper ++;
 		if (jumper == 1000){
+			DUMPMESSTABLE
 			DEBOUT("ALARM tables pq", alarm_pq.size() << "] time_alarm_mumap [" << time_alarm_mumap.size() << "] cidbranch_alm_map [" << cidbranch_alm_map.size())
 		    jumper = 0;
 		})
@@ -175,7 +176,9 @@ void ALMGR::alarmer(void){
 
 							RELLOCK(&mutex,"mutex");
 
-							sl_cc->p_w(_tmpMess);
+							DEBY
+							bool ret = sl_cc->p_w(_tmpMess);
+							DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
 						}
 					}
 					//The alarm if inactive may carry a deleted message, don't access it

@@ -405,8 +405,10 @@ void SL_CO::call(MESSAGE* _message){
 				if(_message->getLock()){
 					DEBASSERT("Unexpected message to be ignored found locked")
 				}
+				int t = _message->getModulus();
 				PURGEMESSAGE(_message)
-				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, _message->getModulus());
+				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, t);
+				RELLOCK(&mutex,"mutex");
 				return;
 			}
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
@@ -541,6 +543,16 @@ void SL_CO::actionCall_SV(ACTION* action){
 		MESSAGE* _tmpMessage = actionList.top().getMessage();
 		DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
 
+//		if (_tmpMessage->getDestEntity() == SODE_KILL){
+//			if (_tmpMessage->getLock()){
+//				DEBASSERT("Locked message directed to SODE_KILL")
+//			}
+//			else{
+//				PURGEMESSAGE(_tmpMessage)
+//			}
+//			continue;
+//		}
+
 		if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 			//To ALO
 			DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
@@ -597,6 +609,16 @@ void SL_CO::actionCall_CL(ACTION* action){
 
 		DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage)
 
+//		if (_tmpMessage->getDestEntity() == SODE_KILL){
+//			if (_tmpMessage->getLock()){
+//				DEBASSERT("Locked message directed to SODE_KILL")
+//			}
+//			else{
+//				PURGEMESSAGE(_tmpMessage)
+//			}
+//			continue;
+//		}
+
 		if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 			// send message to ALO
 			// 200OK B side
@@ -618,7 +640,8 @@ void SL_CO::actionCall_CL(ACTION* action){
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 			DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
 			DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
-			((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+			bool ret = ((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+			DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
 
 			actionList.pop();
 			continue;
@@ -645,7 +668,9 @@ void SL_CO::actionCall_CL(ACTION* action){
 			}
 			else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
 				DEBMESSAGESHORT("SL_CO::call action is internal send to some SM", _tmpMessage )
-				((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+				bool ret = ((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+				DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+
 			}
 			else {
 				DEBASSERT("SL_CO client operation type inconsistency")

@@ -344,6 +344,7 @@ bool SPINC::put(MESSAGE* _message){
 
 	if ( ts == l && dim != 0){
 		DEBOUT("SPINC::put", "ts "<<ts<<"l "<<l)
+		RELLOCK(&writemu, "writemu")
 		return false;
 	}
 	if(BUFF[ts] != MainMessage){
@@ -428,6 +429,7 @@ bool SPINS::put(MESSAGE* _message){
 
 	if ( ts == l && dim != 0){
 		DEBOUT("SPINS::put", "ts "<<ts<<"l "<<l)
+		RELLOCK(&writemu, "writemu")
 		return false;
 	}
 	if(BUFF[ts] != MainMessage){
