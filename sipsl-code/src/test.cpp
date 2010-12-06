@@ -103,6 +103,8 @@ int main(int argc, const char* argv[]) {
 		gg->setSL_CC(sl_cc);
 		gg->linkSUDP(mystack);
 
+		sl_cc->linkSipEngine(gg);
+
 		NEWPTR(DOA*, doa, DOA(sl_cc, DOA_CLEANUP, 0),"DOA")
 //		DOA doa(&sl_cc, DOA_CLEANUP, 0);
 		doa->init();

@@ -189,6 +189,12 @@ bool ENGINE::p_w_s(MESSAGE* _m) {
     return r;
 
 }
+void ENGINE::lockBuffer(void){
+	sb.lockBuffer();
+}
+void ENGINE::unLockBuffer(void){
+	sb.unLockBuffer();
+}
 
 //**********************************************************************************
 //**********************************************************************************

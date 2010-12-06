@@ -20,7 +20,7 @@ The creation is done in different ways:
 \subsection{Deletion}
 
 \subsubsection{Rule: ALARM MANAGER}
- Messages sent to ALARM MAMAGER are always locked. If the CALL_OSET is deleted the desctructor checks if the message is a TYPE\_OP and cancel alarm before deleting it.
+ Messages sent to ALARM MAMAGER are always locked. If the CALL\_OSET is deleted the desctructor checks if the message is a TYPE\_OP and cancel alarm before deleting it.
  ALARM MANAGER will never touch a message in a non active ALARM.
  
  A message which cancel alarm is never locked and deleted after clearing alarm.
@@ -369,14 +369,60 @@ resp. to TU |  1xx             V                     |
 
                      INVITE client transaction
 
-end{verbatim}
+\end{verbatim}
 
 
-\section{Call\_OSet lifecyle}
+\section{Call\_Oset lifecyle}
 
 The deletion of the call\_oset is triggered using:
 \begin{verbatim}
 	COMAP::setDoaRequested(call_oset, message->getModulus());
 \end{verbatim} 
+
+The DOA will start a timer and delete the object after the timer expires. If a new message arrives in call\_oset, the timer is reset.
+
+\section{Overload behaviour}
+
+\subsection{Overload of SL\_CC circular buffer}
+
+SL\_CC get messages from: SIPENGINE, SL\_CC itself and VALO.
+\subsubsection{From SIPENGINE}
+The SIPENGINE can send up:
+\begin{itemize}
+\item New request for non existent call\_set (INVITE for a new call)
+\item Request (new or retransmission) for an existing call\_oset (INVITE, ACK, BYE)
+\item Response 
+\end{itemize}
+
+When a message arrives at SIPENGINE and SL\_CC denies the access to the buffer, the message must
+be passed to the SL\_CC::p\_w\_s.
+
+The SL\_CC::p\_w\_s will:
+
+\begin{itemize}
+\item Look for a call\_oset (x side or y side) if not found the message
+will send back a Server Unavailable and purge the original request
+\item If the call\_oset X (Y) side is found the call must be cancelled also on B (A) side, call\_oset is set to DOA\_REQUESTED
+and in terminate overall state and the final state of any existing state machine (sv and cl).
+\end{itemize}
+
+If also the SL\_CC::p\_w\_s is overloaded the message must be discarded without any action.
+
+\subsubsection{From VALO or SL\_CC}
+
+The message must be passed to p\_w\_s, cancel to A and B and trigger the deltion of the call\_oset.
+
+\subsubsection{SL\_CC}
+If the queue is overloaded the SIPENGINE also must not accept any new request.
+How to decide when to unlock?
+
+
+
+
+
+\subsection{CANCEL}
+\begin{verbatim}
+http://tools.ietf.org/html/rfc3261#section-9
+\end{verbatim}
 
 \end{document}

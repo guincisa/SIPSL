@@ -35,10 +35,15 @@ class SL_CC : public ENGINE {
         SL_CC(int);
         COMAP* getCOMAP(void);
         void linkTransport(TRNSPRT*);
+        void linkSipEngine(ENGINE*);
+
 
     private:
 
         TRNSPRT* transport;
+
+        ENGINE *sipengine;
+
 
     	COMAP* comap;
 

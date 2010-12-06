@@ -82,6 +82,10 @@ class ENGINE {
 #endif
 
 		ENGINE(int numthreads);
+
+	    void lockBuffer(void);
+	    void unLockBuffer(void);
+
 };
 
 

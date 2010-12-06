@@ -316,6 +316,7 @@ SPINC::SPINC(){
 	s = 0;
 	l = -1;
 	DIM = 0;
+	forcedState = false;
 
     pthread_mutex_init(&readmu, NULL);
     pthread_mutex_init(&writemu,NULL);
@@ -331,7 +332,30 @@ SPINC::SPINC(){
 
 
 }
+
+void SPINC::lockBuffer(void){
+	GETLOCK(&dimmu, "dimmu")
+	forcedState = true;
+	RELLOCK(&dimmu, "dimmu")
+	return;
+}
+
+void SPINC::unLockBuffer(void){
+	GETLOCK(&dimmu, "dimmu")
+	forcedState = false;
+	RELLOCK(&dimmu, "dimmu")
+	return;
+}
+
 bool SPINC::put(MESSAGE* _message){
+
+	GETLOCK(&dimmu, "dimmu")
+	if (forcedState == true){
+		RELLOCK(&dimmu, "dimmu")
+		return false;
+	}
+	RELLOCK(&dimmu, "dimmu")
+
 
 	GETLOCK(&writemu, "writemu")
 	int ts = s+1;
@@ -401,6 +425,8 @@ SPINS::SPINS(){
 	s = 0;
 	l = -1;
 	DIM = 0;
+	forcedState = false;
+
 
     pthread_mutex_init(&readmu, NULL);
     pthread_mutex_init(&writemu,NULL);
@@ -416,7 +442,30 @@ SPINS::SPINS(){
 
 
 }
+void SPINS::lockBuffer(void){
+	GETLOCK(&dimmu, "dimmu")
+	forcedState = true;
+	RELLOCK(&dimmu, "dimmu")
+	return;
+}
+
+void SPINS::unLockBuffer(void){
+	GETLOCK(&dimmu, "dimmu")
+	forcedState = false;
+	RELLOCK(&dimmu, "dimmu")
+	return;
+}
+
+
 bool SPINS::put(MESSAGE* _message){
+
+	GETLOCK(&dimmu, "dimmu")
+	if (forcedState == true){
+		RELLOCK(&dimmu, "dimmu")
+		return false;
+	}
+	RELLOCK(&dimmu, "dimmu")
+
 
 	GETLOCK(&writemu, "writemu")
 	int ts = s+1;

@@ -106,6 +106,8 @@ class SPINC {
 	    pthread_mutex_t dimmu;
 	    pthread_mutex_t buffmu[SPINC_MOD];
 
+	    bool forcedState;
+
 	public:
 	    bool put(MESSAGE*);
 	    MESSAGE* get(void);
@@ -115,12 +117,17 @@ class SPINC {
 	    pthread_mutex_t condvarmutex;
 	    pthread_cond_t condvar;
 
+	    void lockBuffer(void);
+
+	    void unLockBuffer(void);
 
 };
 class SPINS {
 
 	private:
 		MESSAGE* BUFF[ARR_SHORT];
+
+		bool forcedState;
 
 		int l, s, DIM;
 
@@ -137,6 +144,10 @@ class SPINS {
 
 	    pthread_mutex_t condvarmutex;
 	    pthread_cond_t condvar;
+
+	    void lockBuffer(void);
+
+	    void unLockBuffer(void);
 
 
 };

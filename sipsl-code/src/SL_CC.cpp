@@ -112,11 +112,23 @@ COMAP* SL_CC::getCOMAP(void){
 void SL_CC::linkTransport(TRNSPRT* _transport){
 	transport = _transport;
 }
+void SL_CC::linkSipEngine(ENGINE* _sipengine){
+	sipengine = _sipengine;
+}
 //**********************************************************************************
 //**********************************************************************************
 void SL_CC::parse_s(MESSAGE* _mess) {
+
 	DEBOUT("SL_CC::parse_s", _mess)
 	RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+
+	//Unlock it at the end
+	sipengine->lockBuffer();
+
+	//Trick because the parse below does an unlock...
+	GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+	parse(_mess);
+	sipengine->unLockBuffer();
 	return;
 }
 //**********************************************************************************
