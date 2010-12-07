@@ -160,7 +160,7 @@ CALL_OSET::~CALL_OSET(void){
 		DEBY
 	}
 	if (alo != 0x0){
-		DEBY
+		DEBOUT("Delete ALO", alo)
 		DELPTR((VALO*)alo, "VALO");
 	}
 
@@ -359,6 +359,9 @@ void SL_CO::call(MESSAGE* _message){
 		if (_message->getLock()){
 			_message->unSetLock();
 			call_oset->removeLockedMessage(_message);
+
+			_message->setTypeOfInternal(TYPE_MESS);
+
 		}else {
 			DEBASSERT("Break rule: a message from alarm is found unlocked")
 		}
@@ -427,6 +430,10 @@ void SL_CO::call(MESSAGE* _message){
 
 			}
 			else {
+
+				//_message must be deleted using an action and sode_kill
+				DEBASSERT("Action cannot be null anymore")
+
 				DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 				//Delete only if not locked
 				if (!_message->getLock()){
@@ -511,6 +518,10 @@ void SL_CO::call(MESSAGE* _message){
 
 		}
 		else {
+			//_message must be deleted using an action and sode_kill
+			DEBASSERT("Action cannot be null anymore")
+
+
 			//TODO we mayn receive an alarm that is expired
 			//so the sm has ignored it
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
@@ -543,20 +554,37 @@ void SL_CO::actionCall_SV(ACTION* action){
 		MESSAGE* _tmpMessage = actionList.top().getMessage();
 		DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
 
-//		if (_tmpMessage->getDestEntity() == SODE_KILL){
-//			if (_tmpMessage->getLock()){
-//				DEBASSERT("Locked message directed to SODE_KILL")
-//			}
-//			else{
-//				PURGEMESSAGE(_tmpMessage)
-//			}
-//			continue;
-//		}
+		if (_tmpMessage->getDestEntity() == SODE_KILL){
+			if (_tmpMessage->getLock()){
+				DEBASSERT("Locked message directed to SODE_KILL")
+			}
+			else{
+				PURGEMESSAGE(_tmpMessage)
+			}
+		}
 
-		if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+		else if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
+			if (_tmpMessage->getLock()){
+				DEBASSERT("Locked message directed to SODE_KILL")
+			}
+			else{
+				DEBOUT("SL_CO::actionCall_SV setDoaRequested",call_oset)
+				((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
+				PURGEMESSAGE(_tmpMessage)
+			}
+		}
+
+		//TODO this leaks ?
+
+
+		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 			//To ALO
 			DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
 			call_oset->getALO()->call(_tmpMessage);
+			if(!_tmpMessage->getLock()){
+				DEBOUT("Message coming back form ALO not locked, deleted", _tmpMessage)
+				PURGEMESSAGE(_tmpMessage)
+			}
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
 			//server sm sending to client sm should not happen
@@ -571,7 +599,14 @@ void SL_CO::actionCall_SV(ACTION* action){
 		} else if (_tmpMessage->getTypeOfInternal() == TYPE_OP){
 
 			if ( _tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_ON){
+
 				DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#");
+				// Rule : timer on must be locked
+				if (!_tmpMessage->getLock()){
+					DEBOUT("Message to alarm found unlocked", _tmpMessage)
+					DEBASSERT("Message to alarm found unlocked")
+				}
+
 				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
 
 			} else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_OFF){
@@ -609,23 +644,36 @@ void SL_CO::actionCall_CL(ACTION* action){
 
 		DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage)
 
-//		if (_tmpMessage->getDestEntity() == SODE_KILL){
-//			if (_tmpMessage->getLock()){
-//				DEBASSERT("Locked message directed to SODE_KILL")
-//			}
-//			else{
-//				PURGEMESSAGE(_tmpMessage)
-//			}
-//			continue;
-//		}
+		if (_tmpMessage->getDestEntity() == SODE_KILL){
+			if (_tmpMessage->getLock()){
+				DEBASSERT("Locked message directed to SODE_KILL")
+			}
+			else{
+				PURGEMESSAGE(_tmpMessage)
+			}
+		}
+		else if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
+			if (_tmpMessage->getLock()){
+				DEBASSERT("Locked message directed to SODE_KILL")
+			}
+			else{
+				DEBOUT("SL_CO::actionCall_CL setDoaRequested",call_oset)
+				((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
+				PURGEMESSAGE(_tmpMessage)
+			}
+		}
 
-		if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 			// send message to ALO
 			// 200OK B side
 			DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 			call_oset->getALO()->call(_tmpMessage);
-			actionList.pop();
-			continue;
+			if(!_tmpMessage->getLock()){
+				DEBOUT("Message coming back form ALO not locked, deleted", _tmpMessage)
+				PURGEMESSAGE(_tmpMessage)
+			}
+//			actionList.pop();
+//			continue;
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 
@@ -634,17 +682,17 @@ void SL_CO::actionCall_CL(ACTION* action){
 			DEBDEV("Send to trnasport", _tmpMessage)
 			call_oset->getTRNSPRT()->downCall(_tmpMessage, call_oset);
 
-			actionList.pop();
-			continue;
+//			actionList.pop();
+//			continue;
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 			DEBOUT("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
 			DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
 			bool ret = ((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 			DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
-
-			actionList.pop();
-			continue;
+//
+//			actionList.pop();
+//			continue;
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_OP ){ // to alarm
 
@@ -652,7 +700,11 @@ void SL_CO::actionCall_CL(ACTION* action){
 
 			if ( _tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_ON){
 				DEBOUT("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#");
-				DEBY
+
+				if (!_tmpMessage->getLock()){
+					DEBOUT("Message to alarm found unlocked", _tmpMessage)
+					DEBASSERT("Message to alarm found unlocked")
+				}
 				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
 				DEBY
 
@@ -662,9 +714,14 @@ void SL_CO::actionCall_CL(ACTION* action){
 				string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->getOrderOfOperation()+ "#";
 				DEBOUT("SL_CO::cancel alarm, callid", callid_alarm)
 				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
+
 				if(!_tmpMessage->getLock()){
 					PURGEMESSAGE(_tmpMessage)
+				}else {
+					DEBOUT("Rule break timer off message found locked",_tmpMessage)
+					DEBASSERT("Rule break timer off message found locked")
 				}
+
 			}
 			else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
 				DEBMESSAGESHORT("SL_CO::call action is internal send to some SM", _tmpMessage )

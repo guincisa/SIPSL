@@ -148,6 +148,7 @@ void SIPENGINE::parse_s(MESSAGE* _mess) {
 
 	DEBOUT("SIPENGINE::parse_s", _mess)
 	RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+	PURGEMESSAGE(_mess)
 	return;
 }
 

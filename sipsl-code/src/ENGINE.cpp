@@ -182,7 +182,7 @@ bool ENGINE::p_w_s(MESSAGE* _m) {
     bool r = rej.put(_m);
     DEBOUT("ENGINE::p_w_s put returned",_m << " "<<r)
     if (!r){
-    	DEBASSERT("ENGINE::p_w_s put returned false")
+    	DEBOUT("ENGINE::p_w_s put returned false", _m)
     }
     pthread_cond_signal(&(rej.condvar));
     RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
@@ -190,9 +190,11 @@ bool ENGINE::p_w_s(MESSAGE* _m) {
 
 }
 void ENGINE::lockBuffer(void){
+	DEBOUT("ENGINE::lockBuffer",this)
 	sb.lockBuffer();
 }
 void ENGINE::unLockBuffer(void){
+	DEBOUT("ENGINE::unLockBuffer",this)
 	sb.unLockBuffer();
 }
 

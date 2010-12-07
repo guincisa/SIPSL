@@ -208,7 +208,11 @@ void SUDP::listen() {
     			bool r = engine->p_w(message);
     			if (!r){
     				DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
-    				engine->p_w_s(message);
+    				bool rr = engine->p_w_s(message);
+    				if (!rr){
+        				DEBOUT("SUDP::listen() message rejected by s queue",message)
+        				PURGEMESSAGE(message)
+    				}
     			}
         	}else {
         		DEBERROR("SUDP::listen() could not allocate memory for incoming message")

@@ -38,6 +38,7 @@ using namespace std;
 
 #define SODE_NOPOINT 0
 #define SODE_KILL 9999
+#define SODE_KILLDOA 9
 #define SODE_FWD 1
 #define SODE_BKWD 2
 #define SODE_ALOPOINT 3

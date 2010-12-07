@@ -178,7 +178,18 @@ ACTION* SM::event(MESSAGE* _event){
 			return act;
 		}
 	}
+
+	//Default event is delete the message
+	//TODO not nice
+	if(act == 0x0){
+		NEWPTR2(act, ACTION(),"ACTION")
+			_event->setDestEntity(SODE_KILL);
+			_event->setGenEntity(SODE_TRNSCT_SV);
+			SingleAction sa_1 = SingleAction(_event);
+			act->addSingleAction(sa_1);
+	}
 	RELLOCK(&mutex,"mutex");
+
 	return(act);
 }
 //**********************************************************************************
@@ -237,6 +248,8 @@ bool pre_invite_from_a(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 
+	//_message riciclato
+
 	DEBOUT("TRSNCT_INV_SV::act_invite_to_alo", _message)
 	DEBOUT("TRSNCT_INV_SV::act_invite_to_alo", _message->getHeadSipRequest().getContent())
 
@@ -245,6 +258,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: INVITE A is forwarded to ALO
 	//_message changes its dest and gen
+	//To ALO is a single action so I don't lock it here
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_SV);
 	_message->setTypeOfInternal(TYPE_MESS);
@@ -253,6 +267,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 2: 100 TRY is created and sent to NTW
+	//This message is stored so it is meant for more thing so I have to lock it
 	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
 	SipUtil.genTryFromInvite(_message, etry);
 	etry->setTypeOfInternal(TYPE_MESS);
@@ -264,6 +279,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 3: TIMER_S
+	// A timer must be always sent locked
 	CREATEMESSAGE(timer_s, _message, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
 	SipUtil.genQuickReplyFromInvite(_message, timer_s, "SIP/2.0 503 Server Unavailable");
 	//ack_timer->setSourceMessage(_message->getSourceMessage());
@@ -309,6 +325,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 
+
 	//***********************************************************
 	//RETRANSMIT THE TRY
 	//***********************************************************
@@ -326,9 +343,11 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 
 	//**************************************
-	//Local state 1
-	DEBOUT("TRSNCT_INV_SV::act_resend_try_to_a move to state 1","")
-	_sm->State = 1;
+	//Action 2: Send this message to gc
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	SingleAction sa_2 = SingleAction(_message);
+	action->addSingleAction(sa_2);
 
 	return action;
 
@@ -355,6 +374,8 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 }
 //*****************************************************************
 ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
+
+	//_message riciclato
 
 	DEBOUT("TRSNCT_INV_SV::act_provreply_to_a",  _message)
 	DEBOUT("TRSNCT_INV_SV::act_provreply_to_a",  _message->getHeadSipReply().getContent() )
@@ -386,10 +407,6 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	DEBOUT("TRSNCT_INV_SV::act_provreply_to_a move OverallState_SV","OS_PROCEEDING")
 	_sm->getSL_CO()->OverallState_SV = OS_PROCEEDING;
 
-	//OVERALL
-	//TODO
-	//cancel 64*T1 timer
-
 	return action;
 }
 //*****************************************************************
@@ -405,9 +422,12 @@ ACTION* act_resend_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2);
 	action->addSingleAction(sa_1);
 
-	//OVERALL
-	//TODO
-	//cancel 64*T1 timer
+	//**************************************
+	//Action 2: Delete this one
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	SingleAction sa_2 = SingleAction(_message);
+	action->addSingleAction(sa_2);
 
 	return action;
 
@@ -506,13 +526,6 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	// This message arrives from alarm and is copy of STOREDMESSAGE_1_3
-	//deletion here is forbidden
-	if(!_message->getLock()){
-		_message->setLock();
-		_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
-	}
-
 	//**************************************
 	//Action 1: Forward stored 200 OK to A
 	if( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 == MainMessage){
@@ -555,6 +568,16 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 //	SingleAction sa_3 = SingleAction(ack_timer_clear);
 //	action->addSingleAction(sa_3);
 
+
+	//**************************************
+	//Action 4: Delete this one
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	SingleAction sa_4 = SingleAction(_message);
+	action->addSingleAction(sa_4);
+
+
+
 	return action;
 
 	//OVERALL
@@ -573,12 +596,6 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 	//INVITE from A
 	//resend stored 200ok
 	//reset alarm
-
-	//This INVITE LEAKS
-	//in this way it will be deleted by calloset
-	_message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
-
 
 	//**************************************
 	//Action 1: Forward stored 200 OK to A
@@ -617,6 +634,13 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 	ack_timer_clear->setOrderOfOperation("TIMER_G");
 	SingleAction sa_3 = SingleAction(ack_timer_clear);
 	action->addSingleAction(sa_3);
+
+	//**************************************
+	//Action 4: Delete this one
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	SingleAction sa_4 = SingleAction(_message);
+	action->addSingleAction(sa_4);
 
 	return action;
 
@@ -674,13 +698,15 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRSNCT_INV_SV act_200ok_to_a called no actions",_message)
 
-	//**************************************
-	//Purge it
-	//TODO needed ?
-	if(_message->getLock()){
-		_message->unSetLock();
-		_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
-	}
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	//TODO CLEAR CALL ACK not arriving
+
+	//Kill this message
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	SingleAction sa_1 = SingleAction(_message);
+	action->addSingleAction(sa_1);
 
 	DEBOUT("SM act_200ok_to_a move to state 5","")
 	_sm->State = 5;
@@ -691,8 +717,8 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 	//TODO
 	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 
-	//TODO CLEAR CALL ACK not arriving
-	return ((ACTION*) 0x0);
+
+	return (action);
 }
 //*****************************************************************
 // 200 OK from Alarm overall state confirmed
@@ -717,19 +743,20 @@ bool pre_200ok_from_alarm_confirm(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_null(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_3_3d_inv_sv",_message)
+	DEBOUT("TRSNCT_INV_SV act_null",_message)
 
-	//no action the unlock message will be deleted by the calloset
-	if(_message->getLock()){
-		_message->unSetLock();
-		_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
-	}
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	//**************************************
-	//Nothing
-//	_message->unSetLock();
-//	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
-	return ((ACTION*) 0x0);
+	//TODO CLEAR CALL ACK not arriving
+
+	//Kill this message
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	SingleAction sa_1 = SingleAction(_message);
+	action->addSingleAction(sa_1);
+
+	return (action);
+
 }
 //*****************************************************************
 //ACTION* act_3_3e_inv_sv(SM* _sm, MESSAGE* _message) {
@@ -764,9 +791,16 @@ bool pre_N_99_inv_sv(SM* _sm, MESSAGE* _message){
 }
 ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
 
-
 	//Send temination signal to client machine
 	DEBOUT("TRSNCT_INV_SV act_N_99_inv_sv",_message)
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	SingleAction sa_1 = SingleAction(_message);
+	action->addSingleAction(sa_1);
 
 	DEBOUT("SM act_N_99_inv_sv move to state 99","")
 	_sm->State = 99;
@@ -775,7 +809,7 @@ ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
 	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
 
 	//TODO finish here
-
+	return(action);
 
 }
 //**********************************************************************************
@@ -1008,22 +1042,20 @@ ACTION* act_terminate_cl(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRNSCT_INV_CL act_terminate_cl *** incomplete *** ",_message)
 
-	//**************************************
-	//trigger call_oset deletion:
-	_message->unSetLock();
-	_sm->getSL_CO()->call_oset->removeLockedMessage(_message);
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	_message->setDestEntity(SODE_KILLDOA);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	SingleAction sa_1 = SingleAction(_message);
+	action->addSingleAction(sa_1);
+
 
 	DEBOUT("SM act_terminate_cl move OverallState_SV to","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_CL = OS_TERMINATED;
-
-
-	//TODO this leaks ?
-	DEBOUT("TRNSCT_INV_CL act_terminate_cl setDoaRequested","")
-	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
-
+	DEBOUT("SM act_terminate_cl move to",99)
 	_sm->State = 99;
 
-	return 0x0;
+	return (action);
 
 }
 //*****************************************************************
@@ -1077,7 +1109,7 @@ ACTION* act_clear_invite_alarm(SM* _sm, MESSAGE* _message) {
 // 101 DE B - 180 RING B
 //*****************************************************************
 //pre_1_3_inv_cl
-bool pre_provrep_from(SM* _sm, MESSAGE* _message){
+bool pre_provrep_from_b(SM* _sm, MESSAGE* _message){
 
 	DEBOUT("SM_CL pre_provrep_from",_message)
 
@@ -1184,8 +1216,8 @@ ACTION* act_200ok_inv_to_alo(SM* _sm, MESSAGE* _message) {
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->setTypeOfInternal(TYPE_MESS);
 	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
-	_message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+//	_message->setLock();
+//	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 	SingleAction sa_2 = SingleAction(_message);
 	action->addSingleAction(sa_2);
 
@@ -1395,7 +1427,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_1_2CL.action = &act_clear_invite_alarm;
 
 	//from 1 or from 2
-	PA_INV_1_3CL.predicate = &pre_provrep_from;
+	PA_INV_1_3CL.predicate = &pre_provrep_from_b;
 	PA_INV_1_3CL.action = &act_provrep_to_sv;
 
 	//from 1 for 2 or 3
@@ -1409,7 +1441,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 	PA_INV_4_4bCL.action = &act_resend_ack;
 
 	//Not all 180 are sent back
-	PA_INV_4_4cCL.predicate = &pre_provrep_from;
+	PA_INV_4_4cCL.predicate = &pre_provrep_from_b;
 	PA_INV_4_4cCL.action = &act_null;
 
 	resend_invite = 1;
@@ -1552,7 +1584,7 @@ ACTION* act_ack_to_b(SM* _sm, MESSAGE* _message) {
 	DEBMESSAGE("FIRST ACK B", _message)
 
 	//**************************************
-	//Action 1: ack is to ALO
+	//Action 1: ack is from ALO
 	_message->setDestEntity(SODE_NTWPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->setTypeOfInternal(TYPE_MESS);
@@ -1599,10 +1631,15 @@ ACTION* act_resend_ack_to_b(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 	DEBMESSAGE("SECOND ACK B", __message)
 
-	if(!_message->getLock()){
-		_message->setLock();
-		_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
-	}
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_CL);
+	SingleAction sa_2 = SingleAction(_message);
+	action->addSingleAction(sa_2);
+
+//	if(!_message->getLock()){
+//		_message->setLock();
+//		_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+//	}
 
 	return action;
 
@@ -1704,6 +1741,9 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_resend_200ok_to_a called",_message)
+
+	_message->setLock();
+	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	//**************************************
@@ -1901,8 +1941,8 @@ ACTION* act_200ok_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	_message->setDestEntity(SODE_ALOPOINT);
 	_message->setGenEntity(SODE_TRNSCT_CL);
 	_message->setTypeOfInternal(TYPE_MESS);
-	_message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
+//	_message->setLock();
+//	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 
