@@ -413,7 +413,6 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 ACTION* act_resend_provreply_to_a(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("TRSNCT_INV_SV::act_resend_provreply_to_a",  _message )
-	DEBOUT("TRSNCT_INV_SV::act_resend_provreply_to_a",  _message->getHeadSipReply().getContent() )
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 

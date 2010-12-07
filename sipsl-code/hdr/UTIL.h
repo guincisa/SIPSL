@@ -315,17 +315,36 @@ class ThreadWrapper {
 	pthread_mutex_unlock(&messTableMtx);}
 	//**********************************************************
 #undef NEWPTR
+//#define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
+//	m1 = new (nothrow) m2;\
+//	DEBOUT("NEW ", mess << "][" <<m1)\
+//	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
 #define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
-	m1 = new (nothrow) m2;\
-	DEBOUT("NEW ", mess << "][" <<m1)\
-	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
+	try {\
+		m1 = new m2;\
+		DEBOUT("NEW ", mess <<"]["<<m1)\
+	}\
+	catch (bad_alloc &b){\
+		DEBOUT("NEW BAD ALLOC",b.what())\
+		DEBASSERT("BAD ALLOC")\
+	}
 	//**********************************************************
 //no embedded declaration
 #undef NEWPTR2
-#define NEWPTR2(m1, m2, mess) m1 = 0x0;\
-	m1 = new (nothrow) m2;\
-	DEBOUT("NEW ", mess << "][" <<m1)\
-	if (m1 == 0x0) { DEBERROR("NEW allocation failed")}
+//#define NEWPTR2(m1, m2, mess) m1 = 0x0;\
+//	m1 = new (nothrow) m2;\
+//	DEBOUT("NEW ", mess << "][" <<m1)\
+//	if (m1 == 0x0) { DEBERROR("NEW allocation failed")}
+#define NEWPTR2(m1, m2,mess) m1 = 0x0;\
+	try {\
+		m1 = new m2;\
+		DEBOUT("NEW ", mess <<"]["<<m1)\
+	}\
+	catch (bad_alloc &b){\
+		DEBOUT("NEW BAD ALLOC",b.what())\
+		DEBASSERT("BAD ALLOC")\
+	}
+
 	//**********************************************************
 #undef DELPTR
 #define DELPTR(m1, mess) \
