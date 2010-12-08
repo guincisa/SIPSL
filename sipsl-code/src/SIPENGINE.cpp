@@ -110,7 +110,7 @@ void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-//**********************************************************************************
+//*********************************************************************************
 void SIPENGINE::parse_s(MESSAGE* _mess) {
 	//Message from network cannot be managed since main buffer is full
 	//Cases:
@@ -159,7 +159,7 @@ void SIPENGINE::parse(MESSAGE* _mess) {
 	RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 
 	//Check if Request or Reply
-	int tl = _mess->getTotLines();
+	_mess->getTotLines();
 	DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getLine(0) << "] [" <<_mess->getKey())
 
 	int type = _mess->getReqRepType();

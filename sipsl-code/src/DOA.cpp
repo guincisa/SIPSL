@@ -125,7 +125,6 @@ void DOA::init(void) {
 
 }void DOA::doa(void) {
 
-	int i = 0;
 	for(;;) {
 		nanosleep(&sleep_time,NULL);
 		DEBOUT("DOA::doa", "started")

@@ -447,7 +447,7 @@ void MESSAGE::dumpVector(void){
 
 	vector<string>::iterator theIterator;
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
-    	DEBOUT("Message vector", *theIterator)
+    	DEBOUT("Message vector", (string)*theIterator)
     }
 }
 int MESSAGE::getReqRepType(void){
@@ -581,8 +581,7 @@ stack<C_HeadVia*> &MESSAGE::getSTKHeadVia(void){
 		return s_headVia;
 	}
 
-	unsigned int i;
-	unsigned int j = 1;
+	size_t i;
 
 	for( i =   flex_line.size() - 1 ; i > 0 ; i --){
 		if(flex_line[i].substr(0,4).compare("Via:") == 0){
@@ -627,7 +626,7 @@ void MESSAGE::purgeSTKHeadVia(void){
 		DEBASSERT("MESSAGE::purgeSTKHeadVia invalid")
 
 
-	unsigned int i;
+	size_t i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,4).compare("Via:") == 0){
@@ -660,7 +659,6 @@ void MESSAGE::pushHeadVia(string _content){
 	s_headVia.push(s);
 	// first search Via and insert before
 	// if no via, then search SDP
-	unsigned int i;
 	bool found = false;
 	vector<string>::iterator theIterator;
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
@@ -791,7 +789,7 @@ S_HeadMaxFwd& MESSAGE::getHeadMaxFwd(void){
 		return headMaxFwd;
 	}
 
-	int i;
+	size_t i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,13).compare("Max-Forwards:")==0){
@@ -815,7 +813,7 @@ C_HeadTo* MESSAGE::getHeadTo(void){
 		return headTo;
 	}
 
-	int i;
+	size_t i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,3).compare("To:")==0){
@@ -843,7 +841,7 @@ C_HeadFrom* MESSAGE::getHeadFrom(void){
 		return headFrom;
 	}
 
-	unsigned int i;
+	size_t i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("From:")==0){
@@ -868,7 +866,7 @@ void MESSAGE::replaceHeadFrom(string _content){
 	headFrom->setContent(_content);
 
 	// replace in flex_line
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("From:")==0){
@@ -895,7 +893,7 @@ void MESSAGE::replaceHeadTo(string _content){
 	headTo->setContent(_content);
 
 	// replace in flex_line
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,3).compare("To:")==0){
@@ -922,7 +920,7 @@ C_HeadCallId &MESSAGE::getHeadCallId(void){
 		return headCallId;
 	}
 
-	unsigned int i;
+	size_t i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Call-ID:") == 0){
@@ -945,7 +943,7 @@ C_HeadCSeq &MESSAGE::getHeadCSeq(void){
 		return headCSeq;
 	}
 
-	unsigned int i;
+	size_t i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
@@ -965,7 +963,7 @@ void MESSAGE::replaceHeadCSeq(string _content){
 	headCSeq.setContent(_content);
 
 	// replace in flex_line
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
@@ -989,7 +987,7 @@ void MESSAGE::replaceHeadCSeq(int _cseq, string _method){
 	headCSeq.setContent(tt);
 
 	// replace in flex_line
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,5).compare("CSeq:")==0){
@@ -1024,7 +1022,7 @@ C_HeadRoute* MESSAGE::getHeadRoute(void) throw (HeaderException){
 		return headRoute;
 	}
 
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,6).compare("Route:")==0){
@@ -1050,7 +1048,7 @@ void MESSAGE::removeHeadRoute(void){
 		DEBASSERT("MESSAGE::removeHeadRoute invalid")
 
 	headRoute_p = false;
-	unsigned int i;
+	size_t i;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,6).compare("Route:")==0){
 			removeHeader(i);
@@ -1077,7 +1075,7 @@ C_HeadContact* MESSAGE::getHeadContact(void){
 		return headContact;
 	}
 
-	int i;
+	size_t i;
 
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Contact:")==0){
@@ -1102,7 +1100,7 @@ void MESSAGE::replaceHeadContact(string _content){
 	headContact->setContent(_content);
 
 	// replace in flex_line
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,8).compare("Contact:")==0){
@@ -1124,7 +1122,7 @@ void MESSAGE::removeMaxForwards(void){
 	headMaxFwd.setContent("");
 
 	// replace in flex_line
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,13).compare("Max-Forwards:")==0){
@@ -1150,7 +1148,7 @@ void MESSAGE::dropHeader(string _header){
 		DEBASSERT("MESSAGE::dropHeader invalid")
 
 
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,_header.size()).compare(_header)==0){
@@ -1183,7 +1181,7 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 	}
 
 
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,_header.size()).compare(_header)==0){
@@ -1202,7 +1200,7 @@ string MESSAGE::getGenericHeader(string _header){
 
 
 	DEBOUT("MESSAGE::getGenericHeader", _header)
-	unsigned int i;
+	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,_header.size()).compare(_header)==0){
@@ -1214,8 +1212,9 @@ string MESSAGE::getGenericHeader(string _header){
 	}
 	if (!found) {
 		DEBOUT("MESSAGE::setGenericHeader not found",_header)
-				return "";
 	}
+	return "";
+
 }
 
 

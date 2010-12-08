@@ -141,7 +141,7 @@ class ThreadWrapper {
 #define RELLOCK(m,message) \
 		pthread_mutex_unlock(m);
 #undef TRYCATCH
-#define TRYCATCH(m) try { m; } catch (exception& e) { DEBASSERT("Exception" << e.what())}
+#define TRYCATCH(m) try { m; } catch (exception& e) { DEBOUT("TRYCATCH", e.what()) DEBASSERT("Exception")}
 #undef PURGEMESSAGE
 #define PURGEMESSAGE(m1)  { \
 	if (m1 == MainMessage){DEBASSERT("Purging MainMessage")}\
@@ -163,7 +163,7 @@ class ThreadWrapper {
 				int i= m1->getTotLines();\
 				DEBDEV("New MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
-				sprintf(bu, "%x%llu",m1,num);\
+				sprintf(bu, "%x%llu",(unsigned int)m1,num);\
 				string key(bu);\
 				m1->setKey(key);\
 				pthread_mutex_lock(&messTableMtx);\
@@ -315,10 +315,6 @@ class ThreadWrapper {
 	pthread_mutex_unlock(&messTableMtx);}
 	//**********************************************************
 #undef NEWPTR
-//#define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
-//	m1 = new (nothrow) m2;\
-//	DEBOUT("NEW ", mess << "][" <<m1)\
-//	if (m1 == 0x0) { DEBOUT("NEW allocation failed", "") DEBASSERT("Alloc failed")}
 #define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
 	try {\
 		m1 = new m2;\
@@ -331,10 +327,6 @@ class ThreadWrapper {
 	//**********************************************************
 //no embedded declaration
 #undef NEWPTR2
-//#define NEWPTR2(m1, m2, mess) m1 = 0x0;\
-//	m1 = new (nothrow) m2;\
-//	DEBOUT("NEW ", mess << "][" <<m1)\
-//	if (m1 == 0x0) { DEBERROR("NEW allocation failed")}
 #define NEWPTR2(m1, m2,mess) m1 = 0x0;\
 	try {\
 		m1 = new m2;\

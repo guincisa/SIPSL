@@ -197,7 +197,6 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 	GETLOCK(&unique[_mod],"unique"<<_mod);
 
 	//doa
-	int doa_state;
 	p_doamap = call_oset_doa_state[_mod].find(_call_oset);
 	p_ttl = call_oset_ttl[_mod].find(_call_oset);
 	if (p_doamap != call_oset_doa_state[_mod].end()){
@@ -282,7 +281,7 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
 		map<CALL_OSET*, unsigned long long int>::iterator p_ttl;
 		p_ttl = call_oset_ttl[_mod].find(_call_oset);
 		if (p_ttl == call_oset_ttl[_mod].end()){
-			DEBASSERT("call_oset_ttl insistent")
+			DEBASSERT("call_oset_ttl inexistent")
 		}
 		SysTime afterT;
 		GETTIME(afterT);
@@ -342,7 +341,8 @@ void COMAP::incCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 	//call_oset message counter
 
 	if (_mod >= COMAPS){
-		DEBASSERT("invalid comap index "<<_mod)
+		DEBOUT("COMAP::incCALL_OSET_MsgCnt invalid comap index",_call_oset << "]["<<_mod)
+		DEBASSERT("COMAP::incCALL_OSET_MsgCnt invalid comap index ")
 	}
 
 	int i;
@@ -355,6 +355,8 @@ void COMAP::incCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 		call_oset_msg_cnt[_mod].erase(p_msgcnt);
 		call_oset_msg_cnt[_mod].insert(pair<CALL_OSET*, int>(_call_oset, i));
 	}else {
+		DEBOUT("COMAP::incCALL_OSET_MsgCnt invalid", _call_oset)
+		DEBASSERT("COMAP::incCALL_OSET_MsgCnt")
 	}
 	return;
 
@@ -369,7 +371,7 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 	}
 
 	//call_oset message counter
-	int i;
+	int i = 0;
 	map<CALL_OSET*,int>::iterator p_msgcnt;
 	p_msgcnt = call_oset_msg_cnt[_mod].find(_call_oset);
 	if (p_msgcnt != call_oset_msg_cnt[_mod].end()){
@@ -379,7 +381,9 @@ void COMAP::decCALL_OSET_MsgCnt(CALL_OSET* _call_oset, int _mod){
 		DEBOUT("COMAP::decCALL_OSET_MsgCnt new value", _call_oset << "] [" << i)
 		call_oset_msg_cnt[_mod].erase(p_msgcnt);
 		call_oset_msg_cnt[_mod].insert(pair<CALL_OSET*, int>(_call_oset, i));
-	}else {
+	} else {
+		DEBOUT("COMAP::decCALL_OSET_MsgCnt Unexpected event", _call_oset)
+		DEBASSERT("COMAP::decCALL_OSET_MsgCnt")
 	}
 
 	//if no messages inside and in doa_requested then switch to doa_confirmed
@@ -503,7 +507,6 @@ void COMAP::purgeDOA(void){
 		map<string, CALL_OSET*>::iterator p_comap_mm;
 		CALL_OSET* call_oset;
 		stack<string> todel_cx;
-		int iter = 0;
 
 		if (mod >= COMAPS){
 			DEBASSERT("invalid comap index "<<mod)

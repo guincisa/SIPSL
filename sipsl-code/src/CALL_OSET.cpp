@@ -92,7 +92,7 @@
 #include "TRNSPRT.h"
 #endif
 
-static SIPUTIL SipUtil;
+//static SIPUTIL SipUtil;
 
 //**********************************************************************************
 //**********************************************************************************
@@ -160,7 +160,6 @@ CALL_OSET::~CALL_OSET(void){
 		DEBY
 	}
 	if (alo != 0x0){
-		DEBOUT("Delete ALO", alo)
 		DELPTR((VALO*)alo, "VALO");
 	}
 
@@ -201,6 +200,13 @@ int CALL_OSET::getNextSequence(string _method){
 	}
 }
 void CALL_OSET::insertSequence(string _method, int _i){
+	map<string, int> ::iterator p;
+	p = sequenceMap.find(_method);
+	if (p != sequenceMap.end()){
+		DEBOUT("CALL_OSET::insertSequence exists", _method <<"]["<<_i)
+		sequenceMap.erase(p);
+	}
+
 	sequenceMap.insert(pair<string, int>(_method,_i));
 }
 int CALL_OSET::getCurrentSequence(string _method){
@@ -263,7 +269,14 @@ string CALL_OSET::getCallId_X(void){
 
 void CALL_OSET::insertLockedMessage(MESSAGE* _message){
 	DEBMESSAGESHORT("Insert locked message", _message)
-	lockedMessages.insert(pair<MESSAGE*,int>(_message,0));
+	map<MESSAGE*,int>::iterator i;
+	i = lockedMessages.find(_message);
+	if (i !=lockedMessages.end()){
+		return;
+	}else {
+		lockedMessages.insert(pair<MESSAGE*,int>(_message,0));
+	}
+	return;
 }
 MESSAGE* CALL_OSET::getNextLockedMessage(void){
 
@@ -286,7 +299,7 @@ void CALL_OSET::removeLockedMessage(MESSAGE* _message){
 	p=lockedMessages.find(_message);
 	if (p!=lockedMessages.end()){
 		DEBY
-		MESSAGE* t = (MESSAGE*)p->first;
+		//MESSAGE* t = (MESSAGE*)p->first;
 		lockedMessages.erase(p);
 	}
 
@@ -325,6 +338,12 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 
 	_trnsctSm->setId(stmp);
 
+	map<string, TRNSCT_SM*>::iterator it;
+	it = trnsctSmMap.find(stmp);
+	if (it != trnsctSmMap.end()){
+		DEBOUT("CALL_OSET::addTrnsctSm adding a exsiting sm", stmp <<"]["<<_trnsctSm)
+		DEBASSERT("CALL_OSET::addTrnsctSm")
+	}
 	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(stmp, _trnsctSm));
 
 	// special for client sm Ack

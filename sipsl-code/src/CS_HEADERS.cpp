@@ -115,16 +115,21 @@ void S_HeadGeneric::setContent(string _content) {
 }
 
 string &S_HeadGeneric::getContent(void) {
-	if (contentReady)
+	if (contentReady){
 		return content;
-	else
+	}
+	else{
 		buildContent();
+	}
+	return content;
 }
 string S_HeadGeneric::copyContent(void) {
-	if (contentReady)
+	if (contentReady){
 		return content;
-	else
+	}else{
 		buildContent();
+	}
+	return content;
 }
 bool S_HeadGeneric::isParsed(void) {
     return parsed;
@@ -246,6 +251,12 @@ void TupleVector::doParse(void) {
 		for ( iter = lval_rval.begin(); iter != lval_rval.end(); iter ++) {
 			ss = *iter;
 			tt = getLRvalue(ss);
+			DEBCODE (\
+			TupleMap::iterator it;\
+			it = tuples.find(tt.Lvalue);\
+			if (it != tuples.end()){\
+				DEBASSERT("TupleVector::doParse")\
+			})
 			tuples.insert(make_pair(tt.Lvalue, tt.Rvalue));
 		}
 		parsed = true;
@@ -491,7 +502,10 @@ S_AttReply::S_AttReply(string _content)
 S_AttReply::S_AttReply(string _replyID, string _code)
     :S_AttGeneric(_code + " " +_replyID){
 
-	(0);
+	code = 0;
+	replyID = 0;
+	reply = "";
+
     if (!compare_it(_replyID)) {
         parsed = true;
         correct = false;

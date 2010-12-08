@@ -24,6 +24,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 using namespace std;
 #define REGISTER_REQUEST 1
@@ -117,7 +118,7 @@ inline string trimUseless(string s) {
 }
 inline Tuple brkin2(string couple, string separator) {
 
-    int a = couple.find(separator, 0);
+	size_t a = couple.find(separator, 0);
     Tuple tt;
     if (a < 0) {
         tt.Lvalue = couple.substr(0, a);
@@ -210,7 +211,7 @@ inline vector<string> parse(string _par, string head, string sep, bool _trimspac
 }
 inline Tuple getLRvalue(string couple) {
 
-    int a = couple.find("=", 0);
+    size_t a = couple.find("=", 0);
     Tuple tt;
     if ( a != string::npos) {
 		tt.Lvalue = couple.substr(0, a);
@@ -753,9 +754,8 @@ class C_HeadSipReply : public S_HeadGeneric { //i //t
         void doParse(void);
         void buildContent(void);
 
-
-        S_AttSipVersion sipvs;
         S_AttReply reply;
+        S_AttSipVersion sipvs;
 
     public:
 

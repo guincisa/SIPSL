@@ -1,0 +1,15 @@
+echo "SL_CO"
+grep "NEW \[SL_CO" log | wc
+grep "DELPTR\[SL_CO" log | wc
+echo "MESSAGE"
+grep "NEW \[MESSAGE" log| wc
+grep "DELPTR\[MESSAGE" log| wc
+echo "New Via"
+grep "NEW \[New via" log | wc
+grep "DELPTR\[Delete via" log | wc
+echo "C_H"
+grep "NEW \[C_H" log | wc
+grep "DELPTR\[C_H" log | wc
+echo "TRNSCT"
+grep "NEW \[TRNSCT" log | wc
+grep "DELPTR\[(TRNSCT" log | wc

@@ -183,6 +183,7 @@ void ALMGR::alarmer(void){
 					}
 					//The alarm if inactive may carry a deleted message, don't access it
 					//mess_alm_map.erase(tmal->getMessage());
+					delmap.erase(tmal);
 					delmap.insert(pair<ALARM*,int>(tmal,0));
 					DEBOUT("ALARM CHECK INTERVAL", tmal << "][curr " << (unsigned long long int)curr << "][tcu " <<  (unsigned long long int)tcu)
 					PRTIME
@@ -243,6 +244,8 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 	DEBOUT("((C_HeadVia&) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().getContent()",((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().getContent())
 	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->getOrderOfOperation()+ "#";
 	DEBOUT("Alarm id (cid+branch", cidbranch_alarm);
+
+	cidbranch_alm_map.erase(cidbranch_alarm);
 	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
 
 	RELLOCK(&mutex,"mutex");

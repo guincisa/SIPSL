@@ -175,7 +175,7 @@ void SUDP::start(void) {
     t1->st = this;
 
     //TODO result not used
-    int res = pthread_create(&(listenerThread->thread), NULL, SUDPSTACK, (void *) t1 );
+    pthread_create(&(listenerThread->thread), NULL, SUDPSTACK, (void *) t1 );
     return;
 }
 
