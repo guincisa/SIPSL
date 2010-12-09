@@ -368,7 +368,8 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 void SL_CO::call(MESSAGE* _message){
 
 	//TODO if we use this mutex we can remove mutexes in state machines
-	GETLOCK(&mutex,"mutex");
+	//locked in comap
+	//GETLOCK(&mutex,"mutex");
 	PRTIME
 	DEBMESSAGE("SL_CO::call incoming", _message)
 
@@ -430,7 +431,7 @@ void SL_CO::call(MESSAGE* _message){
 				int t = _message->getModulus();
 				PURGEMESSAGE(_message)
 				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, t);
-				RELLOCK(&mutex,"mutex");
+				//RELLOCK(&mutex,"mutex");
 				return;
 			}
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
@@ -561,7 +562,8 @@ void SL_CO::call(MESSAGE* _message){
 		DEBOUT("SL_CO::call delete action","")
 		DELPTR(action,"ACTION");
 	}
-	RELLOCK(&mutex,"mutex");
+	//RELLOCK(&mutex,"mutex");
+	return;
 }
 
 void SL_CO::actionCall_SV(ACTION* action){
@@ -713,7 +715,7 @@ void SL_CO::actionCall_CL(ACTION* action){
 //			actionList.pop();
 //			continue;
 		}
-		else if (_tmpMessage->getTypeOfInternal() == TYPE_OP ){ // to alarm
+		else if (_tmpMessage->getTypeOfInternal() == TYPE_OP ){
 
 			DEBOUT("SL_CO:: TYPE_OP","")
 
@@ -751,8 +753,8 @@ void SL_CO::actionCall_CL(ACTION* action){
 			else {
 				DEBASSERT("SL_CO client operation type inconsistency")
 			}
-			actionList.pop();
-			continue;
+//			actionList.pop();
+//			continue;
 		}
 		else if (_tmpMessage->getDestEntity() == SODE_NOPOINT){
 			DEBOUT("SL_CO::TEST, message is abandoned",_tmpMessage->getLine(0))

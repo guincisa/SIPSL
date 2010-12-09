@@ -29,7 +29,6 @@
 // doa requested only message with gen != NWTPOINT can be processed by call_oset
 #define DOA_REQUESTED 1
 // doa confirmed no message can get in
-#define DOA_CONFIRMED 2
 
 
 //map to associate callId_Y to callId_X
@@ -60,12 +59,12 @@ class COMAP {
 		void setDoa(CALL_OSET*, int,int);
 		int getDoa(CALL_OSET*,int);
 
-		//Number of messages currently running inside call_oset
-		map<CALL_OSET*, int> call_oset_msg_cnt[COMAPS];
+//		//Number of messages currently running inside call_oset
+//		map<CALL_OSET*, int> call_oset_msg_cnt[COMAPS];
 
-		int getCALL_OSET_MsgCnt(CALL_OSET*,int);
-		void incCALL_OSET_MsgCnt(CALL_OSET*,int);
-		void decCALL_OSET_MsgCnt(CALL_OSET*,int);
+//		int getCALL_OSET_MsgCnt(CALL_OSET*,int);
+//		void incCALL_OSET_MsgCnt(CALL_OSET*,int);
+//		void decCALL_OSET_MsgCnt(CALL_OSET*,int);
 
 	public:
 		void setCALL_OSET(string callId_X, CALL_OSET*,int);

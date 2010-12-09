@@ -140,6 +140,10 @@ class ThreadWrapper {
 #undef RELLOCK
 #define RELLOCK(m,message) \
 		pthread_mutex_unlock(m);
+#undef TRYLOCK
+#define TRYLOCK(m,message,r)\
+		r = pthread_mutex_trylock(m);
+
 #undef TRYCATCH
 #define TRYCATCH(m) try { m; } catch (exception& e) { DEBOUT("TRYCATCH", e.what()) DEBASSERT("Exception")}
 #undef PURGEMESSAGE
@@ -362,6 +366,11 @@ class ThreadWrapper {
 #define RELLOCK(m,message) \
 		DEBOUT("Releasing lock " << message, m)\
 		pthread_mutex_unlock(m);
+#undef TRYLOCK
+#define TRYLOCK(m,message,r)\
+		DEBOUT("Trying lock " << message, m)\
+		r = pthread_mutex_trylock(m);\
+		DEBOUT("Trying lock result "<< r , m)
 #endif
 //**********************************************************
 //**********************************************************

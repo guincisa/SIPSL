@@ -156,6 +156,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 		DEBSIP("SL_CC::parse CALLOSET normal ID",callids)
 
+		//If found it will be locked here
 		call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
 		//First try to get the Call object using x side parameters
@@ -187,6 +188,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 		// Then try to get call object using y side params
 		else {
+			//if found then is locked
 			call_oset = comap->getCALL_OSET_YDerived(callids,modulus);
 			if (call_oset != 0x0){
 				DEBINF("SL_CC::parse", "B SIDE call_oset exists "<< call_oset)

@@ -38,6 +38,7 @@ class CALL_OSET {
 	friend class VALO;
 	friend class TRNSCT_SM;
 	friend class TRNSPRT;
+	friend class SL_CC;
 
 	private:
 
@@ -103,7 +104,6 @@ class CALL_OSET {
 class SL_CO {
 
 	private:
-	pthread_mutex_t mutex;
 
 	void actionCall_SV(ACTION*);
 	void actionCall_CL(ACTION*);
@@ -120,6 +120,9 @@ class SL_CO {
 		CALL_OSET* call_oset;
 
 		void call(MESSAGE*);
+
+		pthread_mutex_t mutex;
+
 
 };
 
