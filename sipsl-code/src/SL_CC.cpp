@@ -285,12 +285,17 @@ void SL_CC::parse(MESSAGE* _mess) {
 					}
 					else {
 						DEBINF("Put this message into the locked messages table",_mess)
-						DEBASSERT("")
 					}
 				}
 				return;
 			}else{
-				DEBASSERT(".")
+				//Not existent or deleted
+				if(!_mess->getLock()){
+					PURGEMESSAGE(_mess)
+				}
+				else {
+					DEBINF("Put this message into the locked messages table",_mess)
+				}
 			}
 
 		}
