@@ -167,7 +167,20 @@ CALL_OSET::~CALL_OSET(void){
 	//and this one triggers it, it will crash?
 	MESSAGE* m = getNextLockedMessage();
 	while (m != MainMessage){
-		DEBY
+
+		DEBOUT("MESSAGE to be deleted", m)
+
+		//TODO DEBCODE
+		map<const MESSAGE*, MESSAGE*>::iterator p;
+		DEBCODE(
+			pthread_mutex_lock(&messTableMtx);
+			p = globalMessTable.find(_tmpMess);
+			if (p ==globalMessTable.end())
+				DEBASSERT("Message already deleted")
+			pthread_mutex_unlock(&messTableMtx);
+			)
+		//TODO DEBCODE
+
 		DEBMESSAGESHORT("DOA locked message", m)
 		if (m->getTypeOfInternal() == TYPE_OP){
 			string callid_alarm = m->getHeadCallId().getContent() +  ((C_HeadVia*) m->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + m->getOrderOfOperation()+ "#";
