@@ -74,7 +74,7 @@ class ThreadWrapper {
 #define SL_CCTH 64
 #define LOGMIN
 #else
-#define COMAPS 2
+#define COMAPS 6
 #define SIPENGINETH 6
 #define SL_CCTH 8
 #define LOGSIP
@@ -323,6 +323,9 @@ class ThreadWrapper {
 	try {\
 		m1 = new m2;\
 		DEBOUT("NEW ", mess <<"]["<<m1)\
+		if (m1 == 0x0){\
+			DEBASSERT("NEWPTR failed")\
+		}\
 	}\
 	catch (bad_alloc &b){\
 		DEBOUT("NEW BAD ALLOC",b.what())\
@@ -335,6 +338,9 @@ class ThreadWrapper {
 	try {\
 		m1 = new m2;\
 		DEBOUT("NEW ", mess <<"]["<<m1)\
+		if (m1 == 0x0){\
+			DEBASSERT("NEWPTR failed")\
+		}\
 	}\
 	catch (bad_alloc &b){\
 		DEBOUT("NEW BAD ALLOC",b.what())\

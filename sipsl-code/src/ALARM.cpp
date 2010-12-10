@@ -148,16 +148,29 @@ void ALMGR::alarmer(void){
 				multimap<const unsigned long long int, ALARM*>::iterator iter;
 				pair<multimap<const unsigned long long int,ALARM*>::iterator,multimap<const unsigned long long int ,ALARM*>::iterator> ret;
 				map<ALARM*,int> delmap;
-				DEBOUT("map<ALARM*,int> delmap", &delmap)
 
 				ret = time_alarm_mumap.equal_range(tcu);
 
 			    for (iter=ret.first; iter!=ret.second; ++iter){
 					DEBY
 					ALARM* tmal = iter->second;
+					DEBOUT("ALARM* tmal", tmal)
 					if (tmal->isActive()){
 
 						MESSAGE* _tmpMess = tmal->getMessage();
+
+						DEBOUT("ALARM found message", _tmpMess)
+
+						//TODO DEBCODE
+						map<const MESSAGE*, MESSAGE*>::iterator p;
+						DEBCODE(
+							pthread_mutex_lock(&messTableMtx);
+							p = globalMessTable.find(_tmpMess);
+							if (p ==globalMessTable.end())
+								DEBASSERT("ALARM found message has been deleted")
+							pthread_mutex_unlock(&messTableMtx);
+							)
+						//TODO DEBCODE
 
 						//ALMGR shall not care about message or internalop
 						//SL_CC does it but here if for debug purposes

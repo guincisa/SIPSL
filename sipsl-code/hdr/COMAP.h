@@ -40,7 +40,7 @@ class COMAP {
 
 	private:
 
-		pthread_mutex_t unique[COMAPS];
+		//pthread_mutex_t unique[COMAPS];
 
 		//Call id x
 		map<string, CALL_OSET*> comap_mm[COMAPS];
@@ -83,5 +83,8 @@ class COMAP {
 
 		COMAP(void);
 		~COMAP(void);
+
+		pthread_mutex_t unique_ex[COMAPS];
+
 
 };

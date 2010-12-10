@@ -37,6 +37,7 @@
 #define TIMER_DOA 10000000
 #define TIMER_zero 0
 
+//seconds
 #define DOA_CLEANUP 10
 
 #ifdef SPARC
