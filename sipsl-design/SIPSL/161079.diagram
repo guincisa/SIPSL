@@ -42,7 +42,7 @@ STOREMESS_1_3=200OK
   xyzwh 418 66 2000 211 135
 statecanvas 130743 state_ref 196279 // 4
   show_activities default region_horizontally default drawing_language default show_stereotype_properties default
-  xyzwh 1448 584 2000 40 29
+  xyzwh 876 477 2000 40 29
 end
 note 130999 "ACTION;
 nothing
@@ -78,7 +78,7 @@ RESET TIMER_S"
 transitioncanvas 128311 transition_ref 225335 // INVITE_A(NTW,SV)
   decenter_end 224
   
-  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 764.5 52.5 2001 to ref 128183
+  from ref 128055 z 2001 label "INVITE_A(NTW,SV)" xyz 764 52 2001 to ref 128183
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 129207 transition_ref 225591 // DIALOG_101(CL,SV) or RING_180(CL,SV)
@@ -94,7 +94,7 @@ transitioncanvas 130103 transition_ref 225719 // 200_OK(ALO,SV)
 end
 transitioncanvas 130871 transition_ref 225847 // TIMER 200OK & OVERALL = CONFIRMED
   
-  from ref 129975 z 2001 label "TIMER 200OK & OVERALL = CONFIRMED" xyz 1144.5 543.5 2001 to ref 130743
+  from ref 129975 z 2001 label "TIMER 200OK & OVERALL = CONFIRMED" xyz 668 437.5 2001 to ref 130743
   write_horizontally default show_definition default drawing_language default
 end
 transitioncanvas 131383 transition_ref 225975 // 200_OK(ALO,SV)
@@ -111,7 +111,7 @@ transitioncanvas 131767 transition_ref 232503 // INVITE_A(NTW,SV)
 end
 transitioncanvas 132535 transition_ref 232631 // TIMER 200OK & OVERALL <> CONFIRMED & resend < MAX
   
-  from ref 129975 z 2001 label "TIMER 200OK & OVERALL <> CONFIRMED & resend < MAX" xyz 110.5 438.5 2001 to point 166 484
+  from ref 129975 z 2001 label "TIMER 200OK & OVERALL <> CONFIRMED & resend < MAX" xyz 110 438 2001 to point 166 484
   line 132663 z 2001 to point 201 527
   line 132791 z 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
@@ -124,7 +124,7 @@ transitioncanvas 133175 transition_ref 232759 // TIMER 200OK & OVERALL <> CONFIR
 end
 transitioncanvas 134071 transition_ref 261175 // INVITE_A(NTW,SV)
   
-  from ref 129975 z 2001 label "INVITE_A(NTW,SV)" xyz 343.5 389.5 2001 to point 177 373
+  from ref 129975 z 2001 label "INVITE_A(NTW,SV)" xyz 343 389 2001 to point 177 373
   line 134455 z 2001 to point 170 395
   line 134327 z 2001 to ref 129975
   write_horizontally default show_definition default drawing_language default
@@ -139,7 +139,7 @@ end
 transitioncanvas 138167 transition_ref 288311 // expired TIMER_S
   decenter_begin 310
   
-  from ref 129975 z 2001 label "expired TIMER_S" xyz 740 571.5 2001 to point 706 574
+  from ref 129975 z 2001 label "expired TIMER_S" xyz 740 571 2001 to point 706 574
   line 138295 z 2001 to ref 133047
   write_horizontally default show_definition default drawing_language default
 end
@@ -150,7 +150,7 @@ transitioncanvas 138423 transition_ref 288439 // <transition>
 end
 transitioncanvas 138551 transition_ref 288567 // TIMER_S expired
   
-  from ref 128183 z 2001 label "TIMER_S expired" xyz 1035 837 3000 to ref 133047
+  from ref 128183 z 2001 label "TIMER_S expired" xyz 1035 837 2001 to ref 133047
   write_horizontally default show_definition default drawing_language default
 end
 line 128695 -_-_

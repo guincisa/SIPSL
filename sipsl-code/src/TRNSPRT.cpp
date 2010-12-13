@@ -142,6 +142,13 @@ void TRNSPRT::downCall(MESSAGE* _message, CALL_OSET* _call_oset){
 
 
 	DEBNTW("TRNSPRT::downCall", _message)
+
+	if(_message->getTypeOfInternal() == TYPE_OP){
+		//Thsi rule is needed to clear alarms when running ~CALL_OSET
+		DEBOUT("RULE Break, can't send a message with type op",this)
+		DEBASSERT("RULE Break, can't send a message with type op")
+	}
+
 	if (_message->getReqRepType() == REPSUPP) {
 		//TODO Check if there is a ROUTE header
 		_call_oset->getENGINE()->getSUDP()->sendReply(_message);

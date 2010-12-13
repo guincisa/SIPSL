@@ -438,7 +438,15 @@ void COMAP::purgeDOA(void){
 
 			GETLOCK(&(call_oset->getSL_CO()->mutex),"CALL_OSET::SL_CO::mutex")
 
-			DEBOUT("COMAP::purgeDOA", call_oset << "] DOA state ["<<getDoa(call_oset,mod) )
+			string tmps;
+			if (call_oset->getSL_CO()->OverallState_CL == OS_COMPLETED && call_oset->getSL_CO()->OverallState_SV==OS_CONFIRMED){
+				tmps = "IN PROGESS";
+			}else{
+				tmps = "IN TEMPORARY STATE";
+			}
+
+
+			DEBOUT("COMAP::purgeDOA", call_oset << "] DOA state ["<<getDoa(call_oset,mod) <<"]["<<tmps)
 			if ( getDoa(call_oset,mod) == DOA_REQUESTED){
 
 				//check time

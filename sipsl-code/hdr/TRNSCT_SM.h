@@ -69,6 +69,9 @@ class TRNSCT_SM  :  public SM{
 
 	public:
 
+		SingleAction generateTimerS(int genPoint);
+		SingleAction clearTimerS(int genPoint);
+
 		string getId(void);
 		void setId(string);
 
@@ -114,6 +117,8 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 		PREDICATE_ACTION PA_INV_3_5SV;
 		PREDICATE_ACTION PA_INV_3_3dSV;
 		PREDICATE_ACTION PA_INV_3_3eSV;
+		PREDICATE_ACTION PA_INV_S_SV;
+
 
 
 		//This is the try  a to be resent if invite a arrives again
@@ -148,6 +153,8 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 		PREDICATE_ACTION PA_INV_4_4bCL; //200OK B incoming again, need to resend ACK
 		PREDICATE_ACTION PA_INV_4_4cCL;
 		PREDICATE_ACTION PA_INV_1_99CL; //resend invite max reached
+		PREDICATE_ACTION PA_INV_S_CL; //timer s
+
 
 		int resend_invite;
 
@@ -197,6 +204,7 @@ class TRNSCT_SM_BYE_SV : public TRNSCT_SM {
 		PREDICATE_ACTION PA_BYE_1_2SV;
 		PREDICATE_ACTION PA_BYE_1_1SV;
 		PREDICATE_ACTION PA_BYE_2_2SV;
+		PREDICATE_ACTION PA_BYE_S_SV;
 
 
 		TRNSCT_SM_BYE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
@@ -216,6 +224,7 @@ class TRNSCT_SM_BYE_CL : public TRNSCT_SM {
 		PREDICATE_ACTION PA_BYE_1_1CL; //resend bye
 		PREDICATE_ACTION PA_BYE_1_99CL;
 		PREDICATE_ACTION PA_BYE_1_2CL; //200OK
+		PREDICATE_ACTION PA_BYE_S_CL;
 
 		TRNSCT_SM_BYE_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 

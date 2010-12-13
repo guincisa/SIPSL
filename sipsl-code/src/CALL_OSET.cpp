@@ -174,7 +174,7 @@ CALL_OSET::~CALL_OSET(void){
 		map<const MESSAGE*, MESSAGE*>::iterator p;
 		DEBCODE(
 			pthread_mutex_lock(&messTableMtx);
-			p = globalMessTable.find(_tmpMess);
+			p = globalMessTable.find(m);
 			if (p ==globalMessTable.end())
 				DEBASSERT("Message already deleted")
 			pthread_mutex_unlock(&messTableMtx);
@@ -393,7 +393,8 @@ void SL_CO::call(MESSAGE* _message){
 			_message->unSetLock();
 			call_oset->removeLockedMessage(_message);
 
-			_message->setTypeOfInternal(TYPE_MESS);
+			//TIMER_S
+			//_message->setTypeOfInternal(TYPE_MESS);
 
 		}else {
 			DEBASSERT("Break rule: a message from alarm is found unlocked")

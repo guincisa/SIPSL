@@ -150,8 +150,9 @@ void ALMGR::alarmer(void){
 				map<ALARM*,int> delmap;
 
 				ret = time_alarm_mumap.equal_range(tcu);
+				//DEBOUT("ALARM Triggerable", time_alarm_mumap.count(tcu))
 
-			    for (iter=ret.first; iter!=ret.second; ++iter){
+			    for (iter=ret.first; iter!=ret.second; iter++){
 					DEBY
 					ALARM* tmal = iter->second;
 					DEBOUT("ALARM* tmal", tmal)
@@ -236,7 +237,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 
 	GETLOCK(&mutex,"mutex");
 
-	map<MESSAGE*, ALARM*>::iterator p;
+	//map<MESSAGE*, ALARM*>::iterator p;
 
 	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
 
@@ -327,7 +328,8 @@ void ALMGR::cancelAlarm(string _cidbranch){
 		DEBOUT("ALMGR::cancelAlarm", "found")
 		tmp = (ALARM*)p->second;
 		if(!tmp->isActive()){
-			DEBOUT("ALMGR::cancelAlarm", _cidbranch <<  " is not active")}
+			DEBOUT("ALMGR::cancelAlarm", _cidbranch <<  " is not active")
+		}
 		tmp->cancel();
 	}
 	else {
