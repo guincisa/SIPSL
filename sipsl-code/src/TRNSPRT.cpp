@@ -99,7 +99,13 @@ void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
 	bool r = _sl_cc->p_w(_message);
 	if(!r){
 		DEBOUT("TRNSPRT::upCall message rejected, put in rejection queue",_message)
-		_sl_cc->p_w_s(_message);
+		bool ret2 = _sl_cc->p_w_s(_message);
+		if (!ret2){
+			if (!_message->getLock()){
+				PURGEMESSAGE(_message)
+			}
+		}
+
 	}
 }
 void TRNSPRT::downCall(MESSAGE* _message, CALL_OSET* _call_oset){

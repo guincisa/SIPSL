@@ -193,6 +193,16 @@ void ALMGR::alarmer(void){
 							DEBY
 							bool ret = sl_cc->p_w(_tmpMess);
 							DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+							if(!ret){
+								DEBOUT("ALARM::alarmer message rejected, put in rejection queue",_tmpMess)
+								bool ret2 = sl_cc->p_w_s(_tmpMess);
+								if (!ret2){
+									if (!_tmpMess->getLock()){
+										PURGEMESSAGE(_tmpMess)
+									}
+								}
+							}
+
 						}
 					}
 					//The alarm if inactive may carry a deleted message, don't access it

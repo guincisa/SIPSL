@@ -725,6 +725,17 @@ void SL_CO::actionCall_CL(ACTION* action){
 			DEBOUT("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
 			bool ret = ((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 			DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+			if(!ret){
+				DEBOUT("SL_CO::actionCall_CL p_w message rejected, put in rejection queue",_tmpMessage)
+				bool ret2 = ((SL_CC*)call_oset->getENGINE())->p_w_s(_tmpMessage);
+				if (!ret2){
+					if (!_tmpMessage->getLock()){
+						PURGEMESSAGE(_tmpMessage)
+					}
+				}
+
+			}
+
 //
 //			actionList.pop();
 //			continue;
@@ -762,6 +773,17 @@ void SL_CO::actionCall_CL(ACTION* action){
 				DEBMESSAGESHORT("SL_CO::call action is internal send to some SM", _tmpMessage )
 				bool ret = ((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 				DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+				if(!ret){
+					DEBOUT("SL_CO::actionCall_CL p_w message rejected, put in rejection queue",_tmpMessage)
+					bool ret2 = ((SL_CC*)call_oset->getENGINE())->p_w_s(_tmpMessage);
+					if (!ret2){
+						if (!_tmpMessage->getLock()){
+							PURGEMESSAGE(_tmpMessage)
+						}
+					}
+
+				}
+
 
 			}
 			else {

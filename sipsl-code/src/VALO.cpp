@@ -189,6 +189,17 @@ void VALO::onInvite(MESSAGE* _message){
 
 	bool ret = sl_cc->p_w(message);
 	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+	if(!ret){
+		DEBOUT("VALO::onInvite p_w message rejected, put in rejection queue",message)
+		bool ret2 = sl_cc->p_w_s(message);
+		if (!ret2){
+			if (!message->getLock()){
+				PURGEMESSAGE(message)
+			}
+		}
+
+	}
+
 
 }
 void VALO::onAck(MESSAGE* _message){
@@ -300,6 +311,18 @@ void VALO::onAck(MESSAGE* _message){
 	DEBMESSAGE("New outgoing b2b message", newack)
 	bool ret = sl_cc->p_w(newack);
 	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+	if(!ret){
+		DEBOUT("VALO::onAck p_w message rejected, put in rejection queue",newack)
+		bool ret2 = sl_cc->p_w_s(newack);
+		if (!ret2){
+			if (!newack->getLock()){
+				PURGEMESSAGE(newack)
+			}
+		}
+
+	}
+
+
 
 }
 void VALO::onAckNoTrnsct(MESSAGE* _message){
@@ -460,6 +483,16 @@ void VALO::onBye(MESSAGE* _message){
 		//message->setLock();
 		bool ret = sl_cc->p_w(message);
 		DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+		if(!ret){
+			DEBOUT("VALO::onBye p_w message rejected, put in rejection queue",message)
+			bool ret2 = sl_cc->p_w_s(message);
+			if (!ret2){
+				if (!message->getLock()){
+					PURGEMESSAGE(message)
+				}
+			}
+
+		}
 
 
 	}
@@ -507,6 +540,17 @@ void VALO::onBye(MESSAGE* _message){
 		//call_oset->insertLockedMessage(message);
 		bool ret = sl_cc->p_w(message);
 		DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+		if(!ret){
+			DEBOUT("VALO::onBye message rejected, put in rejection queue",message)
+			bool ret2 = sl_cc->p_w_s(message);
+			if (!ret2){
+				if (!message->getLock()){
+					PURGEMESSAGE(message)
+				}
+			}
+
+		}
+
 
 	}
 
@@ -594,6 +638,17 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	bool ret = sl_cc->p_w(ok_x);
 	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+	if(!ret){
+		DEBOUT("VALO::on200ok message rejected, put in rejection queue",ok_x)
+		bool ret2 = sl_cc->p_w_s(ok_x);
+		if (!ret2){
+			if (!ok_x->getLock()){
+				PURGEMESSAGE(ok_x)
+			}
+		}
+
+	}
+
 
 
 }
