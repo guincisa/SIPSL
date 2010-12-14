@@ -176,20 +176,6 @@ class ThreadWrapper {
 				globalMessTable[j].insert(pair<const MESSAGE*, MESSAGE*>(m1, m1));\
 				pthread_mutex_unlock(&messTableMtx[j]);}
 
-//#define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
-//				SysTime inTime;\
-//				GETTIME(inTime);\
-//				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
-//				int i= m1->getTotLines();\
-//				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
-//				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
-//				string key(bu);\
-//				__mess->setKey(key);\
-//				int i = getModulus(__mess);\
-//				pthread_mutex_lock(&messTableMtx[i]);\
-//				globalMessTable[i].insert(pair<const MESSAGE*, MESSAGE*>(__mess, _mess));\
-//				pthread_mutex_unlock(&messTableMtx[i]);}
-
 #define CREATENEWMESSAGE_EXT(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
