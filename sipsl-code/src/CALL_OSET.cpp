@@ -600,7 +600,7 @@ void SL_CO::actionCall_SV(ACTION* action){
 
 		else if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
 			if (_tmpMessage->getLock()){
-				DEBASSERT("Locked message directed to SODE_KILL")
+				DEBASSERT("Locked message directed to SODE_KILLDOA")
 			}
 			else{
 				DEBOUT("SL_CO::actionCall_SV setDoaRequested",call_oset)
