@@ -173,11 +173,12 @@ CALL_OSET::~CALL_OSET(void){
 		//TODO DEBCODE
 		map<const MESSAGE*, MESSAGE*>::iterator p;
 		DEBCODE(
-			pthread_mutex_lock(&messTableMtx);
-			p = globalMessTable.find(m);
-			if (p ==globalMessTable.end())
+			int ixx = getModulus(m);
+			pthread_mutex_lock(&messTableMtx[ixx]);
+			p = globalMessTable[ixx].find(m);
+			if (p ==globalMessTable[ixx].end())
 				DEBASSERT("Message already deleted")
-			pthread_mutex_unlock(&messTableMtx);
+			pthread_mutex_unlock(&messTableMtx[ixx]);
 			)
 		//TODO DEBCODE
 

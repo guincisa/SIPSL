@@ -151,14 +151,15 @@ class ThreadWrapper {
 	if (m1 == MainMessage){DEBASSERT("Purging MainMessage")}\
 	if (m1->getLock()) {DEBASSERT("Purging a locked message")}\
 	map<const MESSAGE*, MESSAGE*>::iterator p; \
-	pthread_mutex_lock(&messTableMtx);\
-	p = globalMessTable.find(m1);\
-	if (p !=globalMessTable.end()) {\
-		globalMessTable.erase(m1);\
+	int i = getModulus(m1);\
+	pthread_mutex_lock(&messTableMtx[i]);\
+	p = globalMessTable[i].find(m1);\
+	if (p !=globalMessTable[i].end()) {\
+		globalMessTable[i].erase(m1);\
 		DELPTR(m1,"MESSAGE");\
 		m1 = MainMessage; \
 	}\
-	pthread_mutex_unlock(&messTableMtx);}
+	pthread_mutex_unlock(&messTableMtx[i]);}
 #define CREATEMESSAGE(m1, m2, gen, dest) MESSAGE* m1=0x0; {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
@@ -170,22 +171,24 @@ class ThreadWrapper {
 				sprintf(bu, "%x%llu",(unsigned int)m1,num);\
 				string key(bu);\
 				m1->setKey(key);\
-				pthread_mutex_lock(&messTableMtx);\
-				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(m1, m1));\
-				pthread_mutex_unlock(&messTableMtx);}
+				int j = getModulus(m1);\
+				pthread_mutex_lock(&messTableMtx[j]);\
+				globalMessTable[j].insert(pair<const MESSAGE*, MESSAGE*>(m1, m1));\
+				pthread_mutex_unlock(&messTableMtx[j]);}
 
-#define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
-				SysTime inTime;\
-				GETTIME(inTime);\
-				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
-				int i= m1->getTotLines();\
-				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
-				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
-				string key(bu);\
-				__mess->setKey(key);\
-				pthread_mutex_lock(&messTableMtx);\
-				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, _mess));\
-				pthread_mutex_unlock(&messTableMtx);}
+//#define CREATENEWMESSAGE(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
+//				SysTime inTime;\
+//				GETTIME(inTime);\
+//				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
+//				int i= m1->getTotLines();\
+//				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
+//				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
+//				string key(bu);\
+//				__mess->setKey(key);\
+//				int i = getModulus(__mess);\
+//				pthread_mutex_lock(&messTableMtx[i]);\
+//				globalMessTable[i].insert(pair<const MESSAGE*, MESSAGE*>(__mess, _mess));\
+//				pthread_mutex_unlock(&messTableMtx[i]);}
 
 #define CREATENEWMESSAGE_EXT(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
 				SysTime inTime;\
@@ -196,9 +199,10 @@ class ThreadWrapper {
 				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
 				string key(bu);\
 				__mess->setKey(key);\
-				pthread_mutex_lock(&messTableMtx);\
-				globalMessTable.insert(pair<const MESSAGE*, MESSAGE*>(__mess, __mess));\
-				pthread_mutex_unlock(&messTableMtx);}}
+				int i = getModulus(__mess);\
+				pthread_mutex_lock(&messTableMtx[i]);\
+				globalMessTable[i].insert(pair<const MESSAGE*, MESSAGE*>(__mess, __mess));\
+				pthread_mutex_unlock(&messTableMtx[i]);}}
 
 //**********************************************************
 //**********************************************************
@@ -311,12 +315,13 @@ class ThreadWrapper {
 
 #undef DUMPMESSTABLE
 #define DUMPMESSTABLE {map<const MESSAGE*, MESSAGE *>::iterator p;\
-	pthread_mutex_lock(&messTableMtx);\
-	DEBOUT("GLOBALMESSAGETABLE",&globalMessTable << "]["<<globalMessTable.size())\
-	for (p=globalMessTable.begin() ; p != globalMessTable.end() ; p ++){\
-		DEBOUT("***********MESSAGE in table", (MESSAGE*)p->second)\
+	for(int i = 0; i < COMAPS;i++){\
+	pthread_mutex_lock(&messTableMtx[i]);\
+	DEBOUT("GLOBALMESSAGETABLE",i << "]["<<&globalMessTable[i] << "]["<<globalMessTable[i].size())\
+	for (p=globalMessTable[i].begin() ; p != globalMessTable[i].end() ; p ++){\
+		DEBOUT("***********MESSAGE in table ", i<<"]["<<(MESSAGE*)p->second)\
 	}\
-	pthread_mutex_unlock(&messTableMtx);}
+	pthread_mutex_unlock(&messTableMtx[i]);}}
 	//**********************************************************
 #undef NEWPTR
 #define NEWPTR(type, m1, m2,mess) type m1 = 0x0;\
@@ -381,4 +386,12 @@ class ThreadWrapper {
 //**********************************************************
 //**********************************************************
 
+inline int getModulus(void* pointer) {
+
+	DEBOUT("MESSAGE pointer modulus",(long long unsigned int)pointer)
+	int i = (int)((long long unsigned int)pointer % COMAPS);
+	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i)
+	return i;
+
+}
 

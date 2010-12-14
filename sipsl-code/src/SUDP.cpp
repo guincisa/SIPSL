@@ -144,8 +144,9 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
     echoServAddr.sin_port = htons(echoServPort);      /* Local port */
 
     //Init mutex
-    pthread_mutex_init(&messTableMtx,NULL);
-
+    for (int i = 0; i < COMAPS;i++){
+    	pthread_mutex_init(&messTableMtx[i],NULL);
+    }
     /* Bind to the local address */
     if (bind(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
         DEBERROR("bind() failed)");

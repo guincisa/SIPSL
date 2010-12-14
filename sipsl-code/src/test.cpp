@@ -68,8 +68,8 @@
 #include "TRNSPRT.h"
 #endif
 
-map<const MESSAGE*, MESSAGE *> globalMessTable;
-pthread_mutex_t messTableMtx;
+map<const MESSAGE*, MESSAGE *> globalMessTable[COMAPS];
+pthread_mutex_t messTableMtx[COMAPS];
 MESSAGE* MainMessage;
 
 int main(int argc, const char* argv[]) {

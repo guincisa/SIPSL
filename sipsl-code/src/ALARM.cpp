@@ -165,11 +165,12 @@ void ALMGR::alarmer(void){
 						//TODO DEBCODE
 						map<const MESSAGE*, MESSAGE*>::iterator p;
 						DEBCODE(
-							pthread_mutex_lock(&messTableMtx);
-							p = globalMessTable.find(_tmpMess);
-							if (p ==globalMessTable.end())
+							int i = getModulus(_tmpMess);
+							pthread_mutex_lock(&messTableMtx[i]);
+							p = globalMessTable[i].find(_tmpMess);
+							if (p ==globalMessTable[i].end())
 								DEBASSERT("ALARM found message has been deleted")
-							pthread_mutex_unlock(&messTableMtx);
+							pthread_mutex_unlock(&messTableMtx[i]);
 							)
 						//TODO DEBCODE
 
