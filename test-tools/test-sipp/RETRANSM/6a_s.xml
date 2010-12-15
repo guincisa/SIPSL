@@ -76,8 +76,7 @@
     ]]>
   </send>
 
-  <recv lost="100"
-	request="ACK"
+  <recv request="ACK"
         optional="true"
         rtd="true"
         crlf="true">
@@ -85,6 +84,8 @@
 
   <recv request="BYE">
   </recv>
+
+<pause milliseconds="2000"/>
 
   <send>
     <![CDATA[

@@ -55,6 +55,7 @@
   <recv response="180" optional="true">
   </recv>
 
+
   <recv response="183" optional="true">
   </recv>
 
@@ -66,7 +67,7 @@
 
   <!-- Packet lost can be simulated in any send/recv message by         -->
   <!-- by adding the 'lost = "10"'. Value can be [1-100] percent.       -->
-  <pause milliseconds="80000"/>
+  <pause milliseconds="1200"/>
   <send>
     <![CDATA[
 

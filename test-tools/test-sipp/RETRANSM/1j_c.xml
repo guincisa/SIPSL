@@ -48,14 +48,14 @@
     ]]>
   </send>
 
-  <recv response="100"
-        optional="true">
+  <recv response="100" optional="true" lost="100">
   </recv>
 
-  <recv response="180" optional="true">
+  <recv response="180" optional="true" lost="100">
   </recv>
 
-  <recv response="183" optional="true">
+
+  <recv response="183" optional="true" lost="100">
   </recv>
 
   <!-- By adding rrs="true" (Record Route Sets), the route sets         -->
@@ -64,8 +64,10 @@
   <recv response="200" rtd="true">
   </recv>
 
+
   <!-- Packet lost can be simulated in any send/recv message by         -->
   <!-- by adding the 'lost = "10"'. Value can be [1-100] percent.       -->
+  <pause milliseconds="1000"/>
   <send>
     <![CDATA[
 
@@ -105,8 +107,7 @@
     ]]>
   </send>
 
-  <recv lost="100"
-	response="200" crlf="true">
+  <recv response="200" crlf="true">
   </recv>
 
   <!-- definition of the response time repartition table (unit is ms)   -->

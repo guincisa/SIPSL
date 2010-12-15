@@ -1,0 +1,18 @@
+-------------------------------------------------------
+6a
+
+first bye lost
+
+sipp -sf c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf 6a_s.xml -p 5062
+
+
+
+-------------------------------------------------------
+6b
+
+200 ok never sent back
+
+
+sipp -sf c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf 6b_s.xml -p 5062

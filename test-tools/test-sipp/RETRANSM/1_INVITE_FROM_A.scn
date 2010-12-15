@@ -1,0 +1,91 @@
+------------------------------------------------------------------------
+1a
+First 100Trying is lost, second arrives
+
+The second is not sent because 180 arrives immediately to A
+
+sipp -sf 1a_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1b
+First and second 100Trying are lost
+
+sipp -sf 1b_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1c
+All 100Trying lost, 200OK arrives
+
+sipp -sf 1c_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1d
+First 180Ring lost, second OK
+
+sipp -sf 1d_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1e
+First 180Ring lost, second lost
+
+sipp -sf 1e_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1f
+All 180 lost
+
+sipp -sf 1f_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1g
+First 200 ok lost
+Is simulated by waiting one second before seding the ack on a side
+
+sipp -sf 1g_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1h
+Two 200OK lost
+
+sipp -sf 1h_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1i
+All 200OK lost
+
+sipp -sf 1i_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+------------------------------------------------------------------------
+1j
+All 1xx and first 200ok lost
+
+can't implement
+
+
+------------------------------------------------------------------------
+1k
+All 1xx and all 200ok lost
+
+sipp -sf 1k_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf s.xml -p 5062
+
+
+

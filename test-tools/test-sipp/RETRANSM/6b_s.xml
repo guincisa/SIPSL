@@ -25,7 +25,6 @@
   <!-- against stateful SIP proxies/B2BUAs.                             -->
   <recv request="INVITE" crlf="true">
   </recv>
-<pause milliseconds="80000"/>
 
   <!-- The '[last_*]' keyword is replaced automatically by the          -->
   <!-- specified header if it was present in the last message received  -->
@@ -83,8 +82,9 @@
         crlf="true">
   </recv>
 
-  <recv request="BYE">
+  <recv request="BYE" lost="100">
   </recv>
+
 
   <send>
     <![CDATA[

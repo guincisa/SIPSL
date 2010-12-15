@@ -52,7 +52,7 @@
     ]]>
   </send>
 
-  <send retrans="500" lost="10">
+  <send retrans="500">
     <![CDATA[
 
       SIP/2.0 200 OK
@@ -76,16 +76,17 @@
     ]]>
   </send>
 
-  <recv lost="10" request="ACK"
+  <recv request="ACK"
         optional="true"
         rtd="true"
-        crlf="true">
+        crlf="true"
+        lost="50">
   </recv>
 
-  <recv request="BYE" >
+  <recv request="BYE">
   </recv>
 
-  <send lost="10">
+  <send>
     <![CDATA[
 
       SIP/2.0 200 OK

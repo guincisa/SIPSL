@@ -55,6 +55,7 @@
   <recv response="180" optional="true">
   </recv>
 
+
   <recv response="183" optional="true">
   </recv>
 
@@ -66,7 +67,8 @@
 
   <!-- Packet lost can be simulated in any send/recv message by         -->
   <!-- by adding the 'lost = "10"'. Value can be [1-100] percent.       -->
-  <send lost="10">
+  <pause milliseconds="1000"/>
+  <send>
     <![CDATA[
 
       ACK sip:[service]@[remote_ip]:[remote_port] SIP/2.0

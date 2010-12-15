@@ -1,4 +1,0 @@
-The ACK to b is lost and B request the ack to SIPSL by sending the 200ok again
-sipp -sf ACKNOTSENT_B.xml -p 5062
-
-sipp -sf c.xml -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
