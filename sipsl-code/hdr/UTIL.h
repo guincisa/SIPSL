@@ -65,18 +65,43 @@ class ThreadWrapper {
 };
 
 
-#define MAXTHREADS 8
+//Tuning
+//COMAPS: number of comaps
+//COMAPS: number of gloabl message tables
+//MAXTHREADS: threads initialized in ENGINE
+//SIPENGINETH: SIPENGINE activated threads
+//SL_CCTH: SL_CC activated threads
+//ARR: dimension of the buffer
+//ARR_SHORT: dimension of the overload buffer
+//SPINC_MOD: number of locks in the buffer
+//DOA_CLEANUP: seconds every loop of the DOA
+//TIMER_DOA: milliseconds before a call_oset is set to DELETED
+//TIMER_DOA / 2 : milliseconds before a DELETED call_oset if purged
+
 
 #ifdef SPARC
 #define MAXTHREADS 64
 #define COMAPS 5
 #define SIPENGINETH 10
 #define SL_CCTH 64
+#define ARR 30
+#define ARR_SHORT 10
+#define SPINC_MOD 10
+#define DOA_CLEANUP 10
+#define TIMER_DOA 10000000
 #define LOGMIN
 #else
 #define COMAPS 6
+#define MAXTHREADS 8
 #define SIPENGINETH 6
 #define SL_CCTH 8
+#define ARR 30
+#define ARR_SHORT 10
+#define SPINC_MOD 10
+#define DOA_CLEANUP 10
+#define TIMER_DOA 10000000
+
+
 //#define LOGSIP
 //#define LOGINF
 //#define LOGMIN

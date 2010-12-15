@@ -27,9 +27,6 @@
 #define SPIN_RR  1
 #define SPIN_FF  0
 //#define USE_SPINB
-#define ARR 30
-#define ARR_SHORT 10
-#define SPINC_MOD 10
 #define SPIN_TRASH 1
 //Block mode will block the sl_co because it constantly back feeds itself
 //#define SPIN_BLOCK 2
