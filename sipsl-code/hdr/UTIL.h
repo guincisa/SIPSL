@@ -77,12 +77,13 @@ class ThreadWrapper {
 #define COMAPS 6
 #define SIPENGINETH 6
 #define SL_CCTH 8
-#define LOGSIP
-#define LOGINF
-#define LOGMIN
-#define LOGDEV
-#define LOGMEM
-#define LOGNTW
+//#define LOGSIP
+//#define LOGINF
+//#define LOGMIN
+//#define LOGDEV
+//#define LOGMEM
+//#define LOGNTW
+
 //#define LOGLOK
 #endif
 
@@ -227,12 +228,12 @@ class ThreadWrapper {
 		sprintf(bu, "%llu",m);\
 		string time(bu);\
 		stringstream xx ; xx << "TIME [" << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3)<<"]\n"; cout << xx.str();cout.flush();}
-
-
 #undef DEBNTW
 #define DEBNTW(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 #else
 #define DEBNTW(m1,m2)
+#define PRTIME
+#define PRTIME_F(m)
 #endif
 //**********************************************************
 //**********************************************************
@@ -265,6 +266,8 @@ class ThreadWrapper {
 #undef DEBERROR
 #define DEBERROR(m1)  {stringstream xx ; xx << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]\n";cout << xx.str();cout.flush();}
 	//**********************************************************
+#else
+#define DEBERROR(m)
 #endif
 //**********************************************************
 //**********************************************************
