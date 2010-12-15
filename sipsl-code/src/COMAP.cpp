@@ -440,10 +440,13 @@ void COMAP::purgeDOA(void){
 
 			string tmps;
 			if (call_oset->getSL_CO()->OverallState_CL == OS_COMPLETED && call_oset->getSL_CO()->OverallState_SV==OS_CONFIRMED){
-				tmps = "IN PROGESS";
-			}else{
-				tmps = "IN TEMPORARY STATE";
+				tmps = "CALL ESTABLISHED";
+			}else if (call_oset->getSL_CO()->OverallState_CL == OS_TERMINATED && call_oset->getSL_CO()->OverallState_SV==OS_TERMINATED){
+				tmps = "CLOSED CALL";
+			}else {
+				tmps = "CALL TEMPORARY STATE";
 			}
+
 
 
 			DEBOUT("COMAP::purgeDOA", call_oset << "] DOA state ["<<getDoa(call_oset,mod) <<"]["<<tmps)
