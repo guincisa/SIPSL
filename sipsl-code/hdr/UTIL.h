@@ -80,35 +80,38 @@ class ThreadWrapper {
 
 
 #ifdef SPARC
-#define MAXTHREADS 64
-#define COMAPS 5
-#define SIPENGINETH 10
-#define SL_CCTH 64
-#define ARR 30
-#define ARR_SHORT 10
-#define SPINC_MOD 10
-#define DOA_CLEANUP 10
-#define TIMER_DOA 10000000
+#define MAXTHREADS 264
+#define COMAPS 10
+#define SIPENGINETH 64
+#define SL_CCTH 264
+#define ARR 150
+#define ARR_SHORT 30
+#define SPINC_MOD 15
+#define DOA_CLEANUP 1
+#define TIMER_DOA 4000000
 #define LOGMIN
+#define LOGSIP
+#define LOGINF
+#define LOGMIN
+#define LOGDEV
+#define LOGMEM
+#define LOGNTW
 #else
 #define COMAPS 6
 #define MAXTHREADS 8
 #define SIPENGINETH 6
 #define SL_CCTH 8
-#define ARR 30
-#define ARR_SHORT 10
+#define ARR 100
+#define ARR_SHORT 30
 #define SPINC_MOD 10
-#define DOA_CLEANUP 10
-#define TIMER_DOA 10000000
-
-
-//#define LOGSIP
-//#define LOGINF
-//#define LOGMIN
-//#define LOGDEV
-//#define LOGMEM
-//#define LOGNTW
-
+#define DOA_CLEANUP 1
+#define TIMER_DOA 4000000
+#define LOGSIP
+#define LOGINF
+#define LOGMIN
+#define LOGDEV
+#define LOGMEM
+#define LOGNTW
 //#define LOGLOK
 #endif
 
@@ -402,10 +405,11 @@ class ThreadWrapper {
 
 inline int getModulus(void* pointer) {
 
+	//Addresses are all multiple of 2
 	DEBOUT("MESSAGE pointer modulus",(long long unsigned int)pointer)
-	int i = (int)((long long unsigned int)pointer % COMAPS);
-	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i)
-	return i;
+	int i = (int)((long long unsigned int)pointer % (COMAPS*2));
+	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i/2)
+	return i/2;
 
 }
 

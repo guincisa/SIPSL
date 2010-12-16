@@ -1814,7 +1814,12 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+
+	CREATEMESSAGE(___message, _message, SODE_TRNSCT_SV, SODE_KILLDOA)
+	SingleAction sa_3 = SingleAction(___message);
+	action->addSingleAction(sa_3);
+
 
 	DEBOUT("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
@@ -1823,7 +1828,7 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 	_sm->State = 2;
 
 	DEBOUT("SM act_200ok_bye_to_a setDoaRequested ","")
-	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
+	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 
 	return action;
 
@@ -1843,10 +1848,15 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+
+	CREATEMESSAGE(___message, _message, SODE_TRNSCT_SV, SODE_KILLDOA)
+	SingleAction sa_3 = SingleAction(___message);
+	action->addSingleAction(sa_3);
+
 
 	DEBOUT("SM act_200ok_bye_to_a setDoaRequested ","")
-	((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
+	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 
 	return action;
 
