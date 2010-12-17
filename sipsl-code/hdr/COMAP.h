@@ -40,8 +40,6 @@ class COMAP {
 
 	private:
 
-		//pthread_mutex_t unique[COMAPS];
-
 		//Call id x
 		map<string, CALL_OSET*> comap_mm[COMAPS];
 
@@ -58,13 +56,6 @@ class COMAP {
 
 		void setDoa(CALL_OSET*, int,int);
 		int getDoa(CALL_OSET*,int);
-
-//		//Number of messages currently running inside call_oset
-//		map<CALL_OSET*, int> call_oset_msg_cnt[COMAPS];
-
-//		int getCALL_OSET_MsgCnt(CALL_OSET*,int);
-//		void incCALL_OSET_MsgCnt(CALL_OSET*,int);
-//		void decCALL_OSET_MsgCnt(CALL_OSET*,int);
 
 		void resetDoaRequestTimer(CALL_OSET* call_oset,int modulus);
 
@@ -84,7 +75,9 @@ class COMAP {
 		COMAP(void);
 		~COMAP(void);
 
-		pthread_mutex_t unique_ex[COMAPS];
+		//pthread_mutex_t unique_ex[COMAPS];
+		pthread_mutex_t unique_exx[COMAPS];
+
 
 
 };

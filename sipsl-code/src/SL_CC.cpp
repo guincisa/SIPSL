@@ -157,7 +157,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		DEBSIP("SL_CC::parse CALLOSET normal ID",callids)
 
 		//If found it will be locked here
-		GETLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
+		//GETLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 		call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
 		//First try to get the Call object using x side parameters
@@ -175,7 +175,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			//Main entrance to sl_co
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess, modulus) == -1 ){
-				RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
+				//RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
 				if(!_mess->getLock()){
 					PURGEMESSAGE(_mess)
@@ -185,7 +185,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 					DEBASSERT("")
 				}
 			}
+			else {
+				DEBY
+			}
 			//MEssage has been worked by SL_CO
+
 			return;
 		}
 		// Then try to get call object using y side params
@@ -204,7 +208,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 					_mess->setDestEntity(SODE_TRNSCT_CL);
 				}
 				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
-					RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
+					//RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 					DEBINF("SL_CC::parse rejected by COMAP", callids)
 					if(!_mess->getLock()){
 						PURGEMESSAGE(_mess)
@@ -214,6 +218,10 @@ void SL_CC::parse(MESSAGE* _mess) {
 						DEBASSERT("")
 					}
 				}
+				else{
+					DEBY
+				}
+
 				return;
 			}
 		}
@@ -237,7 +245,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			DEBINF("SL_CC::parse CALL_OSET created by x side", callids << "] [" <<call_oset)
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
-				RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
+				//RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 				if(!_mess->getLock()){
 					PURGEMESSAGE(_mess)
 				}
@@ -245,6 +253,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 					DEBINF("Put this message into the locked messages table",_mess)
 					DEBASSERT("")
 				}
+			}else {
+				DEBY
 			}
 			return;
 
@@ -252,7 +262,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 		else {
 			DEBMESSAGE("Unexpected message ignored", _mess)
-			RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
+			//RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 			if(!_mess->getLock()){
 				PURGEMESSAGE(_mess)
 			}else {
@@ -288,7 +298,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		CALL_OSET* call_oset = 0x0;
 
 		//COMAP locked here
-		GETLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
+		//GETLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 		call_oset = comap->getCALL_OSET_XMain(callids,modulus);
 
 
@@ -298,7 +308,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 			if (call_oset != 0x0){
 				DEBINF("SL_CC::parse", "B SIDE call_oset exists")
 				if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
-					RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
+					//RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 					DEBINF("SL_CC::parse rejected by COMAP", callids)
 					if(!_mess->getLock()){
 						PURGEMESSAGE(_mess)
@@ -306,6 +316,8 @@ void SL_CC::parse(MESSAGE* _mess) {
 					else {
 						DEBINF("Put this message into the locked messages table",_mess)
 					}
+				} else{
+					DEBY
 				}
 				return;
 			}else{
@@ -321,7 +333,7 @@ void SL_CC::parse(MESSAGE* _mess) {
 		}
 		else {
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
-				RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
+				//RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
 				if(!_mess->getLock()){
 					PURGEMESSAGE(_mess)
@@ -329,7 +341,10 @@ void SL_CC::parse(MESSAGE* _mess) {
 				else {
 					DEBINF("Put this message into the locked messages table",_mess)
 				}
+			}else{
+				DEBY
 			}
+
 			return;
 		}
 	} else {

@@ -1827,7 +1827,6 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 	DEBOUT("SM act_200ok_bye_to_a move to state 2","")
 	_sm->State = 2;
 
-	DEBOUT("SM act_200ok_bye_to_a setDoaRequested ","")
 	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 
 	return action;
@@ -1854,8 +1853,6 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_3 = SingleAction(___message);
 	action->addSingleAction(sa_3);
 
-
-	DEBOUT("SM act_200ok_bye_to_a setDoaRequested ","")
 	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 
 	return action;

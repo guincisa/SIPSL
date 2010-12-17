@@ -319,7 +319,14 @@ void CALL_OSET::removeLockedMessage(MESSAGE* _message){
 
 }
 
+void CALL_OSET::dumpTrnsctSm(void){
 
+	map<string, TRNSCT_SM*> ::iterator p;
+	p = trnsctSmMap.begin();
+	for ( p = trnsctSmMap.begin(); p != trnsctSmMap.end() ; p++){
+		DEBOUT("TRNSCT MAP", p->first << "]["<<(TRNSCT_SM*)p->second << "][" << ((TRNSCT_SM*)p->second)->getId())
+	}
+}
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
@@ -532,7 +539,8 @@ void SL_CO::call(MESSAGE* _message){
 				}
 			}else{
 				// but the call object has been recognized!!!
-				DEBOUT("A unexpected reply directed to client has reached the call object","")
+				DEBMESSAGE("A unexpected reply directed to client has reached the call object",_message)
+				call_oset->dumpTrnsctSm();
 				DEBASSERT("Check this")
 			}
 

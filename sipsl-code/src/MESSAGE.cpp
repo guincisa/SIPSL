@@ -1344,7 +1344,7 @@ int MESSAGE::getModulus(void){
 	}
 	//is calculated in two ways:
 	// if first 5 chars of call id is "CoMap" then
-	// the modulus is the number after it (single digit)
+	// the modulus is the number after it (two digits)
 	// otherwise is calculated
 
 	string s = getHeadCallId().getContent();
