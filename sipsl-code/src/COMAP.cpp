@@ -379,8 +379,10 @@ void COMAP::purgeDOA(void){
 
 	int mod;
 
-	for ( mod=0; mod< COMAPS; mod++){
+	DEBOUT("COMAP::purgeDOA started",0)
 
+	for ( mod=0; mod< COMAPS; mod++){
+		DEBY
 		map<string, CALL_OSET*>::iterator p_comap_mm;
 		CALL_OSET* call_oset;
 		stack<string> todel_cx;

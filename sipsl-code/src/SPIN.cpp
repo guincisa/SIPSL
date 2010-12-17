@@ -443,6 +443,7 @@ SPINS::SPINS(){
 
 }
 void SPINS::lockBuffer(void){
+	DEBOUT("SPIN locked", 0)
 	GETLOCK(&dimmu, "dimmu")
 	forcedState = true;
 	RELLOCK(&dimmu, "dimmu")
@@ -450,6 +451,7 @@ void SPINS::lockBuffer(void){
 }
 
 void SPINS::unLockBuffer(void){
+	DEBOUT("SPIN unlocked", 0)
 	GETLOCK(&dimmu, "dimmu")
 	forcedState = false;
 	RELLOCK(&dimmu, "dimmu")
