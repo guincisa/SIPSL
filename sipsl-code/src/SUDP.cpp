@@ -144,7 +144,7 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
     echoServAddr.sin_port = htons(echoServPort);      /* Local port */
 
     //Init mutex
-    for (int i = 0; i < COMAPS;i++){
+    for (int i = 0; i < MESSAGEMAPS;i++){
     	pthread_mutex_init(&messTableMtx[i],NULL);
     }
     /* Bind to the local address */

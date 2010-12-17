@@ -391,8 +391,8 @@ class MESSAGE : public BASEMESSAGE {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //static multimap<const string, MESSAGE *> globalMessTable;
-extern map<const MESSAGE*, MESSAGE *> globalMessTable[COMAPS];
-extern pthread_mutex_t messTableMtx[COMAPS];
+extern map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
+extern pthread_mutex_t messTableMtx[MESSAGEMAPS];
 extern MESSAGE* MainMessage;
 
 

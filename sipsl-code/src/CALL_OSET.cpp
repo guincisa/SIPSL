@@ -388,9 +388,7 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 //**********************************************************************************
 void SL_CO::call(MESSAGE* _message){
 
-	//TODO if we use this mutex we can remove mutexes in state machines
-	//locked in comap
-	//GETLOCK(&mutex,"mutex");
+
 	PRTIME
 	DEBMESSAGE("SL_CO::call incoming", _message)
 
@@ -453,7 +451,6 @@ void SL_CO::call(MESSAGE* _message){
 				int t = _message->getModulus();
 				PURGEMESSAGE(_message)
 				((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, t);
-				//RELLOCK(&mutex,"mutex");
 				return;
 			}
 			DEBOUT("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))

@@ -157,7 +157,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 		DEBSIP("SL_CC::parse CALLOSET normal ID",callids)
 
 		//If found it will be locked here
-		//GETLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 		call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
 		//First try to get the Call object using x side parameters
@@ -175,7 +174,6 @@ void SL_CC::parse(MESSAGE* _mess) {
 
 			//Main entrance to sl_co
 			if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess, modulus) == -1 ){
-				//RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
 				DEBINF("SL_CC::parse rejected by COMAP", callids)
 				if(!_mess->getLock()){
 					PURGEMESSAGE(_mess)

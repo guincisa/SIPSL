@@ -97,6 +97,8 @@ class ThreadWrapper {
 #define LOGMEM
 #define LOGNTW
 #define LOGLOK
+#define ADDRESSPACE 8
+#define MESSAGEMAPS 30
 #else
 #define COMAPS 6
 #define MAXTHREADS 8
@@ -113,6 +115,10 @@ class ThreadWrapper {
 #define LOGDEV
 #define LOGMEM
 #define LOGNTW
+#define ADDRESSPACE 4
+#define MESSAGEMAPS 6
+
+
 //#define LOGLOK
 #endif
 
@@ -408,9 +414,9 @@ inline int getModulus(void* pointer) {
 
 	//Addresses are all multiple of 2
 	DEBOUT("MESSAGE pointer modulus",(long long unsigned int)pointer)
-	int i = (int)((long long unsigned int)pointer % (COMAPS*4));
-	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i/4)
-	return i/4;
+	int i = (int)((long long unsigned int)pointer % (MESSAGEMAPS*ADDRESSPACE));
+	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i/ADDRESSPACE)
+	return i/ADDRESSPACE;
 
 }
 

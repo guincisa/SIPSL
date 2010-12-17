@@ -98,6 +98,12 @@ COMAP::COMAP(void){
 		pthread_mutex_init(&unique_exx[i], NULL);
 		DEBDEV("comap unique_exx", &unique_exx)
 	}
+
+	for (int i = 0; i < COMAPS; i++){
+		loktry[i] = 0;
+	}
+
+
 }
 COMAP::~COMAP(void){
 }
@@ -325,12 +331,12 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 		RELLOCK(&unique_exx[_mod],"unique_exxx"<<_mod);
 		return -1;
 	}
-	if (getDoa(_call_oset,_mod) == DOA_REQUESTED  && _message->getGenEntity() == SODE_NTWPOINT) {
+	//if (getDoa(_call_oset,_mod) == DOA_REQUESTED  && _message->getGenEntity() == SODE_NTWPOINT) {
+	if (getDoa(_call_oset,_mod) == DOA_REQUESTED) {
 
-		//TODO Not enough...
 		resetDoaRequestTimer(_call_oset,_mod);
-
 	}
+
 	DEBOUT("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
 
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
@@ -354,7 +360,6 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
 
 	resetDoaRequestTimer(_call_oset,_mod);
 
-
 	if (getDoa(_call_oset,_mod) == DOA_DELETED || getDoa(_call_oset,_mod) == DOA_REQUESTED) {
 		DEBOUT("COMAP::setDoaRequested already deleted (-1) or confirmed (2)", getDoa(_call_oset,_mod))
 		//Reset delete timer
@@ -373,6 +378,7 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
 void COMAP::purgeDOA(void){
 
 	int mod;
+
 	for ( mod=0; mod< COMAPS; mod++){
 
 		map<string, CALL_OSET*>::iterator p_comap_mm;
@@ -382,8 +388,20 @@ void COMAP::purgeDOA(void){
 		if (mod >= COMAPS){
 			DEBASSERT("invalid comap index "<<mod)
 		}
-
-		GETLOCK(&unique_exx[mod]," purgeDOA unique_exx"<<mod);
+		int trylok;
+		TRYLOCK(&unique_exx[mod]," purgeDOA unique_exx"<<mod, trylok)
+		if(trylok != 0){
+			loktry[mod]++;
+			if (loktry[mod] > 10){
+				DEBOUT("COMAP::purgeDOA trylock failed more than 10 times", mod)
+				DEBASSERT("COMAP::purgeDOA trylock failed")
+			}else{
+				continue;
+			}
+		}else {
+			DEBY
+			loktry[mod] = 0;
+		}
 
 		DEBMEM("COMAP::purgeDOA comap entries",comap_mm[mod].size())
 		for( p_comap_mm = comap_mm[mod].begin(); p_comap_mm != comap_mm[mod].end() ; ++p_comap_mm){
@@ -411,7 +429,7 @@ void COMAP::purgeDOA(void){
 				map<CALL_OSET*, unsigned long long int>::iterator p_ttl;
 				p_ttl = call_oset_ttl[mod].find(call_oset);
 				if (p_ttl == call_oset_ttl[mod].end()){
-					DEBASSERT("call_oset_ttl insistent")
+					DEBASSERT("call_oset_ttl inexistent")
 				}
 				if (p_ttl->second < now){
 
@@ -450,6 +468,7 @@ void COMAP::purgeDOA(void){
 
 					call_id_y2x[mod].erase(call_oset->getCallId_Y());
 
+					RELLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
 					DELPTR(call_oset,"CALL_OSET");
 					call_oset = 0x0;
 					//cant relase here... would core

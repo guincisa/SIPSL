@@ -40,6 +40,8 @@ class COMAP {
 
 	private:
 
+		int loktry[COMAPS];
+
 		//Call id x
 		map<string, CALL_OSET*> comap_mm[COMAPS];
 
