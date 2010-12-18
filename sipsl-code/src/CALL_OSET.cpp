@@ -176,8 +176,10 @@ CALL_OSET::~CALL_OSET(void){
 			int ixx = getModulus(m);
 			pthread_mutex_lock(&messTableMtx[ixx]);
 			p = globalMessTable[ixx].find(m);
-			if (p ==globalMessTable[ixx].end())
+			if (p ==globalMessTable[ixx].end()){
+				DEBOUT("Message already deleted", m)
 				DEBASSERT("Message already deleted")
+			}
 			pthread_mutex_unlock(&messTableMtx[ixx]);
 			)
 		//TODO DEBCODE

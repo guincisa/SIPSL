@@ -163,24 +163,26 @@ void ALMGR::alarmer(void){
 
 						DEBOUT("ALARM found message", _tmpMess)
 
-						//TODO DEBCODE
+						//Autofix code
+						//This code fixes mistakes made in sm
 						map<const MESSAGE*, MESSAGE*>::iterator p;
-						DEBCODE(
-							int i = getModulus(_tmpMess);
-							pthread_mutex_lock(&messTableMtx[i]);
-							p = globalMessTable[i].find(_tmpMess);
-							if (p ==globalMessTable[i].end()){
-								DEBOUT("ALARM found message has been deleted",_tmpMess)
-								DEBASSERT("ALARM found message has been deleted")
-							}
-							pthread_mutex_unlock(&messTableMtx[i]);
-							)
-						//TODO DEBCODE
+						int i = getModulus(_tmpMess);
+						pthread_mutex_lock(&messTableMtx[i]);
+						p = globalMessTable[i].find(_tmpMess);
+						bool delmess=false;
+						if (p ==globalMessTable[i].end()){
+							delmess = true;
+							DEBOUT("ALARM found with deleted message",_tmpMess)
+
+						}
+						pthread_mutex_unlock(&messTableMtx[i]);
 
 						//ALMGR shall not care about message or internalop
 						//SL_CC does it but here if for debug purposes
+						if (delmess){
 
-						if ( _tmpMess->getTypeOfInternal() == TYPE_MESS ){
+						}
+						else if ( _tmpMess->getTypeOfInternal() == TYPE_MESS ){
 							DEBOUT("ALMGR::alarmer operation TYPE_MESS", _tmpMess)
 							_tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
 							_tmpMess->compileMessage();
@@ -231,6 +233,17 @@ void ALMGR::alarmer(void){
 				}
 			}
 		}
+		else{
+			//Autofix code
+			//This code fixes mistakes
+			//the pq can be empty nut the other structures may still contain something.
+			if(!time_alarm_mumap.empty()){
+				DEBOUT("ALARM pq empty, time_alarm_mumap not empty","")
+			}
+			if (!cidbranch_alm_map.empty()){
+				DEBOUT("ALARM pq empty, cidbranch_alm_map not empty","")
+			}
+		}
 		RELLOCK(&mutex,"mutex");
 
 	}
@@ -269,10 +282,15 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 
 	map<string, ALARM*>::iterator p;
 	p = cidbranch_alm_map.find(cidbranch_alarm);
+	//Autofix code
+	//This code fixes mistakes made in sm
 	if ( p!= cidbranch_alm_map.end()){
 		//Same alarm id already exists
 		DEBOUT("Same alarm id already exists", cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
-		internalCancelAlarm(cidbranch_alarm);
+			if( ((ALARM*)p->second)->isActive()){
+				DEBOUT("Active alarm replaced",cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
+				((ALARM*)p->second)->cancel();
+			}
 	}
 	cidbranch_alm_map.erase(cidbranch_alarm);
 	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));

@@ -85,6 +85,17 @@ class ALMGR {
         void internalCancelAlarm(string cidbranch);
 
 
+        //Case in cui il messaggio è MainMessage
+        //1. inserisco un allarme: alarm map <xyz,a1>
+        //   - inserisco il trigger time nella priority queue pq<time1>
+        //   - inserisco il trigger time e allarme nella multimap mmu<time1,a1>
+        //2. reinserisco xyz
+        //   a1 è disattivato a1->cancel
+        //3. la sl_co va in cancellazione
+        //   l'allarme è disattivato solo se il messaggio da cancellare è un type_op
+        //   tutti i type_op gia eliminati non possono disattivare l'allarme
+        //
+
 	public:
 		void alarmer(void);
 
