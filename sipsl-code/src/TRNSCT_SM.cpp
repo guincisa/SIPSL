@@ -1836,8 +1836,6 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_resend_200ok_to_a called",_message)
 
-	_message->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	//**************************************
@@ -1849,9 +1847,8 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 	//Action TIMER_S
 	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
-	CREATEMESSAGE(___message, _message, SODE_TRNSCT_SV, SODE_KILLDOA)
-	SingleAction sa_3 = SingleAction(___message);
-	action->addSingleAction(sa_3);
+//	SingleAction sa_3 = SingleAction(_message);
+//	action->addSingleAction(sa_3);
 
 	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 

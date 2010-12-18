@@ -665,7 +665,9 @@ void SL_CO::actionCall_SV(ACTION* action){
 			}
 		}
 		else {
-			//TODO
+			DEBMESSAGE("SL_CO::call action is unexpected",_tmpMessage)
+			DEBOUT("SL_CO::call action is unexpected - type of internal",_tmpMessage->getTypeOfInternal())
+			DEBOUT("SL_CO::call action is unexpected - destination",_tmpMessage->getDestEntity())
 			DEBASSERT("SL_CO::call action is unexpected")
 		}
 		DEBOUT("pop action","")

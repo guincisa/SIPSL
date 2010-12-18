@@ -115,8 +115,8 @@ class ThreadWrapper {
 #define LOGDEV
 #define LOGMEM
 #define LOGNTW
-#define ADDRESSPACE 4
-#define MESSAGEMAPS 6
+#define ADDRESSPACE 8
+#define MESSAGEMAPS 20
 
 
 //#define LOGLOK

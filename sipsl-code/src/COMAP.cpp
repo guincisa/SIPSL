@@ -340,8 +340,11 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 	DEBOUT("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
 
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+	DEBOUT("CALL_OSET::SL_CO::mutex reaching",_call_oset)
 	GETLOCK(&(_call_oset->getSL_CO()->mutex),"CALL_OSET::SL_CO::mutex");
+	DEBOUT("CALL_OSET::SL_CO::mutex getting",_call_oset)
 	_call_oset->getSL_CO()->call(_message);
+	DEBOUT("CALL_OSET::SL_CO::mutex releasing",_call_oset)
 	RELLOCK(&(_call_oset->getSL_CO()->mutex),"CALL_OSET::SL_CO::mutex");
 
 	return 0;
@@ -393,6 +396,7 @@ void COMAP::purgeDOA(void){
 		int trylok;
 		TRYLOCK(&unique_exx[mod]," purgeDOA unique_exx"<<mod, trylok)
 		if(trylok != 0){
+			DEBOUT("COMAP::purgeDOA trylock failed", mod)
 			loktry[mod]++;
 			if (loktry[mod] > 10){
 				DEBOUT("COMAP::purgeDOA trylock failed more than 10 times", mod)
@@ -410,7 +414,14 @@ void COMAP::purgeDOA(void){
 			DEBY
 			call_oset = (CALL_OSET*)p_comap_mm->second;
 
-			GETLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
+			DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex reaching", call_oset)
+			int rxz;
+			TRYLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex",rxz)
+			if(rxz!=0){
+				DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex mutex locked", call_oset)
+				continue;
+			}
+			DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex getting", call_oset)
 
 			string tmps;
 			if (call_oset->getSL_CO()->OverallState_CL == OS_COMPLETED && call_oset->getSL_CO()->OverallState_SV==OS_CONFIRMED){
@@ -462,7 +473,6 @@ void COMAP::purgeDOA(void){
 				if (p_ttl->second < now){
 
 					//check if the CALL_OSET::SL_CO is locked
-					DEBOUT("TRYLOCK call_oset",call_oset)
 
 					todel_cx.push((string)p_comap_mm->first);
 
@@ -471,6 +481,8 @@ void COMAP::purgeDOA(void){
 					call_id_y2x[mod].erase(call_oset->getCallId_Y());
 
 					RELLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
+					DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex releasing", call_oset)
+
 					DELPTR(call_oset,"CALL_OSET");
 					call_oset = 0x0;
 					//cant relase here... would core

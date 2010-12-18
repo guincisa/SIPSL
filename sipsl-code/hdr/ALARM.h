@@ -39,6 +39,7 @@ class ALARM {
 
 		string cidbranch;
 
+
 	public:
 		ALARM(MESSAGE* message, unsigned long long int fireTime);
 		unsigned long long int getTriggerTime(void);
@@ -63,26 +64,25 @@ class ALMGR {
 		// a2 -> 20
 		// a3 -> 40
 
+
 		priority_queue<const unsigned long long int, vector<unsigned long long int>, greater<const unsigned long long int> > alarm_pq;
 
+
+		//TODO need to change this to
+		//multimap<time, cidstring>
 		multimap<const unsigned long long int, ALARM*, less<const unsigned long long int> > time_alarm_mumap;
+
 		timespec sleep_time;
 		SL_CC* sl_cc;
 
-		// This is used when I was to clear the alarm related to message
-		// to cancel an alarm I use the MESSAGE*
-		//map<MESSAGE*, ALARM*> mess_alm_map;
-
-		//string callidy = _message->getHeadCallId().getNormCallId() +
-		//		_message->getSTKHeadVia().top()->getC_AttVia().getViaParms().findRvalue("branch");
 
 		map<string, ALARM*> cidbranch_alm_map;
-//		map<string, MESSAGE*> cidbranch_message;
-//		map<MESSAGE*, string> message_cidbranch;
 
         ThreadWrapper *listenerThread;
 
         pthread_mutex_t mutex;
+
+        void internalCancelAlarm(string cidbranch);
 
 
 	public:

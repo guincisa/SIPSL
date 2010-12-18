@@ -85,6 +85,7 @@ ALMGR::ALMGR(SL_CC* _sl_cc, timespec _sleep_time){
 	sleep_time = _sleep_time;
 	sl_cc = _sl_cc;
 	DEBOUT("ALMGR::ALMGR", "alarm created")
+
 }
 void ALMGR::initAlarm(void){
 
@@ -168,8 +169,10 @@ void ALMGR::alarmer(void){
 							int i = getModulus(_tmpMess);
 							pthread_mutex_lock(&messTableMtx[i]);
 							p = globalMessTable[i].find(_tmpMess);
-							if (p ==globalMessTable[i].end())
+							if (p ==globalMessTable[i].end()){
+								DEBOUT("ALARM found message has been deleted",_tmpMess)
 								DEBASSERT("ALARM found message has been deleted")
+							}
 							pthread_mutex_unlock(&messTableMtx[i]);
 							)
 						//TODO DEBCODE
@@ -252,12 +255,6 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 
 	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
 
-	// insert into priority q
-	alarm_pq.push(alm->getTriggerTime());
-
-
-	//insert into map time - alarm
-	time_alarm_mumap.insert(pair<unsigned long long int const, ALARM*>(alm->getTriggerTime(), alm));
 
 
 	string cidbranch_alarm;
@@ -268,10 +265,25 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 	DEBY
 	DEBOUT("((C_HeadVia&) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().getContent()",((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().getContent())
 	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->getOrderOfOperation()+ "#";
-	DEBOUT("Alarm id (cid+branch", cidbranch_alarm);
+	DEBOUT("Inserting Alarm id (cid+branch", cidbranch_alarm << "]["<<alm);
 
+	map<string, ALARM*>::iterator p;
+	p = cidbranch_alm_map.find(cidbranch_alarm);
+	if ( p!= cidbranch_alm_map.end()){
+		//Same alarm id already exists
+		DEBOUT("Same alarm id already exists", cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
+		internalCancelAlarm(cidbranch_alarm);
+	}
 	cidbranch_alm_map.erase(cidbranch_alarm);
 	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
+
+	// insert into priority q
+	alarm_pq.push(alm->getTriggerTime());
+
+
+	//insert into map time - alarm
+	time_alarm_mumap.insert(pair<unsigned long long int const, ALARM*>(alm->getTriggerTime(), alm));
+
 
 	RELLOCK(&mutex,"mutex");
 
@@ -279,75 +291,33 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 
 }
 
-//void ALMGR::insertAlarm(MESSAGE* _message, SysTime _fireTime){
-//
-//	//check if message already exists and cancel related alarm
-//	//do note remove it from multimap and from mess_alm map
-//
-//	DEBOUT("ALMGR::insertAlarm", (unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec )
-//
-//	GETLOCK(&mutex,"mutex");
-//
-//	//DEBOUT("ALMGR::insertAlarm", _fireTime.tv.tv_sec*1000000+_fireTime.tv.tv_usec)
-//	SysTime mytime;
-//	GETTIME(mytime);
-//	unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
-//	DEBOUT("ALMGR::insertAlarm in ms", (double) ((unsigned long long int)_fireTime.tv.tv_sec*1000000 + (unsigned long long int)_fireTime.tv.tv_usec  - curr) / 1000000)
-//
-//
-//	map<MESSAGE*, ALARM*>::iterator p;
-//
-//	NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
-//
-//	// insert into priority q
-//	alarm_pq.push(alm->getTriggerTime());
-//
-//
-//	//insert into map time - alarm
-//	time_alarm_mumap.insert(pair<unsigned long long int const, ALARM*>(alm->getTriggerTime(), alm));
-//
-//
-//	string cidbranch_alarm;
-//	DEBY
-//	((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getContent();
-//	DEBY
-//	DEBOUT("((C_HeadVia&) _message->getSTKHeadVia().top()).getC_AttVia().getContent()",((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getContent())
-//	DEBY
-//	DEBOUT("((C_HeadVia&) _message->getSTKHeadVia().top()).getC_AttVia().getViaParms().getContent()",((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().getContent())
-//	cidbranch_alarm = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->orderOfOperation+ "#";
-//	DEBOUT("Alarm id (cid+branch", cidbranch_alarm);
-//	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
-//
-//	RELLOCK(&mutex,"mutex");
-//
-//	return;
-//
-//}
 void ALMGR::cancelAlarm(string _cidbranch){
 
 	// alarm is deactivated and the related message may have been
 	// purged so
 
 	GETLOCK(&mutex,"mutex");
+		internalCancelAlarm(_cidbranch);
+	RELLOCK(&mutex,"mutex");
 
-	DEBOUT("ALMGR::cancelAlarm", _cidbranch)
+
+}
+void ALMGR::internalCancelAlarm(string _cidbranch){
 
 	map<string, ALARM*> ::iterator p;
 	p = cidbranch_alm_map.find(_cidbranch);
 	ALARM* tmp = 0x0;
 	if (p != cidbranch_alm_map.end()){
-		DEBOUT("ALMGR::cancelAlarm", "found")
+		DEBOUT("ALMGR::internalCancelAlarm", "found")
 		tmp = (ALARM*)p->second;
 		if(!tmp->isActive()){
-			DEBOUT("ALMGR::cancelAlarm", _cidbranch <<  " is not active")
+			DEBOUT("ALMGR::internalCancelAlarm", _cidbranch <<  " is not active")
 		}
 		tmp->cancel();
 	}
 	else {
-		DEBOUT("ALMGR::cancelAlarm", "not found")
+		DEBOUT("ALMGR::internalCancelAlarm", "not found")
 	}
-	RELLOCK(&mutex,"mutex");
-
 
 }
 //**********************************************************************************
