@@ -141,6 +141,10 @@ class ThreadWrapper {
 #undef DEBASSERT
 #define DEBASSERT(m1)  {stringstream xx ; xx << "\n\nDEBASSERT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< "\n ************ \n"<< m1 << "\n ************ \n"; cout << xx.str();cout.flush();assert(0);}
 
+#undef DEBWARNING
+#define DEBWARNING(m1,m2)  BDEBUG("******************************\n   WARNING   \n******************************\n"<<m1,m2)
+
+
 //#define DEBASSERT(m1) {cout << "\n\nDEBASSERT [" << pthread_self() << "] "<< __FILE__ << " " << __LINE__<< " ******" << m1 << "*****" << endl<<endl<< endl; cout.flush();assert(0);}
 //**********************************************************
 #define WAITTIME { timespec sleep_time; \

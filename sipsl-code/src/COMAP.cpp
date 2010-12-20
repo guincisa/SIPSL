@@ -341,11 +341,9 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
 	DEBOUT("CALL_OSET::SL_CO::mutex reaching",_call_oset)
-	GETLOCK(&(_call_oset->getSL_CO()->mutex),"CALL_OSET::SL_CO::mutex");
 	DEBOUT("CALL_OSET::SL_CO::mutex getting",_call_oset)
-	_call_oset->getSL_CO()->call(_message);
+	_call_oset->call(_message);
 	DEBOUT("CALL_OSET::SL_CO::mutex releasing",_call_oset)
-	RELLOCK(&(_call_oset->getSL_CO()->mutex),"CALL_OSET::SL_CO::mutex");
 
 	return 0;
 }
@@ -414,19 +412,19 @@ void COMAP::purgeDOA(void){
 			DEBY
 			call_oset = (CALL_OSET*)p_comap_mm->second;
 
-			DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex reaching", call_oset)
-			int rxz;
-			TRYLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex",rxz)
-			if(rxz!=0){
-				DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex mutex locked", call_oset)
-				continue;
-			}
+//			DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex reaching", call_oset)
+//			int rxz;
+//			TRYLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex",rxz)
+//			if(rxz!=0){
+//				DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex mutex locked", call_oset)
+//				continue;
+//			}
 			DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex getting", call_oset)
 
 			string tmps;
-			if (call_oset->getSL_CO()->OverallState_CL == OS_COMPLETED && call_oset->getSL_CO()->OverallState_SV==OS_CONFIRMED){
+			if (call_oset->getOverallState_CL() == OS_COMPLETED && call_oset->getOverallState_SV()==OS_CONFIRMED){
 				tmps = "CALL ESTABLISHED";
-			}else if (call_oset->getSL_CO()->OverallState_CL == OS_TERMINATED && call_oset->getSL_CO()->OverallState_SV==OS_TERMINATED){
+			}else if (call_oset->getOverallState_CL() == OS_TERMINATED && call_oset->getOverallState_SV()==OS_TERMINATED){
 				tmps = "CLOSED CALL";
 			}else {
 				tmps = "CALL TEMPORARY STATE";
@@ -480,7 +478,7 @@ void COMAP::purgeDOA(void){
 
 					call_id_y2x[mod].erase(call_oset->getCallId_Y());
 
-					RELLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
+//					RELLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
 					DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex releasing", call_oset)
 
 					DELPTR(call_oset,"CALL_OSET");
@@ -493,7 +491,7 @@ void COMAP::purgeDOA(void){
 				//Nothing
 			}
 			if (call_oset != 0x0){
-				RELLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
+//				RELLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
 			}
 		}
 		string tops;

@@ -172,7 +172,7 @@ void ALMGR::alarmer(void){
 						bool delmess=false;
 						if (p ==globalMessTable[i].end()){
 							delmess = true;
-							DEBOUT("ALARM found with deleted message",_tmpMess)
+							DEBWARNING("ALARM found with deleted message",_tmpMess)
 
 						}
 						pthread_mutex_unlock(&messTableMtx[i]);
@@ -288,7 +288,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 		//Same alarm id already exists
 		DEBOUT("Same alarm id already exists", cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
 			if( ((ALARM*)p->second)->isActive()){
-				DEBOUT("Active alarm replaced",cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
+				DEBWARNING("Active alarm replaced",cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
 				((ALARM*)p->second)->cancel();
 			}
 	}

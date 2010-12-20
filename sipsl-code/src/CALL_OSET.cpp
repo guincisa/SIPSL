@@ -100,6 +100,10 @@
 //**********************************************************************************
 CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call){
 
+    pthread_mutex_init(&mutex, NULL);
+	GETLOCK(&(mutex),"CALL_OSET::mutex");
+
+
 	engine = _engine;
 	sequenceMap.insert(pair<string, int>("ACK_B",0));
 	sequenceMap.insert(pair<string, int>("INVITE_B",0));
@@ -120,8 +124,14 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call){
 	DEBOUT("CALL_OSET sequenceMap", &sequenceMap)
 	DEBOUT("CALL_OSET trnsctSmMap", &trnsctSmMap)
 
+	RELLOCK(&(mutex),"SL_CO::mutex");
+
 }
 CALL_OSET::~CALL_OSET(void){
+
+	//Need to lock here!
+	GETLOCK(&(mutex),"CALL_OSET::mutex");
+
 
 	DEBOUT("CALL_OSET ACCESS CALL_OSET::~CALL_OSET begin", this)
 	if (sl_co != 0x0){
@@ -177,8 +187,7 @@ CALL_OSET::~CALL_OSET(void){
 			pthread_mutex_lock(&messTableMtx[ixx]);
 			p = globalMessTable[ixx].find(m);
 			if (p ==globalMessTable[ixx].end()){
-				DEBOUT("Message already deleted", m)
-				DEBASSERT("Message already deleted")
+				DEBWARNING("Message already deleted",m)
 			}
 			pthread_mutex_unlock(&messTableMtx[ixx]);
 			)
@@ -199,6 +208,7 @@ CALL_OSET::~CALL_OSET(void){
 	}
 	DELPTR(sl_co, "SL_CO")
 	DEBY
+	RELLOCK(&(mutex),"SL_CO::mutex");
 
 }
 int CALL_OSET::getNextSequence(string _method){
@@ -375,13 +385,24 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 		lastTRNSCT_SM_ACK_CL = _trnsctSm;
 	}	return;
 }
+void CALL_OSET::call(MESSAGE* _message){
+	GETLOCK(&(mutex),"CALL_OSET::mutex");
+	sl_co->call(_message);
+	RELLOCK(&(mutex),"CALL_OSET::mutex");
+}
+int CALL_OSET::getOverallState_CL(void){
+	return sl_co->OverallState_CL;
+}
+int CALL_OSET::getOverallState_SV(void){
+	return sl_co->OverallState_SV;
+}
+
 //**********************************************************************************
 //**********************************************************************************
 // SL_CO
 //**********************************************************************************
 SL_CO::SL_CO(CALL_OSET* _call_oset){
 	call_oset = _call_oset;
-    pthread_mutex_init(&mutex, NULL);
     OverallState_SV = OS_INIT;
     OverallState_CL = OS_INIT;
 
@@ -538,9 +559,10 @@ void SL_CO::call(MESSAGE* _message){
 				}
 			}else{
 				// but the call object has been recognized!!!
-				DEBMESSAGE("A unexpected reply directed to client has reached the call object",_message)
+				// the sm may have been deleted
+				DEBWARNING("An unexpected reply directed to client has reached the call object", _message)
 				call_oset->dumpTrnsctSm();
-				DEBASSERT("Check this")
+				action = 0x0;
 			}
 
 			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
@@ -561,8 +583,8 @@ void SL_CO::call(MESSAGE* _message){
 		}
 		else {
 			//_message must be deleted using an action and sode_kill
-			DEBASSERT("Action cannot be null anymore")
 
+			// we may receive the message from above: An unexpected reply directed to client has reached the call object
 
 			//TODO we mayn receive an alarm that is expired
 			//so the sm has ignored it

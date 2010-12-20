@@ -196,13 +196,11 @@ ACTION* SM::event(MESSAGE* _event){
 	multimap<const int,PREDICATE_ACTION*>::iterator iter;
 	ret = move_sm.equal_range(State);
 
-	GETLOCK(&mutex,"mutex");
     for (iter=ret.first; iter!=ret.second; ++iter){
 		tmp  = iter->second;
 		DEBOUT("SM::event tmp  = iter->second;", iter->second)
 		if (tmp->predicate(this, _event)){
 			act = tmp->action(this, _event);
-			RELLOCK(&mutex,"mutex");
 			return act;
 		}
 	}
@@ -216,7 +214,6 @@ ACTION* SM::event(MESSAGE* _event){
 			SingleAction sa_1 = SingleAction(_event);
 			act->addSingleAction(sa_1);
 	}
-	RELLOCK(&mutex,"mutex");
 
 	return(act);
 }
@@ -233,8 +230,6 @@ SM::SM(ENGINE* _eng, SL_CO* _sl_co){
 	DEBOUT("SM::SM", "")
 	sl_cc = _eng;
     sl_co = _sl_co;
-
-    pthread_mutex_init(&mutex, NULL);
 	State = 0;
 
 //	controlSequence = 1;

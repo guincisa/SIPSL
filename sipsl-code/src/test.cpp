@@ -12,6 +12,7 @@
 #include <sys/socket.h> /* for socket() and bind() */
 #include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
 #include <stdlib.h>     /* for atoi() and exit() */
+#include <signal.h>
 
 #ifndef UTIL_H
 #include "UTIL.h"
@@ -72,7 +73,17 @@ map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
 pthread_mutex_t messTableMtx[MESSAGEMAPS];
 MESSAGE* MainMessage;
 
+void ex_program(int sig) {
+	DEBOUT("SIGSEGV", sig);
+	DEBASSERT("...")
+// (void) signal(SIGINT, SIG_DFL);
+}
+
+
 int main(int argc, const char* argv[]) {
+
+	 (void) signal(SIGSEGV, ex_program);
+
 
 	if (argc == 1){
 

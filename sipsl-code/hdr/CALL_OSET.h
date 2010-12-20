@@ -30,15 +30,13 @@ class ENGINE;
 class TRNSPRT;
 
 //Umbrella class which hosts states machines and call object
+//This must be controlled by a mutex
 class CALL_OSET {
 
-	friend class COMAP;
 	friend class SL_CO;
 	friend class ALO;
 	friend class VALO;
 	friend class TRNSCT_SM;
-	friend class TRNSPRT;
-	friend class SL_CC;
 
 	private:
 
@@ -49,12 +47,10 @@ class CALL_OSET {
 		string callId_X;
 		string callId_Y;
 		void setCallId_Y(string _cally);
-		string getCallId_Y(void);
 		void setCallId_X(string callId_X);
 		string getCallId_X(void);
 		void setSL_CO(SL_CO*);
 		SL_CO* getSL_CO(void);
-		ENGINE* getENGINE(void);
 		ALO* getALO(void);
 		void setALO(ALO*);
 		TRNSPRT* getTRNSPRT(void);
@@ -89,12 +85,26 @@ class CALL_OSET {
 
 		map<MESSAGE*,int> lockedMessages;
 
+		pthread_mutex_t mutex;
+
+		MESSAGE* getNextLockedMessage(void);
+
 	public:
 		CALL_OSET(ENGINE*, TRNSPRT*, string call_x);
 		~CALL_OSET(void);
+
+		string getCallId_Y(void);
+
+		int getOverallState_CL(void);
+		int getOverallState_SV(void);
+
+		//Wrapper for SL_CO::call
+		void call(MESSAGE*);
+
 		void insertLockedMessage(MESSAGE*);
-		MESSAGE* getNextLockedMessage(void);
 		void removeLockedMessage(MESSAGE*);
+
+		ENGINE* getENGINE(void);
 
 
 };
@@ -122,9 +132,6 @@ class SL_CO {
 		CALL_OSET* call_oset;
 
 		void call(MESSAGE*);
-
-		pthread_mutex_t mutex;
-
 
 };
 

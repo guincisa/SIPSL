@@ -37,7 +37,6 @@ class PREDICATE_ACTION;
 class SM {
 
 	private:
-		pthread_mutex_t mutex;
 		multimap< const int, PREDICATE_ACTION*> move_sm;
 
 		ENGINE* sl_cc;

@@ -1308,6 +1308,9 @@ void MESSAGE::setTypeOfInternal(int _i){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setTypeOfInternal invalid")
 
+	if( typeOfInternal == TYPE_OP && _i != TYPE_OP){
+		DEBWARNING("MESSAGE::setTypeOfInternal changing from TYPE_OP", this)
+	}
 	typeOfInternal = _i;
 }
 int MESSAGE::getType_trnsct(void){
