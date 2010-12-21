@@ -456,7 +456,7 @@ void COMAP::purgeDOA(void){
 					unsigned long long int killtime = now + TIMER_DOA / 2;
 					DEBOUT("COMAP::setDoa ttl will be removed", TIMER_DOA /2 << " " << killtime)
 					call_oset_ttl[mod].erase(p_ttl);
-					call_oset_ttl[mod].insert(pair<CALL_OSET*, unsigned long long int>(call_oset,killtime));
+					call_oset_ttl_delete[mod].insert(pair<CALL_OSET*, unsigned long long int>(call_oset,killtime));
 
 				} else{
 					DEBOUT("COMAP::purgeDOA not time to delete ", call_oset)
@@ -468,12 +468,12 @@ void COMAP::purgeDOA(void){
 				SysTime afterT;
 				GETTIME(afterT);
 				unsigned long long int now = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec;
-				map<CALL_OSET*, unsigned long long int>::iterator p_ttl;
-				p_ttl = call_oset_ttl[mod].find(call_oset);
-				if (p_ttl == call_oset_ttl[mod].end()){
+				map<CALL_OSET*, unsigned long long int>::iterator p_ttl_del;
+				p_ttl_del = call_oset_ttl_delete[mod].find(call_oset);
+				if (p_ttl_del == call_oset_ttl_delete[mod].end()){
 					DEBASSERT("call_oset_ttl insistent")
 				}
-				if (p_ttl->second < now){
+				if (p_ttl_del->second < now){
 
 					//check if the CALL_OSET::SL_CO is locked
 
