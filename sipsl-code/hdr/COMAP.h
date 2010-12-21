@@ -55,6 +55,7 @@ class COMAP {
 
 		//Time to live
 		map<CALL_OSET*, unsigned long long int> call_oset_ttl[COMAPS];
+		map<CALL_OSET*, unsigned long long int> call_oset_ttl_delete[COMAPS];
 
 		void setDoa(CALL_OSET*, int,int);
 		int getDoa(CALL_OSET*,int);

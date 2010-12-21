@@ -218,11 +218,13 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 	map<string, CALL_OSET*>::iterator p_comap_mm;
 	map<string,string>::iterator p_cally2x;
 	map<CALL_OSET*,int>::iterator p_msgcnt;
-	map<CALL_OSET*, unsigned long long int>::iterator p_ttl;
+	map<CALL_OSET*, unsigned long long int>::iterator p_ttl, p_ttldel;
 
 	//doa
 	p_doamap = call_oset_doa_state[_mod].find(_call_oset);
 	p_ttl = call_oset_ttl[_mod].find(_call_oset);
+	p_ttldel = call_oset_ttl[_mod].find(_call_oset);
+
 	if (p_doamap != call_oset_doa_state[_mod].end()){
 		if ((int)(p_doamap->second) != DOA_DELETED) {
 			RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
@@ -231,10 +233,13 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 		}else {
 			call_oset_doa_state[_mod].erase(p_doamap);
 			call_oset_ttl[_mod].erase(p_ttl);
+			call_oset_ttl_delete[_mod].erase(p_ttldel);
+
 		}
 	}
 	call_oset_doa_state[_mod].insert(pair<CALL_OSET*, int>(_call_oset, NOT_DOA));
 	call_oset_ttl[_mod].insert(pair<CALL_OSET*, unsigned long long int>(_call_oset, 0));
+	call_oset_ttl_delete[_mod].insert(pair<CALL_OSET*, unsigned long long int>(_call_oset, 0));
 
 	//comap
 	p_comap_mm = comap_mm[_mod].find(_callId_X);
