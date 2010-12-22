@@ -179,8 +179,12 @@ CALL_OSET::~CALL_OSET(void){
 	while (m != MainMessage){
 
 		DEBOUT("MESSAGE to be deleted", m)
+		if (!m->getLock()){
+			DEBASSERT("CALL_OSET::~CALL_OSET message in lockedmessage tabelk found unlocked ["<< m <<"]")
+		}
 
 		//TODO DEBCODE
+		//checks if this message is still in global table
 		map<const MESSAGE*, MESSAGE*>::iterator p;
 		DEBCODE(
 			int ixx = getModulus(m);
@@ -324,9 +328,12 @@ void CALL_OSET::removeLockedMessage(MESSAGE* _message){
 	map<MESSAGE*,int>::iterator p;
 	p=lockedMessages.find(_message);
 	if (p!=lockedMessages.end()){
-		DEBY
+		DEBOUT("CALL_OSET::removeLockedMessage found", _message)
 		//MESSAGE* t = (MESSAGE*)p->first;
 		lockedMessages.erase(p);
+	}
+	else {
+		DEBOUT("CALL_OSET::removeLockedMessage not found", _message)
 	}
 
 }
@@ -417,6 +424,8 @@ void SL_CO::call(MESSAGE* _message){
 
     ACTION* action = 0x0;
 
+	//Rule: message from Alarm must be TYPE_OP
+	//Rule: message from Alarm must be locked and unlocked here
 	if(_message->getTypeOfInternal() == TYPE_OP && 	_message->getTypeOfOperation() !=  TYPE_OP_SMCOMMAND){
 		if (_message->getLock()){
 			_message->unSetLock();

@@ -100,36 +100,35 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	SM(_sl_cc, _sl_co){
 
 	requestType = _requestType;
-	Matrix = _matrixMess;
 
-	//TODO insert into lock table???
-	Matrix->setLock();
+	if (_matrixMess == MainMessage || _matrixMess == 0x0 ){
+		DEBASSERT("TRNSCT_SM::TRNSCT_SM invalid Matrix ["<<_matrixMess<<"]")
+	}
+	if (_a_Matrix == MainMessage || _a_Matrix == 0x0 ){
+		DEBASSERT("TRNSCT_SM::TRNSCT_SM invalid A_Matrix ["<<_matrixMess<<"]")
+	}
 
-	//This one is locked elsewere
-	A_Matrix = _a_Matrix;
-
-	DEBCODE(\
-		if (!A_Matrix->getLock()){\
-			DEBASSERT("A_Matrix is unlocked")\
-		}\
-		if (_a_Matrix == 0x0 || _a_Matrix == MainMessage){\
-			DEBASSERT("NO")\
-		}\
-	)
+	if (_a_Matrix == _matrixMess){
+		Matrix = _matrixMess;
+		A_Matrix = _a_Matrix;
+		Matrix->setLock();
+		sl_co->call_oset->insertLockedMessage(Matrix);
+	}
+	else{
+		Matrix = _matrixMess;
+		A_Matrix = _a_Matrix;
+		Matrix->setLock();
+		sl_co->call_oset->insertLockedMessage(Matrix);
+	}
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this << "id [" <<id<<"]")
-	if (Matrix == A_Matrix){
-		Matrix->unSetLock();
-		PURGEMESSAGE(Matrix)
-	}else{
-		Matrix->unSetLock();
-		PURGEMESSAGE(Matrix)
-		A_Matrix->unSetLock();
-		PURGEMESSAGE(A_Matrix)
-	}
 
+	//A_Matrix belongs to another SM
+	Matrix->unSetLock();
+	sl_co->call_oset->removeLockedMessage(A_Matrix);
+	PURGEMESSAGE(Matrix)
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
 
 }
