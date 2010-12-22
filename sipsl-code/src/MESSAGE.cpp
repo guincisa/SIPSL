@@ -40,9 +40,14 @@
 #include "CS_HEADERS.h"
 #endif
 
+#ifndef CALL_OSET_H
+#include "CALL_OSET.h"
+#endif
+
 #ifndef MESSAGE_H
 #include "MESSAGE.h"
 #endif
+
 
 // *****************************************************************************************
 // *****************************************************************************************
@@ -513,11 +518,34 @@ MESSAGE* MESSAGE::getSourceMessage(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getSourceMessage invalid")
 
+#ifdef DEBCODE
+	map<const MESSAGE*, MESSAGE*>::iterator p;
+	int i = ::getModulus((void*)source);
+	pthread_mutex_lock(&messTableMtx[i]);
+	p = globalMessTable[i].find(source);
+	if (p ==globalMessTable[i].end()) {
+		DEBASSERT("MESSAGE::getSourceMessage deleted source:[" <<source<<"] message ["<<this<<"]")
+	}
+	pthread_mutex_unlock(&messTableMtx[i]);
+#endif
+
+
 	return source;
 }
 void MESSAGE::setSourceMessage(MESSAGE* _source){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setSourceMessage invalid")
+
+#ifdef DEBCODE
+	map<const MESSAGE*, MESSAGE*>::iterator p;
+	int i = ::getModulus((void*)_source);
+	pthread_mutex_lock(&messTableMtx[i]);
+	p = globalMessTable[i].find(_source);
+	if (p ==globalMessTable[i].end()) {
+		DEBASSERT("MESSAGE::setSourceMessage deleted source:[" <<_source<<"] message ["<<this<<"]")
+	}
+	pthread_mutex_unlock(&messTableMtx[i]);
+#endif
 
 	source = _source;
 }
@@ -1265,10 +1293,11 @@ string MESSAGE::getDialogExtendedCID(void){
 	DEBOUT_UTIL("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag"))
 	return getHeadCallId().getNormCallId() + getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag");
 }
-void MESSAGE::setLock(void){
+void MESSAGE::setLock(CALL_OSET* _call_oset){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setLock invalid")
 
+	_call_oset->insertLockedMessage(this);
 	lock = true;
 }
 bool MESSAGE::getLock(void){
@@ -1277,12 +1306,12 @@ bool MESSAGE::getLock(void){
 
 	return lock;
 }
-void MESSAGE::unSetLock(void){
+void MESSAGE::unSetLock(CALL_OSET* _call_oset){
 	if (invalid == 1){
 		DEBASSERT("MESSAGE::unSetLock invalid")}
 
 	DEBOUT("MESSAGE::unSetLock ", this)
-
+	_call_oset->removeLockedMessage(this);
 	lock=false;
 }
 

@@ -101,7 +101,7 @@ using namespace std;
 #define REPSUPP 2
 #define REPUNSUPP 4
 
-
+class CALL_OSET;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //// BASEMESSAGE
@@ -367,9 +367,9 @@ class MESSAGE : public BASEMESSAGE {
 
     	int getModulus(void);
 
-    	void setLock(void);
+    	void setLock(CALL_OSET*);
     	bool getLock(void);
-    	void unSetLock(void);
+    	void unSetLock(CALL_OSET*);
 
     	string getOrderOfOperation(void);
     	void setOrderOfOperation(string);

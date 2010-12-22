@@ -28,6 +28,8 @@ class SL_SM;
 class TRNSCT_SM;
 class ENGINE;
 class TRNSPRT;
+class MESSAGE;
+class ACTION;
 
 //Umbrella class which hosts states machines and call object
 //This must be controlled by a mutex
@@ -103,6 +105,7 @@ class CALL_OSET {
 
 		void insertLockedMessage(MESSAGE*);
 		void removeLockedMessage(MESSAGE*);
+		bool isLockedMessage(MESSAGE*);
 
 		ENGINE* getENGINE(void);
 

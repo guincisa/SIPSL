@@ -286,10 +286,11 @@ void SL_CC::parse(MESSAGE* _mess) {
 		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
 		int modulus = _mess->getSourceMessage()->getModulus();
 
-		DEBCODE(
+#ifdef DEBCODE
 		if (modulus != _mess->getModulus()){
 			DEBASSERT("Modulus inconsistency")
-		})
+		}
+#endif
 
 		DEBSIP("SL_CC::parse Message from ALO/TRNSCT_CL generating call object", callids)
 

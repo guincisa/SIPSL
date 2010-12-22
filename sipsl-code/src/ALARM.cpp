@@ -114,7 +114,10 @@ void ALMGR::initAlarm(void){
 }
 void ALMGR::alarmer(void){
 
+#ifdef DEBCODE
 	int jumper = 0;
+#endif
+
 	DEBOUT("ALMGR::alarmer", "begin")
 	for(;;){
 
@@ -128,12 +131,14 @@ void ALMGR::alarmer(void){
 		unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
 		unsigned long long int tcu = 0;
 
-		DEBCODE(jumper ++;
+#ifdef DEBCODE
+		jumper ++;
 		if (jumper == 1000){
 			DUMPMESSTABLE
 			DEBOUT("ALARM tables pq", alarm_pq.size() << "] time_alarm_mumap [" << time_alarm_mumap.size() << "] cidbranch_alm_map [" << cidbranch_alm_map.size())
 		    jumper = 0;
-		})
+		}
+#endif
 
 		if (!alarm_pq.empty()) {
 
@@ -253,14 +258,13 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 	//check if message already exists and cancel related alarm
 	//do note remove it from multimap and from mess_alm map
 
-	DEBCODE(
-			SysTime afterT;
-			GETTIME(afterT);
-			unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec;
-			DEBOUT("ALMGR::insertAlarm", _fireTime )
-			DEBOUT("ALMGR::insertAlarm delta", (unsigned long long int) (_fireTime  - firetime) )
-			)
-
+#ifdef DEBCODE
+	SysTime afterT;
+	GETTIME(afterT);
+	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec;
+	DEBOUT("ALMGR::insertAlarm", _fireTime )
+	DEBOUT("ALMGR::insertAlarm delta", (unsigned long long int) (_fireTime  - firetime) )
+#endif
 
 	GETLOCK(&mutex,"mutex");
 

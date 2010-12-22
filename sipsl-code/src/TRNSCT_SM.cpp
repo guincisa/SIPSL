@@ -111,14 +111,12 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	if (_a_Matrix == _matrixMess){
 		Matrix = _matrixMess;
 		A_Matrix = _a_Matrix;
-		Matrix->setLock();
-		sl_co->call_oset->insertLockedMessage(Matrix);
+		Matrix->setLock(sl_co->call_oset);
 	}
 	else{
 		Matrix = _matrixMess;
 		A_Matrix = _a_Matrix;
-		Matrix->setLock();
-		sl_co->call_oset->insertLockedMessage(Matrix);
+		Matrix->setLock(sl_co->call_oset);
 	}
 }
 TRNSCT_SM::~TRNSCT_SM(void){
@@ -126,8 +124,7 @@ TRNSCT_SM::~TRNSCT_SM(void){
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this << "id [" <<id<<"]")
 
 	//A_Matrix belongs to another SM
-	Matrix->unSetLock();
-	sl_co->call_oset->removeLockedMessage(A_Matrix);
+	Matrix->unSetLock(sl_co->call_oset);
 	PURGEMESSAGE(Matrix)
 	DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
 
@@ -165,8 +162,7 @@ SingleAction TRNSCT_SM::generateTimerS(int genPoint){
 	timer_s->setTypeOfInternal(TYPE_OP);
 	timer_s->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	timer_s->setOrderOfOperation("TIMER_S");
-	timer_s->setLock();
-	getSL_CO()->call_oset->insertLockedMessage(timer_s);
+	timer_s->setLock(sl_co->call_oset);
 	return(SingleAction(timer_s));
 
 }
@@ -294,8 +290,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	SipUtil.genTryFromInvite(_message, etry);
 	etry->setTypeOfInternal(TYPE_MESS);
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1 = etry;
-	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1);
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(etry);
 	action->addSingleAction(sa_2);
 
@@ -409,8 +404,7 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Store the message to use it for retransmission
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 = _message;
-	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2);
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock(_sm->getSL_CO()->call_oset);
 
 	//**************************************
 	//Local state 2
@@ -489,8 +483,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 		_message->setTypeOfInternal(TYPE_MESS);
 		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 = _message;
 		DEBOUT("STORED_MESSAGE_1_3", ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3)
-		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock();
-		_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
+		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock(_sm->getSL_CO()->call_oset);
 	}else {
 		DEBASSERT("Don't know what to do")
 	}
@@ -513,8 +506,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	ack_timer->setOrderOfOperation("TIMER_G");
-	ack_timer->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
+	ack_timer->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(ack_timer);
 	action->addSingleAction(sa_2);
 	//**************************************
@@ -572,8 +564,7 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	ack_timer->setOrderOfOperation("TIMER_G");
-	ack_timer->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
+	ack_timer->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(ack_timer);
 	action->addSingleAction(sa_2);
 
@@ -646,8 +637,7 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	ack_timer->setOrderOfOperation("TIMER_G");
-	ack_timer->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(ack_timer);
+	ack_timer->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(ack_timer);
 	action->addSingleAction(sa_2);
 	//**************************************
@@ -1041,8 +1031,7 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 	__timedmessage->setTypeOfInternal(TYPE_OP);
 	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	__timedmessage->setOrderOfOperation("TIMER_A");
-	__timedmessage->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
+	__timedmessage->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(__timedmessage);
 	action->addSingleAction(sa_2);
 
@@ -1795,8 +1784,7 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = _message;
 	DEBOUT("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
-	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE);
+	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
 
 	//**************************************
 	//Action 1:
@@ -1980,8 +1968,7 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
 	__timedmessage->setTypeOfInternal(TYPE_OP);
 	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	__timedmessage->setOrderOfOperation("TIMER_A");
-	__timedmessage->setLock();
-	_sm->getSL_CO()->call_oset->insertLockedMessage(__timedmessage);
+	__timedmessage->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(__timedmessage);
 	action->addSingleAction(sa_2);
 

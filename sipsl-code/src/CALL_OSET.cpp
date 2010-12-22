@@ -185,17 +185,17 @@ CALL_OSET::~CALL_OSET(void){
 
 		//TODO DEBCODE
 		//checks if this message is still in global table
+
+#ifdef DEBCODE
 		map<const MESSAGE*, MESSAGE*>::iterator p;
-		DEBCODE(
-			int ixx = getModulus(m);
-			pthread_mutex_lock(&messTableMtx[ixx]);
-			p = globalMessTable[ixx].find(m);
-			if (p ==globalMessTable[ixx].end()){
-				DEBWARNING("Message already deleted",m)
-			}
-			pthread_mutex_unlock(&messTableMtx[ixx]);
-			)
-		//TODO DEBCODE
+		int ixx = getModulus(m);
+		pthread_mutex_lock(&messTableMtx[ixx]);
+		p = globalMessTable[ixx].find(m);
+		if (p ==globalMessTable[ixx].end()){
+			DEBWARNING("Message already deleted",m)
+		}
+		pthread_mutex_unlock(&messTableMtx[ixx]);
+#endif
 
 		DEBMESSAGESHORT("DOA locked message", m)
 		if (m->getTypeOfInternal() == TYPE_OP){
@@ -204,7 +204,7 @@ CALL_OSET::~CALL_OSET(void){
 			getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 		}
 		//TODO what if the message is being triggered now?
-		m->unSetLock();
+		m->unSetLock(this);
 		PURGEMESSAGE(m);
 		DEBY
 		m = getNextLockedMessage();
@@ -337,7 +337,13 @@ void CALL_OSET::removeLockedMessage(MESSAGE* _message){
 	}
 
 }
+bool CALL_OSET::isLockedMessage(MESSAGE* _message){
+	map<MESSAGE*,int>::iterator p;
+	p=lockedMessages.find(_message);
 
+	return ( p!=lockedMessages.end() );
+
+}
 void CALL_OSET::dumpTrnsctSm(void){
 
 	map<string, TRNSCT_SM*> ::iterator p;
@@ -428,8 +434,7 @@ void SL_CO::call(MESSAGE* _message){
 	//Rule: message from Alarm must be locked and unlocked here
 	if(_message->getTypeOfInternal() == TYPE_OP && 	_message->getTypeOfOperation() !=  TYPE_OP_SMCOMMAND){
 		if (_message->getLock()){
-			_message->unSetLock();
-			call_oset->removeLockedMessage(_message);
+			_message->unSetLock(call_oset);
 
 			//TIMER_S
 			//_message->setTypeOfInternal(TYPE_MESS);
@@ -566,21 +571,22 @@ void SL_CO::call(MESSAGE* _message){
 				else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
 					NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_BYE_CL")
 				}
+
+				call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
+
+				//This is needed when a new request is coming from ALO
+				//B side call ID created by ALO has to be associated to the main call_id (from Aside)
+				SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+				tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
+
 			}else{
 				// but the call object has been recognized!!!
 				// the sm may have been deleted
 				DEBWARNING("An unexpected reply directed to client has reached the call object", _message)
 				call_oset->dumpTrnsctSm();
 				action = 0x0;
+				DEBASSERT("An unexpected reply directed to client has reached the call object")
 			}
-
-			call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
-
-			//TODO?
-			//This is needed when a new request is coming from ALO
-			//B side call ID created by ALO has to be associated to the main call_id (from Aside)
-			SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-			tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
 		}
 
 		action = trnsct_cl->event(_message);
@@ -600,8 +606,7 @@ void SL_CO::call(MESSAGE* _message){
 			DEBOUT("SL_CO::event", "action is null nothing, event ignored")
 			if (!_message->getLock()){
 				//TODO why I do this?
-				_message->unSetLock();
-				call_oset->removeLockedMessage(_message);
+				_message->unSetLock(call_oset);
 				PURGEMESSAGE(_message)
 			}
 			else {

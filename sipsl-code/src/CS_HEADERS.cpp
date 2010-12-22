@@ -251,12 +251,13 @@ void TupleVector::doParse(void) {
 		for ( iter = lval_rval.begin(); iter != lval_rval.end(); iter ++) {
 			ss = *iter;
 			tt = getLRvalue(ss);
-			DEBCODE (\
-			TupleMap::iterator it;\
-			it = tuples.find(tt.Lvalue);\
-			if (it != tuples.end()){\
-				DEBASSERT("TupleVector::doParse")\
-			})
+#ifdef DEBCODE
+			TupleMap::iterator it;
+			it = tuples.find(tt.Lvalue);
+			if (it != tuples.end()){
+				DEBASSERT("TupleVector::doParse")
+			}
+#endif
 			tuples.insert(make_pair(tt.Lvalue, tt.Rvalue));
 		}
 		parsed = true;

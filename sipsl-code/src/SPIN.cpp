@@ -166,13 +166,17 @@ void ROTQ::put(MESSAGE* m) {
         return;
     }
     MESSAGE* local = 0x0;
-    DEBCODE(local = Q[top];)
+#ifdef DEBCODE
+    local = Q[top];
+#endif
     Q[top] = m;
 
     top ++ ;
     top = top % ARR;
     if (top == bot) {
-    	DEBCODE(DEBOUT("ROTQ::put trashing message", local))
+#ifdef DEBCODE
+    	DEBOUT("ROTQ::put trashing message", local)
+#endif
         //DEBASSERT("FULL TRASHING")
     	//If trashing message will may leak...
         DEBOUT("FULL TRASHING","")
