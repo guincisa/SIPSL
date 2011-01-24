@@ -123,12 +123,12 @@ void SL_CC::parse_s(MESSAGE* _mess) {
 	RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
 
 	//Unlock it at the end
-	sipengine->lockBuffer();
+	//sipengine->lockBuffer();
 
 	//Trick because the parse below does an unlock...
 	GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 	parse(_mess);
-	sipengine->unLockBuffer();
+	//sipengine->unLockBuffer();
 	return;
 }
 //**********************************************************************************
@@ -276,15 +276,19 @@ void SL_CC::parse(MESSAGE* _mess) {
 		//Careful with source message
 		//Ok if coming from server: its the retransmission of 200ok for A
 		DEBY
-		DEBOUT("SL_CC::parse _mess->getSourceMessage()", _mess->getSourceMessage())
-		if (_mess->getSourceMessage() == MainMessage){
-			DEBOUT("_mess", _mess)
-			DEBOUT("_mess->getGenEntity", _mess->getGenEntity())
-			DEBOUT("_mess->getDestEntity", _mess->getDestEntity())
-			DEBASSERT("_mess->getSourceMessage() == MainMessage")
-		}
-		string callids = _mess->getSourceMessage()->getHeadCallId().getContent();
-		int modulus = _mess->getSourceMessage()->getModulus();
+//		DEBOUT("SL_CC::parse _mess->getSourceMessage()", _mess->getSourceMessage())
+//		if (_mess->getSourceMessage() == MainMessage){
+//			DEBOUT("_mess", _mess)
+//			DEBOUT("_mess->getGenEntity", _mess->getGenEntity())
+//			DEBOUT("_mess->getDestEntity", _mess->getDestEntity())
+//			DEBASSERT("_mess->getSourceMessage() == MainMessage")
+//		}
+		string callids = _mess->getSourceHeadCallId().getContent();
+                if (callids.length() == 0){
+                    DEBMESSAGE("No source call id in the incoming message",_mess)
+                    DEBASSERT("No source call id in the incoming message")
+                }
+		int modulus = _mess->getSourceModulus();
 
 #ifdef DEBCODE
 		if (modulus != _mess->getModulus()){

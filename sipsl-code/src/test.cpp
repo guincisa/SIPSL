@@ -74,7 +74,7 @@ pthread_mutex_t messTableMtx[MESSAGEMAPS];
 MESSAGE* MainMessage;
 
 void ex_program(int sig) {
-	DEBOUT("SIGSEGV", sig);
+	DEBOUT("SIG", sig);
 	DEBASSERT("...")
 // (void) signal(SIGINT, SIG_DFL);
 }
@@ -83,6 +83,7 @@ void ex_program(int sig) {
 int main(int argc, const char* argv[]) {
 
 	 (void) signal(SIGSEGV, ex_program);
+         (void) signal(SIGBUS, ex_program);
 
 
 	if (argc == 1){

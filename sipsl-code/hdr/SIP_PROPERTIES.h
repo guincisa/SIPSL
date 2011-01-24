@@ -38,6 +38,7 @@
 
 
 #ifdef SPARC
+//#define BPHONE "172.21.160.73"
 #define BPHONE "10.21.99.79"
 #else
 #define BPHONE "grog"

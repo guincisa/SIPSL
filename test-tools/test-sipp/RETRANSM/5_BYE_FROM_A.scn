@@ -4,12 +4,12 @@ First BYE lost
 
 200ok set to lost=50%
 
-sipp -sf 5a_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf 5a_c.xml  -rsa $grog:5060 -p 5061 -m 1 -d 10000 $grog:5062
 sipp -sf s.xml -p 5062
 
 ------------------------------------------------------------
 5b
 All bye lost
 
-sipp -sf 5b_c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf 5b_c.xml  -rsa $grog:5060 -p 5061 -m 1 -d 10000 $grog:5062
 sipp -sf s.xml -p 5062

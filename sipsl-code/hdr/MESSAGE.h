@@ -264,6 +264,11 @@ class MESSAGE : public BASEMESSAGE {
     	//Needed for ACK
     	int type_trnsct;
 
+        //Need to eliminate the source message
+        //SL_CC
+        C_HeadCallId sourceHeadCallId;
+	int sourceModulus;
+
 
     public:
 
@@ -384,6 +389,10 @@ class MESSAGE : public BASEMESSAGE {
     	void setTypeOfOperation(int);
 
 
+        C_HeadCallId& getSourceHeadCallId();
+	int getSourceModulus();
+        void setSourceHeadCallId(string);
+	void setSourceModulus(int);
 };
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

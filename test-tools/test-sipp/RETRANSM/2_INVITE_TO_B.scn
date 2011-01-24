@@ -5,7 +5,7 @@ First INVITE is lost
 
 scenario server waits 1 second before 100trying
 
-sipp -sf c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf c.xml  -rsa $grog:5060 -p 5061 -m 1 -d 10000 $grog:5062
 sipp -sf 2a_s.xml -p 5062
 
 
@@ -14,7 +14,7 @@ sipp -sf 2a_s.xml -p 5062
 
 Two invites lost
 
-sipp -sf c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf c.xml  -rsa $grog:5060 -p 5061 -m 1 -d 10000 $grog:5062
 sipp -sf 2b_s.xml -p 5062
 
 
@@ -23,7 +23,7 @@ sipp -sf 2b_s.xml -p 5062
 
 All invite lost
 
-sipp -sf c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf c.xml  -rsa $grog:5060 -p 5061 -m 1 -d 10000 $grog:5062
 sipp -sf 2c_s.xml -p 5062
 
 
@@ -47,5 +47,5 @@ first 180 lost is 2a and 2b
 
 200ok delayed
 
-sipp -sf c.xml  -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+sipp -sf c.xml  -rsa $grog:5060 -p 5061 -m 1 -d 10000 $grog:5062
 sipp -sf 2f_s.xml -p 5062

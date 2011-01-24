@@ -244,6 +244,9 @@ PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
 }
 //**********************************************************************************
 //**********************************************************************************
+//**********************************************************************************
+//**********************************************************************************
+//**********************************************************************************
 
 //*****************************************************************
 // INVITE_A from network
@@ -496,8 +499,6 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	//This will be sent to A which will resend the ACK
 	//TODO This leaks
 	CREATEMESSAGE(ack_timer, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_TRNSCT_SV)
-	//source is correct
-	//ack_timer->setSourceMessage(_message->getSourceMessage());
 	SysTime afterT;
 	GETTIME(afterT);
 	// T1 and not 2+T1
