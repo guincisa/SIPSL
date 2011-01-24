@@ -161,17 +161,20 @@ SUDP* ENGINE::getSUDP(void){
 //**********************************************************************************
 bool ENGINE::p_w(MESSAGE* _m) {
 
-	DEBOUT("bool ENGINE::p_w(MESSAGE* _m) ", _m)
+    DEBOUT("bool ENGINE::p_w(MESSAGE* _m) ", _m)
     GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
     bool r = sb.put(_m);
     DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
     if (!r){
     	DEBOUT("ENGINE::p_w put returned false","")
+    }else {
+        //Otherwise the message is parsed
+        pthread_cond_signal(&(sb.condvar));
     }
-    pthread_cond_signal(&(sb.condvar));
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
     DEBY
     return r;
+
 
 }
 //**********************************************************************************
@@ -183,8 +186,10 @@ bool ENGINE::p_w_s(MESSAGE* _m) {
     DEBOUT("ENGINE::p_w_s put returned",_m << " "<<r)
     if (!r){
     	DEBOUT("ENGINE::p_w_s put returned false", _m)
+    }else {
+        //Otherwise the message is parsed
+        pthread_cond_signal(&(rej.condvar));
     }
-    pthread_cond_signal(&(rej.condvar));
     RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
     return r;
 

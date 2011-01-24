@@ -1,1 +1,2 @@
-sipp -sn uac -rsa grog:5060 -p 5061 -m 1 -d 10000 grog:5062
+echo $grog:5062
+sipp -sn uac -rsa $grog:5060 -p 5061 -m 1 -d 10000 grog:5062

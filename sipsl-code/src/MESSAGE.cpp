@@ -301,7 +301,8 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headSipReply(""),
 	headMaxFwd(""),
 	headCallId(""),
-	headCSeq(""){
+	headCSeq(""),
+        sourceHeadCallId(""){
 
 	reqRep = 0;
 
@@ -371,9 +372,14 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headMaxFwd(""),
 	//headTo(""),
 	headCallId(""),
+        sourceHeadCallId(_message->getHeadCallId().getContent()),
 	headCSeq(""){
 	DEBOUT("MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):","")
-	source = _message;
+
+	//source = _message;
+        //Must be done esplicitely
+        source = MainMessage;
+        sourceModulus = _message->getModulus();
 	s_headVia_p = false;
 	headMaxFwd_p = false;
 	headContact_p = false;
@@ -1398,4 +1404,16 @@ int MESSAGE::getModulus(void){
 
 
 
+}
+C_HeadCallId& MESSAGE::getSourceHeadCallId(void){
+    return sourceHeadCallId;
+}
+int MESSAGE::getSourceModulus(void){
+    return sourceModulus;
+}
+void MESSAGE::setSourceHeadCallId(string _content){
+    sourceHeadCallId.setContent(_content);
+}
+void MESSAGE::setSourceModulus(int _mod){
+    sourceModulus = _mod;
 }

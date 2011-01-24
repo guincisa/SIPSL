@@ -118,145 +118,142 @@ void ALMGR::alarmer(void){
 	int jumper = 0;
 #endif
 
-	DEBOUT("ALMGR::alarmer", "begin")
-	for(;;){
+    DEBOUT("ALMGR::alarmer", "begin")
+    for(;;){
 
-		nanosleep(&sleep_time,NULL);
+        nanosleep(&sleep_time,NULL);
 
-		GETLOCK(&mutex,"mutex");
+        GETLOCK(&mutex,"mutex");
 
-		//extract from priority queue
-		SysTime mytime;
-		GETTIME(mytime);
-		unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
-		unsigned long long int tcu = 0;
+        //extract from priority queue
+        SysTime mytime;
+        GETTIME(mytime);
+        unsigned long long int curr = ((unsigned long long int) mytime.tv.tv_sec)*1000000+(unsigned long long int)mytime.tv.tv_usec;
+        unsigned long long int tcu = 0;
 
 #ifdef DEBCODE
-		jumper ++;
-		if (jumper == 1000){
-			DUMPMESSTABLE
-			DEBOUT("ALARM tables pq", alarm_pq.size() << "] time_alarm_mumap [" << time_alarm_mumap.size() << "] cidbranch_alm_map [" << cidbranch_alm_map.size())
-		    jumper = 0;
-		}
+        jumper ++;
+        if (jumper == 1000){
+                DUMPMESSTABLE
+                DEBOUT("ALARM tables pq", alarm_pq.size() << "] time_alarm_mumap [" << time_alarm_mumap.size() << "] cidbranch_alm_map [" << cidbranch_alm_map.size())
+            jumper = 0;
+        }
 #endif
 
-		if (!alarm_pq.empty()) {
+        if (!alarm_pq.empty()) {
 
-			tcu = alarm_pq.top();
+            tcu = alarm_pq.top();
 
+            while (!alarm_pq.empty() && curr >= tcu){
 
-			while (!alarm_pq.empty() && curr >= tcu){
+                DEBOUT("ALARM exists", alarm_pq.size())
 
-				DEBOUT("ALARM exists", alarm_pq.size())
+                // now get a list of alarms from the multi map
 
-				// now get a list of alarms from the multi map
+                multimap<const unsigned long long int, ALARM*>::iterator iter;
+                pair<multimap<const unsigned long long int,ALARM*>::iterator,multimap<const unsigned long long int ,ALARM*>::iterator> ret;
+                map<ALARM*,int> delmap;
 
-				multimap<const unsigned long long int, ALARM*>::iterator iter;
-				pair<multimap<const unsigned long long int,ALARM*>::iterator,multimap<const unsigned long long int ,ALARM*>::iterator> ret;
-				map<ALARM*,int> delmap;
+                ret = time_alarm_mumap.equal_range(tcu);
+                //DEBOUT("ALARM Triggerable", time_alarm_mumap.count(tcu))
 
-				ret = time_alarm_mumap.equal_range(tcu);
-				//DEBOUT("ALARM Triggerable", time_alarm_mumap.count(tcu))
+                for (iter=ret.first; iter!=ret.second; iter++){
+                    DEBY
+                    ALARM* tmal = iter->second;
+                    DEBOUT("ALARM* tmal", tmal)
+                    if (tmal->isActive()){
 
-			    for (iter=ret.first; iter!=ret.second; iter++){
-					DEBY
-					ALARM* tmal = iter->second;
-					DEBOUT("ALARM* tmal", tmal)
-					if (tmal->isActive()){
+                        MESSAGE* _tmpMess = tmal->getMessage();
 
-						MESSAGE* _tmpMess = tmal->getMessage();
+                        DEBOUT("ALARM found message", _tmpMess)
 
-						DEBOUT("ALARM found message", _tmpMess)
+                        //Autofix code
+                        //This code fixes mistakes made in sm
+                        map<const MESSAGE*, MESSAGE*>::iterator p;
+                        int i = getModulus(_tmpMess);
+                        pthread_mutex_lock(&messTableMtx[i]);
+                        p = globalMessTable[i].find(_tmpMess);
+                        bool delmess=false;
+                        if (p ==globalMessTable[i].end()){
+                                delmess = true;
+                                DEBWARNING("ALARM found with deleted message",_tmpMess)
 
-						//Autofix code
-						//This code fixes mistakes made in sm
-						map<const MESSAGE*, MESSAGE*>::iterator p;
-						int i = getModulus(_tmpMess);
-						pthread_mutex_lock(&messTableMtx[i]);
-						p = globalMessTable[i].find(_tmpMess);
-						bool delmess=false;
-						if (p ==globalMessTable[i].end()){
-							delmess = true;
-							DEBWARNING("ALARM found with deleted message",_tmpMess)
+                        }
+                        pthread_mutex_unlock(&messTableMtx[i]);
 
-						}
-						pthread_mutex_unlock(&messTableMtx[i]);
+                        //ALMGR shall not care about message or internalop
+                        //SL_CC does it but here if for debug purposes
+                        if (delmess){
 
-						//ALMGR shall not care about message or internalop
-						//SL_CC does it but here if for debug purposes
-						if (delmess){
+                        }
+                        else if ( _tmpMess->getTypeOfInternal() == TYPE_MESS ){
+                            DEBASSERT("Inactive code")
+//                            DEBOUT("ALMGR::alarmer operation TYPE_MESS", _tmpMess)
+//                            _tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
+//                            _tmpMess->compileMessage();
+//                            _tmpMess->dumpVector();
+//
+//                            RELLOCK(&mutex,"mutex");
+//
+//                            sl_cc->p_w(_tmpMess);
+                        } else {
+                            DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", _tmpMess->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _tmpMess->getOrderOfOperation() << "#")
 
-						}
-						else if ( _tmpMess->getTypeOfInternal() == TYPE_MESS ){
-							DEBOUT("ALMGR::alarmer operation TYPE_MESS", _tmpMess)
-							_tmpMess->setHeadSipRequest("INVITE sip:ALLARME@172.21.160.117:5062 SIP/2.0");
-							_tmpMess->compileMessage();
-							_tmpMess->dumpVector();
+                            //RELLOCK(&mutex,"mutex");
 
-							RELLOCK(&mutex,"mutex");
+                            DEBY
+                            bool ret = sl_cc->p_w(_tmpMess);
+                            DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+                            if(!ret){
+                                DEBOUT("ALARM::alarmer message rejected, put in rejection queue",_tmpMess)
+                                bool ret2 = sl_cc->p_w_s(_tmpMess);
+                                if (!ret2){
+                                    if (!_tmpMess->getLock()){
+                                        PURGEMESSAGE(_tmpMess)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //The alarm if inactive may carry a deleted message, don't access it
+                    //mess_alm_map.erase(tmal->getMessage());
+                    delmap.erase(tmal);
+                    delmap.insert(pair<ALARM*,int>(tmal,0));
+                    DEBOUT("ALARM CHECK INTERVAL", tmal << "][curr " << (unsigned long long int)curr << "][tcu " <<  (unsigned long long int)tcu)
+                    PRTIME
+                    PRTIME_F((unsigned long long int)tcu)
+                    cidbranch_alm_map.erase(tmal->getCidbranch());
+                    DEBY
+                }
+                for (map<ALARM*,int>::iterator iter2 = delmap.begin(); iter2!=delmap.end(); iter2++){
+                    DELPTR((ALARM*)(iter2->first),"ALARM")
+                }
+                time_alarm_mumap.erase(tcu);
 
-							sl_cc->p_w(_tmpMess);
-						} else {
-							DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", _tmpMess->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _tmpMess->getOrderOfOperation() << "#")
-
-							RELLOCK(&mutex,"mutex");
-
-							DEBY
-							bool ret = sl_cc->p_w(_tmpMess);
-							DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
-							if(!ret){
-								DEBOUT("ALARM::alarmer message rejected, put in rejection queue",_tmpMess)
-								bool ret2 = sl_cc->p_w_s(_tmpMess);
-								if (!ret2){
-									if (!_tmpMess->getLock()){
-										PURGEMESSAGE(_tmpMess)
-									}
-								}
-							}
-
-						}
-					}
-					//The alarm if inactive may carry a deleted message, don't access it
-					//mess_alm_map.erase(tmal->getMessage());
-					delmap.erase(tmal);
-					delmap.insert(pair<ALARM*,int>(tmal,0));
-					DEBOUT("ALARM CHECK INTERVAL", tmal << "][curr " << (unsigned long long int)curr << "][tcu " <<  (unsigned long long int)tcu)
-					PRTIME
-					PRTIME_F((unsigned long long int)tcu)
-					cidbranch_alm_map.erase(tmal->getCidbranch());
-					DEBY
-				}
-			    for (map<ALARM*,int>::iterator iter2 = delmap.begin(); iter2!=delmap.end(); iter2++){
-			    	DELPTR((ALARM*)(iter2->first),"ALARM")
-
-			    }
-			    time_alarm_mumap.erase(tcu);
-
-				alarm_pq.pop();
-				if (!alarm_pq.empty()){
-					tcu = alarm_pq.top();
-				}
-			}
-		}
-		else{
-			//Autofix code
-			//This code fixes mistakes
-			//the pq can be empty nut the other structures may still contain something.
-			if(!time_alarm_mumap.empty()){
-				DEBOUT("ALARM pq empty, time_alarm_mumap not empty","")
-			}
-			if (!cidbranch_alm_map.empty()){
-				DEBOUT("ALARM pq empty, cidbranch_alm_map not empty","")
-			}
-		}
-		RELLOCK(&mutex,"mutex");
-
-	}
+                alarm_pq.pop();
+                if (!alarm_pq.empty()){
+                    tcu = alarm_pq.top();
+                }
+            }
+        }
+        else{
+            //Autofix code
+            //This code fixes mistakes
+            //the pq can be empty nut the other structures may still contain something.
+            if(!time_alarm_mumap.empty()){
+                    DEBWARNING("ALARM pq empty, time_alarm_mumap not empty","")
+            }
+            if (!cidbranch_alm_map.empty()){
+                    DEBWARNING("ALARM pq empty, cidbranch_alm_map not empty","")
+            }
+        }
+        RELLOCK(&mutex,"mutex");
+    }
 }
 void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 
 	//check if message already exists and cancel related alarm
-	//do note remove it from multimap and from mess_alm map
+	//do not remove it from multimap and from mess_alm map
 
 #ifdef DEBCODE
 	SysTime afterT;
@@ -289,12 +286,12 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 	//Autofix code
 	//This code fixes mistakes made in sm
 	if ( p!= cidbranch_alm_map.end()){
-		//Same alarm id already exists
-		DEBOUT("Same alarm id already exists", cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
-			if( ((ALARM*)p->second)->isActive()){
-				DEBWARNING("Active alarm replaced",cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
-				((ALARM*)p->second)->cancel();
-			}
+            //Same alarm id already exists
+            DEBOUT("Same alarm id already exists", cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
+            if( ((ALARM*)p->second)->isActive()){
+                DEBWARNING("Active alarm replaced",cidbranch_alarm<<"]["<<alm<<"]["<<alm->getTriggerTime())
+                ((ALARM*)p->second)->cancel();
+            }
 	}
 	cidbranch_alm_map.erase(cidbranch_alarm);
 	cidbranch_alm_map.insert(pair<string, ALARM*>(cidbranch_alarm, alm));
@@ -308,6 +305,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, unsigned long long int _fireTime){
 
 
 	RELLOCK(&mutex,"mutex");
+	DEBOUT("Inserted Alarm id (cid+branch", cidbranch_alarm << "]["<<alm);
 
 	return;
 

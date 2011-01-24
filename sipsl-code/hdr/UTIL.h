@@ -39,7 +39,7 @@
 #include <stdio.h>
 
 
-//#define SPARC
+#define SPARC
 
 using namespace std;
 
@@ -78,6 +78,7 @@ class ThreadWrapper {
 //TIMER_DOA: milliseconds before a call_oset is set to DELETED
 //TIMER_DOA / 2 : milliseconds before a DELETED call_oset if purged
 
+//#define NOLOGATALL
 
 #ifdef SPARC
 #define MAXTHREADS 264
@@ -89,6 +90,9 @@ class ThreadWrapper {
 #define SPINC_MOD 15
 #define DOA_CLEANUP 1
 #define TIMER_DOA 5000000
+#define ADDRESSPACE 8
+#define MESSAGEMAPS 30
+#ifndef NOLOGATALL
 #define LOGMIN
 #define LOGSIP
 #define LOGINF
@@ -96,9 +100,8 @@ class ThreadWrapper {
 #define LOGDEV
 #define LOGMEM
 #define LOGNTW
-#define LOGLOK
-#define ADDRESSPACE 8
-#define MESSAGEMAPS 30
+//#define LOGLOK
+#endif
 #else
 #define COMAPS 6
 #define MAXTHREADS 8

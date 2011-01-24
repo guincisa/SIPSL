@@ -40,63 +40,63 @@
 //SPINBUFFER
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class SPINB;
+//class SPINB;
+/////////////////////////////////////////////////////////////////////////////////
+//class ROTQ {
+//    private:
+//        MESSAGE* Q[ARR];
+//        int top,bot; // da scrivere, da leggere
+//        int state;
+//        SPINB *sb;
+//        bool full;
+//        pthread_mutex_t fullq;
+//
+//    public:
+//        ROTQ(void);
+//        void setSpinb(SPINB *);
+//        void setState(int);
+//        int getState(void);
+//        void put(MESSAGE*);
+//        void put_trashing(MESSAGE*);
+//        void put_block(MESSAGE*);
+//
+//
+//        MESSAGE* get(void);
+//        bool isEmpty(void);
+//};
 ///////////////////////////////////////////////////////////////////////////////
-class ROTQ {
-    private:
-        MESSAGE* Q[ARR];
-        int top,bot; // da scrivere, da leggere
-        int state;
-        SPINB *sb;
-        bool full;
-        pthread_mutex_t fullq;
-
-    public:
-        ROTQ(void);
-        void setSpinb(SPINB *);
-        void setState(int);
-        int getState(void);
-        void put(MESSAGE*);
-        void put_trashing(MESSAGE*);
-        void put_block(MESSAGE*);
-
-
-        MESSAGE* get(void);
-        bool isEmpty(void);
-};
-///////////////////////////////////////////////////////////////////////////////
-class SPINB {
-    private:
-
-    //queue<MESSAGE> Q0,Q1,Q2;
-    ROTQ Q[3];
-
-    //int state[3]; // 0 free, 1 write, 2 read
-    int readbuff, writebuff, freebuff;
-
-    public:
-
-    int DIM;
-    pthread_mutex_t readmu;
-    pthread_mutex_t writemu;
-
-    pthread_mutex_t mudim;
-    pthread_mutex_t condvarmutex;
-    pthread_cond_t condvar;
-
-    //Type can be trashing = 1 or blocking = 2
-    SPINB(void);
-    void put(MESSAGE*);
-    MESSAGE* get(void);
-    void move(void);
-    bool isEmpty(void);
-};
+//class SPINB {
+//    private:
+//
+//    //queue<MESSAGE> Q0,Q1,Q2;
+//    ROTQ Q[3];
+//
+//    //int state[3]; // 0 free, 1 write, 2 read
+//    int readbuff, writebuff, freebuff;
+//
+//    public:
+//
+//    int DIM;
+//    pthread_mutex_t readmu;
+//    pthread_mutex_t writemu;
+//
+//    pthread_mutex_t mudim;
+//    pthread_mutex_t condvarmutex;
+//    pthread_cond_t condvar;
+//
+//    //Type can be trashing = 1 or blocking = 2
+//    SPINB(void);
+//    void put(MESSAGE*);
+//    MESSAGE* get(void);
+//    void move(void);
+//    bool isEmpty(void);
+//};
 class SPINC {
 
 	private:
-		MESSAGE* BUFF[ARR];
+	    MESSAGE* BUFF[ARR];
 
-		int l, s, DIM;
+	    int l, s, DIM;
 
 	    pthread_mutex_t readmu;
 	    pthread_mutex_t writemu;

@@ -143,6 +143,8 @@ void VALO::onInvite(MESSAGE* _message){
 	DEBOUT("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
+        //Needed for Matrix_A
+        message->setSourceMessage(_message);
 
 	try {
 		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute()->getRoute().getHostName())
@@ -443,6 +445,7 @@ void VALO::onBye(MESSAGE* _message){
 //	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
+        message->setSourceMessage(_message);
 
 	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
 

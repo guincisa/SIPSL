@@ -532,7 +532,7 @@ void SL_CO::call(MESSAGE* _message){
 	//Message is going to Client SM
 	else if (dest == SODE_TRNSCT_CL){
 
-		string callidys = _message->getHeadCallId().getContent();
+            string callidys = _message->getHeadCallId().getContent();
 	    DEBOUT("SL_CO::call client state machine", callidys)
 
 
