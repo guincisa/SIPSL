@@ -4,12 +4,12 @@ first ack lost
 
 cant implement, I put lost = 50%
 
-sipp -sf c.xml  -rsa $grog:5060 -p 5061 -m 1 -d 10000 $grog:5062
+sipp -sf c.xml  -rsa $mas:5060 -p 5061 -m 1 -d 10000 $umf:5062
 sipp -sf 4a_s.xml -p 5062
 
 --------------------------------------------------------------
 4b
 all ack lost
 
-sipp -sf c.xml  -rsa $grog:5060 -p 5061 -m 1 -d 10000 $grog:5062
+sipp -sf c.xml  -rsa $mas:5060 -p 5061 -m 1 -d 10000 $umf:5062
 sipp -sf 4b_s.xml -p 5062
