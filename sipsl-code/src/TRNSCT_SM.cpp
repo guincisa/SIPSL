@@ -1377,7 +1377,9 @@ ACTION* act_resend_ack(SM* _sm, MESSAGE* _message) {
 	//TODO need the branch!!!
 	_message->replaceHeadCSeq(1,"ACK");
 	_message->compileMessage();
-	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
+	//_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
+        _message->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId().getContent());
+        _message->setSourceModulus(((TRNSCT_SM*)_sm)->getMatrixMessage()->getModulus());
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 
