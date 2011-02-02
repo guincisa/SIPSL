@@ -152,23 +152,26 @@ string TRNSCT_SM::getId(void){
 }
 SingleAction TRNSCT_SM::generateTimerS(int genPoint){
 
-	DEBOUT("TRNSCT_SM::generateTimerS genpoint",genPoint )
+    DEBOUT("TRNSCT_SM::generateTimerS genpoint",genPoint )
 
-	CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
-	SysTime afterT;
-	GETTIME(afterT);
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_S;
-	timer_s->setFireTime(firetime);
-	timer_s->setTypeOfInternal(TYPE_OP);
-	timer_s->setTypeOfOperation(TYPE_OP_TIMER_ON);
-	timer_s->setOrderOfOperation("TIMER_S");
-	timer_s->setLock(sl_co->call_oset);
-	return(SingleAction(timer_s));
+    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
+    SysTime afterT;
+    GETTIME(afterT);
+    lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_S;
+    timer_s->setFireTime(firetime);
+    timer_s->setTypeOfInternal(TYPE_OP);
+    timer_s->setTypeOfOperation(TYPE_OP_TIMER_ON);
+    timer_s->setOrderOfOperation("TIMER_S");
+    timer_s->setLock(sl_co->call_oset);
+    timer_s->setSourceHeadCallId(getMatrixMessage()->getHeadCallId().getContent());
+    timer_s->setSourceModulus(getMatrixMessage()->getModulus());
+    DEBY
+    return(SingleAction(timer_s));
 
 }
 SingleAction TRNSCT_SM::clearTimerS(int genPoint){
 
-	DEBOUT("TRNSCT_SM::generateTimerS genpoint",genPoint )
+	DEBOUT("TRNSCT_SM::clearTimerS genpoint",genPoint )
 
 	CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
 	timer_s->setTypeOfInternal(TYPE_OP);
@@ -301,6 +304,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	//Action 3: TIMER_S
 	// A timer must be always sent locked
 	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
 	//**************************************
@@ -502,7 +506,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	SysTime afterT;
 	GETTIME(afterT);
 	// T1 and not 2+T1
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
+	lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_1;
 	ack_timer->setFireTime(firetime);
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
@@ -560,7 +564,7 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 	SysTime afterT;
 	GETTIME(afterT);
 	// T1 and not 2+T1
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
+	lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_1;
 	ack_timer->setFireTime(firetime);
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
@@ -633,7 +637,7 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 	SysTime afterT;
 	GETTIME(afterT);
 	// T1 and not 2+T1
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1;
+	lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_1;
 	ack_timer->setFireTime(firetime);
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
@@ -1026,7 +1030,7 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 	__timedmessage->setSourceMessage(_message->getSourceMessage());
 	SysTime afterT;
 	GETTIME(afterT);
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite);
+	lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite);
 	DEBOUT("TRNSCT_INV_CL act_invite_to_b creating alarm ", pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite) << " " << firetime)
 	__timedmessage->setFireTime(firetime);
 	__timedmessage->setTypeOfInternal(TYPE_OP);
@@ -1039,6 +1043,7 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
 	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
@@ -1770,6 +1775,7 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	DEBOUT("TRSNCT_INV_SV::act_bye_to_alo move to state 1","")
 	_sm->State = 1;
@@ -1945,48 +1951,49 @@ bool pre_bye_from_alarm(SM* _sm, MESSAGE* _message){
 //act_1_1_bye_cl
 ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b",_message)
+    DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b",_message)
 
-	NEWPTR(ACTION*, action, ACTION(),"ACTION")
-	//**************************************
-	//Action 1: send to NTW
-	_message->setDestEntity(SODE_NTWPOINT);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->setTypeOfInternal(TYPE_MESS);
-	SingleAction sa_1 = SingleAction(_message);
-	action->addSingleAction(sa_1);
+    NEWPTR(ACTION*, action, ACTION(),"ACTION")
+    //**************************************
+    //Action 1: send to NTW
+    _message->setDestEntity(SODE_NTWPOINT);
+    _message->setGenEntity(SODE_TRNSCT_CL);
+    _message->setTypeOfInternal(TYPE_MESS);
+    SingleAction sa_1 = SingleAction(_message);
+    action->addSingleAction(sa_1);
 
-	//**************************************
-	//Action 2: send to alarm
-	//careful with source message.
-	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
-	__timedmessage->setSourceMessage(_message->getSourceMessage());
-	//This is to be sent later, after timer expires
-	//Preconfigure message entity points, the alarm manager cannot do this
-	SysTime afterT;
-	GETTIME(afterT);
-	unsigned long long int firetime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye);
-	DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b creating alarm ", TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye) << " " << firetime)
-	__timedmessage->setFireTime(firetime);
-	__timedmessage->setTypeOfInternal(TYPE_OP);
-	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
-	__timedmessage->setOrderOfOperation("TIMER_A");
-	__timedmessage->setLock(_sm->getSL_CO()->call_oset);
-	SingleAction sa_2 = SingleAction(__timedmessage);
-	action->addSingleAction(sa_2);
+    //**************************************
+    //Action 2: send to alarm
+    //careful with source message.
+    CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
+    __timedmessage->setSourceMessage(_message->getSourceMessage());
+    //This is to be sent later, after timer expires
+    //Preconfigure message entity points, the alarm manager cannot do this
+    SysTime afterT;
+    GETTIME(afterT);
+    lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye);
+    DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b creating alarm ", TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye) << " " << firetime)
+    __timedmessage->setFireTime(firetime);
+    __timedmessage->setTypeOfInternal(TYPE_OP);
+    __timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
+    __timedmessage->setOrderOfOperation("TIMER_A");
+    __timedmessage->setLock(_sm->getSL_CO()->call_oset);
+    SingleAction sa_2 = SingleAction(__timedmessage);
+    action->addSingleAction(sa_2);
 
-	//**************************************
-	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+    //**************************************
+    //Action TIMER_S
+    action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
+    DEBY
+    action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b move to state 1","")
-	_sm->State = 1;
+    DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b move to state 1","")
+    _sm->State = 1;
 
-	((TRNSCT_SM_BYE_CL*)_sm)->resend_bye++;
+    ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye++;
 
 
-	return action;
+    return action;
 }
 ACTION* act_200ok_bye_to_alo(SM* _sm, MESSAGE* _message) {
 

@@ -104,9 +104,10 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 	sprintf(bu, "%x#%lld",this,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 	string key(bu);
 	*/
-    DEBOUT("BASEMESSAGE::BASEMESSAGE","copy")
-
-	echoClntAddr = _basemessage->getAddress();
+    DEBOUT("BASEMESSAGE::BASEMESSAGE copy",_basemessage)
+    DEBY
+    echoClntAddr = _basemessage->getAddress();
+    DEBY
     sock = _basemessage->getSock();
 
     inc_ts = _creaTime;
@@ -118,11 +119,12 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 
     genEntity = _genEntity;
 
-	requestDirection = _basemessage->getRequestDirection();
+    requestDirection = _basemessage->getRequestDirection();
 
     invalid = 0;
+    DEBY
 
-	return;
+    return;
 }
 //BASEMESSAGE::BASEMESSAGE(const BASEMESSAGE& x){
 //	DEBASSERT("BASEMESSAGE copy constructor");
@@ -1263,7 +1265,7 @@ void MESSAGE::addGenericHeader(string _header, string _content){
 
 }
 
-void MESSAGE::setFireTime(unsigned long long int _firetime){
+void MESSAGE::setFireTime(lli _firetime){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setFireTime invalid")
 
@@ -1275,7 +1277,7 @@ void MESSAGE::setFireTime(unsigned long long int _firetime){
 //
 //	fireTime = _systime;
 //}
-unsigned long long int MESSAGE::getFireTime(void){
+lli MESSAGE::getFireTime(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getFireTime invalid")
 

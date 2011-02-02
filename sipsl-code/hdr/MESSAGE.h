@@ -258,7 +258,7 @@ class MESSAGE : public BASEMESSAGE {
     	//int specialAction; //delete co
 
         //Timer support
-        unsigned long long int fireTime;
+        lli fireTime;
 
 
     	//Needed for ACK
@@ -366,8 +366,8 @@ class MESSAGE : public BASEMESSAGE {
     	vector<string>::iterator getSDPposition(void);
     	void dumpVector(void);
 
-    	void setFireTime(unsigned long long int fireTime);
-    	unsigned long long int getFireTime(void);
+    	void setFireTime(lli fireTime);
+    	lli getFireTime(void);
 
 
     	int getModulus(void);
