@@ -1027,7 +1027,7 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 2: send message to ALARM
 	CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
-	__timedmessage->setSourceMessage(_message->getSourceMessage());
+	__timedmessage->setSourceMessage(((TRNSCT_SM*)_sm)->getA_Matrix());
 	SysTime afterT;
 	GETTIME(afterT);
 	lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite);
@@ -1966,7 +1966,7 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
     //Action 2: send to alarm
     //careful with source message.
     CREATEMESSAGE(__timedmessage, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
-    __timedmessage->setSourceMessage(_message->getSourceMessage());
+    __timedmessage->setSourceMessage(((TRNSCT_SM*)_sm)->getA_Matrix());
     //This is to be sent later, after timer expires
     //Preconfigure message entity points, the alarm manager cannot do this
     SysTime afterT;
