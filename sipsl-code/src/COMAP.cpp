@@ -218,7 +218,7 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 	map<string, CALL_OSET*>::iterator p_comap_mm;
 	map<string,string>::iterator p_cally2x;
 	map<CALL_OSET*,int>::iterator p_msgcnt;
-	map<CALL_OSET*, unsigned long long int>::iterator p_ttl, p_ttldel;
+	map<CALL_OSET*, lli>::iterator p_ttl, p_ttldel;
 
 	//doa
 	p_doamap = call_oset_doa_state[_mod].find(_call_oset);
@@ -238,8 +238,8 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 		}
 	}
 	call_oset_doa_state[_mod].insert(pair<CALL_OSET*, int>(_call_oset, NOT_DOA));
-	call_oset_ttl[_mod].insert(pair<CALL_OSET*, unsigned long long int>(_call_oset, 0));
-	call_oset_ttl_delete[_mod].insert(pair<CALL_OSET*, unsigned long long int>(_call_oset, 0));
+	call_oset_ttl[_mod].insert(pair<CALL_OSET*, lli>(_call_oset, 0));
+	call_oset_ttl_delete[_mod].insert(pair<CALL_OSET*, lli>(_call_oset, 0));
 
 	//comap
 	p_comap_mm = comap_mm[_mod].find(_callId_X);
@@ -441,8 +441,8 @@ void COMAP::purgeDOA(void){
 				//check time
 				SysTime afterT;
 				GETTIME(afterT);
-				unsigned long long int now = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec;
-				map<CALL_OSET*, unsigned long long int>::iterator p_ttl;
+				lli now = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec;
+				map<CALL_OSET*, lli>::iterator p_ttl;
 				p_ttl = call_oset_ttl[mod].find(call_oset);
 				if (p_ttl == call_oset_ttl[mod].end()){
 					DEBASSERT("call_oset_ttl inexistent")
@@ -453,10 +453,10 @@ void COMAP::purgeDOA(void){
 
 					DEBOUT("COMAP::purgeDOA time expired", call_oset)
 					setDoa(call_oset, DOA_DELETED,mod);
-					unsigned long long int killtime = now + TIMER_DOA / 2;
+					lli killtime = now + TIMER_DOA / 2;
 					DEBOUT("COMAP::setDoa ttl will be removed", TIMER_DOA /2 << " " << killtime)
 					call_oset_ttl[mod].erase(p_ttl);
-					call_oset_ttl_delete[mod].insert(pair<CALL_OSET*, unsigned long long int>(call_oset,killtime));
+					call_oset_ttl_delete[mod].insert(pair<CALL_OSET*, lli>(call_oset,killtime));
 
 				} else{
 					DEBOUT("COMAP::purgeDOA not time to delete ", call_oset)
@@ -467,8 +467,8 @@ void COMAP::purgeDOA(void){
 				//check time
 				SysTime afterT;
 				GETTIME(afterT);
-				unsigned long long int now = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec;
-				map<CALL_OSET*, unsigned long long int>::iterator p_ttl_del;
+				lli now = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec;
+				map<CALL_OSET*, lli>::iterator p_ttl_del;
 				p_ttl_del = call_oset_ttl_delete[mod].find(call_oset);
 				if (p_ttl_del == call_oset_ttl_delete[mod].end()){
 					DEBASSERT("call_oset_ttl insistent")
@@ -515,16 +515,16 @@ void COMAP::purgeDOA(void){
 void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
 
 	//Reset delete timer
-	map<CALL_OSET*, unsigned long long int>::iterator p_ttl;
+	map<CALL_OSET*, lli>::iterator p_ttl;
 	p_ttl = call_oset_ttl[_modulus].find(_call_oset);
 	if (p_ttl == call_oset_ttl[_modulus].end()){
 		DEBASSERT("call_oset_ttl insistent")
 	}
 	SysTime afterT;
 	GETTIME(afterT);
-	unsigned long long int killtime = ((unsigned long long int) afterT.tv.tv_sec)*1000000+(unsigned long long int)afterT.tv.tv_usec + TIMER_DOA;
+	lli killtime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_DOA;
 	DEBOUT("COMAP::setDoa ttl ", TIMER_DOA  << " " << killtime)
 	call_oset_ttl[_modulus].erase(p_ttl);
-	call_oset_ttl[_modulus].insert(pair<CALL_OSET*, unsigned long long int>(_call_oset,killtime));
+	call_oset_ttl[_modulus].insert(pair<CALL_OSET*, lli>(_call_oset,killtime));
 
 }

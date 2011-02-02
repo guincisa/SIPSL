@@ -65,6 +65,7 @@ class ThreadWrapper {
 };
 
 
+
 //Tuning
 //COMAPS: number of comaps
 //COMAPS: number of gloabl message tables
@@ -100,6 +101,8 @@ class ThreadWrapper {
 #define LOGDEV
 #define LOGMEM
 #define LOGNTW
+#define SELFCHECK
+#define DEBCODE
 //#define LOGLOK
 #endif
 #else
@@ -424,4 +427,9 @@ inline int getModulus(void* pointer) {
 	return i/ADDRESSPACE;
 
 }
-
+inline string b2S(bool _b){
+    if (_b)
+        return "true";
+    else
+        return "false";
+}
