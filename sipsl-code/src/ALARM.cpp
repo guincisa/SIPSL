@@ -135,7 +135,7 @@ void ALMGR::alarmer(void){
 
         if (!pq.empty()) {
             trip = pq.top();
-            while ( trip.time <= curr){
+            while ( trip.time <= curr && trip.time > 0){
                 DEBOUT("Found and alarm ready for trigger", trip.time << "][" << trip.cid << "][" << trip.alarm)
                 if ( trip.alarm->isActive()){
                     DEBOUT("Alarm is active", trip.cid << "][" << trip.alarm)
@@ -204,8 +204,13 @@ void ALMGR::alarmer(void){
                 if (!pq.empty()){
                     trip = pq.top();
                 }
+                else {
+                    trip.time = -1; //trick to exit the loop
+                }
             }
-        }else {//empty pq
+
+        }
+        else {//empty pq
         }
         RELLOCK(&mutex,"mutex");
     }
