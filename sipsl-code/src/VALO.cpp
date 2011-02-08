@@ -171,7 +171,7 @@ void VALO::onInvite(MESSAGE* _message){
 	DEBOUT("New CONTACT", message->getHeadContact()->getContent())
 
 	message->compileMessage();
-	message->dumpVector();
+	//message->dumpVector();
 
 	DEBMESSAGE("New outgoing b2b message", message)
 
@@ -303,7 +303,7 @@ void VALO::onAck(MESSAGE* _message){
 	DEBOUT("newack->pushHeadVia(viatmpS);", viatmpS)
 
 	newack->compileMessage();
-	newack->dumpVector();
+	//newack->dumpVector();
 
 	//done in state machine client
 //	newack->setLock();
@@ -481,7 +481,7 @@ void VALO::onBye(MESSAGE* _message){
 
 
 		message->compileMessage();
-		message->dumpVector();
+		//message->dumpVector();
 		//done in the client sm
 		//message->setLock();
 		bool ret = sl_cc->p_w(message);
@@ -537,7 +537,7 @@ void VALO::onBye(MESSAGE* _message){
 
 
 		message->compileMessage();
-		message->dumpVector();
+		//message->dumpVector();
 		//done in client sm
 		//message->setLock();
 		//call_oset->insertLockedMessage(message);
@@ -613,9 +613,9 @@ void VALO::on200Ok(MESSAGE* _message){
 		ok_x->dropHeader("Content-Length:");
 
 		DEBOUT("PURGED SDP","")
-		ok_x->dumpVector();
+		//ok_x->dumpVector();
 		ok_x->importSDP(__sdp);
-		ok_x->dumpVector();
+		//ok_x->dumpVector();
 	}
 
 	ok_x->replaceHeadContact("<sip:sipsl@grog:5060>");
@@ -637,7 +637,7 @@ void VALO::on200Ok(MESSAGE* _message){
 //	//TODO the 200 OK B for now is deleted
 //	PURGEMESSAGE(_message)
 
-	ok_x->dumpVector();
+	//ok_x->dumpVector();
 
 	bool ret = sl_cc->p_w(ok_x);
 	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)

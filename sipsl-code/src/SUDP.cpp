@@ -103,7 +103,7 @@ void * SUDPSTACK(void *_tgtObject) {
 
     DEBDEV("SUDPSTACK start","")
 
-	SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
+    SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
 
     tgtObject->st->listen();
 
@@ -119,7 +119,7 @@ void * SUDPSTACK(void *_tgtObject) {
 // *****************************************************************************************
 void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm){
 
-	DEBDEV("SUDP init",_domain)
+    DEBDEV("SUDP init",_domain)
 
     domain = _domain;
 
@@ -168,15 +168,18 @@ void SUDP::start(void) {
 
     // allocate thread and starts
 
-	DEBDEV("SUDP::start","")
-
-	NEWPTR2(listenerThread, ThreadWrapper,"ThreadWrapper")
+    DEBDEV("SUDP::start","")
+    NEWPTR2(listenerThread, ThreadWrapper,"ThreadWrapper")
+    
     SUDPtuple *t1;
-	NEWPTR2(t1, SUDPtuple,"SUDPtuple")
+    NEWPTR2(t1, SUDPtuple,"SUDPtuple")
     t1->st = this;
 
     //TODO result not used
+
     pthread_create(&(listenerThread->thread), NULL, SUDPSTACK, (void *) t1 );
+
+
     return;
 }
 
@@ -185,10 +188,9 @@ void SUDP::start(void) {
 // *****************************************************************************************
 void SUDP::listen() {
 
-	DEBDEV("SUDP::listen","listen")
+    DEBDEV("SUDP::listen","listen")
     for (;;){
         /* Set the size of the in-out parameter */
-    	DEBY
         cliAddrLen = sizeof(echoClntAddr);
 
         /* Block until receive message from a client */
@@ -199,27 +201,27 @@ void SUDP::listen() {
             DEBERROR("SUDP::listen() recvfrom() failed")
             //return;
         }else {
-			//Message handling
-        	DEBY
-        	MESSAGE* message=0x0;
-			CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
-        	if (message != 0x0 ){
-    			DEBMESSAGE("New message from buffer ", message)
-
-    			bool r = engine->p_w(message);
-    			if (!r){
-    				DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
-    				bool rr = engine->p_w_s(message);
-    				if (!rr){
-        				DEBOUT("SUDP::listen() message rejected by s queue",message)
-        				PURGEMESSAGE(message)
-    				}
-    			}
-        	}else {
-        		DEBERROR("SUDP::listen() could not allocate memory for incoming message")
-        	}
+            PROFILE("MESSAGE ARRIVED FROM SOCKET")
+            //Message handling
+            MESSAGE* message=0x0;
+            CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
+            if (message != 0x0 ){
+                DEBMESSAGE("New message from buffer ", message)
+                bool r = engine->p_w(message);
+                PROFILE("MESSAGE SENT TO SIPENGINE")
+                if (!r){
+                    DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
+                    bool rr = engine->p_w_s(message);
+                    if (!rr){
+                        DEBOUT("SUDP::listen() message rejected by s queue",message)
+                        PURGEMESSAGE(message)
+                    }
+                }
+            }else {
+                DEBERROR("SUDP::listen() could not allocate memory for incoming message")
+            }
         }
-	}
+    }
 }
 // *****************************************************************************************
 // getters
@@ -236,92 +238,51 @@ ALMGR* SUDP::getAlmgr(void){
 }
 void SUDP::sendRequest(MESSAGE* _message){
 
-	struct sockaddr_in si_part;
-	struct hostent *host;
-	memset((char *) &si_part, 0, sizeof(si_part));
+    struct sockaddr_in si_part;
+    struct hostent *host;
+    memset((char *) &si_part, 0, sizeof(si_part));
 
-	DEBSIP("Request address ", _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName() <<":"<< _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort())
-	DEBSIP("Request message ", _message->getLine(0))
+    DEBSIP("Request address ", _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName() <<":"<< _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort())
+    DEBSIP("Request message ", _message->getLine(0))
 
-	si_part.sin_family = AF_INET;
-	host = gethostbyname(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str());
-	bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-	si_part.sin_port = htons(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort());
+    si_part.sin_family = AF_INET;
+    host = gethostbyname(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str());
+    bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
+    si_part.sin_port = htons(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort());
 //	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 //		DEBASSERT ("Can't set request address")
 //	}
-	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
-	if (!_message->getLock()){
-		PURGEMESSAGE(_message)
-	}
+    if (!_message->getLock()){
+        PURGEMESSAGE(_message)
+    }
 
-	return;
+    return;
 }
 void SUDP::sendReply(MESSAGE* _message){
 
-	//Reply uses topmost Via header
-	C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
+    //Reply uses topmost Via header
+    C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
 
-	struct sockaddr_in si_part;
-	struct hostent *host;
-	memset((char *) &si_part, 0, sizeof(si_part));
+    struct sockaddr_in si_part;
+    struct hostent *host;
+    memset((char *) &si_part, 0, sizeof(si_part));
 
-	DEBSIP("Reply address ", viatmp->getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp->getC_AttVia().getS_HostHostPort().getPort())
-	DEBSIP("Reply message ", _message->getLine(0))
+    DEBSIP("Reply address ", viatmp->getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp->getC_AttVia().getS_HostHostPort().getPort())
+    DEBSIP("Reply message ", _message->getLine(0))
 
-	si_part.sin_family = AF_INET;
-	host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
-	bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-	si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
-	if( inet_pton(AF_INET, viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
-		DEBASSERT ("can set reply address")
-	}
-	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    si_part.sin_family = AF_INET;
+    host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
+    bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
+    si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
+    if( inet_pton(AF_INET, viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
+            DEBASSERT ("can set reply address")
+    }
+    sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
-	if (!_message->getLock()){
-		PURGEMESSAGE(_message)
-	}
-
-//	//TODO
-//	//check here DOA and kill call_oset
-//	if (_message->getDoa() == DOA_REQUESTED){
-//		((DOA*)doa)->setComap(((SL_CC*)((SIPENGINE*)engine)->getSL_CC())->getCOMAP());
-//		((DOA*)doa)->p_w(_message);
-//	}
-
-	return;
+    if (!_message->getLock()){
+        PURGEMESSAGE(_message)
+    }
+    return;
 }
-//void SUDP::sendRequest(MESSAGE* _message){
-//
-//	struct sockaddr_in si_part;
-//	memset((char *) &si_part, 0, sizeof(si_part));
-//	si_part.sin_family = AF_INET;
-//	si_part.sin_port = htons(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort());
-//	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
-//		DEBASSERT ("can set request address")
-//	}
-//	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
-//
-//	return;
-//}
-//void SUDP::sendReply(MESSAGE* _message){
-//
-//	//Reply uses topmost Via header
-//	C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
-//	DEBOUT("Reply to ",  viatmp->getC_AttVia().getS_HostHostPort().getHostName() << " : " << viatmp->getC_AttVia().getS_HostHostPort().getPort())
-//
-//	struct sockaddr_in si_part;
-//	memset((char *) &si_part, 0, sizeof(si_part));
-//	si_part.sin_family = AF_INET;
-//	si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
-//	if( inet_aton(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
-//		DEBASSERT ("can set reply address")
-//	}
-//	sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
-//
-//	return;
-//}
-
-
-

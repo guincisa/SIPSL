@@ -91,7 +91,7 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 
 
 	if ( _gted->getHeadTo()->getC_AttUriParms().getContent().length() == 0){
-		DEBOUT("_gted->getHeadTo().getC_AttUriParms()).getContent()",_gted->getHeadTo()->getC_AttUriParms().getContent())
+		//DEBOUT("_gted->getHeadTo().getC_AttUriParms()).getContent()",_gted->getHeadTo()->getC_AttUriParms().getContent())
 		char totmp[512];
 		if (__gtor->getHeadTo()->getNameUri().length()!= 0){
 			sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo()->getNameUri().c_str(), __gtor->getHeadTo()->getC_AttSipUri().getContent().c_str(),(unsigned int)__gtor);
@@ -99,29 +99,29 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 			sprintf(totmp, "%s;tag=%x",__gtor->getHeadTo()->getC_AttSipUri().getContent().c_str(),(unsigned int)__gtor);
 		}
 		string totmpS(totmp);
-		DEBOUT("******** TO new" , totmpS)
+		//DEBOUT("******** TO new" , totmpS)
 		_gted->replaceHeadTo(totmpS);
-		DEBOUT("TO",_gted->getHeadTo()->getContent())
-		DEBOUT("TO",_gted->getHeadTo()->getC_AttSipUri().getContent())
-		DEBOUT("TO",_gted->getHeadTo()->getNameUri())
-		DEBOUT("TO",_gted->getHeadTo()->getC_AttUriParms().getContent())
+		//DEBOUT("TO",_gted->getHeadTo()->getContent())
+		//DEBOUT("TO",_gted->getHeadTo()->getC_AttSipUri().getContent())
+		//DEBOUT("TO",_gted->getHeadTo()->getNameUri())
+		//DEBOUT("TO",_gted->getHeadTo()->getC_AttUriParms().getContent())
 	}
 
 
 	//TODO qui fare dialoge_x...
-	DEBOUT("_gted","SIP/2.0 " << _gtor->getHeadSipReply().getContent())
+	//DEBOUT("_gted","SIP/2.0 " << _gtor->getHeadSipReply().getContent())
 	_gted->setHeadSipReply(_gtor->getHeadSipReply().getContent());
 //	DEBOUT("reply_x","Purge sdp")
 //	_gted->purgeSDP();
-	DEBOUT("reply_x","delete User-Agent:")
+	//DEBOUT("reply_x","delete User-Agent:")
 	_gted->dropHeader("User-Agent:");
-	DEBOUT("reply_x","delete Max-Forwards:")
+	//DEBOUT("reply_x","delete Max-Forwards:")
 	_gted->removeMaxForwards();
-	DEBOUT("reply_x","delete Allow:")
+	//DEBOUT("reply_x","delete Allow:")
 	_gted->dropHeader("Allow:");
-	DEBOUT("reply_x","delete Route:")
+	//DEBOUT("reply_x","delete Route:")
 	_gted->dropHeader("Route:");
-	DEBOUT("reply_x","delete Date:")
+	//DEBOUT("reply_x","delete Date:")
 	_gted->dropHeader("Date:");
 //	DEBOUT("reply_x","delete Content-Type:")
 //	_gted->dropHeader("Content-Type:");
@@ -130,10 +130,9 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	//crash here...
 
 	//via add rport
-	DEBY
 	C_HeadVia* viatmp = (C_HeadVia*) _gted->getSTKHeadVia().top();
 	//TODO 124??
-	DEBOUT("viatmp->getContent", viatmp->getContent())
+	//DEBOUT("viatmp->getContent", viatmp->getContent())
 	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
 //	_gted->popSTKHeadVia();
 //	_gted->pushHeadVia(viatmp.getC_AttVia().getContent());
@@ -146,29 +145,27 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 
 	//TODO qui fare etry...
-	DEBOUT("GTED","Purge sdp")
+	//DEBOUT("GTED","Purge sdp")
 	_gted->purgeSDP();
-	DEBOUT("GTED","delete User-Agent:")
+	//DEBOUT("GTED","delete User-Agent:")
 	_gted->dropHeader("User-Agent:");
-	DEBOUT("GTED","delete Max-Forwards:")
+	//DEBOUT("GTED","delete Max-Forwards:")
 	_gted->removeMaxForwards();
-	DEBOUT("GTED","delete Content-Type:")
+	//DEBOUT("GTED","delete Content-Type:")
 	_gted->dropHeader("Content-Type:");
-	DEBOUT("GTED","delete Allow:")
+	//DEBOUT("GTED","delete Allow:")
 	_gted->dropHeader("Allow:");
-	DEBOUT("GTED","delete Route:")
+	//DEBOUT("GTED","delete Route:")
 	_gted->dropHeader("Route:");
-	DEBOUT("GTED","delete Date:")
+	//DEBOUT("GTED","delete Date:")
 	_gted->dropHeader("Date:");
 
 	_gted->setGenericHeader("Content-Length:","0");
 
 	//via add rport
 	C_HeadVia* viatmp = (C_HeadVia*) _gted->getSTKHeadVia().top();
-	DEBY
 	//TODO 124??
 	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-	DEBY
 
 //	DEBOUT("GTED via", viatmp.getC_AttVia().getContent())
 //	_gted->popSTKHeadVia();
@@ -185,22 +182,27 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 	string viatmpS(viatmp);
 	_gted->purgeSTKHeadVia();
 	_gted->pushHeadVia(viatmpS);
-	DEBOUT("_gted->pushHeadVia(viatmpS);", viatmpS)
+	//DEBOUT("_gted->pushHeadVia(viatmpS);", viatmpS)
 	_gted->dumpVector();
 
 	//Create new call id
 	char callIdtmp[512];
-	sprintf(callIdtmp, "CoMap%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
+        if (_gtor->getModulus() < 10 ){
+            sprintf(callIdtmp, "CoMap0%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
+        }else {
+            sprintf(callIdtmp, "CoMap%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
+        }
+
 	string callIdtmpS(callIdtmp);
 	_gted->setGenericHeader("Call-ID:", callIdtmpS);
 
 	//From changes
 	// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
 	// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-	DEBOUT("FROM",_gted->getHeadFrom()->getContent())
-	DEBOUT("FROM",_gted->getHeadFrom()->getC_AttSipUri().getContent())
-	DEBOUT("FROM",_gted->getHeadFrom()->getNameUri())
-	DEBOUT("FROM",_gted->getHeadFrom()->getC_AttUriParms().getContent())
+	//DEBOUT("FROM",_gted->getHeadFrom()->getContent())
+	//DEBOUT("FROM",_gted->getHeadFrom()->getC_AttSipUri().getContent())
+	//DEBOUT("FROM",_gted->getHeadFrom()->getNameUri())
+	//DEBOUT("FROM",_gted->getHeadFrom()->getC_AttUriParms().getContent())
 	// change tag
 	char fromtmp[512];
 	if (_gted->getHeadFrom()->getNameUri().length() == 0)
@@ -208,12 +210,12 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 	else
 		sprintf(fromtmp, "%s %s;tag=%s",_gted->getHeadFrom()->getNameUri().c_str(), _gted->getHeadFrom()->getC_AttSipUri().getContent().c_str(),_gted->getKey().c_str());
 	string fromtmpS(fromtmp);
-	DEBOUT("******** FROM new" , fromtmpS)
+	//DEBOUT("******** FROM new" , fromtmpS)
 	_gted->replaceHeadFrom(fromtmpS);
-	DEBOUT("FROM",_gted->getHeadFrom()->getContent())
-	DEBOUT("FROM",_gted->getHeadFrom()->getC_AttSipUri().getContent())
-	DEBOUT("FROM",_gted->getHeadFrom()->getNameUri())
-	DEBOUT("FROM",_gted->getHeadFrom()->getC_AttUriParms().getContent())
+	//DEBOUT("FROM",_gted->getHeadFrom()->getContent())
+	//DEBOUT("FROM",_gted->getHeadFrom()->getC_AttSipUri().getContent())
+	//DEBOUT("FROM",_gted->getHeadFrom()->getNameUri())
+	//DEBOUT("FROM",_gted->getHeadFrom()->getC_AttUriParms().getContent())
 
 
 	if (_gtor->getSDPSize() != 0 ){
@@ -228,7 +230,7 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 
 void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 
-	DEBOUT("ETRY","SIP/2.0 100 Trying")
+	//DEBOUT("ETRY","SIP/2.0 100 Trying")
 		_etry->setHeadSipReply("SIP/2.0 100 Trying");
 
 	_etry->dropHeader("Contact:");
@@ -240,7 +242,7 @@ void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 }
 void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header){
 
-	DEBOUT("Reply",_header)
+	//DEBOUT("Reply",_header)
 		_qrep->setHeadSipReply(_header);
 
 	_qrep->dropHeader("Contact:");

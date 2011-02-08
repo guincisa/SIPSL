@@ -101,7 +101,8 @@ int main(int argc, const char* argv[]) {
 		NEWPTR(SUDP*, mystack, SUDP(),"SUDP")
 		//SUDP* mystack ;
 
-		NEWPTR(TRNSPRT*, transport, TRNSPRT(),"TRNSPRT")
+		NEWPTR(TRNSPRT*, transport, TRNSPRT(TRNSPRTTH),"TRNSPRT")
+		transport->linkSUDP(mystack);
 
 		//Second stage engine: Call Control
 		NEWPTR(SL_CC*, sl_cc, SL_CC(SL_CCTH),"SL_CC")

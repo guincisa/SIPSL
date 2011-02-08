@@ -93,22 +93,32 @@
 #include "TRNSPRT.h"
 #endif
 
+TRNSPRT::TRNSPRT(int _i):ENGINE(_i){}
 
 void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
-	DEBNTW("TRNSPRT::upCall", _message)
-	bool r = _sl_cc->p_w(_message);
-	if(!r){
-		DEBOUT("TRNSPRT::upCall message rejected, put in rejection queue",_message)
-		bool ret2 = _sl_cc->p_w_s(_message);
-		if (!ret2){
-			if (!_message->getLock()){
-				PURGEMESSAGE(_message)
-			}
-		}
 
-	}
+    PROFILE("TRNSPRT::upCall start ")
+
+    DEBNTW("TRNSPRT::upCall", _message)
+    bool r = _sl_cc->p_w(_message);
+    if(!r){
+            DEBOUT("TRNSPRT::upCall message rejected, put in rejection queue",_message)
+            bool ret2 = _sl_cc->p_w_s(_message);
+            if (!ret2){
+                    if (!_message->getLock()){
+                            PURGEMESSAGE(_message)
+                    }
+            }
+
+    }
+    PROFILE("TRNSPRT::upCall end ")
+
 }
-void TRNSPRT::downCall(MESSAGE* _message, CALL_OSET* _call_oset){
+void TRNSPRT::parse_s(MESSAGE* _message){
+
+}
+
+void TRNSPRT::parse(MESSAGE* _message){
 
 	//RETRANSMISSIONS
 	//INVITE_B retransmission is setup using ALARM
@@ -145,7 +155,7 @@ void TRNSPRT::downCall(MESSAGE* _message, CALL_OSET* _call_oset){
 	//for timeouts (
 	//for errors messages from network
 
-
+        PROFILE("TRNSPRT::downCall start ")
 
 	DEBNTW("TRNSPRT::downCall", _message)
 
@@ -157,14 +167,16 @@ void TRNSPRT::downCall(MESSAGE* _message, CALL_OSET* _call_oset){
 
 	if (_message->getReqRepType() == REPSUPP) {
 		//TODO Check if there is a ROUTE header
-		_call_oset->getENGINE()->getSUDP()->sendReply(_message);
+		getSUDP()->sendReply(_message);
 	}
 	else if (_message->getReqRepType() == REQSUPP) {
-		_call_oset->getENGINE()->getSUDP()->sendRequest(_message);
+		getSUDP()->sendRequest(_message);
 	}
 	else {
 		DEBASSERT("Unexpected sending to network")
 	}
+        PROFILE("TRNSPRT::downCall end ")
+
 
 }
 

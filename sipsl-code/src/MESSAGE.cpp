@@ -105,9 +105,7 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 	string key(bu);
 	*/
     DEBOUT("BASEMESSAGE::BASEMESSAGE copy",_basemessage)
-    DEBY
     echoClntAddr = _basemessage->getAddress();
-    DEBY
     sock = _basemessage->getSock();
 
     inc_ts = _creaTime;
@@ -122,7 +120,6 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
     requestDirection = _basemessage->getRequestDirection();
 
     invalid = 0;
-    DEBY
 
     return;
 }
@@ -455,10 +452,10 @@ vector<string>::iterator MESSAGE::getSDPposition(void){
     return theIterator;
 }
 void MESSAGE::dumpVector(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::dumpVector invalid")
+    if (invalid == 1)
+        DEBASSERT("MESSAGE::dumpVector invalid")
 
-	vector<string>::iterator theIterator;
+    vector<string>::iterator theIterator;
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
     	DEBOUT("Message vector", (string)*theIterator)
     }
@@ -785,31 +782,30 @@ int MESSAGE::getSDPSize(void){
 
 }
 void MESSAGE::importSDP(vector<string> _sdp){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::importSDP invalid")
+    if (invalid == 1)
+        DEBASSERT("MESSAGE::importSDP invalid")
 
 
-	vector<string>::iterator theIterator;
+    vector<string>::iterator theIterator;
 
-	sdpVector = _sdp;
+    sdpVector = _sdp;
 
-	theIterator = _sdp.begin();
-	sdpSize = 0;
-	sdpVector_p = true;
-	if (theIterator!= _sdp.end()){
-		flex_line.push_back("Content-Type: application/sdp");
-		flex_line.push_back("Content-Length: 0");
-		flex_line.push_back("");
-	}
-	while (theIterator != _sdp.end()){
-		DEBOUT("the iterator", *theIterator)
-		sdpSize = sdpSize + (*theIterator).length() + 2;
-		flex_line.push_back((*theIterator));
-		theIterator++;
-	}
-	char aaa[10];
-	sprintf(aaa,"%d", sdpSize);
-	setGenericHeader("Content-Length:", aaa );
+    theIterator = _sdp.begin();
+    sdpSize = 0;
+    sdpVector_p = true;
+    if (theIterator!= _sdp.end()){
+        flex_line.push_back("Content-Type: application/sdp");
+        flex_line.push_back("Content-Length: 0");
+        flex_line.push_back("");
+    }
+    while (theIterator != _sdp.end()){
+        sdpSize = sdpSize + (*theIterator).length() + 2;
+        flex_line.push_back((*theIterator));
+        theIterator++;
+    }
+    char aaa[10];
+    sprintf(aaa,"%d", sdpSize);
+    setGenericHeader("Content-Length:", aaa );
 
 }
 
@@ -947,25 +943,24 @@ void MESSAGE::replaceHeadTo(string _content){
  * Call Id
  */
 C_HeadCallId &MESSAGE::getHeadCallId(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadCallId invalid")
+    if (invalid == 1)
+        DEBASSERT("MESSAGE::getHeadCallId invalid")
 
+    if(headCallId_p){
+        DEBOUT("CALL ID already parsed", headCallId.getContent())
+        return headCallId;
+    }
 
-	if(headCallId_p){
-		DEBOUT("CALL ID already parsed", headCallId.getContent())
-		return headCallId;
-	}
+    size_t i;
 
-	size_t i;
-
-	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,8).compare("Call-ID:") == 0){
-			headCallId.setContent(flex_line[i].substr(9));
-			break;
-		}
-	}
-	headCallId_p = true;
-	return headCallId;
+    for(i = 1; i < flex_line.size(); i ++){
+        if(flex_line[i].substr(0,8).compare("Call-ID:") == 0){
+            headCallId.setContent(flex_line[i].substr(9));
+            break;
+        }
+    }
+    headCallId_p = true;
+    return headCallId;
 }
 /*
  * CSeq
@@ -1297,7 +1292,6 @@ string MESSAGE::getDialogExtendedCID(void){
 		DEBASSERT("MESSAGE::getDialogExtendedCID invalid")
 
 	//Call id and FromTag
-	DEBY
 	DEBOUT_UTIL("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag"))
 	return getHeadCallId().getNormCallId() + getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag");
 }
@@ -1389,9 +1383,9 @@ int MESSAGE::getModulus(void){
 
 	string s = getHeadCallId().getContent();
 	if (s.substr(0,5).compare("CoMap") == 0){
-		modulus = atoi(s.substr(5,1).c_str());
+		modulus = atoi(s.substr(5,COMAPS_DIG).c_str());
 	}else {
-		DEBY
+
 		char x[64];
 		int k = 64<s.length() ? 64 : s.length();
 		sprintf(x,"%s", s.substr(0,k).c_str());

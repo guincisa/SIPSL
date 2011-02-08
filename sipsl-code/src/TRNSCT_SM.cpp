@@ -121,34 +121,34 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
-	DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this << "id [" <<id<<"]")
+    //DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this << "id [" <<id<<"]")
 
-	//A_Matrix belongs to another SM
-	Matrix->unSetLock(sl_co->call_oset);
-	PURGEMESSAGE(Matrix)
-	DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
+    //A_Matrix belongs to another SM
+    Matrix->unSetLock(sl_co->call_oset);
+    PURGEMESSAGE(Matrix)
+    //DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
 
 }
 
 
 MESSAGE* TRNSCT_SM::getMatrixMessage(void){
-	if (Matrix == 0x0 || Matrix == MainMessage){
-		DEBASSERT("NO")
-	}
+    if (Matrix == 0x0 || Matrix == MainMessage){
+            DEBASSERT("NO")
+    }
 
-	return Matrix;
+    return Matrix;
 }
 MESSAGE* TRNSCT_SM::getA_Matrix(void){
-	if (A_Matrix == 0x0 || A_Matrix == MainMessage){
-		DEBASSERT("NO")
-	}
-	return A_Matrix;
+    if (A_Matrix == 0x0 || A_Matrix == MainMessage){
+            DEBASSERT("NO")
+    }
+    return A_Matrix;
 }
 void TRNSCT_SM::setId(string _id){
-	id = _id;
+    id = _id;
 }
 string TRNSCT_SM::getId(void){
-	return id;
+    return id;
 }
 SingleAction TRNSCT_SM::generateTimerS(int genPoint){
 
@@ -171,13 +171,13 @@ SingleAction TRNSCT_SM::generateTimerS(int genPoint){
 }
 SingleAction TRNSCT_SM::clearTimerS(int genPoint){
 
-	DEBOUT("TRNSCT_SM::clearTimerS genpoint",genPoint )
+    DEBOUT("TRNSCT_SM::clearTimerS genpoint",genPoint )
 
-	CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
-	timer_s->setTypeOfInternal(TYPE_OP);
-	timer_s->setTypeOfOperation(TYPE_OP_TIMER_OFF);
-	timer_s->setOrderOfOperation("TIMER_S");
-	return(SingleAction(timer_s));
+    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
+    timer_s->setTypeOfInternal(TYPE_OP);
+    timer_s->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+    timer_s->setOrderOfOperation("TIMER_S");
+    return(SingleAction(timer_s));
 
 }
 
@@ -185,65 +185,62 @@ SingleAction TRNSCT_SM::clearTimerS(int genPoint){
 
 ACTION* SM::event(MESSAGE* _event){
 
-	PREDICATE_ACTION* tmp;
+    PREDICATE_ACTION* tmp;
 
-	ACTION* act=0x0;
+    ACTION* act=0x0;
 
-	DEBOUT("SM::event Look for state", State)
-	pair<multimap<const int,PREDICATE_ACTION*>::iterator,multimap<const int,PREDICATE_ACTION*>::iterator> ret;
-	multimap<const int,PREDICATE_ACTION*>::iterator iter;
-	ret = move_sm.equal_range(State);
+    DEBOUT("SM::event Look for state", State)
+    pair<multimap<const int,PREDICATE_ACTION*>::iterator,multimap<const int,PREDICATE_ACTION*>::iterator> ret;
+    multimap<const int,PREDICATE_ACTION*>::iterator iter;
+    ret = move_sm.equal_range(State);
 
     for (iter=ret.first; iter!=ret.second; ++iter){
-		tmp  = iter->second;
-		DEBOUT("SM::event tmp  = iter->second;", iter->second)
-		if (tmp->predicate(this, _event)){
-			act = tmp->action(this, _event);
-			return act;
-		}
-	}
+        tmp  = iter->second;
+        if (tmp->predicate(this, _event)){
+            act = tmp->action(this, _event);
+            return act;
+        }
+    }
 
-	//Default event is delete the message
-	//TODO not nice
-	if(act == 0x0){
-		NEWPTR2(act, ACTION(),"ACTION")
-			_event->setDestEntity(SODE_KILL);
-			_event->setGenEntity(SODE_TRNSCT_SV);
-			SingleAction sa_1 = SingleAction(_event);
-			act->addSingleAction(sa_1);
-	}
+    //Default event is delete the message
+    //TODO not nice
+    if(act == 0x0){
+        NEWPTR2(act, ACTION(),"ACTION")
+        _event->setDestEntity(SODE_KILL);
+        _event->setGenEntity(SODE_TRNSCT_SV);
+        SingleAction sa_1 = SingleAction(_event);
+        act->addSingleAction(sa_1);
+    }
 
-	return(act);
+    return(act);
 }
 //**********************************************************************************
 //**********************************************************************************
 void SM::insert_move(int _i, PREDICATE_ACTION* _pa){
 
-	DEBOUT("SM::insert_move", _i << " " << _pa )
-	move_sm.insert(pair<const int, PREDICATE_ACTION*>(_i, _pa));
+    move_sm.insert(pair<const int, PREDICATE_ACTION*>(_i, _pa));
 
 }
 SM::SM(ENGINE* _eng, SL_CO* _sl_co){
 
-	DEBOUT("SM::SM", "")
-	sl_cc = _eng;
+    sl_cc = _eng;
     sl_co = _sl_co;
-	State = 0;
+    State = 0;
 
 //	controlSequence = 1;
 }
 ENGINE* SM::getSL_CC(void){
-	return sl_cc;
+    return sl_cc;
 }
 SL_CO* SM::getSL_CO(void){
-	return sl_co;
+    return sl_co;
 }
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
 PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
-	machine = _sm;
+    machine = _sm;
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -256,18 +253,18 @@ PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
 //*****************************************************************
 bool pre_invite_from_a(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_SV pre_invite_from_a called",_message)
-	if (_message->getReqRepType() == REQSUPP
-			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
-			&& _message->getDestEntity() == SODE_TRNSCT_SV
-			&& _message->getGenEntity() ==  SODE_NTWPOINT){
-		DEBOUT("TRNSCT_INV_SV pre_invite_from_a","true")
-		return true;
-	}
-	else {
-		DEBOUT("TRNSCT_INV_SV pre_invite_from_a","false")
-		return false;
-	}
+    DEBOUT("TRNSCT_INV_SV pre_invite_from_a called",_message)
+    if (_message->getReqRepType() == REQSUPP
+            && (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
+            && _message->getDestEntity() == SODE_TRNSCT_SV
+            && _message->getGenEntity() ==  SODE_NTWPOINT){
+        DEBOUT("TRNSCT_INV_SV pre_invite_from_a","true")
+        return true;
+    }
+    else {
+        DEBOUT("TRNSCT_INV_SV pre_invite_from_a","false")
+        return false;
+    }
 }
 //*****************************************************************
 ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
@@ -1834,6 +1831,11 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE);
 	action->addSingleAction(sa_1);
 
+        //Kill this message
+	_message->setDestEntity(SODE_KILL);
+	_message->setGenEntity(SODE_TRNSCT_SV);
+	SingleAction sa_2 = SingleAction(_message);
+	action->addSingleAction(sa_2);
 	//**************************************
 	//Action TIMER_S
 	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));

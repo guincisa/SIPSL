@@ -32,119 +32,60 @@
 //#define SPIN_BLOCK 2
 
 
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//SPINBUFFER
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//class SPINB;
-/////////////////////////////////////////////////////////////////////////////////
-//class ROTQ {
-//    private:
-//        MESSAGE* Q[ARR];
-//        int top,bot; // da scrivere, da leggere
-//        int state;
-//        SPINB *sb;
-//        bool full;
-//        pthread_mutex_t fullq;
-//
-//    public:
-//        ROTQ(void);
-//        void setSpinb(SPINB *);
-//        void setState(int);
-//        int getState(void);
-//        void put(MESSAGE*);
-//        void put_trashing(MESSAGE*);
-//        void put_block(MESSAGE*);
-//
-//
-//        MESSAGE* get(void);
-//        bool isEmpty(void);
-//};
-///////////////////////////////////////////////////////////////////////////////
-//class SPINB {
-//    private:
-//
-//    //queue<MESSAGE> Q0,Q1,Q2;
-//    ROTQ Q[3];
-//
-//    //int state[3]; // 0 free, 1 write, 2 read
-//    int readbuff, writebuff, freebuff;
-//
-//    public:
-//
-//    int DIM;
-//    pthread_mutex_t readmu;
-//    pthread_mutex_t writemu;
-//
-//    pthread_mutex_t mudim;
-//    pthread_mutex_t condvarmutex;
-//    pthread_cond_t condvar;
-//
-//    //Type can be trashing = 1 or blocking = 2
-//    SPINB(void);
-//    void put(MESSAGE*);
-//    MESSAGE* get(void);
-//    void move(void);
-//    bool isEmpty(void);
-//};
 class SPINC {
 
-	private:
-	    MESSAGE* BUFF[ARR];
+    private:
+        MESSAGE* BUFF[ARR];
 
-	    int l, s, DIM;
+        int l, s, DIM;
 
-	    pthread_mutex_t readmu;
-	    pthread_mutex_t writemu;
-	    pthread_mutex_t dimmu;
-	    pthread_mutex_t buffmu[SPINC_MOD];
+        pthread_mutex_t readmu;
+        pthread_mutex_t writemu;
+        pthread_mutex_t dimmu;
+        pthread_mutex_t buffmu[SPINC_MOD];
 
-	    bool forcedState;
+        bool forcedState;
 
-	public:
-	    bool put(MESSAGE*);
-	    MESSAGE* get(void);
-	    bool isEmpty(void);
-	    SPINC(void);
+    public:
+        bool put(MESSAGE*);
+        MESSAGE* get(void);
+        bool isEmpty(void);
+        SPINC(void);
 
-	    pthread_mutex_t condvarmutex;
-	    pthread_cond_t condvar;
+        pthread_mutex_t condvarmutex;
+        pthread_cond_t condvar;
 
-	    void lockBuffer(void);
+        void lockBuffer(void);
 
-	    void unLockBuffer(void);
+        void unLockBuffer(void);
 
 };
 class SPINS {
 
-	private:
-		MESSAGE* BUFF[ARR_SHORT];
+    private:
+            MESSAGE* BUFF[ARR_SHORT];
 
-		bool forcedState;
+            bool forcedState;
 
-		int l, s, DIM;
+            int l, s, DIM;
 
-	    pthread_mutex_t readmu;
-	    pthread_mutex_t writemu;
-	    pthread_mutex_t dimmu;
-	    pthread_mutex_t buffmu[SPINC_MOD];
+        pthread_mutex_t readmu;
+        pthread_mutex_t writemu;
+        pthread_mutex_t dimmu;
+        pthread_mutex_t buffmu[SPINC_MOD];
 
-	public:
-	    bool put(MESSAGE*);
-	    MESSAGE* get(void);
-	    bool isEmpty(void);
-	    SPINS(void);
+    public:
+        bool put(MESSAGE*);
+        MESSAGE* get(void);
+        bool isEmpty(void);
+        SPINS(void);
 
-	    pthread_mutex_t condvarmutex;
-	    pthread_cond_t condvar;
+        pthread_mutex_t condvarmutex;
+        pthread_cond_t condvar;
 
-	    void lockBuffer(void);
+        void lockBuffer(void);
 
-	    void unLockBuffer(void);
+        void unLockBuffer(void);
 
 
 };

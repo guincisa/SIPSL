@@ -25,13 +25,21 @@
 //Is a global object but not an engine, it runs
 //inside SIPENGINE when up
 //inside SL_CC when down
-class TRNSPRT {
 
-	private:
-		int dummy;
-	public:
+//Must be an engine for the downcall
+//because of the network functions called
+class TRNSPRT : public ENGINE {
 
-	void upCall(MESSAGE*, SL_CC*);
-	void downCall(MESSAGE*, CALL_OSET*);
+    private:
+        int dummy;
+
+    public:
+        
+        TRNSPRT(int);
+
+        void upCall(MESSAGE*, SL_CC*);
+        void parse(MESSAGE*); //downcall
+        void parse_s(MESSAGE*); //empty
+
 
 };

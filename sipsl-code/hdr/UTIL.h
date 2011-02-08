@@ -82,20 +82,23 @@ class ThreadWrapper {
 //#define NOLOGATALL
 
 #ifdef SPARC
+#define SUDPTH 5
 #define MAXTHREADS 264
-#define COMAPS 10
-#define SIPENGINETH 64
+#define COMAPS 50
+#define COMAPS_DIG 2
+#define SIPENGINETH 128
+#define TRNSPRTTH 64
 #define SL_CCTH 264
-#define ARR 150
+#define ARR 4000
 #define ARR_SHORT 30
-#define SPINC_MOD 15
+#define SPINC_MOD 50
 #define DOA_CLEANUP 1
 #define TIMER_DOA 5000000
 #define ADDRESSPACE 8
-#define MESSAGEMAPS 30
+#define MESSAGEMAPS 60
 #ifndef NOLOGATALL
 #define LOGMIN
-#define LOGSIP
+//#define LOGSIP
 #define LOGINF
 #define LOGMIN
 #define LOGDEV
@@ -103,6 +106,7 @@ class ThreadWrapper {
 #define LOGNTW
 #define SELFCHECK
 #define DEBCODE
+#define PROFILING
 //#define LOGLOK
 #endif
 #else
@@ -238,6 +242,11 @@ class ThreadWrapper {
 				pthread_mutex_unlock(&messTableMtx[i]);}}
 
 //**********************************************************
+#ifdef PROFILING
+#define PROFILE(m) DEBOUT("PROFILING",m)
+#else
+#define PROFILE(m)
+#endif
 //**********************************************************
 #ifdef LOGSIP
 
