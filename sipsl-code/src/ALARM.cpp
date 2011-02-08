@@ -124,14 +124,14 @@ void ALMGR::alarmer(void){
         map<string,ALARM*>::iterator cid_iter;
 
 
-#ifdef DEBCODE
-        jumper ++;
-        if (jumper == 1000){
-                DUMPMESSTABLE
-                DEBOUT("ALARM tables pq", pq.size() << "] cidmap [" << cidmap.size())
-            jumper = 0;
-        }
-#endif
+//#ifdef DEBCODE
+//        jumper ++;
+//        if (jumper == 1000){
+//                DUMPMESSTABLE
+//                DEBOUT("ALARM tables pq", pq.size() << "] cidmap [" << cidmap.size())
+//            jumper = 0;
+//        }
+//#endif
 
         if (!pq.empty()) {
             trip = pq.top();
@@ -218,6 +218,7 @@ void ALMGR::alarmer(void){
 
 void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
 
+    PROFILE("ALMGR::insertAlarm begin")
     DEBOUT("ALMGR::insertAlarm message", _message)
 
 
@@ -265,11 +266,16 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
     RELLOCK(&mutex,"mutex");
 
     DEBOUT("Alarm Inserterd",_fireTime <<"][" << cidbranch_alarm << "]["<<alm)
+
+    PROFILE("ALMGR::insertAlarm end")
+
     return;
 }
 
 
 void ALMGR::cancelAlarm(string _cidbranch){
+
+    PROFILE("ALMGR::cancelAlarm begin")
 
     DEBOUT("ALMGR::cancelAlarm", _cidbranch)
     // alarm is deactivated and the related message may have been
@@ -278,6 +284,8 @@ void ALMGR::cancelAlarm(string _cidbranch){
     GETLOCK(&mutex,"mutex");
             internalCancelAlarm(_cidbranch);
     RELLOCK(&mutex,"mutex");
+    
+    PROFILE("ALMGR::cancelAlarm end")
 
 
 }

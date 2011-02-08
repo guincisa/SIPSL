@@ -673,7 +673,7 @@ void SL_CO::actionCall_SV(ACTION* action){
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 			//To network
 			DEBDEV("Send to transport", _tmpMessage)
-			call_oset->getTRNSPRT()->downCall(_tmpMessage, call_oset);
+			call_oset->getTRNSPRT()->parse(_tmpMessage);
 
 		} else if (_tmpMessage->getTypeOfInternal() == TYPE_OP){
 
@@ -761,7 +761,7 @@ void SL_CO::actionCall_CL(ACTION* action){
 			DEBOUT("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 			//To network
 			DEBDEV("Send to trnasport", _tmpMessage)
-			call_oset->getTRNSPRT()->downCall(_tmpMessage, call_oset);
+			call_oset->getTRNSPRT()->parse(_tmpMessage);
 
 //			actionList.pop();
 //			continue;

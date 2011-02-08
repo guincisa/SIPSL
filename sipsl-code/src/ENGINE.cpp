@@ -172,7 +172,6 @@ bool ENGINE::p_w(MESSAGE* _m) {
         pthread_cond_signal(&(sb.condvar));
     }
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-    DEBY
     return r;
 
 
@@ -195,12 +194,12 @@ bool ENGINE::p_w_s(MESSAGE* _m) {
 
 }
 void ENGINE::lockBuffer(void){
-	DEBOUT("ENGINE::lockBuffer",this)
-	sb.lockBuffer();
+    DEBOUT("ENGINE::lockBuffer",this)
+    sb.lockBuffer();
 }
 void ENGINE::unLockBuffer(void){
-	DEBOUT("ENGINE::unLockBuffer",this)
-	sb.unLockBuffer();
+    DEBOUT("ENGINE::unLockBuffer",this)
+    sb.unLockBuffer();
 }
 
 //**********************************************************************************
@@ -211,7 +210,7 @@ void * threadparser (void * _pt){
     ENGINE * ps = pt->ps;
     while(true) {
         DEBOUT("ENGINE thread",_pt)
-		GETLOCK(&(ps->sb.condvarmutex),"ps->sb.condvarmutex");
+            GETLOCK(&(ps->sb.condvarmutex),"ps->sb.condvarmutex");
         while(ps->sb.isEmpty() ) {
             DEBOUT("ENGINE thread is empty",_pt)
             pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
@@ -242,7 +241,7 @@ void * threadparser_s (void * _pt){
     ENGINE * ps = pt->ps;
     while(true) {
         DEBOUT("ENGINE thread",_pt)
-		GETLOCK(&(ps->rej.condvarmutex),"ps->rej.condvarmutex");
+            GETLOCK(&(ps->rej.condvarmutex),"ps->rej.condvarmutex");
         while(ps->rej.isEmpty() ) {
             DEBOUT("ENGINE thread is empty",_pt)
             pthread_cond_wait(&(ps->rej.condvar), &(ps->rej.condvarmutex));

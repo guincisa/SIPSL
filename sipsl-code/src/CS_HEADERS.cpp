@@ -2092,7 +2092,7 @@ void C_HeadFrom::doParse(void){
 		line = s.Lvalue;
 	}
 
-	DEBOUT("C_HeadFrom::doParse newCo", newCo)
+	//DEBOUT("C_HeadFrom::doParse newCo", newCo)
 	int q = hasQuote(line);
 	if( line.length() > 0 && q > 0){
     	string line1 = replaceHttpChars(line.substr(q+1, -1));
@@ -2102,12 +2102,12 @@ void C_HeadFrom::doParse(void){
     	nameUri = trimUseless(line);
     }
 
-    DEBOUT("C_HeadFrom::doParse nameUri", nameUri)
+    //DEBOUT("C_HeadFrom::doParse nameUri", nameUri)
 
     Tuple s2 = brkin2(newCo, ">");
 
-    DEBOUT("C_HeadFrom::doParse s2.Lvalue plus >", s2.Lvalue+ ">")
-    DEBOUT("C_HeadFrom::doParse s2.Rvalue", s2.Rvalue )
+    //DEBOUT("C_HeadFrom::doParse s2.Lvalue plus >", s2.Lvalue+ ">")
+    //DEBOUT("C_HeadFrom::doParse s2.Rvalue", s2.Rvalue )
 
     sipUri.setContent(s2.Lvalue + ">");
     uriParms.setContent(s2.Rvalue);

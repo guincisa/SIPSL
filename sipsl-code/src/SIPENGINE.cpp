@@ -156,46 +156,47 @@ void SIPENGINE::parse_s(MESSAGE* _mess) {
 //**********************************************************************************
 void SIPENGINE::parse(MESSAGE* _mess) {
 
-	RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+    PROFILE("SIPENGINE::parse start")
 
-	//Check if Request or Reply
-	_mess->getTotLines();
-	DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getLine(0) << "] [" <<_mess->getKey())
+    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 
-	int type = _mess->getReqRepType();
+    //Check if Request or Reply
+    _mess->getTotLines();
+    DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getLine(0) << "] [" <<_mess->getKey())
 
-	if (type == REQSUPP) {
+    int type = _mess->getReqRepType();
 
-		DEBSIP("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest().getContent())
+    if (type == REQSUPP) {
 
-		int method = _mess->getHeadSipRequest().getS_AttMethod().getMethodID();
-		if (	// Supported methods
-				method != INVITE_REQUEST &&
-				method != BYE_REQUEST &&
-				method != ACK_REQUEST) {
+        DEBSIP("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest().getContent())
 
-			DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
-			PURGEMESSAGE(_mess)
-			return;
+        int method = _mess->getHeadSipRequest().getS_AttMethod().getMethodID();
 
-		} else {
-			transport->upCall(_mess, (SL_CC*)sl_cc);
-		}
-	}
-	else if ( type == REPSUPP) {
+        if (	// Supported methods
+            method != INVITE_REQUEST &&
+            method != BYE_REQUEST &&
+            method != ACK_REQUEST) {
 
-		DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply().getContent())
-//		int reply_id = _mess->getHeadSipReply().getReply().getReplyID();
-//		int code = _mess->getHeadSipReply().getReply().getCode();
-//		DEBSIP("SIPENGINE::reply type and code", reply_id << " " << code)
+                DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
+                PURGEMESSAGE(_mess)
 
-		//All replies must be considered
-		transport->upCall(_mess, (SL_CC*)sl_cc);
-//		sl_cc->p_w(_mess);
+        } else {
+            transport->upCall(_mess, (SL_CC*)sl_cc);
+        }
+    }
+    else if ( type == REPSUPP) {
 
-	}
-	else {
-		// purge it
-		PURGEMESSAGE(_mess)
-	}
+        DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply().getContent())
+
+        //All replies must be considered
+        transport->upCall(_mess, (SL_CC*)sl_cc);
+
+    }
+    else {
+        // purge it
+        PURGEMESSAGE(_mess)
+    }
+
+    PROFILE("SIPENGINE::parse end")
+
 }
