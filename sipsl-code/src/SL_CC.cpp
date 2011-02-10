@@ -135,6 +135,8 @@ void SL_CC::parse_s(MESSAGE* _mess) {
 void SL_CC::parse(MESSAGE* _mess) {
 
     PROFILE("SL_CC::parse start")
+    TIMEDEF
+    SETNOW
 
     DEBMESSAGESHORT("SL_CC::parse", _mess)
 
@@ -188,7 +190,7 @@ void SL_CC::parse(MESSAGE* _mess) {
                 DEBY
             }
             //MEssage has been worked by SL_CO
-            PROFILE("SL_CC::parse end")
+            PRINTDIFF("SL_CC::parse end")
             return;
 	}
         // Then try to get call object using y side params
@@ -220,7 +222,7 @@ void SL_CC::parse(MESSAGE* _mess) {
                 else{
                     DEBY
                 }
-                PROFILE("SL_CC::parse end")
+                PRINTDIFF("SL_CC::parse end")
                 return;
             }
         }
@@ -255,7 +257,7 @@ void SL_CC::parse(MESSAGE* _mess) {
             }else {
                 DEBY
             }
-            PROFILE("SL_CC::parse end")
+            PRINTDIFF("SL_CC::parse end")
             return;
         }
         else {
@@ -266,7 +268,7 @@ void SL_CC::parse(MESSAGE* _mess) {
             }else {
                     DEBASSERT ("Unexpected message ignored found locked")
             }
-            PROFILE("SL_CC::parse end")
+            PRINTDIFF("SL_CC::parse end")
             return;
         }
     }
@@ -316,7 +318,7 @@ void SL_CC::parse(MESSAGE* _mess) {
                 } else{
                     DEBY
                 }
-                PROFILE("SL_CC::parse end")
+                PRINTDIFF("SL_CC::parse end")
                 return;
             }else{
                 //Not existent or deleted
@@ -341,13 +343,13 @@ void SL_CC::parse(MESSAGE* _mess) {
             }else{
                 DEBY
             }
-            PROFILE("SL_CC::parse end")
+            PRINTDIFF("SL_CC::parse end")
             return;
         }
     } else {
         DEBINF("Unexpected source of the message", _mess->getGenEntity())
         DEBASSERT("")
     }
-    PROFILE("SL_CC::parse end")
+    PRINTDIFF("SL_CC::parse end")
     return;
 }

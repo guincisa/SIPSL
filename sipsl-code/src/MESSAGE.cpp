@@ -715,7 +715,7 @@ void MESSAGE::purgeSDP(void){
 		DEBASSERT("MESSAGE::purgeSDP invalid")
 
 
-	DEBOUT("MESSAGE::purgeSDP","" )
+	DEBSIP("MESSAGE::purgeSDP","" )
 
 	//setGenericHeader("Content-Length:","0");
 	dropHeader("Content-Length:");
@@ -1141,7 +1141,7 @@ void MESSAGE::replaceHeadContact(string _content){
 		}
 	}
 	if (!found) {
-		DEBOUT("MESSAGE::replaceHeadContact from header is missing","")
+		DEBSIP("MESSAGE::replaceHeadContact from header is missing","")
 	}
 }
 void MESSAGE::removeMaxForwards(void){
@@ -1163,7 +1163,7 @@ void MESSAGE::removeMaxForwards(void){
 		}
 	}
 	if (!found) {
-		DEBOUT("MESSAGE::removeMaxForwards, MaxForwards is missing","")
+		DEBSIP("MESSAGE::removeMaxForwards, MaxForwards is missing","")
 	}
 
 }

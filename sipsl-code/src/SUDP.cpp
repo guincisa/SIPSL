@@ -188,6 +188,8 @@ void SUDP::start(void) {
 // *****************************************************************************************
 void SUDP::listen() {
 
+    TIMEDEF
+
     DEBDEV("SUDP::listen","listen")
     for (;;){
         /* Set the size of the in-out parameter */
@@ -201,14 +203,15 @@ void SUDP::listen() {
             DEBERROR("SUDP::listen() recvfrom() failed")
             //return;
         }else {
-            PROFILE("MESSAGE ARRIVED FROM SOCKET")
+            SETNOW
+            PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
             CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
                 bool r = engine->p_w(message);
-                PROFILE("MESSAGE SENT TO SIPENGINE")
+                PRINTDIFF("SUDP:Message sent to SIPENGINE")
                 if (!r){
                     DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
                     bool rr = engine->p_w_s(message);

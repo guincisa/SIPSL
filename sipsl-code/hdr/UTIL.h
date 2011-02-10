@@ -98,6 +98,7 @@ class ThreadWrapper {
 #define MESSAGEMAPS 60
 #ifndef NOLOGATALL
 #define LOGMIN
+#define PROFILELOCK
 //#define LOGSIP
 #define LOGINF
 #define LOGMIN
@@ -110,6 +111,7 @@ class ThreadWrapper {
 //#define LOGLOK
 #endif
 #else
+#define LOGALO
 #define COMAPS 6
 #define MAXTHREADS 8
 #define SIPENGINETH 6
@@ -185,15 +187,7 @@ class ThreadWrapper {
 #undef DELPTR
 #define DELPTR(m1, mess) \
 		delete m1;
-#undef GETLOCK
-#define GETLOCK(m,message) \
-		pthread_mutex_lock(m);
-#undef RELLOCK
-#define RELLOCK(m,message) \
-		pthread_mutex_unlock(m);
-#undef TRYLOCK
-#define TRYLOCK(m,message,r)\
-		r = pthread_mutex_trylock(m);
+
 
 #undef TRYCATCH
 #define TRYCATCH(m) try { m; } catch (exception& e) { DEBOUT("TRYCATCH", e.what()) DEBASSERT("Exception")}
@@ -244,10 +238,25 @@ class ThreadWrapper {
 //**********************************************************
 #ifdef PROFILING
 #define PROFILE(m) DEBOUT("PROFILING",m)
+#define TIMEDEF SysTime mytime1111;
+#define SETNOW gettimeofday(&mytime1111.tv, &mytime1111.tz);
+#define PRINTDIFF(m) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
+		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
+                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
+		DEBOUT("PROFILE DIFFERENCE ", m << "]["<<num)}
+#define PRINTDIFFMIN(m,min) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
+		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
+                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
+		if (num >= min )DEBOUT("PROFILE DIFFERENCE ", m << "]["<<num)}
 #else
 #define PROFILE(m)
 #endif
 //**********************************************************
+#ifdef LOGALO
+#define DEBALO(m1,m2) DEBOUT("DEBALO " << m1, m2)
+#else
+#define DEBALO(m1,m2)
+#endif
 #ifdef LOGSIP
 
 	//**********************************************************
@@ -408,6 +417,15 @@ class ThreadWrapper {
 
 //**********************************************************
 //**********************************************************
+#undef GETLOCK
+#define GETLOCK(m,message) \
+		pthread_mutex_lock(m);
+#undef RELLOCK
+#define RELLOCK(m,message) \
+		pthread_mutex_unlock(m);
+#undef TRYLOCK
+#define TRYLOCK(m,message,r)\
+		r = pthread_mutex_trylock(m);
 #ifdef LOGLOK
 #undef GETLOCK
 #define GETLOCK(m,message) \
@@ -423,6 +441,17 @@ class ThreadWrapper {
 		DEBOUT("Trying lock " << message, m)\
 		r = pthread_mutex_trylock(m);\
 		DEBOUT("Trying lock result "<< r , m)
+#endif
+#ifdef PROFILELOCK
+#undef GETLOCK
+#define GETLOCK(m,message) \
+    {TIMEDEF SETNOW pthread_mutex_lock(m); PRINTDIFFMIN("Wait on lock " << message,10)}
+#undef RELLOCK
+#define RELLOCK(m,message) \
+		pthread_mutex_unlock(m);
+#undef TRYLOCK
+#define TRYLOCK(m,message,r)\
+		r = pthread_mutex_trylock(m);
 #endif
 //**********************************************************
 //**********************************************************
