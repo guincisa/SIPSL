@@ -183,8 +183,9 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 	_gted->purgeSTKHeadVia();
 	_gted->pushHeadVia(viatmpS);
 	//DEBOUT("_gted->pushHeadVia(viatmpS);", viatmpS)
-	_gted->dumpVector();
-
+#ifdef LOGSIP
+        _gted->dumpVector();
+#endif
 	//Create new call id
 	char callIdtmp[512];
         if (_gtor->getModulus() < 10 ){
@@ -222,7 +223,7 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 		//SDP must copy the SDP from incoming OK and put here
 		vector<string> __sdp = _gtor->getSDP();
 		_gted->purgeSDP();
-		DEBOUT("PURGED SDP","")
+		DEBALO("PURGED SDP","")
 		_gted->importSDP(__sdp);
 	}
 
@@ -237,7 +238,9 @@ void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 
 	genASideReplyFromRequest(_invite, _etry);
 	_etry->compileMessage();
+#ifdef LOGSIP
 	_etry->dumpVector();
+#endif
 
 }
 void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header){
@@ -249,7 +252,8 @@ void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _
 
 	genASideReplyFromRequest(_invite, _qrep);
 	_qrep->compileMessage();
+#ifdef LOGSIP
 	_qrep->dumpVector();
-
+#endif
 }
 

@@ -140,20 +140,20 @@ VALO::~VALO(void){
 
 void VALO::onInvite(MESSAGE* _message){
 
-	DEBOUT("VALO::onInvite", _message->getHeadSipRequest().getContent())
+	DEBALO("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
         //Needed for Matrix_A
         message->setSourceMessage(_message);
 
 	try {
-		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute()->getRoute().getHostName())
-		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute()->getRoute().getPort())
-		DEBOUT("VALO","remove route")
+		DEBALO("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute()->getRoute().getHostName())
+		DEBALO("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute()->getRoute().getPort())
+		DEBALO("VALO","remove route")
 		message->removeHeadRoute();
 	}
 	catch(HeaderException e){
-		DEBOUT("Exception ", e.getMessage())
+		DEBALO("Exception ", e.getMessage())
 	}
 
 	//TODO use Registrar
@@ -168,7 +168,7 @@ void VALO::onInvite(MESSAGE* _message){
 	//Standard changes
 	SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
 	message->replaceHeadContact("<sip:sipsl@grog:5060>");
-	DEBOUT("New CONTACT", message->getHeadContact()->getContent())
+	DEBALO("New CONTACT", message->getHeadContact()->getContent())
 
 	message->compileMessage();
 	//message->dumpVector();
@@ -176,12 +176,12 @@ void VALO::onInvite(MESSAGE* _message){
 	DEBMESSAGE("New outgoing b2b message", message)
 
 	//TODO ???
-	DEBOUT("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
+	DEBALO("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
 	NEWPTR(int*, CSeqB2BINVITE, int(message->getHeadCSeq().getSequence()),"CSeqB2BINVITE")
 	ctxt_store.insert(pair<string, void*>("CSeqB2BINVITE", (void*) CSeqB2BINVITE ));
 
 
-	DEBOUT("STORING now call id", message->getHeadCallId().getContent())
+	DEBALO("STORING now call id", message->getHeadCallId().getContent())
 	call_oset->setCallId_Y(message->getHeadCallId().getContent());
 
 	//store this invites
@@ -190,9 +190,9 @@ void VALO::onInvite(MESSAGE* _message){
 	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
 
 	bool ret = sl_cc->p_w(message);
-	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+	DEBALO("bool ret = sl_cc->p_w(_tmpMess);", ret)
 	if(!ret){
-		DEBOUT("VALO::onInvite p_w message rejected, put in rejection queue",message)
+		DEBALO("VALO::onInvite p_w message rejected, put in rejection queue",message)
 		bool ret2 = sl_cc->p_w_s(message);
 		if (!ret2){
 			if (!message->getLock()){

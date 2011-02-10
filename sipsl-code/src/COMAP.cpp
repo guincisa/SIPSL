@@ -108,6 +108,10 @@ COMAP::~COMAP(void){
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
 
+    PROFILE("COMAP::getCALL_OSET_XMain")
+    TIMEDEF
+    SETNOW
+
     DEBINF("COMAP::getCALL_OSET_XMain retrieving using call id", _callId_X <<" comap [" << _mod)
 
     if (_mod >= COMAPS){
@@ -134,6 +138,7 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
             // all other cases the call:oset will be used, lock it now
             DEBINF("CALL_OSET ACCESS COMAP::getCALL_OSET_XMain", tmp)
             RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+            PRINTDIFF("COMAP::getCALL_OSET_XMain end")
             return tmp;
         }
 
@@ -141,11 +146,16 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
         DEBINF("COMAP::getCALL_OSET not found", _callId_X << "]["<<_mod)
     }
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    PRINTDIFF("COMAP::getCALL_OSET_XMain end")
     return tmp;
 }
 //**********************************************************************************
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
+
+    PROFILE("COMAP::getCALL_OSET_YDerived")
+    TIMEDEF
+    SETNOW
 
     DEBINF("COMAP::getCALL_OSET_YSecond retrieving using derived", _callId_Y << " comap ["<<_mod)
 
@@ -188,12 +198,17 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
     }
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     DEBINF("COMAP::getCALL_OSET_YSecond retrieved using derived", _callId_Y << " comap ["<<_mod <<"][" << tmp)
+    PRINTDIFF("COMAP::getCALL_OSET_YDerived end")
     return tmp; //0x0
 
 }
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
+
+    PROFILE("COMAP::setCALL_OSET")
+    TIMEDEF
+    SETNOW
 
     DEBINF("COMAP::setCALL_OSET inserting ", _callId_X << "] [" << _call_oset << " comap [" << _mod)
 
@@ -225,6 +240,7 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
         if ((int)(p_doamap->second) != DOA_DELETED) {
             RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
             DEBASSERT("COMAP::setCALL_OSET invalid call_oset")
+            PRINTDIFF("COMAP::setCALL_OSET end")
             return;
         }else {
             call_oset_doa_state[_mod].erase(p_doamap);
@@ -251,11 +267,16 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
     }
 
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    PRINTDIFF("COMAP::setCALL_OSET end")
     return;
 }
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
+
+    PROFILE("COMAP::setY2XCallId")
+    TIMEDEF
+    SETNOW
 
     DEBINF("COMAP::setY2XCallId inserting ", _callId_Y << " " << _callId_X << " " <<_mod)
     if (_mod >= COMAPS){
@@ -272,10 +293,16 @@ void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
     call_id_y2x[_mod].insert(pair<string, string>(_callId_Y, _callId_X));
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
 
+    PRINTDIFF("COMAP::setY2XCallId end")
+
 }
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
+
+    PROFILE("COMAP::setDoa")
+    TIMEDEF
+    SETNOW
 
     DEBINF("COMAP::setDoa",_call_oset << "] ["<<_doa )
 
@@ -295,8 +322,14 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
     if (_doa == DOA_REQUESTED) {
         resetDoaRequestTimer(_call_oset, _mod);
     }
+
+    PRINTDIFF("COMAP::setDoa end")
 }
 int COMAP::getDoa(CALL_OSET* _call_oset, int _mod){
+
+    PROFILE("COMAP::getDoa")
+    TIMEDEF
+    SETNOW
 
     DEBINF("COMAP::getDoa",_call_oset << "] ["<<_mod )
 
@@ -313,11 +346,16 @@ int COMAP::getDoa(CALL_OSET* _call_oset, int _mod){
         tmp = DOA_DELETED;
     }
     DEBINF("COMAP::getDoa returns",_call_oset << "] ["<<_mod <<"][" << tmp )
+    PRINTDIFF("COMAP::getDoa end")
     return tmp;
 }
 //**********************************************************************************
 //**********************************************************************************
 int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, int _mod){
+
+    PROFILE("COMAP::use_CALL_OSET_SL_CO_call")
+    TIMEDEF
+    SETNOW
 
     DEBINF("COMAP::use_CALL_OSET_SL_CO_call", _call_oset << "] [" << _message->getKey() << " comap [" << _mod)
 
@@ -331,6 +369,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
     if (getDoa(_call_oset, _mod) == DOA_DELETED) {
         DEBINF("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa deleted", _call_oset )
         RELLOCK(&unique_exx[_mod],"unique_exxx"<<_mod);
+        PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
         return -1;
     }
     //if (getDoa(_call_oset,_mod) == DOA_REQUESTED  && _message->getGenEntity() == SODE_NTWPOINT) {
@@ -343,12 +382,16 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     DEBINF("COMAP::use_CALL_OSET_SL_CO_call invoking call for message", _message)
     _call_oset->call(_message);
-
+    PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
     return 0;
 }
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
+
+    PROFILE("COMAP::setDoaRequested")
+    TIMEDEF
+    SETNOW
 
     DEBINF("COMAP::setDoaRequested", _call_oset << " comap ["<< _mod)
 
@@ -365,6 +408,7 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
         //Reset delete timer
 
         RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod)
+        PRINTDIFF("COMAP::setDoaRequested end")
         return;
 
     }else {
@@ -372,14 +416,20 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
         setDoa(_call_oset, DOA_REQUESTED, _mod);
     }
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod)
+    PRINTDIFF("COMAP::setDoaRequested end")
     return;
 
 }
 void COMAP::purgeDOA(void){
 
-    int mod;
+
+    PROFILE("COMAP::purgeDOA")
+    TIMEDEF
+    SETNOW
 
     DEBINF("COMAP::purgeDOA started",0)
+
+    int mod;
 
     for ( mod=0; mod< COMAPS; mod++){
         map<string, CALL_OSET*>::iterator p_comap_mm;
@@ -491,9 +541,14 @@ void COMAP::purgeDOA(void){
         }
         RELLOCK(&unique_exx[mod]," purgeDOA unique_exx"<<mod);
     }
+    PRINTDIFF("COMAP::purgeDOA end")
 }
 
 void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
+
+    PROFILE("COMAP::resetDoaRequestTimer")
+    TIMEDEF
+    SETNOW
 
     //Reset delete timer
     map<CALL_OSET*, lli>::iterator p_ttl;
@@ -507,5 +562,5 @@ void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
     DEBINF("COMAP::setDoa ttl ", TIMER_DOA  << " " << killtime)
     call_oset_ttl[_modulus].erase(p_ttl);
     call_oset_ttl[_modulus].insert(pair<CALL_OSET*, lli>(_call_oset,killtime));
-
+    PRINTDIFF("COMAP::resetDoaRequestTimer")
 }

@@ -98,6 +98,8 @@ TRNSPRT::TRNSPRT(int _i):ENGINE(_i){}
 void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
 
     PROFILE("TRNSPRT::upCall start ")
+    TIMEDEF
+    SETNOW
 
     DEBNTW("TRNSPRT::upCall", _message)
     bool r = _sl_cc->p_w(_message);
@@ -111,7 +113,7 @@ void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
             }
 
     }
-    PROFILE("TRNSPRT::upCall end ")
+    PRINTDIFF("TRNSPRT::upCall end ")
 
 }
 void TRNSPRT::parse_s(MESSAGE* _message){
@@ -156,6 +158,8 @@ void TRNSPRT::parse(MESSAGE* _message){
 	//for errors messages from network
 
         PROFILE("TRNSPRT::downCall start ")
+        TIMEDEF
+        SETNOW
 
 	DEBNTW("TRNSPRT::downCall", _message)
 
@@ -175,9 +179,7 @@ void TRNSPRT::parse(MESSAGE* _message){
 	else {
 		DEBASSERT("Unexpected sending to network")
 	}
-        PROFILE("TRNSPRT::downCall end ")
-
-
+        PRINTDIFF("TRNSPRT::downCall end ")
 }
 
 

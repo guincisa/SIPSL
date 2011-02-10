@@ -157,6 +157,8 @@ void SIPENGINE::parse_s(MESSAGE* _mess) {
 void SIPENGINE::parse(MESSAGE* _mess) {
 
     PROFILE("SIPENGINE::parse start")
+    TIMEDEF
+    SETNOW
 
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 
@@ -197,6 +199,6 @@ void SIPENGINE::parse(MESSAGE* _mess) {
         PURGEMESSAGE(_mess)
     }
 
-    PROFILE("SIPENGINE::parse end")
+    PRINTDIFF("SIPENGINE::parse end")
 
 }
