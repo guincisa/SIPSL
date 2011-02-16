@@ -66,6 +66,8 @@ class ThreadWrapper {
 
 
 
+
+
 //Tuning
 //COMAPS: number of comaps
 //COMAPS: number of gloabl message tables
@@ -95,18 +97,19 @@ class ThreadWrapper {
 #define DOA_CLEANUP 1
 #define TIMER_DOA 5000000
 #define ADDRESSPACE 8
-#define MESSAGEMAPS 60
+#define MESSAGEMAPS 100
 #ifndef NOLOGATALL
 #define LOGMIN
 #define PROFILELOCK
-//#define LOGSIP
+#define LOGSIPHIGH
+//#define LOGSIPLOW
 #define LOGINF
 #define LOGMIN
 #define LOGDEV
 #define LOGMEM
 #define LOGNTW
 #define SELFCHECK
-#define DEBCODE
+//#define DEBCODE
 #define PROFILING
 //#define LOGLOK
 #endif
@@ -121,7 +124,6 @@ class ThreadWrapper {
 #define SPINC_MOD 10
 #define DOA_CLEANUP 1
 #define TIMER_DOA 4000000
-#define LOGSIP
 #define LOGINF
 #define LOGMIN
 #define LOGDEV
@@ -134,8 +136,6 @@ class ThreadWrapper {
 
 //#define LOGLOK
 #endif
-
-
 
 //Mandatory
 
@@ -197,14 +197,14 @@ class ThreadWrapper {
 	if (m1->getLock()) {DEBASSERT("Purging a locked message")}\
 	map<const MESSAGE*, MESSAGE*>::iterator p; \
 	int i = getModulus(m1);\
-	pthread_mutex_lock(&messTableMtx[i]);\
+	GETLOCK(&messTableMtx[i],"&messTableMtx"<<i);\
 	p = globalMessTable[i].find(m1);\
 	if (p !=globalMessTable[i].end()) {\
 		globalMessTable[i].erase(m1);\
 		DELPTR(m1,"MESSAGE");\
 		m1 = MainMessage; \
 	}\
-	pthread_mutex_unlock(&messTableMtx[i]);}
+	RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);}
 #define CREATEMESSAGE(m1, m2, gen, dest) MESSAGE* m1=0x0; {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
@@ -217,9 +217,9 @@ class ThreadWrapper {
 				string key(bu);\
 				m1->setKey(key);\
 				int j = getModulus(m1);\
-				pthread_mutex_lock(&messTableMtx[j]);\
+				GETLOCK(&messTableMtx[i],"&messTableMtx"<<i);\
 				globalMessTable[j].insert(pair<const MESSAGE*, MESSAGE*>(m1, m1));\
-				pthread_mutex_unlock(&messTableMtx[j]);}
+				RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);}
 
 #define CREATENEWMESSAGE_EXT(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
 				SysTime inTime;\
@@ -231,9 +231,9 @@ class ThreadWrapper {
 				string key(bu);\
 				__mess->setKey(key);\
 				int i = getModulus(__mess);\
-				pthread_mutex_lock(&messTableMtx[i]);\
+				GETLOCK(&messTableMtx[i],"&messTableMtx"<<i);\
 				globalMessTable[i].insert(pair<const MESSAGE*, MESSAGE*>(__mess, __mess));\
-				pthread_mutex_unlock(&messTableMtx[i]);}}
+				RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);}}
 
 //**********************************************************
 #ifdef PROFILING
@@ -247,7 +247,7 @@ class ThreadWrapper {
 #define PRINTDIFFMIN(m,min) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\
-		if (num >= min )DEBOUT("PROFILE DIFFERENCE ", m << "]["<<num)}
+		if (num >= min )DEBOUT("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")}
 #else
 #define PROFILE(m)
 #endif
@@ -257,22 +257,24 @@ class ThreadWrapper {
 #else
 #define DEBALO(m1,m2)
 #endif
-#ifdef LOGSIP
+#ifdef LOGSIPLOW
+#define LOGSIPHIGH
 
 	//**********************************************************
 #undef DEBSIP
 #define DEBSIP(m1,m2)  {stringstream xx ; xx << "DEBSIP [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 	//**********************************************************
+#else
+#define DEBSIP(m1,m2)
+#define DEBMESSAGE(m1,m2)
+#define DEBMESSAGESHORT(m1,m2)
+#endif
+#ifdef LOGSIPHIGH
 #undef DEBMESSAGE
 #define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "] Gen [" <<m2->getGenEntity() << "] Dest ["<<m2->getDestEntity() <<"]\n["<< m2->getIncBuffer() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBMESSAGESHORT
 #define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" << m2 << "]\n[" <<m2->getKey() << "]\n["<< m2->getLine(0) << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
-	//**********************************************************
-#else
-#define DEBSIP(m1,m2)
-#define DEBMESSAGE(m1,m2)
-#define DEBMESSAGESHORT(m1,m2)
 #endif
 //**********************************************************
 //**********************************************************
@@ -458,7 +460,7 @@ class ThreadWrapper {
 
 inline int getModulus(void* pointer) {
 
-	//Addresses are all multiple of 2
+	//Addresses are all multiple of ADDRESSPACE
 	DEBOUT("MESSAGE pointer modulus",(long long unsigned int)pointer)
 	int i = (int)((long long unsigned int)pointer % (MESSAGEMAPS*ADDRESSPACE));
 	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i/ADDRESSPACE)

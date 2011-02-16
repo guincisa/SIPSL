@@ -181,10 +181,12 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
 
             DEBINF("COMAP::getCALL_OSET found ", tmp)
 
-            if (getDoa(tmp,_mod)== DOA_REQUESTED){
+            int tmpDoa = getDoa(tmp,_mod);
+            
+            if ( tmpDoa == DOA_REQUESTED){
                 resetDoaRequestTimer(tmp,_mod);
             }
-            if (getDoa(tmp,_mod)== DOA_DELETED){
+            if ( tmpDoa == DOA_DELETED){
                 DEBINF("COMAP::getCALL_OSET found but in DOA_DELETED", tmp)
                 tmp = 0x0;
             }else{
@@ -196,6 +198,17 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
             DEBINF("COMAP::getCALL_OSET Y-X not found", _callId_Y)
         }
     }
+
+    //Consistency check
+    if (tmp != 0x0){
+        map<string, string>::iterator p3;
+        p3 = call_id_x2y[_mod].find(tmp2);
+        if (p3 ==call_id_x2y[_mod].end()){
+            DEBOUT("COMAP::getCALL_OSET_YDerived inconsystency in call_id_x2y",tmp2)
+            DEBASSERT("COMAP::getCALL_OSET_YDerived inconsystency in call_id_x2y")
+        }
+    }
+
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     DEBINF("COMAP::getCALL_OSET_YSecond retrieved using derived", _callId_Y << " comap ["<<_mod <<"][" << tmp)
     PRINTDIFF("COMAP::getCALL_OSET_YDerived end")
@@ -228,16 +241,17 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
     map<CALL_OSET*,int>::iterator p_doamap;
     map<string, CALL_OSET*>::iterator p_comap_mm;
     map<string,string>::iterator p_cally2x;
-    map<CALL_OSET*,int>::iterator p_msgcnt;
+    map<string,string>::iterator p_callx2y;
     map<CALL_OSET*, lli>::iterator p_ttl, p_ttldel;
 
     //doa
     p_doamap = call_oset_doa_state[_mod].find(_call_oset);
     p_ttl = call_oset_ttl[_mod].find(_call_oset);
-    p_ttldel = call_oset_ttl[_mod].find(_call_oset);
+    p_ttldel = call_oset_ttl_delete[_mod].find(_call_oset);
 
     if (p_doamap != call_oset_doa_state[_mod].end()){
         if ((int)(p_doamap->second) != DOA_DELETED) {
+            //???
             RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
             DEBASSERT("COMAP::setCALL_OSET invalid call_oset")
             PRINTDIFF("COMAP::setCALL_OSET end")
@@ -260,11 +274,14 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
     }
     comap_mm[_mod].insert(pair<string, CALL_OSET*>(_callId_X, _call_oset));
 
-    //call_y2x just delete it
-    p_cally2x = call_id_y2x[_mod].find(_callId_X);
-    if (p_cally2x != call_id_y2x[_mod].end()){
-        call_id_y2x[_mod].erase(p_cally2x);
+
+    //Look for any y associated
+    p_callx2y = call_id_x2y[_mod].find(_callId_X);
+    if (p_callx2y != call_id_x2y[_mod].end()){
+        call_id_y2x[_mod].erase(p_cally2x->second);
+        call_id_x2y[_mod].erase(p_cally2x);
     }
+
 
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     PRINTDIFF("COMAP::setCALL_OSET end")
@@ -284,6 +301,7 @@ void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
     }
 
     map<string,string>::iterator p_cally2x;
+    map<string,string>::iterator p_callx2y;
 
     GETLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     p_cally2x = call_id_y2x[_mod].find(_callId_Y);
@@ -291,6 +309,14 @@ void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
         call_id_y2x[_mod].erase(p_cally2x);
     }
     call_id_y2x[_mod].insert(pair<string, string>(_callId_Y, _callId_X));
+
+    p_callx2y = call_id_x2y[_mod].find(_callId_X);
+    if (p_callx2y != call_id_x2y[_mod].end()){
+        call_id_x2y[_mod].erase(p_callx2y);
+    }
+    call_id_x2y[_mod].insert(pair<string, string>(_callId_X, _callId_Y));
+
+
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
 
     PRINTDIFF("COMAP::setY2XCallId end")
@@ -357,7 +383,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
     TIMEDEF
     SETNOW
 
-    DEBINF("COMAP::use_CALL_OSET_SL_CO_call", _call_oset << "] [" << _message->getKey() << " comap [" << _mod)
+    DEBINF("COMAP::use_CALL_OSET_SL_CO_call", _call_oset << "] [" << _message->getKey() << "] comap [" << _mod)
 
     if (_mod >= COMAPS){
         DEBASSERT("invalid comap index "<<_mod)
@@ -365,15 +391,16 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 
     GETLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
 
+    int tmpDoa = getDoa(_call_oset, _mod);
     //Check the call_oset doa
-    if (getDoa(_call_oset, _mod) == DOA_DELETED) {
+    if ( tmpDoa == DOA_DELETED) {
         DEBINF("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa deleted", _call_oset )
         RELLOCK(&unique_exx[_mod],"unique_exxx"<<_mod);
         PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
         return -1;
     }
     //if (getDoa(_call_oset,_mod) == DOA_REQUESTED  && _message->getGenEntity() == SODE_NTWPOINT) {
-    if (getDoa(_call_oset,_mod) == DOA_REQUESTED) {
+    if ( tmpDoa == DOA_REQUESTED) {
         resetDoaRequestTimer(_call_oset,_mod);
     }
 
@@ -516,6 +543,7 @@ void COMAP::purgeDOA(void){
                     call_oset_doa_state[mod].erase(call_oset);
 
                     call_id_y2x[mod].erase(call_oset->getCallId_Y());
+                    call_id_x2y[mod].erase(call_oset->getCallId_X());
 
 //					RELLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
                     DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex releasing", call_oset)

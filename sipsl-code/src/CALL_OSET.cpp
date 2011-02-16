@@ -285,6 +285,9 @@ void CALL_OSET::setCallId_Y(string _cally){
 string CALL_OSET::getCallId_Y(void){
 	return callId_Y;
 }
+string CALL_OSET::getCallId_X(void){
+	return callId_X;
+}
 //**********************************************************************************
 //v4
 void CALL_OSET::setCallId_X(string _callId_X){
@@ -293,9 +296,6 @@ void CALL_OSET::setCallId_X(string _callId_X){
 }
 //**********************************************************************************
 //v4
-string CALL_OSET::getCallId_X(void){
-	return callId_X;
-}
 
 void CALL_OSET::insertLockedMessage(MESSAGE* _message){
 	DEBMESSAGESHORT("Insert locked message", _message)
@@ -355,13 +355,13 @@ void CALL_OSET::dumpTrnsctSm(void){
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 
-	DEBOUT_UTIL("CALL_OSET::getTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] call_oset ["<<this)
+	DEBINF("CALL_OSET::getTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] call_oset ["<<this)
 	char t_key[512];
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode,_branch.c_str());
 
 	string stmp = t_key;
 
-	DEBOUT_UTIL("CALL_OSET::getTrnsctSm", stmp)
+	DEBINF("CALL_OSET::getTrnsctSm", stmp)
 
 	map<string, TRNSCT_SM*> ::iterator p;
 	p = trnsctSmMap.find(stmp);
@@ -375,12 +375,11 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 //**********************************************************************************
 void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm){
 
-	DEBOUT_UTIL("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] ["<<_trnsctSm<<"] call_oset ["<<this)
+	DEBINF("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] ["<<_trnsctSm<<"] call_oset ["<<this)
 	char t_key[512];
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode, _branch.c_str());
 
 	string stmp = t_key;
-	DEBOUT_UTIL("CALL_OSET::addTrnsctSm", stmp)
 
 	_trnsctSm->setId(stmp);
 
@@ -391,6 +390,7 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 		DEBASSERT("CALL_OSET::addTrnsctSm")
 	}
 	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(stmp, _trnsctSm));
+	DEBINF("CALL_OSET::addTrnsctSm", stmp<<"]["<<_trnsctSm)
 
 	// special for client sm Ack
 	if (_method.substr(0,3).compare("ACK") == 0 && _sode == SODE_TRNSCT_CL ){
@@ -398,6 +398,7 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 		lastTRNSCT_SM_ACK_CL = _trnsctSm;
 	}	return;
 }
+
 void CALL_OSET::call(MESSAGE* _message){
 	GETLOCK(&(mutex),"CALL_OSET::mutex");
 	sl_co->call(_message);
@@ -548,11 +549,14 @@ void SL_CO::call(MESSAGE* _message){
             trnsct_cl = call_oset->lastTRNSCT_SM_ACK_CL;
             if ( trnsct_cl == 0x0){
                 DEBASSERT("call_oset->lastTRNSCT_SM_ACK_CL NULL")
-        }
+            }
 
         }else {
             //Replies are recognized here
-            trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
+            string smid1 = _message->getHeadCSeq().getMethod().getContent();
+            string smid2 = ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch");
+            DEBINF("call_oset->getTrnsctSm",smid1 <<"#"<< SODE_TRNSCT_CL <<"#"<<smid2 )
+            trnsct_cl = call_oset->getTrnsctSm(smid1,SODE_TRNSCT_CL,smid2);
         }
 
         //OVERALLSTATE lock begin ?
@@ -586,6 +590,8 @@ void SL_CO::call(MESSAGE* _message){
                 // but the call object has been recognized!!!
                 // the sm may have been deleted
                 DEBWARNING("An unexpected reply directed to client has reached the call object", _message)
+                DEBMESSAGE("An unexpected reply directed to client has reached the call object", _message)
+                DEBOUT("An unexpected reply directed to client has reached the call object", _message <<"]["<<_message->getTypeOfInternal())
                 call_oset->dumpTrnsctSm();
                 action = 0x0;
                 DEBASSERT("An unexpected reply directed to client has reached the call object")
@@ -693,7 +699,7 @@ void SL_CO::actionCall_SV(ACTION* action){
                     DEBASSERT("Message to alarm found unlocked")
                 }
 
-                call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
+                 call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
 
             } else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_OFF){
 

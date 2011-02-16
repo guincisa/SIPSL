@@ -50,7 +50,6 @@ class CALL_OSET {
 		string callId_Y;
 		void setCallId_Y(string _cally);
 		void setCallId_X(string callId_X);
-		string getCallId_X(void);
 		void setSL_CO(SL_CO*);
 		SL_CO* getSL_CO(void);
 		ALO* getALO(void);
@@ -96,6 +95,8 @@ class CALL_OSET {
 		~CALL_OSET(void);
 
 		string getCallId_Y(void);
+                string getCallId_X(void);
+
 
 		int getOverallState_CL(void);
 		int getOverallState_SV(void);

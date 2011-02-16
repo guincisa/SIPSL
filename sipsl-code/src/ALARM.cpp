@@ -95,10 +95,12 @@ void ALMGR::initAlarm(void){
     NEWPTR2(t1,ALMGRtuple, "ALMGRtuple");
     t1->st = this;
     int res;
+
+    pthread_mutex_init(&mutex, NULL);
+
     res = pthread_create(&(listenerThread->thread), NULL, ALARMSTACK, (void *) t1 );
 
     //TODO check consistency!!!
-    pthread_mutex_init(&mutex, NULL);
 
 	DEBOUT("ALMGR::initAlarm", "started")
     return;
@@ -172,7 +174,7 @@ void ALMGR::alarmer(void){
                             }
 #endif
                             //Message is ok now
-                            DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", trip.cid)
+                            DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", trip.cid<<"] Message["<<trip.alarm->getMessage())
                             bool ret = sl_cc->p_w(trip.alarm->getMessage());
                             DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
                             if(!ret){
@@ -215,7 +217,21 @@ void ALMGR::alarmer(void){
         RELLOCK(&mutex,"mutex");
     }
 }
-
+//void ALMGR::parse(MESSAGE* _message){
+//
+//
+//    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+//
+//    if (_message->getFireTime() > 0){
+//        insertAlarm(_message, _message->getFireTime());
+//    }else {
+//        cancelAlarm(_message->getHeadCallId().getContent() +  ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->getOrderOfOperation()+ "#");
+//    }
+//}
+//
+//void ALMGR::parse_s(MESSAGE* _message){
+//
+//}
 void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
 
     PROFILE("ALMGR::insertAlarm begin")
@@ -339,7 +355,88 @@ bool ALARM::isActive(void){
 	return active;
 }
 
+bool PQ::empty(void){
 
+    if ( L == 0x0)
+        return true;
+    else
+        return false;
+};
+
+PQ::PQ(void){
+
+    DEBOUT("PQ::PQ(void)","")
+    L = (pqelm*) 0x0;
+    R = (pqelm*) 0x0;
+
+};
+void PQ::pop(void){
+
+    if (L != 0x0) {
+        pqelm* temp = L;
+        L = L->right;
+        if (temp == R){
+            R = 0x0;
+            if (L != 0x0){
+                DEBASSERT("PQ::next(void)");
+            }
+        }
+        DELPTR(temp,"PQELM");
+    }
+};
+triple PQ::top(void){
+    if (L == 0x0){
+        DEBASSERT("PQ::top")
+    }else{
+        return L->element;
+    }
+};
+
+void PQ::push(triple _elm){
+
+    pqelm* newins = 0x0;
+    NEWPTR2(newins,pqelm,"PQELM")
+    newins->element = _elm;
+    newins->left = 0x0;
+    newins->right = 0x0;
+
+    pqelm* tmp = R;
+    // empty
+    if (tmp == 0x0){
+        if (L!=0x0){
+            //assert!!! inconsistenza
+            assert(0);
+        }
+        L=newins;
+        R=newins;
+        return;
+    }
+    while (tmp != 0x0 && tmp->element.time > _elm.time){
+        tmp = tmp->left;
+    }
+    if (tmp == 0x0){
+        newins->right = L;
+        newins->left = 0x0;
+        L->left = newins;
+        L = newins;
+        return;
+    }
+    if (tmp != 0x0 && tmp != R) {
+        newins->right = tmp->right;
+        tmp->right  = newins;
+        newins->right->left = newins;
+        newins->left = tmp;
+        return;
+    }if (tmp == R){
+        newins->right = 0x0;
+        newins->left = R;
+        R->right = newins;
+
+        return;
+    }
+    DEBASSERT("PQ::push");
+
+};
 
 
 
