@@ -118,6 +118,8 @@ void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
 }
 void TRNSPRT::parse_s(MESSAGE* _message){
 
+            RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+
 }
 
 void TRNSPRT::parse(MESSAGE* _message){
@@ -161,7 +163,9 @@ void TRNSPRT::parse(MESSAGE* _message){
         TIMEDEF
         SETNOW
 
-	DEBNTW("TRNSPRT::downCall", _message)
+        RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+
+        DEBNTW("TRNSPRT::downCall", _message)
 
 	if(_message->getTypeOfInternal() == TYPE_OP){
 		//Thsi rule is needed to clear alarms when running ~CALL_OSET

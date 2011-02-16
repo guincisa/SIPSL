@@ -140,6 +140,10 @@ VALO::~VALO(void){
 
 void VALO::onInvite(MESSAGE* _message){
 
+    TIMEDEF
+    SETNOW
+    PROFILE("VALO::onInvite")
+
 	DEBALO("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
@@ -202,9 +206,14 @@ void VALO::onInvite(MESSAGE* _message){
 
 	}
 
+        PRINTDIFF("VALO::onInvite")
 
 }
 void VALO::onAck(MESSAGE* _message){
+
+    TIMEDEF
+    SETNOW
+    PROFILE("VALO::onAck")
 
 	DEBOUT("VALO::onAck",_message->getHeadSipRequest().getContent())
 
@@ -324,6 +333,7 @@ void VALO::onAck(MESSAGE* _message){
 
 	}
 
+        PRINTDIFF("VALO::onAck")
 
 
 }
@@ -435,6 +445,10 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 //
 }
 void VALO::onBye(MESSAGE* _message){
+
+    TIMEDEF
+    SETNOW
+    PROFILE("VALO::onBye")
 
 	DEBMESSAGE("VALO::onBye", _message)
 
@@ -556,9 +570,16 @@ void VALO::onBye(MESSAGE* _message){
 
 
 	}
+        PRINTDIFF("VALO::onBye")
 
 }
 void VALO::on200Ok(MESSAGE* _message){
+
+    TIMEDEF
+    SETNOW
+    PROFILE("VALO::on200Ok")
+
+
 
 	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
 	if (trnsct_cl == 0x0){
@@ -652,6 +673,7 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	}
 
+        PRINTDIFF("VALO::on200Ok")
 
 
 }

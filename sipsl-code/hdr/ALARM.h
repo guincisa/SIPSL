@@ -25,6 +25,7 @@
 #include <queue>
 #include <map>
 
+
 class ALARM {
 
 	private:
@@ -47,7 +48,6 @@ class ALARM {
             string getCidbranch(void);
 
 };
-
 struct triple {
     lli time;
     string cid;
@@ -66,11 +66,43 @@ class CompareTriple {
     }
 };
 
+
+
+//New double linked list for alarms
+// inserts from higher element
+// reads from lower element
+// mutex only for insert/cancel
+// no mutex for trigger because insert/cancel will not interfere
+
+struct pqelm{
+    triple element;
+    pqelm* left;
+    pqelm* right;
+};
+
+class PQ {
+    public:
+        pqelm* L;
+        pqelm* R;
+
+        void pop(void);
+        triple top(void);
+        void push(triple);
+
+        bool empty(void);
+
+        PQ();
+};
+
+
+
+
 class ALMGR {
 
     private:
 
         priority_queue<triple, vector<triple>, CompareTriple> pq;
+        //PQ pq;
         map<string,  ALARM* > cidmap;
 
         timespec sleep_time;
@@ -97,7 +129,6 @@ class ALMGR {
 
         void purgeAlarm(ALARM*);
 
-
         //Case in cui il messaggio è MainMessage
         //1. inserisco un allarme: alarm map <xyz,a1>
         //   - inserisco il trigger time nella priority queue pq<time1>
@@ -109,8 +140,3 @@ class ALMGR {
         //   tutti i type_op gia eliminati non possono disattivare l'allarme
         //
 };
-
-
-
-
-

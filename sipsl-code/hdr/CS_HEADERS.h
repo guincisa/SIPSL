@@ -172,7 +172,7 @@ inline string cleanHttpChars(string s){
 
 inline vector<string> parse(string _par, string head, string sep, bool _trimspaces) {
 
-	DEBOUT("inline parse called", _par << "]["<<head<<"]["<<sep)
+    DEBSIP("inline parse called", _par << "]["<<head<<"]["<<sep)
 
     int h = 0; // if has head then 1
     vector<string> output;
@@ -180,31 +180,24 @@ inline vector<string> parse(string _par, string head, string sep, bool _trimspac
     string par;
     if (_trimspaces){
     	par = trimUseless(_par);
-    	DEBY
     }
     else{
     	par = _par;
-    	DEBY
     }
 
 
     if (par.substr(0,1).compare(head) == 0) {
         h = 1;
-        DEBY
     }
     int a = par.find(sep.c_str(),0);
     while (a > 0) {
-    	DEBY
        output.push_back(par.substr(h,a-h));
        par = par.substr(a+1,-1);
        h=0;
        a = par.find(sep.c_str(),0);
-       DEBY
     }
     if (a < 0) {
-       DEBY
        output.push_back(par.substr(h,a-1));
-       DEBY
     }
 
     return output;

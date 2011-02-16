@@ -1232,7 +1232,6 @@ C_AttVia::C_AttVia(string _content) :
     transport(""),
     hostPort(""),
     viaParms("",";"){
-	DEBY
     return;
 }
 C_AttVia::C_AttVia(const C_AttVia& x){
@@ -1249,16 +1248,16 @@ void C_AttVia::doParse(void){
 
     //SIP/2.0/UDP 127.0.0.1:5062;rport;branch=z9hG4bKldbblwtj
 
-    DEBOUT("C_AttVia content", content)
+    DEBSIP("C_AttVia content", content)
     Tuple s1 = brkin2(content, " ");
-    DEBOUT("C_AttVia first brkin2",s1.Lvalue << "][" <<  s1.Rvalue)
+    DEBSIP("C_AttVia first brkin2",s1.Lvalue << "][" <<  s1.Rvalue)
 
     Tuple s2 = brkin2(s1.Lvalue, "/");
-    DEBOUT("C_AttVia second brkin2",s2.Lvalue << "][" <<  s2.Rvalue)
+    DEBSIP("C_AttVia second brkin2",s2.Lvalue << "][" <<  s2.Rvalue)
 
 
     Tuple s3 = brkin2(s2.Rvalue, "/");
-    DEBOUT("C_AttVia third brkin2",s3.Lvalue << "][" <<  s3.Rvalue)
+    DEBSIP("C_AttVia third brkin2",s3.Lvalue << "][" <<  s3.Rvalue)
 
 
     transport = s3.Rvalue;
@@ -1290,7 +1289,7 @@ void C_AttVia::buildContent(void){
 //        TupleVector viaParms;
 
     	ostringstream s1;
-    	DEBOUT("version.getContent", version.getContent())
+    	DEBSIP("version.getContent", version.getContent())
     	s1 << version.getContent() << "/" << transport << " " << hostPort.getContent() << ";" << viaParms.getContent();
     	content = s1.str();
     	contentReady = true;
@@ -1734,7 +1733,6 @@ S_AttSipVersion &C_HeadSipReply::getChangeSipVersion(void) {
 C_HeadVia::C_HeadVia(string _content) :
     S_HeadGeneric(_content),
     via("") {
-	DEBY
 }
 C_HeadVia::C_HeadVia(const C_HeadVia& x):via(""){
 	DEBASSERT("C_HeadVia::C_HeadVia copy constructor")
@@ -1742,7 +1740,7 @@ C_HeadVia::C_HeadVia(const C_HeadVia& x):via(""){
 
 void C_HeadVia::doParse(void) {
 
-	DEBOUT("C_HeadVia::doParse", content)
+	DEBSIP("C_HeadVia::doParse", content)
 
     if(parsed)
         return;

@@ -46,8 +46,12 @@ class COMAP {
 		map<string, CALL_OSET*> comap_mm[COMAPS];
 
 
-		//call id y to call id y
+		//call id y to call id x
 		map<string, string> call_id_y2x[COMAPS];
+                //Questo serve quando creo una nuova call
+                //tramite un call_x emi serve per trovare 
+                //la entry nella tabella call_id_y2x
+                map<string, string> call_id_x2y[COMAPS];
 
 		//Map of call_osets and doa
 		//doa can't be stored into call_oset

@@ -162,7 +162,7 @@ SUDP* ENGINE::getSUDP(void){
 bool ENGINE::p_w(MESSAGE* _m) {
 
     DEBOUT("bool ENGINE::p_w(MESSAGE* _m) ", _m)
-    GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+    GETLOCK(&(sb.condvarmutex),"[" << this << "] sb.condvarmutex");
     bool r = sb.put(_m);
     DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
     if (!r){
