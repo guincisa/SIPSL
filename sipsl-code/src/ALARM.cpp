@@ -193,14 +193,15 @@ void ALMGR::alarmer(void){
                         }
                     }
                 } else{// Not active
+                    //no good
                     DEBOUT("Alarm is not active", trip.cid << "][" << trip.alarm)
                     cid_iter = cidmap.find(trip.cid);
                     if ( (cid_iter->second) == trip.alarm ){
                             cidmap.erase(trip.cid);
-                            DELPTR(trip.alarm,"ALARM")
                     }else {
                          DEBOUT("Alarm is not active and active replacement exists", trip.cid << "][" << trip.alarm << "][" << (cid_iter->second))
                     }
+                    DELPTR(trip.alarm,"ALARM")
                 }
                 pq.pop();
                 if (!pq.empty()){
