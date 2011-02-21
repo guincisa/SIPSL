@@ -138,6 +138,7 @@ void SL_CC::parse(MESSAGE* _mess) {
     TIMEDEF
     SETNOW
 
+    DEBOUT("SL_CC::parse", _mess)
     DEBMESSAGESHORT("SL_CC::parse", _mess)
 
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");

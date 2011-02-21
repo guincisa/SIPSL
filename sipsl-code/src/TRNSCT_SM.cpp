@@ -105,7 +105,7 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 		DEBASSERT("TRNSCT_SM::TRNSCT_SM invalid Matrix ["<<_matrixMess<<"]")
 	}
 	if (_a_Matrix == MainMessage || _a_Matrix == 0x0 ){
-		DEBASSERT("TRNSCT_SM::TRNSCT_SM invalid A_Matrix ["<<_matrixMess<<"]")
+		DEBASSERT("TRNSCT_SM::TRNSCT_SM invalid A_Matrix ["<<_matrixMess<<"]["<<_a_Matrix)
 	}
 
 	if (_a_Matrix == _matrixMess){
