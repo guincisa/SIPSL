@@ -132,7 +132,6 @@ CALL_OSET::~CALL_OSET(void){
 	//Need to lock here!
 	GETLOCK(&(mutex),"CALL_OSET::mutex");
 
-
 	DEBOUT("CALL_OSET ACCESS CALL_OSET::~CALL_OSET begin", this)
 	if (sl_co != 0x0){
 		DEBY

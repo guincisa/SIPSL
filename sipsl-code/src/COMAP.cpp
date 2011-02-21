@@ -269,7 +269,9 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 
     //comap
     p_comap_mm = comap_mm[_mod].find(_callId_X);
+    string tmp_y1 = "";
     if (p_comap_mm != comap_mm[_mod].end()){
+        tmp_y1 = ((CALL_OSET*)p_comap_mm->second)->getCallId_Y();
         comap_mm[_mod].erase(p_comap_mm);
     }
     comap_mm[_mod].insert(pair<string, CALL_OSET*>(_callId_X, _call_oset));
@@ -277,11 +279,27 @@ void COMAP::setCALL_OSET(string _callId_X, CALL_OSET* _call_oset, int _mod){
 
     //Look for any y associated
     p_callx2y = call_id_x2y[_mod].find(_callId_X);
+    string tmp_y2="";
     if (p_callx2y != call_id_x2y[_mod].end()){
-        call_id_y2x[_mod].erase(p_cally2x->second);
-        call_id_x2y[_mod].erase(p_cally2x);
+        tmp_y2 = p_callx2y->second;
+
+        if (tmp_y1.compare(tmp_y2) != 0 ){
+            DEBOUT("Inconsystency in COMAP", tmp_y1 << "]["<<tmp_y2)
+            DEBASSERT("Inconsystency in COMAP")
+        }
+        call_id_x2y[_mod].erase(p_callx2y);
+    }
+    if (tmp_y1.length() == 0 && tmp_y2.length() != 0) {
+        DEBOUT("Inconsystency in COMAP", tmp_y1)
+        DEBASSERT("Inconsystency in COMAP")
     }
 
+    if (tmp_y2.length() != 0){
+        p_cally2x = call_id_y2x[_mod].find(tmp_y2);
+        if (p_cally2x != call_id_y2x[_mod].end()){
+            call_id_y2x[_mod].erase(tmp_y2);
+        }
+    }
 
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     PRINTDIFF("COMAP::setCALL_OSET end")

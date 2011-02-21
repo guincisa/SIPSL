@@ -116,7 +116,6 @@ void ALMGR::alarmer(void){
 
         nanosleep(&sleep_time,NULL);
 
-        GETLOCK(&mutex,"mutex");
 
         //extract from priority queue
         SysTime mytime;
@@ -135,6 +134,7 @@ void ALMGR::alarmer(void){
 //        }
 //#endif
 
+        GETLOCK(&mutex,"mutex");
         if (!pq.empty()) {
             trip = pq.top();
             while ( trip.time <= curr && trip.time > 0){
@@ -193,7 +193,6 @@ void ALMGR::alarmer(void){
                         }
                     }
                 } else{// Not active
-                    //no good
                     DEBOUT("Alarm is not active", trip.cid << "][" << trip.alarm)
                     cid_iter = cidmap.find(trip.cid);
                     if ( (cid_iter->second) == trip.alarm ){
@@ -252,7 +251,6 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
         DEBASSERT("Invalid alarm")
     }
 
-    GETLOCK(&mutex,"mutex");
 
     NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
 
@@ -260,6 +258,14 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
     DEBOUT("Inserting Alarm id (cid+branch)", cidbranch_alarm << "]["<<alm);
 
     map<string, ALARM*>::iterator p;
+
+    triple trip;
+    trip.time = _fireTime;
+    trip.cid = cidbranch_alarm;
+    trip.alarm = alm;
+
+    GETLOCK(&mutex,"mutex");
+
     p = cidmap.find(cidbranch_alarm);
 
     if (p != cidmap.end()){
@@ -272,10 +278,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
         DEBOUT("Erasing from cidmap alarm",p->first <<"][" << (ALARM*)(p->second))
         cidmap.erase(cidbranch_alarm);  
     }
-    triple trip;
-    trip.time = _fireTime;
-    trip.cid = cidbranch_alarm;
-    trip.alarm = alm;
+
 
     pq.push(trip);
     cidmap.insert(pair<string,ALARM*>(cidbranch_alarm,alm));
