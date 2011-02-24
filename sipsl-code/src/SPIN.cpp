@@ -334,7 +334,7 @@ SPINC::SPINC(){
     pthread_cond_init(&condvar, NULL);
 
     for (int i = 0 ;i < ARR; i++){
-    	BUFF[i] = MainMessage;
+    	BUFF[i] = (void*) MainMessage;
     }
 
 
@@ -354,7 +354,7 @@ void SPINC::unLockBuffer(void){
     return;
 }
 
-bool SPINC::put(MESSAGE* _message){
+bool SPINC::put(void* _message){
 
     GETLOCK(&dimmu, "dimmu")
     if (forcedState == true){
@@ -377,7 +377,7 @@ bool SPINC::put(MESSAGE* _message){
         RELLOCK(&writemu, "writemu")
         return false;
     }
-    if(BUFF[ts] != MainMessage){
+    if(BUFF[ts] != (void*)MainMessage){
         DEBASSERT("BUFF[s] != MainMessage")
     }
     GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
@@ -394,17 +394,17 @@ bool SPINC::put(MESSAGE* _message){
     return true;
 
 }
-MESSAGE* SPINC::get(void){
+void* SPINC::get(void){
 
     GETLOCK(&readmu,"readmu")
     int n = l % SPINC_MOD;
     GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
-    MESSAGE* m = BUFF[l];
-    if(BUFF[l] == MainMessage){
+    void* m = BUFF[l];
+    if(BUFF[l] == (void*)MainMessage){
             DEBASSERT("BUFF[l] == MainMessage")
     }
 
-    BUFF[l] = MainMessage;
+    BUFF[l] = (void*)MainMessage;
     RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
     l++;
     l = l % ARR;
@@ -445,7 +445,7 @@ SPINS::SPINS(){
     pthread_cond_init(&condvar, NULL);
 
     for (int i = 0 ;i < ARR_SHORT; i++){
-    	BUFF[i] = MainMessage;
+    	BUFF[i] = (void*)MainMessage;
     }
 
 
@@ -467,7 +467,7 @@ void SPINS::unLockBuffer(void){
 }
 
 
-bool SPINS::put(MESSAGE* _message){
+bool SPINS::put(void* _message){
 
     GETLOCK(&dimmu, "dimmu")
     if (forcedState == true){
@@ -490,7 +490,7 @@ bool SPINS::put(MESSAGE* _message){
             RELLOCK(&writemu, "writemu")
             return false;
     }
-    if(BUFF[ts] != MainMessage){
+    if(BUFF[ts] != (void*)MainMessage){
             DEBASSERT("BUFF[s] != MainMessage")
     }
     GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
@@ -507,17 +507,17 @@ bool SPINS::put(MESSAGE* _message){
     return true;
 
 }
-MESSAGE* SPINS::get(void){
+void* SPINS::get(void){
 
     GETLOCK(&readmu,"readmu")
     int n = l % SPINC_MOD;
     GETLOCK(&buffmu[n],"buffmu[" << n <<"]")
-    MESSAGE* m = BUFF[l];
-    if(BUFF[l] == MainMessage){
+    void* m = BUFF[l];
+    if(BUFF[l] == (void*)MainMessage){
         DEBASSERT("BUFF[l] == MainMessage")
     }
 
-    BUFF[l] = MainMessage;
+    BUFF[l] = (void*)MainMessage;
     RELLOCK(&buffmu[n],"buffmu[" << n <<"]")
     l++;
     l = l % ARR_SHORT;

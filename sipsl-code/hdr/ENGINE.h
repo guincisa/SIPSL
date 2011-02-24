@@ -60,18 +60,18 @@ class ENGINE {
     public:
 
 #ifdef TESTING
-		virtual void parse(MESSAGE* message);
+		virtual void parse(void* message);
 #else
-		virtual void parse(MESSAGE* message) = 0;
-		virtual void parse_s(MESSAGE* message) = 0;
+		virtual void parse(void* message) = 0;
+		virtual void parse_s(void* message) = 0;
 
 #endif
 
         void linkSUDP(SUDP*);
         SUDP* getSUDP(void);
 
-    	bool p_w(MESSAGE* message);
-    	bool p_w_s(MESSAGE* message);
+    	bool p_w(void* message);
+    	bool p_w_s(void* message);
 
 #ifdef USE_SPINB
     	SPINB sb;

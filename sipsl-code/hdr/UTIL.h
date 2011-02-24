@@ -100,7 +100,7 @@ class ThreadWrapper {
 #define MESSAGEMAPS 100
 #ifndef NOLOGATALL
 #define LOGMIN
-#define PROFILELOCK
+#define PROFILELOCKVERB
 #define LOGSIPHIGH
 //#define LOGSIPLOW
 #define LOGINF
@@ -450,6 +450,18 @@ class ThreadWrapper {
     {TIMEDEF SETNOW pthread_mutex_lock(m); PRINTDIFFMIN("Wait on lock " << message,10)}
 #undef RELLOCK
 #define RELLOCK(m,message) \
+		pthread_mutex_unlock(m);
+#undef TRYLOCK
+#define TRYLOCK(m,message,r)\
+		r = pthread_mutex_trylock(m);
+#endif
+#ifdef PROFILELOCKVERB
+#undef GETLOCK
+#define GETLOCK(m,message) \
+    {TIMEDEF SETNOW pthread_mutex_lock(m); PRINTDIFFMIN("Got lock - Wait on lock " << message,10)}
+#undef RELLOCK
+#define RELLOCK(m,message) \
+		DEBOUT("Releasing lock " << message, m)\
 		pthread_mutex_unlock(m);
 #undef TRYLOCK
 #define TRYLOCK(m,message,r)\

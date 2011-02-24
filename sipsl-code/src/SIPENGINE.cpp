@@ -111,7 +111,10 @@ void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
 //**********************************************************************************
 //**********************************************************************************
 //*********************************************************************************
-void SIPENGINE::parse_s(MESSAGE* _mess) {
+void SIPENGINE::parse_s(void* __mess) {
+
+	MESSAGE* _mess = (MESSAGE*)__mess;
+
 	//Message from network cannot be managed since main buffer is full
 	//Cases:
 	// INVITE
@@ -154,7 +157,9 @@ void SIPENGINE::parse_s(MESSAGE* _mess) {
 
 //**********************************************************************************
 //**********************************************************************************
-void SIPENGINE::parse(MESSAGE* _mess) {
+void SIPENGINE::parse(void* __mess) {
+
+	MESSAGE* _mess = (MESSAGE*)__mess;
 
     PROFILE("SIPENGINE::parse start")
     TIMEDEF

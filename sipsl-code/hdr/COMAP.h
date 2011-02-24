@@ -67,7 +67,8 @@ class COMAP {
 		void resetDoaRequestTimer(CALL_OSET* call_oset,int modulus);
 
 	public:
-		void setCALL_OSET(string callId_X, CALL_OSET*,int);
+		CALL_OSET* setCALL_OSET(string callId_X,int, ENGINE*, TRNSPRT*);
+
 		CALL_OSET* getCALL_OSET_XMain(string callId_X,int);
 		CALL_OSET* getCALL_OSET_YDerived(string callId_Y,int);
 		void setY2XCallId(string callId_Y, string callId_X,int);
@@ -80,7 +81,8 @@ class COMAP {
 		void purgeDOA(void);
 
 		COMAP(void);
-		~COMAP(void);
+		COMAP(const COMAP& x);
+        ~COMAP(void);
 
 		//pthread_mutex_t unique_ex[COMAPS];
 		pthread_mutex_t unique_exx[COMAPS];

@@ -1,3 +1,40 @@
+23 febbraio
+
+se il call-oset = maincalloset allora reject message
+
+se pero passa in deleted mentre imposto un x2y: no c'e' il lock e poi c'e' la macchina a stati:
+
+pero
+setto la x2y
+passa in deleted
+entro nella use_call
+-> rejected
+
+
+
+
+
+
+
+
+
+
+
+22 Feb
+
+            if(_message->getReqRepType() == REQSUPP){
+                if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+                    NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
+                    SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+                    tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
+                }
+
+
+
+
+
+
+
 CHANGES
 
 13 ottobre 
