@@ -210,11 +210,11 @@ void SUDP::listen() {
             CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
-                bool r = engine->p_w(message);
+                bool r = engine->p_w((void*)message);
                 PRINTDIFF("SUDP:Message sent to SIPENGINE")
                 if (!r){
                     DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
-                    bool rr = engine->p_w_s(message);
+                    bool rr = engine->p_w_s((void*)message);
                     if (!rr){
                         DEBOUT("SUDP::listen() message rejected by s queue",message)
                         PURGEMESSAGE(message)

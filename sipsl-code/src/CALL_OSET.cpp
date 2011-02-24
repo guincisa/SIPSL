@@ -98,11 +98,12 @@
 //**********************************************************************************
 // CALL_OSET
 //**********************************************************************************
-CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call){
+CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _modulus){
 
     pthread_mutex_init(&mutex, NULL);
 	GETLOCK(&(mutex),"CALL_OSET::mutex");
 
+	modulus = _modulus;
 
 	engine = _engine;
 	sequenceMap.insert(pair<string, int>("ACK_B",0));
@@ -399,7 +400,6 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 }
 
 void CALL_OSET::call(MESSAGE* _message){
-	GETLOCK(&(mutex),"CALL_OSET::mutex");
 	sl_co->call(_message);
 	RELLOCK(&(mutex),"CALL_OSET::mutex");
 }
@@ -566,6 +566,8 @@ void SL_CO::call(MESSAGE* _message){
             if(_message->getReqRepType() == REQSUPP){
                 if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
                     NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
+                    SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+                    tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
                 }
                 else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
                     NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
@@ -582,8 +584,8 @@ void SL_CO::call(MESSAGE* _message){
 
                 //This is needed when a new request is coming from ALO
                 //B side call ID created by ALO has to be associated to the main call_id (from Aside)
-                SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-                tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
+//                SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+//                tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
 
             }else{
                 // but the call object has been recognized!!!

@@ -35,7 +35,7 @@
 class SPINC {
 
     private:
-        MESSAGE* BUFF[ARR];
+        void* BUFF[ARR];
 
         int l, s, DIM;
 
@@ -47,8 +47,8 @@ class SPINC {
         bool forcedState;
 
     public:
-        bool put(MESSAGE*);
-        MESSAGE* get(void);
+        bool put(void*);
+        void* get(void);
         bool isEmpty(void);
         SPINC(void);
 
@@ -63,7 +63,7 @@ class SPINC {
 class SPINS {
 
     private:
-            MESSAGE* BUFF[ARR_SHORT];
+            void* BUFF[ARR_SHORT];
 
             bool forcedState;
 
@@ -75,8 +75,8 @@ class SPINS {
         pthread_mutex_t buffmu[SPINC_MOD];
 
     public:
-        bool put(MESSAGE*);
-        MESSAGE* get(void);
+        bool put(void*);
+        void* get(void);
         bool isEmpty(void);
         SPINS(void);
 

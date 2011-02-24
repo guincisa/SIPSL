@@ -72,6 +72,7 @@
 map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
 pthread_mutex_t messTableMtx[MESSAGEMAPS];
 MESSAGE* MainMessage;
+//CALL_OSET* MainOset;
 
 void ex_program(int sig) {
 	DEBOUT("SIG", sig);
@@ -97,6 +98,9 @@ int main(int argc, const char* argv[]) {
 		GETTIME(inTime);\
 		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
 		MainMessage->setValid(1);
+
+//		NEWPTR2(MainOset, CALL_OSET((ENGINE*)0x0, (TRNSPRT*)0x0, "", 0),"Main CallOset")
+
 
 		NEWPTR(SUDP*, mystack, SUDP(),"SUDP")
 		//SUDP* mystack ;

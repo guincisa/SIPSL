@@ -143,7 +143,7 @@ ENGINE::ENGINE(int _i) {
 }
 //**********************************************************************************
 //**********************************************************************************
-void ENGINE::parse(MESSAGE* m) {
+void ENGINE::parse(void* m) {
     DEBERROR("ENGINE::parse illegal invocation")
 #ifndef TESTING
     assert(0);
@@ -159,9 +159,9 @@ SUDP* ENGINE::getSUDP(void){
 }
 //**********************************************************************************
 //**********************************************************************************
-bool ENGINE::p_w(MESSAGE* _m) {
+bool ENGINE::p_w(void* _m) {
 
-    DEBOUT("bool ENGINE::p_w(MESSAGE* _m) ", _m)
+    DEBOUT("bool ENGINE::p_w(void* _m) ", _m)
     GETLOCK(&(sb.condvarmutex),"[" << this << "] sb.condvarmutex");
     bool r = sb.put(_m);
     DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
@@ -178,7 +178,7 @@ bool ENGINE::p_w(MESSAGE* _m) {
 }
 //**********************************************************************************
 //**********************************************************************************
-bool ENGINE::p_w_s(MESSAGE* _m) {
+bool ENGINE::p_w_s(void* _m) {
 
     GETLOCK(&(rej.condvarmutex),"rej.condvarmutex");
     bool r = rej.put(_m);
@@ -216,7 +216,7 @@ void * threadparser (void * _pt){
             pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
         }
         DEBOUT("ENGINE thread freed", _pt)
-        MESSAGE* m = ps->sb.get();
+        void* m = ps->sb.get();
 #ifdef USE_SPINB
         if (m == NULL)  {
             DEBOUT("ENGINE thread NULL",_pt)
@@ -247,7 +247,7 @@ void * threadparser_s (void * _pt){
             pthread_cond_wait(&(ps->rej.condvar), &(ps->rej.condvarmutex));
         }
         DEBOUT("ENGINE thread freed", _pt)
-        MESSAGE* m = ps->rej.get();
+        void* m = ps->rej.get();
 #ifdef USE_SPINB
         if (m == NULL)  {
             DEBOUT("ENGINE thread NULL",_pt)

@@ -56,6 +56,8 @@ class CALL_OSET {
 		void setALO(ALO*);
 		TRNSPRT* getTRNSPRT(void);
 
+		int modulus;
+
 
 		// TRANSACTION MANAGEMENT
 		// KEY is like this
@@ -86,12 +88,11 @@ class CALL_OSET {
 
 		map<MESSAGE*,int> lockedMessages;
 
-		pthread_mutex_t mutex;
 
 		MESSAGE* getNextLockedMessage(void);
 
 	public:
-		CALL_OSET(ENGINE*, TRNSPRT*, string call_x);
+		CALL_OSET(ENGINE*, TRNSPRT*, string call_x, int modulus);
 		~CALL_OSET(void);
 
 		string getCallId_Y(void);
@@ -110,6 +111,7 @@ class CALL_OSET {
 
 		ENGINE* getENGINE(void);
 
+		pthread_mutex_t mutex;
 
 };
 //**********************************************************************************
