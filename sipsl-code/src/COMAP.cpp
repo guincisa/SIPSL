@@ -408,14 +408,30 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
         resetDoaRequestTimer(_call_oset,_mod);
     }
 
-    DEBINF("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
 
-	GETLOCK(&(_call_oset->mutex),"CALL_OSET::mutex");
-    RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-    DEBINF("COMAP::use_CALL_OSET_SL_CO_call invoking call for message", _message)
-    _call_oset->call(_message);
-    PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
-    return 0;
+//	GETLOCK(&(_call_oset->mutex),"CALL_OSET::mutex");
+//    RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+//    DEBINF("COMAP::use_CALL_OSET_SL_CO_call invoking call for message", _message)
+//    _call_oset->call(_message);
+//    PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+//    return 0;
+
+    int trylok;
+    TRYLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)", trylok)
+    if(trylok != 0){
+    	//CALL OSET is locked reschedule in SL_CC
+    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call repushed to sl_cc", _call_oset )
+    	_call_oset->getENGINE()->p_w(_message);
+    	PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+    }
+    else {
+    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
+    	 _call_oset->call(_message);
+    	 PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+    }
+
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -435,8 +451,9 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
 
     resetDoaRequestTimer(_call_oset,_mod);
 
-    if (getDoa(_call_oset,_mod) == DOA_DELETED || getDoa(_call_oset,_mod) == DOA_REQUESTED) {
-        DEBINF("COMAP::setDoaRequested already deleted (-1) or confirmed (2)", getDoa(_call_oset,_mod))
+    int state = getDoa(_call_oset,_mod);
+    if (state == DOA_DELETED || state == DOA_REQUESTED) {
+        DEBINF("COMAP::setDoaRequested already deleted (-1) or confirmed (2)",state)
         //Reset delete timer
 
         RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod)
@@ -478,9 +495,8 @@ void COMAP::purgeDOA(void){
             loktry[mod]++;
             if (loktry[mod] > 10){
                 DEBWARNING("COMAP::purgeDOA trylock failed more than 10 times", mod)
-            }else{
-                continue;
             }
+            continue;
         }else {
             loktry[mod] = 0;
         }
