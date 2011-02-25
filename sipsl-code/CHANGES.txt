@@ -1,3 +1,16 @@
+25 Feb
+
+void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
+
+
+controllare stato
+
+
+
+
+
+
+
 23 febbraio
 
 se il call-oset = maincalloset allora reject message
