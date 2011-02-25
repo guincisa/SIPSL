@@ -83,6 +83,8 @@ class ThreadWrapper {
 
 //#define NOLOGATALL
 
+#define SPINSTL
+
 #ifdef SPARC
 #define SUDPTH 5
 #define MAXTHREADS 264
