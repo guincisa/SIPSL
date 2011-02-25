@@ -31,7 +31,7 @@
 //Block mode will block the sl_co because it constantly back feeds itself
 //#define SPIN_BLOCK 2
 
-
+#ifndef SPINSTL
 class SPINC {
 
     private:
@@ -89,3 +89,50 @@ class SPINS {
 
 
 };
+#else
+
+#include <queue>
+using namespace std;
+class SPINC {
+
+    private:
+
+		std::queue<void*> Q;
+		pthread_mutex_t spinm;
+
+    public:
+        bool put(void*);
+        void* get(void);
+        bool isEmpty(void);
+        SPINC(void);
+
+        pthread_mutex_t condvarmutex;
+        pthread_cond_t condvar;
+
+        void lockBuffer(void);
+
+        void unLockBuffer(void);
+
+};
+class SPINS {
+
+    private:
+
+		std::queue<void*> Q;
+		pthread_mutex_t spinm;
+
+    public:
+        bool put(void*);
+        void* get(void);
+        bool isEmpty(void);
+        SPINS(void);
+
+        pthread_mutex_t condvarmutex;
+        pthread_cond_t condvar;
+
+        void lockBuffer(void);
+
+        void unLockBuffer(void);
+
+};
+#endif

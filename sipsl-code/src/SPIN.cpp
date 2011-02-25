@@ -96,226 +96,8 @@
 #include "SIPUTIL.h"
 #endif
 
-//ROTQ::ROTQ(void) {
-//
-//     top = 0;
-//    bot = 0;
-//    full = false;
-//
-//    pthread_mutex_init(&fullq, NULL);
-//
-//
-//}
-//void ROTQ::setSpinb(SPINB * _sb) {
-//    sb = _sb;
-//}
-//
-//int ROTQ::getState() {
-//    return state;
-//}
-//void ROTQ::setState(int s) {
-//    state = s;
-//}
-//void ROTQ::put_trashing(MESSAGE* m) {
-//
-//    if (state != SPIN_WW) {
-//        DEBOUT("ERROR not write buffer","")
-//        return;
-//    }
-//    Q[top] = m;
-//
-//    top ++ ;
-//    top = top % ARR;
-//    if (top == bot) {
-//        //DEBASSERT("FULL TRASHING")
-//        DEBOUT("QUEUE FULL, TRASHING MESSAGES",sb)
-//        GETLOCK(&(sb->mudim),"sb->mudim");
-//        (sb->DIM)--;
-//        RELLOCK(&(sb->mudim),"sb->mudim");
-//        bot ++;
-//        bot = bot % ARR;
-//    }
-//}
-//New
-//void ROTQ::put_block(MESSAGE* m) {
-//
-//    if (state != SPIN_WW) {
-//        DEBOUT("ERROR not write buffer","")
-//        return;
-//    }
-//    Q[top] = m;
-//
-//    top ++ ;
-//    top = top % ARR;
-//    if (top == bot) {
-//        //DEBASSERT("FULL TRASHING")
-//        DEBOUT("QUEUE FULL, WAITING",sb)
-//        full = true;
-//		GETLOCK(&fullq,"fullq")
-////        GETLOCK(&(sb->mudim),"sb->mudim");
-////        (sb->DIM)--;
-////        RELLOCK(&(sb->mudim),"sb->mudim");
-////        bot ++;
-////        bot = bot % ARR;
-//    }
-////}
-//void ROTQ::put(MESSAGE* m) {
-//
-//    if (state != SPIN_WW) {
-//        DEBOUT("ERROR not write buffer","")
-//        return;
-//    }
-//    MESSAGE* local = 0x0;
-//#ifdef DEBCODE
-//    local = Q[top];
-//#endif
-//    Q[top] = m;
-//
-//    top ++ ;
-//    top = top % ARR;
-//    if (top == bot) {
-//#ifdef DEBCODE
-//    	DEBOUT("ROTQ::put trashing message", local)
-//#endif
-//        //DEBASSERT("FULL TRASHING")
-//    	//If trashing message will may leak...
-//        DEBOUT("FULL TRASHING","")
-//        GETLOCK(&(sb->mudim),"sb->mudim");
-//        (sb->DIM)--;
-//        RELLOCK(&(sb->mudim),"sb->mudim");
-//        bot ++;
-//        bot = bot % ARR;
-//    }
-//}
 
-//MESSAGE* ROTQ::get_old(void) {
-//
-//    if (state != SPIN_RR) {
-//        DEBOUT("ERROR not read buffer","")
-//        return NULL;
-//    }
-//    if (bot == top && !full) {
-//        DEBOUT(" top = bot, empty", "");
-//        return NULL;
-//    }else {
-//    	MESSAGE* m = Q[bot];
-//        bot ++;
-//        bot = bot % ARR;
-//        full = false;
-//        RELLOCK(&fullq,"fullq")
-//        return m;
-//    }
-//}
-//MESSAGE* ROTQ::get(void) {
-//
-//    if (state != SPIN_RR) {
-//        DEBOUT("ERROR not read buffer","")
-//        return NULL;
-//    }
-//    if (bot == top ) {
-//        DEBOUT(" top = bot ", "");
-//        return NULL;
-//    }
-//    else {
-//
-//    	MESSAGE* m = Q[bot];
-//        bot ++;
-//        bot = bot % ARR;
-//        return m;
-//    }
-//}
-//
-//bool ROTQ::isEmpty(void) {
-//    return bot == top;
-//}
-//
-//SPINB::SPINB(void) {
-//
-//    DEBOUT("SPINB::SPINB",this)
-//
-//    Q[0].setSpinb(this);
-//    Q[1].setSpinb(this);
-//    Q[2].setSpinb(this);
-//
-//    Q[0].setState(SPIN_RR);
-//    Q[1].setState(SPIN_WW);
-//    Q[2].setState(SPIN_FF);
-//    readbuff = 0;
-//    writebuff = 1;
-//    freebuff = 2;
-//    DIM = 0;
-//
-//    pthread_mutex_init(&mudim, NULL);
-//    pthread_mutex_init(&readmu, NULL);
-//    pthread_mutex_init(&writemu, NULL);
-//    pthread_mutex_init(&condvarmutex, NULL);
-//    pthread_cond_init(&condvar, NULL);
-//
-//}
-//
-//bool SPINB::isEmpty(void) {
-//    return (Q[0].isEmpty() && Q[1].isEmpty() && Q[2].isEmpty());
-//}
-//void SPINB::put(MESSAGE* m) {
-//
-//    int nextbuff = (writebuff +1);
-//    nextbuff = nextbuff % 3;
-//
-//    GETLOCK(&writemu,"writemu");
-//    Q[writebuff].put(m);
-//
-//
-//    if (Q[nextbuff].getState() == SPIN_FF) {
-//        //cout <<" PUT spin" << endl;
-//        Q[nextbuff].setState(SPIN_WW);
-//        Q[writebuff].setState(SPIN_FF);
-//        writebuff = nextbuff;
-//    }
-//    RELLOCK(&writemu,"writemu");
-//    GETLOCK(&mudim,"mudim");
-//    DIM++;
-//    RELLOCK(&mudim,"mudim");
-//}
-//MESSAGE* SPINB::get(void) {
-//    // MUTEX
-//
-//    int nextbuff = (readbuff + 1);
-//    nextbuff = nextbuff % 3;
-//    GETLOCK(&readmu,"readmu");
-//    if (Q[readbuff].isEmpty() && Q[nextbuff].getState() == SPIN_FF) {
-//        //cout <<" Get spin" << endl;
-//            Q[nextbuff].setState(SPIN_RR);
-//            Q[readbuff].setState(SPIN_FF);
-//            readbuff = nextbuff;
-//    }
-//    MESSAGE* m = Q[readbuff].get();
-//    RELLOCK(&readmu,"readmu");
-//    if (m != NULL) {
-//        GETLOCK(&mudim,"mudim");
-//        DIM--;
-//        RELLOCK(&mudim,"mudim");
-//    }
-//
-//
-//    return m;
-//}
-//
-//void SPINB::move(void) {
-//    GETLOCK(&writemu,"writemu")
-//
-//    int nextbuff = (writebuff +1 ) ;
-//    nextbuff = nextbuff % 3;
-//
-//    if (Q[nextbuff].getState() == SPIN_FF) {
-//        Q[nextbuff].setState(SPIN_WW);
-//        Q[writebuff].setState(SPIN_FF);
-//        writebuff = nextbuff;
-//    }
-//    RELLOCK(&writemu,"writemu");
-//    DEBOUT("MOVE","")
-//
-//}
-
+#ifndef SPINSTL
 SPINC::SPINC(){
     s = 0;
     l = -1;
@@ -540,3 +322,57 @@ bool SPINS::isEmpty(void){
     return ise;
 
 }
+#else
+SPINC::SPINC(void) {
+
+	pthread_mutex_init(&spinm, NULL);
+    pthread_mutex_init(&condvarmutex, NULL);
+    pthread_cond_init(&condvar, NULL);
+}
+bool SPINC::put(void* _message){
+    GETLOCK(&(spinm),"SPINC::spinm");
+	Q.push(_message);
+    RELLOCK(&(spinm),"SPINC::spinm");
+}
+void* SPINC::get(void){
+	void* t;
+    GETLOCK(&(spinm),"SPINC::spinm");
+	t = Q.front();
+	Q.pop();
+    RELLOCK(&(spinm),"SPINC::spinm");
+	return t;
+}
+bool SPINC::isEmpty(void){
+	return Q.empty();
+}
+void SPINC::lockBuffer(void){
+}
+void SPINC::unLockBuffer(void){
+}
+SPINS::SPINS(void) {
+
+	pthread_mutex_init(&spinm, NULL);
+    pthread_mutex_init(&condvarmutex, NULL);
+    pthread_cond_init(&condvar, NULL);
+}
+bool SPINS::put(void* _message){
+    GETLOCK(&(spinm),"SPINC::spinm");
+	Q.push(_message);
+    RELLOCK(&(spinm),"SPINC::spinm");
+}
+void* SPINS::get(void){
+	void* t;
+    GETLOCK(&(spinm),"SPINC::spinm");
+	t = Q.front();
+	Q.pop();
+    RELLOCK(&(spinm),"SPINC::spinm");
+	return t;
+}
+bool SPINS::isEmpty(void){
+	return Q.empty();
+}
+void SPINS::lockBuffer(void){
+}
+void SPINS::unLockBuffer(void){
+}
+#endif
