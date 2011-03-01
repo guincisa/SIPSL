@@ -1402,6 +1402,8 @@ ACTION* act_null_cl(SM* _sm, MESSAGE* _message) {
 	//Kill this message
 	_message->setDestEntity(SODE_KILL);
 	_message->setGenEntity(SODE_TRNSCT_CL);
+    _message->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId().getContent());
+    _message->setSourceModulus(((TRNSCT_SM*)_sm)->getMatrixMessage()->getModulus());
 	SingleAction sa_1 = SingleAction(_message);
 	action->addSingleAction(sa_1);
 

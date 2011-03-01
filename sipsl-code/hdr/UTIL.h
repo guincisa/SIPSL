@@ -102,7 +102,7 @@ class ThreadWrapper {
 #define MESSAGEMAPS 100
 #ifndef NOLOGATALL
 #define LOGMIN
-#define PROFILELOCKVERB
+#define PROFILELOCK
 #define LOGSIPHIGH
 //#define LOGSIPLOW
 #define LOGINF
