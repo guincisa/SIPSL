@@ -77,19 +77,32 @@ typedef map<string,string> TupleMap;
 
 inline vector<string> brkSpaces(string s) {
 
-    //separate string into words
-    //TODO TOKENIZER????
-    vector<string> output;
-    int a = 0;
-    a = s.find(" ", 0);
-    while (a > 0) {
-        output.push_back(s.substr(0,a));
-        s = s.substr(a+1,-1);
-        a = s.find(" ", 0);
-    }
-    output.push_back(s);
-    return output;
+	char st[s.size()+1];
+	strcpy(st, s.c_str());
+
+	vector<string> output;
+
+	char* tok = strtok(st, " ");
+
+	while (tok != NULL){
+		output.push_back(tok);
+		tok = strtok(NULL, " ");
+	}
+	return output;
+
 }
+    /*
+      char str[] ="- This, a sample string.";
+  char * pch;
+  printf ("Splitting string \"%s\" into tokens:\n",str);
+  pch = strtok (str," ,.-");
+  while (pch != NULL)
+  {
+    printf ("%s\n",pch);
+    pch = strtok (NULL, " ,.-");
+  }*/
+
+
 inline string trimCR(string s){
 	int ii = s.find("\r",0);
     if(ii >= 0){

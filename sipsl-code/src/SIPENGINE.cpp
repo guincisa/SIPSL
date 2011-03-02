@@ -159,13 +159,14 @@ void SIPENGINE::parse_s(void* __mess) {
 //**********************************************************************************
 void SIPENGINE::parse(void* __mess) {
 
+    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+
 	MESSAGE* _mess = (MESSAGE*)__mess;
 
     PROFILE("SIPENGINE::parse start")
     TIMEDEF
     SETNOW
 
-    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 
     //Check if Request or Reply
     _mess->getTotLines();

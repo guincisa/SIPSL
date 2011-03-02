@@ -104,13 +104,13 @@ void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
     DEBNTW("TRNSPRT::upCall", _message)
     bool r = _sl_cc->p_w((void*)_message);
     if(!r){
-            DEBOUT("TRNSPRT::upCall message rejected, put in rejection queue",_message)
-            bool ret2 = _sl_cc->p_w_s((void*)_message);
-            if (!ret2){
-                    if (!_message->getLock()){
-                            PURGEMESSAGE(_message)
-                    }
-            }
+		DEBOUT("TRNSPRT::upCall message rejected, put in rejection queue",_message)
+		bool ret2 = _sl_cc->p_w_s((void*)_message);
+		if (!ret2){
+			if (!_message->getLock()){
+				PURGEMESSAGE(_message)
+			}
+		}
 
     }
     PRINTDIFF("TRNSPRT::upCall end ")
