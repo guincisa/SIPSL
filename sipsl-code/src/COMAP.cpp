@@ -128,23 +128,13 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
 
     p = comap_mm[_mod].find(_callId_X);
     if (p != comap_mm[_mod].end()){
-            tmp = (CALL_OSET*)p->second;
+        tmp = (CALL_OSET*)p->second;
 
         DEBINF("COMAP::getCALL_OSET found ", tmp)
 
         if (getDoa(tmp,_mod)== DOA_REQUESTED){
             resetDoaRequestTimer(tmp,_mod);
         }
-//        if (getDoa(tmp,_mod)== DOA_DELETED){
-//                //tmp = MainOset;
-//        }else{
-//            // all other cases the call:oset will be used, lock it now
-//            DEBINF("CALL_OSET ACCESS COMAP::getCALL_OSET_XMain", tmp)
-//            RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-//            PRINTDIFF("COMAP::getCALL_OSET_XMain end")
-//            return tmp;
-//        }
-
     }else {
         DEBINF("COMAP::getCALL_OSET not found", _callId_X << "]["<<_mod)
     }
@@ -393,8 +383,6 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
         DEBASSERT("invalid comap index "<<_mod)
     }
 
-    //GETLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-
     int tmpDoa = getDoa(_call_oset, _mod);
     //Check the call_oset doa
     if ( tmpDoa == DOA_DELETED) {
@@ -403,18 +391,9 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
         PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
         return -1;
     }
-    //if (getDoa(_call_oset,_mod) == DOA_REQUESTED  && _message->getGenEntity() == SODE_NTWPOINT) {
     if ( tmpDoa == DOA_REQUESTED) {
         resetDoaRequestTimer(_call_oset,_mod);
     }
-
-
-//	GETLOCK(&(_call_oset->mutex),"CALL_OSET::mutex");
-//    RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-//    DEBINF("COMAP::use_CALL_OSET_SL_CO_call invoking call for message", _message)
-//    _call_oset->call(_message);
-//    PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
-//    return 0;
 
     int trylok;
     TRYLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)", trylok)
@@ -604,7 +583,7 @@ void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
     map<CALL_OSET*, lli>::iterator p_ttl;
     p_ttl = call_oset_ttl[_modulus].find(_call_oset);
     if (p_ttl == call_oset_ttl[_modulus].end()){
-        DEBASSERT("call_oset_ttl insistent")
+        DEBASSERT("call_oset_ttl inexistent")
     }
     SysTime afterT;
     GETTIME(afterT);

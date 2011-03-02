@@ -136,6 +136,8 @@ void SL_CC::parse_s(void* __mess) {
 //**********************************************************************************
 void SL_CC::parse(void* __mess) {
 
+    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+
 	MESSAGE* _mess = (MESSAGE*)__mess;
 
     PROFILE("SL_CC::parse start")
@@ -145,7 +147,6 @@ void SL_CC::parse(void* __mess) {
     DEBOUT("SL_CC::parse", _mess)
     DEBMESSAGESHORT("SL_CC::parse", _mess)
 
-    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 
     //Maybe it has been delete by DOA when outside the call_oset
     //TODO needed???

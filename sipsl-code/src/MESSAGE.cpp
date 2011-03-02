@@ -1385,7 +1385,6 @@ int MESSAGE::getModulus(void){
 	if (s.substr(0,5).compare("CoMap") == 0){
 		modulus = atoi(s.substr(5,COMAPS_DIG).c_str());
 	}else {
-
 		char x[64];
 		int k = 64<s.length() ? 64 : s.length();
 		sprintf(x,"%s", s.substr(0,k).c_str());
