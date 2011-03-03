@@ -1,7 +1,7 @@
 3 Marzo
 
-che succede se un messaggio viene lanciato dall'allarme (e messo in coda)
-e allo stesso momento cancellato?
+canellazione della call_oset:
+non posso eliminare i messaggi locked perche potrebbero essere ovunque...
 
 
 2 Marzo

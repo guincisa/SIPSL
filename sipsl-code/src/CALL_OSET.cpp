@@ -175,6 +175,7 @@ CALL_OSET::~CALL_OSET(void){
 
 	//TODO if the message is a source message for a message which in ALARM
 	//and this one triggers it, it will crash?
+	//Messages could be anywhere
 	MESSAGE* m = getNextLockedMessage();
 	while (m != MainMessage){
 
@@ -197,6 +198,7 @@ CALL_OSET::~CALL_OSET(void){
 		pthread_mutex_unlock(&messTableMtx[ixx]);
 #endif
 
+		//Non c'ha senso....
 		DEBMESSAGESHORT("DOA locked message", m)
 		if (m->getTypeOfInternal() == TYPE_OP){
 			string callid_alarm = m->getHeadCallId().getContent() +  ((C_HeadVia*) m->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + m->getOrderOfOperation()+ "#";
@@ -209,8 +211,9 @@ CALL_OSET::~CALL_OSET(void){
 			PURGEMESSAGE(m);
 			DEBY
 			DEBOUT("Message to be deleted", m)
+			m = getNextLockedMessage();
+
 		}
-		m = getNextLockedMessage();
 	}
 	DELPTR(sl_co, "SL_CO")
 	DEBY
