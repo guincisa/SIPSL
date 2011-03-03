@@ -135,14 +135,17 @@ void SL_CC::parse_s(void* __mess) {
 //**********************************************************************************
 //**********************************************************************************
 void SL_CC::parse(void* __mess) {
-
+DEBY
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-
+DEBY
 	MESSAGE* _mess = (MESSAGE*)__mess;
-
+DEBY
     PROFILE("SL_CC::parse start")
+DEBY
     TIMEDEF
+DEBY
     SETNOW
+DEBY
 
     DEBOUT("SL_CC::parse", _mess)
     DEBMESSAGESHORT("SL_CC::parse", _mess)

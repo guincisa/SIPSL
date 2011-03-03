@@ -163,6 +163,14 @@ bool ENGINE::p_w(void* _m) {
 
     DEBOUT("bool ENGINE::p_w(void* _m) ", _m)
     GETLOCK(&(sb.condvarmutex),"[" << this << "] sb.condvarmutex");
+
+#ifdef MESSAGEUSAGE
+    int i = getModulus((MESSAGE*)_m);
+    GETLOCK(&messTableMtx[i],"&messTableMtx"<<i);
+    ((MESSAGE*)_m)->inuse = 0;
+    RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);
+#endif
+
     bool r = sb.put(_m);
     DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
     if (!r){
@@ -226,7 +234,21 @@ void * threadparser (void * _pt){
         }
         else {
 #endif
+
+
+#ifdef MESSAGEUSAGE
+    int i = getModulus((MESSAGE*)m);
+    GETLOCK(&messTableMtx[i],"&messTableMtx"<<i);
+    if ( ((MESSAGE*)m)->inuse != 0){
+    	DEBOUT("MESSAGE ALREADY RUNNING", m << "]["<<((MESSAGE*)m)->inuse)
+    	DEBASSERT("MESSAGE ALREADY RUNNING")
+    }
+    ((MESSAGE*)m)->inuse = (int) pthread_self();
+    RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);
+#endif
+
             pt->ps->parse(m);
+
 #ifdef USE_SPINB
         }
 #endif

@@ -150,7 +150,7 @@ void ALMGR::alarmer(void){
                             DEBOUT("Inconsistency 2 in ALARM, alarm was found active but cidmap points to different alarm",trip.cid << "][" << trip.alarm <<"]["<<(ALARM*)(cid_iter->second))
                             DEBASSERT("ALARM inconsistency 2")
                         } else {//Alarm structures ok
-#ifdef DEBCODE
+#ifdef DEBCODEALARM1
                             MESSAGE* _tmpMess = trip.alarm->getMessage();
                             DEBOUT("ALARM found message", _tmpMess << "][" << trip.alarm)
                             //Selfcheck code
