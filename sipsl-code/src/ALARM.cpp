@@ -160,7 +160,7 @@ void ALMGR::alarmer(void){
                             pthread_mutex_lock(&messTableMtx[i]);
                             p = globalMessTable[i].find(_tmpMess);
                             bool delmess=false;
-                            if (p ==globalMessTable[i].end()){
+                            if (p ==globalMessTable[i].end() && _tmpMess != MainMessage){
                                     delmess = true;
                                     DEBWARNING("Inconsistency 3 in ALARM Active ALARM found with deleted message",_tmpMess <<"]["<<trip.alarm)
                                     DEBASSERT("Inconsistency 3 in ALARM")
