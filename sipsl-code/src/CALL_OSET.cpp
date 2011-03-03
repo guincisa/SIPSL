@@ -180,7 +180,7 @@ CALL_OSET::~CALL_OSET(void){
 
 		DEBOUT("MESSAGE to be deleted", m)
 		if (!m->getLock()){
-			DEBASSERT("CALL_OSET::~CALL_OSET message in lockedmessage tabelk found unlocked ["<< m <<"]")
+			DEBASSERT("CALL_OSET::~CALL_OSET message in locked message table found unlocked ["<< m <<"]")
 		}
 
 		//TODO DEBCODE
@@ -208,9 +208,9 @@ CALL_OSET::~CALL_OSET(void){
 			m->unSetLock(this);
 			PURGEMESSAGE(m);
 			DEBY
-			m = getNextLockedMessage();
 			DEBOUT("Message to be deleted", m)
 		}
+		m = getNextLockedMessage();
 	}
 	DELPTR(sl_co, "SL_CO")
 	DEBY
