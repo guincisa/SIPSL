@@ -1,3 +1,37 @@
+3 Marzo
+
+che succede se un messaggio viene lanciato dall'allarme (e messo in coda)
+e allo stesso momento cancellato?
+
+
+2 Marzo
+
+il problema e' che sembra che lo stesso messaggio sia gestito da piu threads allo stesso momento
+
+usare una variabile 
+int inuse =  numero thread;
+loccata con il global message lock
+quando il messaggio entra nella parse 
+
+
+
+p_w(){
+    if inuse != 0
+       assert
+    else 
+        inuse = currentthread
+        
+        
+
+
+
+
+
+
+
+
+
+
 25 Feb
 
 void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){

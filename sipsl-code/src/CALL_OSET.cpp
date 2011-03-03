@@ -202,13 +202,15 @@ CALL_OSET::~CALL_OSET(void){
 			string callid_alarm = m->getHeadCallId().getContent() +  ((C_HeadVia*) m->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + m->getOrderOfOperation()+ "#";
 			DEBOUT("CALL_OSET::~CALL_OSET::cancel alarm, callid", callid_alarm)
 			getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
+			//Do not delete alarmed messages
+		}else{
+			//TODO what if the message is being triggered now?
+			m->unSetLock(this);
+			PURGEMESSAGE(m);
+			DEBY
+			m = getNextLockedMessage();
+			DEBOUT("Message to be deleted", m)
 		}
-		//TODO what if the message is being triggered now?
-		m->unSetLock(this);
-		PURGEMESSAGE(m);
-		DEBY
-		m = getNextLockedMessage();
-		DEBOUT("Message to be deleted", m)
 	}
 	DELPTR(sl_co, "SL_CO")
 	DEBY

@@ -337,6 +337,10 @@ MESSAGE::MESSAGE(string _incMessBuff, int _genEntity, SysTime _inc_ts, int _sock
 	headContact = NULL;
 	headRoute = NULL;
 
+#ifdef MESSAGEUSAGE
+	inuse = (int) pthread_self();
+#endif
+
 }
 //MESSAGE::MESSAGE(const MESSAGE& x){
 //	DEBASSERT("MESSAGE copy constructor");
@@ -406,6 +410,10 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headFrom = NULL;
 	headContact = NULL;
 	headRoute = NULL;
+
+#ifdef MESSAGEUSAGE
+	inuse = (int) pthread_self();
+#endif
 
 
 	return;
