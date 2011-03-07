@@ -113,7 +113,7 @@ class ThreadWrapper {
 #define SELFCHECK
 //#define DEBCODE
 #define PROFILING
-#define MESSAGEUSAGE
+//#define MESSAGEUSAGE
 #define DEBCODEALARM1
 //#define LOGLOK
 #endif
