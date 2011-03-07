@@ -205,15 +205,13 @@ CALL_OSET::~CALL_OSET(void){
 			DEBOUT("CALL_OSET::~CALL_OSET::cancel alarm, callid", callid_alarm)
 			getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
 			//Do not delete alarmed messages
-		}else{
-			//TODO what if the message is being triggered now?
-			m->unSetLock(this);
-			PURGEMESSAGE(m);
-			DEBY
-			DEBOUT("Message to be deleted", m)
-			m = getNextLockedMessage();
-
 		}
+		//TODO what if the message is being triggered now?
+		m->unSetLock(this);
+		PURGEMESSAGE(m);
+		DEBY
+		DEBOUT("Message to be deleted", m)
+		m = getNextLockedMessage();
 	}
 	DELPTR(sl_co, "SL_CO")
 	DEBY
