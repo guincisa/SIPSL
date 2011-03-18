@@ -1,21 +1,151 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper]{report}
 \usepackage{graphicx}
+\usepackage[cm]{fullpage}
 \title{Message Life Cycle - SIPSL}
 \author{guic}
-\date{October 2010}
+\date{March 2011}
 \begin{document}
 	\small
-	\maketitle
-\section{Message Lifecycle}
+	\maketitle 
+\chapter{Message Lifecycle}
+\section{Normal scenario}
 
-\subsection{Creation}
+\subsection{Initial Request: INVITE}
 
-The creation is done in different ways:
-
+\subsubsection{Step 1 SUDP - INVITE} 
 \begin{itemize}
-   \item Incoming from network
-   \item Create internally a request, reply or operation
+   \item Invite arrives at SUDP: gen = NTW
+   \item Invite arrives at SIPENGINE
+   \item Invire arrives at TRNSPRT
+   \item Invite arrives at SL\_CC: dest = SM\_SV
 \end{itemize}
+
+\subsubsection{Step 2 local - INVITE}
+\begin{itemize}
+   \item Invite arrives at C\_OSET: SM\_SV\_INV created
+   \item Invite stored in Matrix
+   \item Invite locked
+   \item Invite arrives at SM\_SV\_INV
+\end{itemize}
+
+\subsubsection{Step 3 SM - INVITE} 
+\begin{itemize}
+   \item Invite duplicated to Invite\_alo
+   \item Invite\_alo source message esplicitely set to Invite
+   \item Invite duplicated to 100 Trying
+   \item Invite duplicated to TIMER\_S 
+\end{itemize}
+ 
+Invite from A does not move anymore and is locked. 
+
+\
+\framebox{Rule: Locked message can't be sent out by state machines, action
+executer shall assert it the message is locked} 
+
+\framebox{Rule: If a message is directed to a SM and storage is not needed, the
+SM shall set it to SODE\_KILL}
+
+\subsubsection{Step 4 action executer} 
+\begin{itemize}
+   \item Invite\_ALO executed in VALO
+	\begin{itemize}
+	  \item VALO duplicates INVITE
+	  \item New Invite\_valo source message esplicitely set to Invite\_alo source
+	  message
+	  \item VALO set gen = VALO, dest = SM\_CL
+	  \item VALO set genmod = modsource 
+	  \item VALO set gencid = cidsource
+	  \item VALO send INVITE\_valo to SL\_CC
+	\end{itemize}
+   \item action executer deletes Invite\_alo
+   \item 100 Trying is sent to network
+   \item timer\_s is sent to alarm 
+\end{itemize}
+
+\framebox{Rule: VALO must duplicate message}
+\framebox{Rule: action executer must delete message after returning from valo}
+\framebox{Rule: when a message is duplicated, the genmod and gencid are
+automatically set}
+\framebox{Rule: when a message is duplicated, the sourcemess is not set, it must
+be escplicitely set, default value is MainMessage. This is needed because if we
+delete the source message we are not able to change all messages pointing to
+this.}
+
+\framebox{Rule: SL\_CC will delete the message, if not locked due to a
+creation of a SM}
+
+\subsubsection{Step 5: transport} 
+\begin{itemize}
+   \item 100 Trying is sent to network
+   \item 100 Trying is purged 
+\end{itemize}
+
+\subsubsection{Step 6: alarm} 
+\begin{itemize}
+   \item Timer\_s is stored in alarm
+\end{itemize}
+
+\subsubsection{Step 7: alarm} 
+\begin{itemize}
+   \item Timer\_s is stored in alarm
+\end{itemize}
+
+\subsubsection{Step 8: Invite\_valo is sent to SL\_CC} 
+\begin{itemize}
+   \item SL\_CC checks gen and dest
+   \item SL\_CC search X C\_OSET using sourcecid and sourcemod, found
+   \item invite\_valo is sent to C\_OSET
+\end{itemize}
+
+\subsubsection{Step 9: Invite\_valo is sent to C\_OSET} 
+\begin{itemize}
+   \item C\_OSET creates the SM
+   \item invite\_valo is locked when creating the SM
+   \item SM matrix is set to invite\_valo
+   \item SM a\_matrix is set to invite\_valo source message (original invite)
+\end{itemize}
+
+\subsubsection{Step 10: Invite\_valo arrives to SM\_CL} 
+\begin{itemize}
+   \item Invite\_valo is duplicated to invite\_b and dest=network
+   \item Invite\_valo is duplicated and set to timer\_a
+   \item Invite\_valo is duplicated and set to timer\_s
+\end{itemize}
+
+\subsubsection{Step 11: action executer} 
+\begin{itemize}
+   \item Invite\_b is sent to transport and then deleted
+   \item timer\_a sent to alarm
+   \item timer\_s sent to alarm
+\end{itemize}
+
+\subsection{Reply from B: 180 Ringing}
+
+\subsubsection{Step 1: SUDP and SL\_CC} 
+\begin{itemize}
+   \item reply arrives at SUDP, gen = network
+   \item reply is sent to SIPENGINE
+   \item reply is sent to SL\_CC
+   \begin{itemize}
+     \item SL\_CC getXcalloset not found
+     \item SL\_CC getYcalloset found
+     \item reply destination set to SM\_CL
+   \end{itemize}  
+\end{itemize}
+
+\subsubsection{Step 2: C\_OSET} 
+\begin{itemize}
+   \item reply arrives C\_OSET
+   \item SM\_CL identified using CSeq information
+   \item SM\_CL invite found
+ \end{itemize}  
+ 
+ \subsubsection{Step 3: SM\_CL Invite} 
+\begin{itemize}
+   \item reply for a is create using a\_matrix
+   \item reply is duplicated to clear timer\_a
+   \item reply is duplicated create timer\_s 
+ \end{itemize} 
 
 \subsection{Deletion}
 
