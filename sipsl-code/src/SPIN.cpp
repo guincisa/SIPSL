@@ -333,6 +333,7 @@ bool SPINC::put(void* _message){
     GETLOCK(&(spinm),"SPINC::spinm");
 	Q.push(_message);
     RELLOCK(&(spinm),"SPINC::spinm");
+    return true;
 }
 void* SPINC::get(void){
 	void* t;
@@ -359,6 +360,7 @@ bool SPINS::put(void* _message){
     GETLOCK(&(spinm),"SPINC::spinm");
 	Q.push(_message);
     RELLOCK(&(spinm),"SPINC::spinm");
+    return true;
 }
 void* SPINS::get(void){
 	void* t;
