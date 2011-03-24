@@ -267,7 +267,7 @@ class MESSAGE : public BASEMESSAGE {
         //Need to eliminate the source message
         //SL_CC
         C_HeadCallId sourceHeadCallId;
-	int sourceModulus;
+        int sourceModulus;
 
 
     public:

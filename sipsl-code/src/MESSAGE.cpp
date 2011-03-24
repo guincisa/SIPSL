@@ -213,8 +213,15 @@ int BASEMESSAGE::getGenEntity(void){
 	return genEntity;
 }
 void BASEMESSAGE::setGenEntity(int _genEntity){
+
 	if (invalid == 1)
 		DEBASSERT("BASEMESSAGE::setGenEntity invalid")
+
+	//MLF2
+	if (genEntity != 0){
+		DEBOUT("BASEMESSAGE::setGenEntity is not null cannot be changed anymore",genEntity << " new["<<_genEntity)
+		DEBASSERT("BASEMESSAGE::setGenEntity is not null cannot be changed anymore")
+	}
 
 	genEntity = _genEntity;
 }
@@ -559,6 +566,9 @@ void MESSAGE::setSourceMessage(MESSAGE* _source){
 	}
 	pthread_mutex_unlock(&messTableMtx[i]);
 #endif
+
+    sourceHeadCallId = _source->getHeadCallId();
+    sourceModulus = _source->getModulus();
 
 	source = _source;
 }
@@ -1348,7 +1358,8 @@ void MESSAGE::setTypeOfInternal(int _i){
 		DEBASSERT("MESSAGE::setTypeOfInternal invalid")
 
 	if( typeOfInternal == TYPE_OP && _i != TYPE_OP){
-		DEBWARNING("MESSAGE::setTypeOfInternal changing from TYPE_OP", this)
+		DEBOUT("MESSAGE::setTypeOfInternal changing from TYPE_OP",this)
+		DEBASSERT("MESSAGE::setTypeOfInternal changing from TYPE_OP")
 	}
 	typeOfInternal = _i;
 }
