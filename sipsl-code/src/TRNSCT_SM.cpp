@@ -121,13 +121,9 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 }
 TRNSCT_SM::~TRNSCT_SM(void){
 
-    //DEBOUT("TRNSCT_SM::~TRNSCT_SM ",this << "id [" <<id<<"]")
-
     //A_Matrix belongs to another SM
     Matrix->unSetLock(sl_co->call_oset);
     PURGEMESSAGE(Matrix)
-    //DEBOUT("TRNSCT_SM::~TRNSCT_SM done",this)
-
 }
 
 
@@ -150,36 +146,38 @@ void TRNSCT_SM::setId(string _id){
 string TRNSCT_SM::getId(void){
     return id;
 }
-SingleAction TRNSCT_SM::generateTimerS(int genPoint){
-
-    DEBOUT("TRNSCT_SM::generateTimerS genpoint",genPoint )
-
-    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
-    SysTime afterT;
-    GETTIME(afterT);
-    lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_S;
-    timer_s->setFireTime(firetime);
-    timer_s->setTypeOfInternal(TYPE_OP);
-    timer_s->setTypeOfOperation(TYPE_OP_TIMER_ON);
-    timer_s->setOrderOfOperation("TIMER_S");
-    timer_s->setLock(sl_co->call_oset);
-    timer_s->setSourceHeadCallId(getMatrixMessage()->getHeadCallId().getContent());
-    timer_s->setSourceModulus(getMatrixMessage()->getModulus());
-    DEBY
-    return(SingleAction(timer_s));
-
-}
-SingleAction TRNSCT_SM::clearTimerS(int genPoint){
-
-    DEBOUT("TRNSCT_SM::clearTimerS genpoint",genPoint )
-
-    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
-    timer_s->setTypeOfInternal(TYPE_OP);
-    timer_s->setTypeOfOperation(TYPE_OP_TIMER_OFF);
-    timer_s->setOrderOfOperation("TIMER_S");
-    return(SingleAction(timer_s));
-
-}
+//SingleAction TRNSCT_SM::generateTimerS(int genPoint){
+//
+//    DEBOUT("TRNSCT_SM::generateTimerS genpoint",genPoint )
+//
+//    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
+//    SysTime afterT;
+//    GETTIME(afterT);
+//    lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_S;
+//    timer_s->setFireTime(firetime);
+//    timer_s->setTypeOfInternal(TYPE_OP);
+//    timer_s->setTypeOfOperation(TYPE_OP_TIMER_ON);
+//    timer_s->setOrderOfOperation("TIMER_S");
+//
+//    //MLF2 don't lock
+//    //timer_s->setLock(sl_co->call_oset);
+//
+//    timer_s->setSourceMessage(getA_Matrix());
+//    DEBY
+//    return(SingleAction(timer_s));
+//
+//}
+//SingleAction TRNSCT_SM::clearTimerS(int genPoint){
+//
+//    DEBOUT("TRNSCT_SM::clearTimerS genpoint",genPoint )
+//
+//    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
+//    timer_s->setTypeOfInternal(TYPE_OP);
+//    timer_s->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+//    timer_s->setOrderOfOperation("TIMER_S");
+//    return(SingleAction(timer_s));
+//
+//}
 
 //**********************************************************************************
 
@@ -203,7 +201,7 @@ ACTION* SM::event(MESSAGE* _event){
     }
 
     //Default event is delete the message
-    //TODO not nice
+    //TODO Will fail
     if(act == 0x0){
         NEWPTR2(act, ACTION(),"ACTION")
         _event->setDestEntity(SODE_KILL);
@@ -269,21 +267,16 @@ bool pre_invite_from_a(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 
-	//_message riciclato
-
 	DEBOUT("TRSNCT_INV_SV::act_invite_to_alo", _message)
 	DEBOUT("TRSNCT_INV_SV::act_invite_to_alo", _message->getHeadSipRequest().getContent())
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	//**************************************
-	//Action 1: INVITE A is forwarded to ALO
-	//_message changes its dest and gen
-	//To ALO is a single action so I don't lock it here
-	_message->setDestEntity(SODE_ALOPOINT);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->setTypeOfInternal(TYPE_MESS);
-	SingleAction sa_1 = SingleAction(_message);
+	//Action 1: INVITE A is duplcated and sent to ALO
+	CREATEMESSAGE(m2alo, _message, SODE_TRNSCT_CL, SODE_ALOPOINT)
+	m2alo->setSourceMessage(_message);
+	SingleAction sa_1 = SingleAction(m2alo);
 	action->addSingleAction(sa_1);
 
 	//**************************************
@@ -291,7 +284,6 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	//This message is stored so it is meant for more thing so I have to lock it
 	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
 	SipUtil.genTryFromInvite(_message, etry);
-	etry->setTypeOfInternal(TYPE_MESS);
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1 = etry;
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(etry);
@@ -300,7 +292,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 3: TIMER_S
 	// A timer must be always sent locked
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
@@ -336,24 +328,23 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	//TODO
-	//Store the 100 TRY and use here a copy
-
 	//**************************************
-	//Action 1: Retransmit the 100 TRY
+	//Action 1: No need to duplicate the 100 TRY
+	// because the destination is already NTW
 	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1);
 	action->addSingleAction(sa_1);
 
-	//**************************************
-	//Action 2: Send this message to gc
-	_message->setDestEntity(SODE_KILL);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_2 = SingleAction(_message);
-	action->addSingleAction(sa_2);
+//	//**************************************
+//	//Action 2: Send this message to gc
+//	//
+//	_message->setDestEntity(SODE_KILL);
+//	_message->setGenEntity(SODE_TRNSCT_SV);
+//	SingleAction sa_2 = SingleAction(_message);
+//	action->addSingleAction(sa_2);
 
 	//**************************************
 	//Action 3: TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
@@ -391,23 +382,22 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 	//**************************************
-	//Action 1: Forward the Reply
+	//Action 1: Duplicate and Forward the Reply
 	// The message ha been prepared by client so it's ready to be sent back
-	_message->setDestEntity(SODE_NTWPOINT);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->setTypeOfInternal(TYPE_MESS);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_SV, SODE_NTWPOINT)
+	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
+
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
-
 
 	//**************************************
 	//Store the message to use it for retransmission
-	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 = _message;
+	//cannot store the _message since I can't change destination
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 = m2netw;
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock(_sm->getSL_CO()->call_oset);
 
 	//**************************************
@@ -431,19 +421,20 @@ ACTION* act_resend_provreply_to_a(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: Resend stored message
+	//no need to duplicate since dest is already the ntw
 	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2);
 	action->addSingleAction(sa_1);
 
-	//**************************************
-	//Action 2: Delete this one
-	_message->setDestEntity(SODE_KILL);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_2 = SingleAction(_message);
-	action->addSingleAction(sa_2);
+//	//**************************************
+//	//Action 2: Delete this one
+//	_message->setDestEntity(SODE_KILL);
+//	_message->setGenEntity(SODE_TRNSCT_SV);
+//	SingleAction sa_2 = SingleAction(_message);
+//	action->addSingleAction(sa_2);
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	return action;
@@ -482,18 +473,17 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: Forward 200 OK to A
 	if( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 == MainMessage && _message->getReqRepType() == REPSUPP){
-		_message->setDestEntity(SODE_NTWPOINT);
-		_message->setGenEntity(SODE_TRNSCT_SV);
-		_message->setTypeOfInternal(TYPE_MESS);
 		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 = _message;
 		DEBOUT("STORED_MESSAGE_1_3", ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3)
 		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock(_sm->getSL_CO()->call_oset);
 	}else {
 		DEBASSERT("Don't know what to do")
 	}
-
-	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
+	//MLF2
+	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_SV, SODE_NTWPOINT)
+	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
+
 
 	//**************************************
 	//Action 2: copy the 200 OK and send to ALARM
@@ -508,7 +498,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	ack_timer->setOrderOfOperation("TIMER_G");
-	ack_timer->setLock(_sm->getSL_CO()->call_oset);
+	//ack_timer->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(ack_timer);
 	action->addSingleAction(sa_2);
 	//**************************************
@@ -516,7 +506,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	DEBOUT("SM act_200ok_to_a move to state 3","")
@@ -548,7 +538,8 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 	if( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 == MainMessage){
 		DEBASSERT("OK from alarm but STOREMESS_1_3 empty")
 	}
-	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
+	CREATEMESSAGE(mnetw, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_NTWPOINT)
+	SingleAction sa_1 = SingleAction(mnetw);
 	action->addSingleAction(sa_1);
 
 	//**************************************
@@ -556,8 +547,7 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 	//This will be sent to A which will resend the ACK
 	//TODO this message leaks
 	CREATEMESSAGE(ack_timer, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_TRNSCT_SV)
-	//source is correct
-	//ack_timer->setSourceMessage(_message->getSourceMessage());
+	ack_timer->setSourceMessage( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 );
 	SysTime afterT;
 	GETTIME(afterT);
 	// T1 and not 2+T1
@@ -566,7 +556,6 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	ack_timer->setOrderOfOperation("TIMER_G");
-	ack_timer->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(ack_timer);
 	action->addSingleAction(sa_2);
 
@@ -575,26 +564,10 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//**************************************
 
-//	//**************************************
-//	//Action 3: Clear alarm for 200 OK to A (created in 1_3)
-//	CREATEMESSAGE(ack_timer_clear, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV,SODE_TRNSCT_SV)
-//	ack_timer_clear->setTypeOfInternal(TYPE_OP);
-//	ack_timer_clear->setTypeOfOperation(TYPE_OP_TIMER_OFF);
-//	ack_timer_clear->setOrderOfOperation("TIMER_G");
-//	SingleAction sa_3 = SingleAction(ack_timer_clear);
-//	action->addSingleAction(sa_3);
-
-
-	//**************************************
-	//Action 4: Delete this one
-	_message->setDestEntity(SODE_KILL);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_4 = SingleAction(_message);
-	action->addSingleAction(sa_4);
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
@@ -622,15 +595,14 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 	if( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 == MainMessage){
 		DEBASSERT("OK from alarm but STOREMESS_1_3 empty")
 	}
-	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3);
+	CREATEMESSAGE(mnetw, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_NTWPOINT)
+	SingleAction sa_1 = SingleAction(mnetw);
 	action->addSingleAction(sa_1);
 
 	//**************************************
 	//Action 2: copy the 200 OK and send to ALARM
 	//This will be sent to A which will resend the ACK
 	CREATEMESSAGE(ack_timer, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_TRNSCT_SV)
-	//source is correct
-	//ack_timer->setSourceMessage(_message->getSourceMessage());
 	SysTime afterT;
 	GETTIME(afterT);
 	// T1 and not 2+T1
@@ -639,7 +611,6 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 	ack_timer->setTypeOfInternal(TYPE_OP);
 	ack_timer->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	ack_timer->setOrderOfOperation("TIMER_G");
-	ack_timer->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(ack_timer);
 	action->addSingleAction(sa_2);
 	//**************************************
@@ -655,15 +626,8 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_3);
 
 	//**************************************
-	//Action 4: Delete this one
-	_message->setDestEntity(SODE_KILL);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_4 = SingleAction(_message);
-	action->addSingleAction(sa_4);
-
-	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	return action;
@@ -726,15 +690,9 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 
 	//TODO CLEAR CALL ACK not arriving
 
-	//Kill this message
-	_message->setDestEntity(SODE_KILLDOA);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_1 = SingleAction(_message);
-	action->addSingleAction(sa_1);
-
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
 	DEBOUT("SM act_200ok_to_a move to state 5","")
@@ -778,15 +736,9 @@ ACTION* act_null_sv(SM* _sm, MESSAGE* _message) {
 
 	//TODO CLEAR CALL ACK not arriving
 
-	//Kill this message
-	_message->setDestEntity(SODE_KILL);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_1 = SingleAction(_message);
-	action->addSingleAction(sa_1);
-
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	return (action);
@@ -817,14 +769,13 @@ ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 
-	_message->setDestEntity(SODE_KILLDOA);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(killd,_message, SODE_TRNSCT_SV,SODE_KILLDOA)
+	SingleAction sa_1 = SingleAction(killd);
 	action->addSingleAction(sa_1);
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
 	DEBOUT("SM act_N_99_inv_sv move to state 99","")
@@ -863,10 +814,8 @@ ACTION* act_timer_s_sv(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-
-	_message->setDestEntity(SODE_KILLDOA);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(killd,_message, SODE_TRNSCT_SV,SODE_KILLDOA)
+	SingleAction sa_1 = SingleAction(killd);
 	action->addSingleAction(sa_1);
 
 	DEBOUT("SM act_timer_s move to state 99","")
@@ -1015,11 +964,10 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: send message to NTW
-	_message->setDestEntity(SODE_NTWPOINT);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->setTypeOfInternal(TYPE_MESS);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_CL, SODE_NTWPOINT)
+	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
+
 
 	//**************************************
 	//Action 2: send message to ALARM
@@ -1033,13 +981,12 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 	__timedmessage->setTypeOfInternal(TYPE_OP);
 	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
 	__timedmessage->setOrderOfOperation("TIMER_A");
-	__timedmessage->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(__timedmessage);
 	action->addSingleAction(sa_2);
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
@@ -1081,14 +1028,14 @@ ACTION* act_terminate_cl(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	_message->setDestEntity(SODE_KILLDOA);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(killd,_message, SODE_TRNSCT_CL,SODE_KILLDOA)
+	SingleAction sa_1 = SingleAction(killd);
 	action->addSingleAction(sa_1);
+
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
 	DEBOUT("SM act_terminate_cl move OverallState_CL to","OS_TERMINATED")
@@ -1131,17 +1078,16 @@ ACTION* act_clear_invite_alarm(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: clear INVITE B alarm
-	_message->setTypeOfInternal(TYPE_OP);
-	_message->setTypeOfOperation(TYPE_OP_TIMER_OFF);
-	_message->setOrderOfOperation("TIMER_A");
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(clearalm, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
+	clearalm->setTypeOfInternal(TYPE_OP);
+	clearalm->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+	clearalm->setOrderOfOperation("TIMER_A");
+	SingleAction sa_1 = SingleAction(clearalm);
 	action->addSingleAction(sa_1);
-	//The message has no esplicit destination because type is OP
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
@@ -1191,24 +1137,24 @@ ACTION* act_provrep_to_sv(SM* _sm, MESSAGE* _message) {
 	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
 	reply_x->purgeSDP();
 	reply_x->compileMessage();
-	reply_x->dumpVector();
-	reply_x->setTypeOfInternal(TYPE_MESS);
 	DEBOUT("CONTACT", reply_x->getHeadContact()->getContent())
 	SingleAction sa_1 = SingleAction(reply_x);
 	action->addSingleAction(sa_1);
 
 
+
 	//**************************************
 	//Action 2: clear INVITE B alarm
-	_message->setTypeOfInternal(TYPE_OP);
-	_message->setTypeOfOperation(TYPE_OP_TIMER_OFF);
-	_message->setOrderOfOperation("TIMER_A");
-	SingleAction sa_2 = SingleAction(_message);
+	CREATEMESSAGE(clearalm, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
+	clearalm->setTypeOfInternal(TYPE_OP);
+	clearalm->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+	clearalm->setOrderOfOperation("TIMER_A");
+	SingleAction sa_2 = SingleAction(clearalm);
 	action->addSingleAction(sa_2);
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
@@ -1257,35 +1203,20 @@ ACTION* act_200ok_inv_to_alo(SM* _sm, MESSAGE* _message) {
 	___message->setTypeOfInternal(TYPE_OP);
 	___message->setTypeOfOperation(TYPE_OP_TIMER_OFF);
 	___message->setOrderOfOperation("TIMER_A");
-//	___message->setLock();
-//	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
 	SingleAction sa_1 = SingleAction(___message);
 	action->addSingleAction(sa_1);
 
 	//**************************************
 	//Action 2: 200 OK B to ALO
 	//Alo will delete it
-	_message->setDestEntity(SODE_ALOPOINT);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->setTypeOfInternal(TYPE_MESS);
-	_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
-//	_message->setLock();
-//	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
-	SingleAction sa_2 = SingleAction(_message);
+	CREATEMESSAGE(_toalo, _message, SODE_TRNSCT_CL, SODE_ALOPOINT)
+	_toalo->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
+	SingleAction sa_2 = SingleAction(_toalo);
 	action->addSingleAction(sa_2);
-
-//	//Clear alam here in case the b did not send any trying
-//	___message->typeOfInternal = TYPE_OP;
-//	___message->typeOfOperation = TYPE_OP_TIMER_OFF;
-//	___message->setLock();
-//	_sm->getSL_CO()->call_oset->insertLockedMessage(___message);
-//
-//	_message->setLock();
-//	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
@@ -1369,22 +1300,20 @@ ACTION* act_resend_ack(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: take the 200OK change to send it to ack_cl
-	_message->setDestEntity(SODE_TRNSCT_CL);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->setTypeOfInternal(TYPE_OP);
-	_message->setTypeOfOperation(TYPE_OP_SMCOMMAND);
+	CREATEMESSAGE(reack, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
+	reack->setTypeOfInternal(TYPE_OP);
+	reack->setTypeOfOperation(TYPE_OP_SMCOMMAND);
 	//TODO need the branch!!!
-	_message->replaceHeadCSeq(1,"ACK");
-	_message->compileMessage();
-	//_message->setSourceMessage(((TRNSCT_SM*)_sm)->getMatrixMessage());
-        _message->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId().getContent());
-        _message->setSourceModulus(((TRNSCT_SM*)_sm)->getMatrixMessage()->getModulus());
-	SingleAction sa_1 = SingleAction(_message);
+	reack->replaceHeadCSeq(1,"ACK");
+	reack->compileMessage();
+	reack->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId().getContent());
+	reack->setSourceModulus(((TRNSCT_SM*)_sm)->getMatrixMessage()->getModulus());
+	SingleAction sa_1 = SingleAction(reack);
 	action->addSingleAction(sa_1);
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 	//DEBASSERT("ACTION* act_4_4b_inv_cl need to send this to ACK-CL")
 	return action;
@@ -1399,17 +1328,9 @@ ACTION* act_null_cl(SM* _sm, MESSAGE* _message) {
 
 	//TODO CLEAR CALL ACK not arriving
 
-	//Kill this message
-	_message->setDestEntity(SODE_KILL);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-    _message->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId().getContent());
-    _message->setSourceModulus(((TRNSCT_SM*)_sm)->getMatrixMessage()->getModulus());
-	SingleAction sa_1 = SingleAction(_message);
-	action->addSingleAction(sa_1);
-
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 	return (action);
@@ -1444,9 +1365,8 @@ ACTION* act_timer_s_cl(SM* _sm, MESSAGE* _message) {
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 
-	_message->setDestEntity(SODE_KILLDOA);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(killd,_message, SODE_TRNSCT_CL,SODE_KILLDOA)
+	SingleAction sa_1 = SingleAction(killd);
 	action->addSingleAction(sa_1);
 
 	DEBOUT("SM act_timer_s move to state 99","")
@@ -1571,11 +1491,9 @@ ACTION* act_ack_to_alo(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: ack is to ALO
-	_message->setDestEntity(SODE_ALOPOINT);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->setTypeOfInternal(TYPE_MESS);
-	_message->setType_trnsct(TYPE_TRNSCT);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(ack,_message, SODE_TRNSCT_SV,SODE_ALOPOINT)
+	ack->setType_trnsct(TYPE_TRNSCT);
+	SingleAction sa_1 = SingleAction(ack);
 	action->addSingleAction(sa_1);
 
 	DEBOUT("SM act_ack_to_alo move to state 1","")
@@ -1653,16 +1571,19 @@ ACTION* act_ack_to_b(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: ack is from ALO
-	_message->setDestEntity(SODE_NTWPOINT);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->setTypeOfInternal(TYPE_MESS);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(ack,_message, SODE_TRNSCT_CL,SODE_NTWPOINT)
+	SingleAction sa_1 = SingleAction(ack);
 	action->addSingleAction(sa_1);
 
 	DEBOUT("SM act_ack_to_b move to state","1")
 	_sm->State = 1;
 	DEBOUT("SM act_ack_to_b move OverallState_CL to","OS_COMPLETED")
 	_sm->getSL_CO()->OverallState_CL = OS_COMPLETED;
+
+
+	//
+	//clear timer s???
+
 
 	return action;
 
@@ -1694,20 +1615,9 @@ ACTION* act_resend_ack_to_b(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: send ack to B
 	CREATEMESSAGE(__message, ((TRNSCT_SM*)_sm)->getMatrixMessage(), SODE_TRNSCT_CL,SODE_NTWPOINT)
-	__message->setTypeOfInternal(TYPE_MESS);
 	SingleAction sa_1 = SingleAction(__message);
 	action->addSingleAction(sa_1);
 	DEBMESSAGE("SECOND ACK B", __message)
-
-	_message->setDestEntity(SODE_KILL);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	SingleAction sa_2 = SingleAction(_message);
-	action->addSingleAction(sa_2);
-
-//	if(!_message->getLock()){
-//		_message->setLock();
-//		_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
-//	}
 
 	return action;
 
@@ -1761,16 +1671,15 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	//Action 1:
 	//_message changes its dest and gen
 	// remember initial generation  is used for backward messages like bye coming from B
-	_message->setDestEntity(SODE_ALOPOINT);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->setTypeOfInternal(TYPE_MESS);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(by, _message, SODE_TRNSCT_SV,SODE_ALOPOINT)
+	by->setSourceMessage(_message);
+	SingleAction sa_1 = SingleAction(by);
 	action->addSingleAction(sa_1);
 
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	DEBOUT("TRSNCT_INV_SV::act_bye_to_alo move to state 1","")
@@ -1793,15 +1702,13 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1:
-	_message->setDestEntity(SODE_NTWPOINT);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	_message->setTypeOfInternal(TYPE_MESS);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(mess, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
+	SingleAction sa_1 = SingleAction(mess);
 	action->addSingleAction(sa_1);
 
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	CREATEMESSAGE(___message, _message, SODE_TRNSCT_SV, SODE_KILLDOA)
 	SingleAction sa_3 = SingleAction(___message);
@@ -1827,17 +1734,13 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	//**************************************
 	//Action 1: resend 200 ok
-	SingleAction sa_1 = SingleAction(((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE);
+	CREATEMESSAGE(___message, ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE, SODE_TRNSCT_SV, SODE_KILLDOA)
+	SingleAction sa_1 = SingleAction(___message);
 	action->addSingleAction(sa_1);
 
-        //Kill this message
-	_message->setDestEntity(SODE_KILL);
-	_message->setGenEntity(SODE_TRNSCT_SV);
-	SingleAction sa_2 = SingleAction(_message);
-	action->addSingleAction(sa_2);
 	//**************************************
 	//Action TIMER_S
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 //	SingleAction sa_3 = SingleAction(_message);
 //	action->addSingleAction(sa_3);
@@ -1957,10 +1860,9 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
     NEWPTR(ACTION*, action, ACTION(),"ACTION")
     //**************************************
     //Action 1: send to NTW
-    _message->setDestEntity(SODE_NTWPOINT);
-    _message->setGenEntity(SODE_TRNSCT_CL);
-    _message->setTypeOfInternal(TYPE_MESS);
-    SingleAction sa_1 = SingleAction(_message);
+    CREATEMESSAGE(_m,_message,SODE_TRNSCT_CL,SODE_NTWPOINT)
+    _m->setSourceMessage(_message);
+    SingleAction sa_1 = SingleAction(_m);
     action->addSingleAction(sa_1);
 
     //**************************************
@@ -1978,13 +1880,12 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
     __timedmessage->setTypeOfInternal(TYPE_OP);
     __timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
     __timedmessage->setOrderOfOperation("TIMER_A");
-    __timedmessage->setLock(_sm->getSL_CO()->call_oset);
     SingleAction sa_2 = SingleAction(__timedmessage);
     action->addSingleAction(sa_2);
 
     //**************************************
     //Action TIMER_S
-    action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
+    // bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
     //action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
     DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b move to state 1","")
@@ -2003,12 +1904,8 @@ ACTION* act_200ok_bye_to_alo(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: send to ALO
-	_message->setDestEntity(SODE_ALOPOINT);
-	_message->setGenEntity(SODE_TRNSCT_CL);
-	_message->setTypeOfInternal(TYPE_MESS);
-//	_message->setLock();
-//	_sm->getSL_CO()->call_oset->insertLockedMessage(_message);
-	SingleAction sa_1 = SingleAction(_message);
+	CREATEMESSAGE(_m, _message, SODE_TRNSCT_CL, SODE_ALOPOINT)
+	SingleAction sa_1 = SingleAction(_m);
 	action->addSingleAction(sa_1);
 
 	//**************************************

@@ -147,8 +147,16 @@ void VALO::onInvite(MESSAGE* _message){
 	DEBALO("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
-        //Needed for Matrix_A
-        message->setSourceMessage(_message);
+
+    //MLF2
+    //Needed for Matrix_A
+    //message->setSourceMessage(_message);
+	message->setSourceMessage(_message->getSourceMessage());
+//    message->setSourceHeadCallId(_message->getSourceHeadCallId().getContent());
+//    message->setSourceModulus(_message->getSourceModulus());
+
+    //Deleted in action_SV
+    //PURGEMESSAGE(_message)
 
 	try {
 		DEBALO("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute()->getRoute().getHostName())
@@ -206,7 +214,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 	}
 
-        PRINTDIFF("VALO::onInvite")
+     PRINTDIFF("VALO::onInvite")
 
 }
 void VALO::onAck(MESSAGE* _message){
@@ -459,7 +467,8 @@ void VALO::onBye(MESSAGE* _message){
 //	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
-        message->setSourceMessage(_message);
+	message->setSourceMessage(_message->getSourceMessage());
+
 
 	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
 

@@ -8,6 +8,7 @@
 	\small
 	\maketitle 
 \chapter{Message Lifecycle}
+
 \section{Normal scenario}
 
 \subsection{Initial Request: INVITE}
@@ -146,6 +147,30 @@ creation of a SM}
    \item reply is duplicated to clear timer\_a
    \item reply is duplicated create timer\_s 
  \end{itemize} 
+
+
+
+\section{Rules}
+
+\begin{itemize}
+  \item Once the destination is set in the message it cannot be changed, to
+  change it a copy must be done
+  \item Message type cannot be changed
+  \item All incoming messages to CALL\_OSET must be deleted at the end of
+  SL\_CC::parse() except if they are locked.
+  \item Action: all new actions must use new messages
+  \item Alarm: messages (on or off) must be unlocked
+  \item Alarm: once triggered (active) original message must be sent
+  \item Alarm: inactive alarm must delete related message
+  \item Alarm: clear alarm, the carrying message must be deleted
+  \item By default the CREATMESSAGE sets the source call\_id and source modulus
+  \item Sourcemessage must be done esplicitely in CREATEMESSAGE
+  \item Once \~CALL\_OSET() starts it only deleted stored messages
+  \item If an alarm comes into SL\_CC and no CALL\_OSET is found the message is
+  deleted
+  \item \~CALL\_OSET() does not clear alarms
+\end{itemize}
+
 
 \subsection{Deletion}
 

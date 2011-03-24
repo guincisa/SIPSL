@@ -150,31 +150,34 @@ void ALMGR::alarmer(void){
                             DEBOUT("Inconsistency 2 in ALARM, alarm was found active but cidmap points to different alarm",trip.cid << "][" << trip.alarm <<"]["<<(ALARM*)(cid_iter->second))
                             DEBASSERT("ALARM inconsistency 2")
                         } else {//Alarm structures ok
-#ifdef DEBCODEALARM1
-                            MESSAGE* _tmpMess = trip.alarm->getMessage();
-                            DEBOUT("ALARM found message", _tmpMess << "][" << trip.alarm)
-                            //Selfcheck code
-                            //This code fixes mistakes made in sm
-                            map<const MESSAGE*, MESSAGE*>::iterator p;
-                            int i = getModulus(_tmpMess);
-                            pthread_mutex_lock(&messTableMtx[i]);
-                            p = globalMessTable[i].find(_tmpMess);
-                            bool delmess=false;
-                            if (p ==globalMessTable[i].end() && _tmpMess != MainMessage){
-                                    delmess = true;
-                                    DEBWARNING("Inconsistency 3 in ALARM Active ALARM found with deleted message",_tmpMess <<"]["<<trip.alarm)
-                                    DEBASSERT("Inconsistency 3 in ALARM")
-                            }
-                            pthread_mutex_unlock(&messTableMtx[i]);
-
-                            if ( trip.alarm->getMessage()->getTypeOfInternal() == TYPE_MESS ){
-                                DEBOUT("Inconsistency 4 in ALARM invalid operation TYPE_MESS", _tmpMess->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _tmpMess->getOrderOfOperation() << "#")
-                                DEBOUT("Inconsistency 4 in ALARM invalid operation TYPE_MESS cid",trip.cid)
-                                DEBASSERT("Inconsistency 4 in ALARM")
-                            }
-#endif
+//#ifdef DEBCODEALARM1
+//                            MESSAGE* _tmpMess = trip.alarm->getMessage();
+//                            DEBOUT("ALARM found message", _tmpMess << "][" << trip.alarm)
+//                            //Selfcheck code
+//                            //This code fixes mistakes made in sm
+//                            map<const MESSAGE*, MESSAGE*>::iterator p;
+//                            int i = getModulus(_tmpMess);
+//                            pthread_mutex_lock(&messTableMtx[i]);
+//                            p = globalMessTable[i].find(_tmpMess);
+//                            bool delmess=false;
+//                            if (p ==globalMessTable[i].end() && _tmpMess != MainMessage){
+//                                    delmess = true;
+//                                    DEBWARNING("Inconsistency 3 in ALARM Active ALARM found with deleted message",_tmpMess <<"]["<<trip.alarm)
+//                                    DEBASSERT("Inconsistency 3 in ALARM")
+//                            }
+//                            pthread_mutex_unlock(&messTableMtx[i]);
+//
+//                            if ( trip.alarm->getMessage()->getTypeOfInternal() == TYPE_MESS ){
+//                                DEBOUT("Inconsistency 4 in ALARM invalid operation TYPE_MESS", _tmpMess->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _tmpMess->getOrderOfOperation() << "#")
+//                                DEBOUT("Inconsistency 4 in ALARM invalid operation TYPE_MESS cid",trip.cid)
+//                                DEBASSERT("Inconsistency 4 in ALARM")
+//                            }
+//#endif
                             //Message is ok now
                             DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", trip.cid<<"] Message["<<trip.alarm->getMessage())
+							if (trip.alarm->getMessage()->getLock()){
+								 DEBASSERT("Locked alarm"<<trip.alarm->getMessage())
+							}
                             bool ret = sl_cc->p_w(trip.alarm->getMessage());
                             DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
                             if(!ret){
@@ -200,7 +203,13 @@ void ALMGR::alarmer(void){
                     }else {
                          DEBOUT("Alarm is not active and active replacement exists", trip.cid << "][" << trip.alarm << "][" << (cid_iter->second))
                     }
+
+                    //MLF2 delete message
+                    MESSAGE* _tmpMess = trip.alarm->getMessage();
+                    PURGEMESSAGE(_tmpMess)
+
                     DELPTR(trip.alarm,"ALARM")
+
                 }
                 pq.pop();
                 if (!pq.empty()){
@@ -347,13 +356,13 @@ void ALARM::cancel(void){
     active = false;
 }
 MESSAGE* ALARM::getMessage(void){
-	if (!active){
-		DEBASSERT("Break rule: accessing the message of an inactive ALARM")
-		return 0x0;
-	}
-	else{
+//	if (!active){
+//		DEBASSERT("Break rule: accessing the message of an inactive ALARM")
+//		return 0x0;
+//	}
+//	else{
 		return message;
-	}
+//	}
 }
 bool ALARM::isActive(void){
 	return active;

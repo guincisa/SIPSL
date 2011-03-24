@@ -220,16 +220,14 @@ DEBY
                 }
                 if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
                     DEBINF("SL_CC::parse rejected by COMAP", callids)
-                    if(!_mess->getLock()){
-                        PURGEMESSAGE(_mess)
-                    }
-                    else {
-                        DEBINF("Put this message into the locked messages table",_mess)
-                        DEBASSERT("")
-                    }
+
                 }
-                else{
-                    DEBY
+                if(!_mess->getLock()){
+                    PURGEMESSAGE(_mess)
+                }
+                else {
+                    DEBINF("Put this message into the locked messages table",_mess)
+                    //MLF2 can be locked if creates a sm
                 }
                 PRINTDIFF("SL_CC::parse end")
                 return;
@@ -238,7 +236,13 @@ DEBY
         // call_oset == 0x0 always true here
         //COMAP[mod] still locked!
         // Does not exists on any side
-        if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP) {
+
+        //MLF2 begin
+        //if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP) {
+        //Only the invite from network can generate call oset
+        if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST) {
+        //MLF2 end
+
             //new call Server (originating) side
             DEBINF("SL_CC::parse new call CALL_OSET creation X side, message", _mess)
 
@@ -266,16 +270,15 @@ DEBY
                 DEBY
             }
             PRINTDIFF("SL_CC::parse end")
-//        	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
 
             return;
         }
         else {
             DEBMESSAGE("Unexpected message ignored", _mess)
             if(!_mess->getLock()){
-                    PURGEMESSAGE(_mess)
+                 PURGEMESSAGE(_mess)
             }else {
-                    DEBASSERT ("Unexpected message ignored found locked")
+                 DEBASSERT ("Unexpected message ignored found locked")
             }
             PRINTDIFF("SL_CC::parse end")
         	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
@@ -291,11 +294,12 @@ DEBY
         //Ok if coming from server: its the retransmission of 200ok for A
 
         string callids = _mess->getSourceHeadCallId().getContent();
+        int modulus = _mess->getModulus();
+
         if (callids.length() == 0){
             DEBMESSAGE("No source call id in the incoming message",_mess)
             DEBASSERT("No source call id in the incoming message")
         }
-        int modulus = _mess->getSourceModulus();
 
 #ifdef DEBCODE
         if (modulus != _mess->getModulus()){
@@ -308,9 +312,8 @@ DEBY
         CALL_OSET* call_oset = 0x0;
 
         //COMAP locked here
-        GETLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
+        GETLOCK(&(comap->unique_exx[modulus]) , "unique_exx" << modulus )
         call_oset = comap->getCALL_OSET_XMain(callids,modulus);
-
 
         //TODO may be deleted here?
         if (call_oset == 0x0) {
@@ -323,7 +326,9 @@ DEBY
                         PURGEMESSAGE(_mess)
                     }
                     else {
-                        DEBINF("Put this message into the locked messages table",_mess)
+                    	DEBOUT("locked message", _mess)
+                    	//MLF2
+                        DEBASSERT("locked message")
                     }
                 } else{
                     DEBY
@@ -332,16 +337,19 @@ DEBY
                 return;
             }else{
                 //Not existent or deleted
+            	//From alarm
                 if(!_mess->getLock()){
                     PURGEMESSAGE(_mess)
                 }
                 else {
-                    DEBINF("Put this message into the locked messages table",_mess)
+                	//MLF2
+                    DEBOUT("Unexpected locked message",_mess)
+                	DEBASSERT("Unexpected locked message")
                 }
             	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
             }
         }
-        else {
+        else {//!=0x0
             if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
                 //RELLOCK(&(comap->unique_ex[modulus]),"unique_ex"<<modulus)
                 DEBINF("SL_CC::parse rejected by COMAP", callids)
@@ -349,7 +357,9 @@ DEBY
                     PURGEMESSAGE(_mess)
                 }
                 else {
-                    DEBINF("Put this message into the locked messages table",_mess)
+                	//MLF2
+                    DEBOUT("Unexpected locked message",_mess)
+					// it may be locked because it may have created an SM and stored
                 }
             }else{
                 DEBY

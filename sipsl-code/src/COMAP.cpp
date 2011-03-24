@@ -395,22 +395,28 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
         resetDoaRequestTimer(_call_oset,_mod);
     }
 
-    int trylok;
-    TRYLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)", trylok)
-    if(trylok != 0){
-    	//CALL OSET is locked reschedule in SL_CC
-    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call repushed to sl_cc", _call_oset )
-    	_call_oset->getENGINE()->p_w(_message);
-    	PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+//    int trylok;
+//    TRYLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)", trylok)
+//    if(trylok != 0){
+//    	//CALL OSET is locked reschedule in SL_CC
+//    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+//    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call repushed to sl_cc", _call_oset )
+//    	_call_oset->getENGINE()->p_w(_message);
+//    	PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+//    }
+//    else {
+//    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+//    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
+//    	 _call_oset->call(_message);
+//    	 PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+//    }
+    GETLOCK(&(_call_oset->mutex),&(_call_oset->mutex));
+    RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    _call_oset->call(_message);
+    if (!_message->getLock()){
+    	PURGEMESSAGE(_message)
     }
-    else {
-    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
-    	 _call_oset->call(_message);
-    	 PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
-    }
-
+    PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
 }
 //**********************************************************************************
 //**********************************************************************************

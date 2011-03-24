@@ -1,3 +1,89 @@
+22 Marzo
+
+timer_s non funziona
+quando il messaggio e' sparato non arriva alla stessa macchina
+
+
+21 Marzo
+
+il messaggio viene ripassato alla pw ma la sl_cc lo cancella in parallelo
+(cosi e' la regola)
+1. duplicare il messaggio prime del push
+2. non reinfilarlo ma aspettare sul lock.
+
+    int trylok;
+    TRYLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)", trylok)
+    if(trylok != 0){
+    	//CALL OSET is locked reschedule in SL_CC
+    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call repushed to sl_cc", _call_oset )
+    	_call_oset->getENGINE()->p_w(_message);
+    	PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+    }
+    else {
+    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
+    	 _call_oset->call(_message);
+    	 PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+    }
+
+
+16 marzo
+
+la prov reply entra in sl_cc e pasa alla state m server
+
+15 marzo
+continuare la MLF2 mandato invite a B
+
+
+1. Ogni messaggio deve avere una sola funzione e destinazione
+2. la rete non e' piu una destinazione finale
+3. locked message serve per lasciarlo in memoria
+dest = prossima destinazione
+
+i messaggi non possono cambiare destinazione 
+
+
+- Request da A
+	- finiscono in matrix server
+	- locked
+- Request da ALO a B
+   - finiscono in matrix client
+   - locked
+- Reply da B
+   - 
+   - 
+- Reply verso A
+   - 
+- messaggi verso Alarm
+i messagi verso alarm sono copie, e non locked
+una volta triggerati vanno eliminati
+non devono generare macchine
+
+   
+ 4. messaggi dalla rete che arrivano dopo la cancellazione del calloset
+ dovrebbero essere ignorati...
+
+
+11 Marzo
+
+ridisegnare la gestione dei messaggi
+quando elimino il call oset i messaggi potrebbero essere ovunque
+comunque in teoria solo quelli di allarmi
+perche gli altri dovrebbero essere bloccati dalla comap!
+
+possibili regole:
+1)
+- i messaggi allarmi non vanno messi nella locked table
+la locked table viene svuotata con il distruttore della calloset
+il modulo allarmi riesce a caapire se un mesasggio e' cancellato
+ma non e' thread safe sul messagio che puo sparire in qualsiasi
+momento
+- 
+
+
+
+
 3 Marzo
 
 canellazione della call_oset:
