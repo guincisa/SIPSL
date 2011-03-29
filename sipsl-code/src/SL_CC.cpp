@@ -222,13 +222,13 @@ DEBY
                     DEBINF("SL_CC::parse rejected by COMAP", callids)
 
                 }
-                if(!_mess->getLock()){
-                    PURGEMESSAGE(_mess)
-                }
-                else {
-                    DEBINF("Put this message into the locked messages table",_mess)
-                    //MLF2 can be locked if creates a sm
-                }
+//                if(!_mess->getLock()){
+//                    PURGEMESSAGE(_mess)
+//                }
+//                else {
+//                    DEBINF("Put this message into the locked messages table",_mess)
+//                    //MLF2 can be locked if creates a sm
+//                }
                 PRINTDIFF("SL_CC::parse end")
                 return;
             }
