@@ -146,38 +146,36 @@ void TRNSCT_SM::setId(string _id){
 string TRNSCT_SM::getId(void){
     return id;
 }
-//SingleAction TRNSCT_SM::generateTimerS(int genPoint){
-//
-//    DEBOUT("TRNSCT_SM::generateTimerS genpoint",genPoint )
-//
-//    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
-//    SysTime afterT;
-//    GETTIME(afterT);
-//    lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_S;
-//    timer_s->setFireTime(firetime);
-//    timer_s->setTypeOfInternal(TYPE_OP);
-//    timer_s->setTypeOfOperation(TYPE_OP_TIMER_ON);
-//    timer_s->setOrderOfOperation("TIMER_S");
-//
-//    //MLF2 don't lock
-//    //timer_s->setLock(sl_co->call_oset);
-//
-//    timer_s->setSourceMessage(getA_Matrix());
-//    DEBY
-//    return(SingleAction(timer_s));
-//
-//}
-//SingleAction TRNSCT_SM::clearTimerS(int genPoint){
-//
-//    DEBOUT("TRNSCT_SM::clearTimerS genpoint",genPoint )
-//
-//    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
-//    timer_s->setTypeOfInternal(TYPE_OP);
-//    timer_s->setTypeOfOperation(TYPE_OP_TIMER_OFF);
-//    timer_s->setOrderOfOperation("TIMER_S");
-//    return(SingleAction(timer_s));
-//
-//}
+SingleAction TRNSCT_SM::generateTimerS(int genPoint){
+
+    DEBOUT("TRNSCT_SM::generateTimerS genpoint",genPoint )
+
+    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
+    SysTime afterT;
+    GETTIME(afterT);
+    lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_S;
+    timer_s->setFireTime(firetime);
+    timer_s->setTypeOfInternal(TYPE_OP);
+    timer_s->setTypeOfOperation(TYPE_OP_TIMER_ON);
+    timer_s->setOrderOfOperation("TIMER_S");
+
+
+    timer_s->setSourceMessage(getA_Matrix());
+    DEBY
+    return(SingleAction(timer_s));
+
+}
+SingleAction TRNSCT_SM::clearTimerS(int genPoint){
+
+    DEBOUT("TRNSCT_SM::clearTimerS genpoint",genPoint )
+
+    CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
+    timer_s->setTypeOfInternal(TYPE_OP);
+    timer_s->setTypeOfOperation(TYPE_OP_TIMER_OFF);
+    timer_s->setOrderOfOperation("TIMER_S");
+    return(SingleAction(timer_s));
+
+}
 
 //**********************************************************************************
 
@@ -304,7 +302,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	//Action 3: TIMER_S
 	// A timer must be always sent locked
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
 	//**************************************
@@ -345,18 +343,11 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1);
 	action->addSingleAction(sa_1);
 
-//	//**************************************
-//	//Action 2: Send this message to gc
-//	//
-//	_message->setDestEntity(SODE_KILL);
-//	_message->setGenEntity(SODE_TRNSCT_SV);
-//	SingleAction sa_2 = SingleAction(_message);
-//	action->addSingleAction(sa_2);
 
 	//**************************************
 	//Action 3: TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
 	return action;
@@ -403,7 +394,7 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	//**************************************
 	//Store the message to use it for retransmission
@@ -436,17 +427,10 @@ ACTION* act_resend_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2);
 	action->addSingleAction(sa_1);
 
-//	//**************************************
-//	//Action 2: Delete this one
-//	_message->setDestEntity(SODE_KILL);
-//	_message->setGenEntity(SODE_TRNSCT_SV);
-//	SingleAction sa_2 = SingleAction(_message);
-//	action->addSingleAction(sa_2);
-
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	return action;
 
@@ -473,7 +457,7 @@ bool pre_200ok_from_alo(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_200ok_to_a called",_message)
+	DEBOUT("TRSNCT_INV_SV act_200ok_fwdto_a called",_message)
 
 	//200ok from ALO
 	//send to A
@@ -518,7 +502,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	DEBOUT("SM act_200ok_to_a move to state 3","")
 	_sm->State = 3;
@@ -536,7 +520,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_200ok_to_a called",_message)
+	DEBOUT("TRSNCT_INV_SV act_200ok_refwdto_a called",_message)
 
 	//200ok from ALARM
 	//send to a
@@ -579,7 +563,7 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
 	return action;
@@ -639,7 +623,7 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	return action;
 
@@ -699,6 +683,11 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
+
+	CREATEMESSAGE(killd,_message, SODE_TRNSCT_SV,SODE_KILLDOA)
+	SingleAction sa_1 = SingleAction(killd);
+	action->addSingleAction(sa_1);
+
 	//TODO CLEAR CALL ACK not arriving
 
 	//**************************************
@@ -706,15 +695,11 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
-	DEBOUT("SM act_200ok_to_a move to state 5","")
+	DEBOUT("SM act_terminate_sv move to state 5","")
 	_sm->State = 5;
 
-	DEBOUT("SM act_200ok_to_a move OverallState_SV","OS_TERMINATED")
+	DEBOUT("SM act_terminate_sv move OverallState_SV","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
-
-	//TODO
-	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
-
 
 	return (action);
 }
@@ -750,7 +735,7 @@ ACTION* act_null_sv(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	return (action);
 
@@ -998,7 +983,7 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
 	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
@@ -1099,7 +1084,7 @@ ACTION* act_clear_invite_alarm(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
 	DEBOUT("SM act_clear_invite_alarm move to state","2")
@@ -1166,7 +1151,7 @@ ACTION* act_provrep_to_sv(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
 	DEBOUT("SM act_provrep_to_sv move to state","3")
@@ -1228,7 +1213,7 @@ ACTION* act_200ok_inv_to_alo(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
 	DEBOUT("SM act_200ok_inv_to_alo move to state","4")
@@ -1342,7 +1327,7 @@ ACTION* act_null_cl(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 	return (action);
 
@@ -1691,7 +1676,7 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 	DEBOUT("TRSNCT_INV_SV::act_bye_to_alo move to state 1","")
 	_sm->State = 1;
@@ -1897,7 +1882,7 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
     //**************************************
     //Action TIMER_S
     // bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
-    //action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
+    action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
     DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b move to state 1","")
     _sm->State = 1;

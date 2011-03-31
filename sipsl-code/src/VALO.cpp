@@ -178,7 +178,7 @@ void VALO::onInvite(MESSAGE* _message){
 	message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
 
 	//Standard changes
-	SipUtil.genBInvitefromAInvite(_message, message, getSUDP());
+	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP());
 	message->replaceHeadContact("<sip:sipsl@grog:5060>");
 	DEBALO("New CONTACT", message->getHeadContact()->getContent())
 
@@ -198,7 +198,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 	//store this invites
 	//only possible because both invites are locked during the creation of their SM
-	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message ));
+	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message->getSourceMessage() ));
 	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
 
 	bool ret = sl_cc->p_w(message);
