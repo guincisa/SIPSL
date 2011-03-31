@@ -667,16 +667,16 @@ void SL_CO::actionCall_SV(ACTION* action){
         MESSAGE* _tmpMessage = actionList.top().getMessage();
         DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
 
-        if (_tmpMessage->getDestEntity() == SODE_KILL){
-            if (_tmpMessage->getLock()){
-                DEBASSERT("Locked message directed to SODE_KILL")
-            }
-            else{
-                PURGEMESSAGE(_tmpMessage)
-            }
-        }
+//        if (_tmpMessage->getDestEntity() == SODE_KILL){
+//            if (_tmpMessage->getLock()){
+//                DEBASSERT("Locked message directed to SODE_KILL")
+//            }
+//            else{
+//                PURGEMESSAGE(_tmpMessage)
+//            }
+//        }
 
-        else if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
+        if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
             if (_tmpMessage->getLock()){
                 DEBASSERT("Locked message directed to SODE_KILLDOA")
             }
@@ -762,15 +762,15 @@ void SL_CO::actionCall_CL(ACTION* action){
 
 		DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage)
 
-		if (_tmpMessage->getDestEntity() == SODE_KILL){
-			if (_tmpMessage->getLock()){
-				DEBASSERT("Locked message directed to SODE_KILL")
-			}
-			else{
-				PURGEMESSAGE(_tmpMessage)
-			}
-		}
-		else if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
+//		if (_tmpMessage->getDestEntity() == SODE_KILL){
+//			if (_tmpMessage->getLock()){
+//				DEBASSERT("Locked message directed to SODE_KILL")
+//			}
+//			else{
+//				PURGEMESSAGE(_tmpMessage)
+//			}
+//		}
+		if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
 			if (_tmpMessage->getLock()){
 				DEBASSERT("Locked message directed to SODE_KILL")
 			}

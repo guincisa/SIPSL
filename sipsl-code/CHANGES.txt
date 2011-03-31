@@ -1,3 +1,18 @@
+31 Marzo
+
+comaps problema con il modulo
+
+
+30 Marzo
+
+scenario 1i, chiamata rimane appesa
+
+ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
+
+	qui...
+	
+	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
+
 22 Marzo
 
 timer_s non funziona
