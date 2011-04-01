@@ -1,7 +1,16 @@
+1 Aprile
+
+forse rimane locked e la call oset cancellata
+aumento TIMER_DOA x 10
+
+
 31 Marzo
 
-comaps problema con il modulo
+1: potrebbe essere nelle macchine
+non rimando il 200ok a A per avere l'ack
+on mando l'ack a B quando manda l'ok
 
+2:
 
 30 Marzo
 

@@ -301,8 +301,8 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 3: TIMER_S
 	// A timer must be always sent locked
-	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
 	//**************************************
@@ -346,8 +346,8 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 3: TIMER_S
-	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
 	return action;

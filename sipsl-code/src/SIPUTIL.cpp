@@ -188,7 +188,7 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
 #endif
 	//Create new call id
 	char callIdtmp[512];
-        if (_gtor->getModulus() < 10 ){
+        if (_gtor->getModulus() < 10  && COMAPS_DIG > 1){
             sprintf(callIdtmp, "CoMap0%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
         }else {
             sprintf(callIdtmp, "CoMap%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
