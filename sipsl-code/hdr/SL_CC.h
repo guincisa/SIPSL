@@ -40,6 +40,9 @@ class SL_CC : public ENGINE {
 
     private:
 
+        int internalparse(void*);
+
+
         TRNSPRT* transport;
 
         ENGINE *sipengine;

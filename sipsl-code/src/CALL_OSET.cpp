@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <map>
 #include <string.h>
+#include <errno.h>
 
 #include <assert.h>
 #include <sys/types.h>
@@ -214,9 +215,14 @@ CALL_OSET::~CALL_OSET(void){
 		DEBOUT("Message to be deleted", m)
 		m = getNextLockedMessage();
 	}
+	RELLOCK(&(mutex),"SL_CO::mutex");
+	int rr = pthread_mutex_destroy(&mutex);
+	if (rr == EBUSY){
+		DEBASSERT("CALL_OSET::~CALL_OSET mutex locked["<< sl_co <<"]")
+
+	}
 	DELPTR(sl_co, "SL_CO")
 	DEBY
-	RELLOCK(&(mutex),"SL_CO::mutex");
 
 }
 int CALL_OSET::getNextSequence(string _method){
@@ -711,7 +717,8 @@ void SL_CO::actionCall_SV(ACTION* action){
         else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
             //To network
             DEBDEV("Send to transport", _tmpMessage)
-            call_oset->getTRNSPRT()->parse(_tmpMessage);
+            //WHY PARSE
+            call_oset->getTRNSPRT()->p_w(_tmpMessage);
         }
         else if (_tmpMessage->getTypeOfInternal() == TYPE_OP){
              if ( _tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_ON){
@@ -796,7 +803,8 @@ void SL_CO::actionCall_CL(ACTION* action){
 			DEBINF("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 			//To network
 			DEBDEV("Send to trnasport", _tmpMessage)
-			call_oset->getTRNSPRT()->parse(_tmpMessage);
+            //WHY PARSE?
+			call_oset->getTRNSPRT()->p_w(_tmpMessage);
 
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {

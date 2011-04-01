@@ -112,6 +112,8 @@ void ALMGR::alarmer(void){
 #endif
 
     DEBOUT("ALMGR::alarmer", "begin")
+
+	int trymaxlock = 0;
     for(;;){
 
         nanosleep(&sleep_time,NULL);
@@ -134,7 +136,21 @@ void ALMGR::alarmer(void){
 //        }
 //#endif
 
-        GETLOCK(&mutex,"mutex");
+        //GETLOCK(&mutex,"mutex");
+        int trylok;
+        TRYLOCK(&mutex," ALARM loog mutex", trylok)
+        if(trylok != 0){
+        	DEBOUT("ALARM mutex busy", "")
+			trymaxlock++;
+        	if (trymaxlock > 10){
+        		DEBASSERT("ALARM mutex too busy" <<trymaxlock)
+        	}
+        	continue;
+        }
+        else{
+        	trymaxlock = 0;
+        }
+
         if (!pq.empty()) {
             trip = pq.top();
             while ( trip.time <= curr && trip.time > 0){

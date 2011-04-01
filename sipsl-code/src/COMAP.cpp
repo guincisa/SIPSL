@@ -417,6 +417,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
     	PURGEMESSAGE(_message)
     }
     PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+    return 0;
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -480,7 +481,20 @@ void COMAP::purgeDOA(void){
             loktry[mod]++;
             if (loktry[mod] > 10){
                 DEBWARNING("COMAP::purgeDOA trylock failed more than 10 times", mod)
+				int trylock2;
+				for( p_comap_mm = comap_mm[mod].begin(); p_comap_mm != comap_mm[mod].end() ; ++p_comap_mm){
+					 call_oset = (CALL_OSET*)p_comap_mm->second;
+					 TRYLOCK(&(call_oset->mutex)," call_oset test"<<mod, trylock2)
+					 if( trylock2 !=0 ){
+						 DEBOUT("purgeDOA trylock failed and call_oset locked ", mod << "][" << call_oset <<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
+					 }
+					 else{
+						 DEBOUT("purgeDOA trylock failed and call_oset not locked ", mod << "][" << call_oset<<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
+						 RELLOCK(&(call_oset->mutex),"call_oset released")
+					 }
+				}
             }
+            //Check the locks
             continue;
         }else {
             loktry[mod] = 0;
@@ -501,7 +515,7 @@ void COMAP::purgeDOA(void){
                 tmps = "CALL TEMPORARY STATE";
             }
 
-            DEBINF("COMAP::purgeDOA", call_oset << "] DOA state ["<<getDoa(call_oset,mod) <<"]["<<tmps)
+            DEBINF("COMAP::purgeDOA", call_oset << "] DOA state ["<<getDoa(call_oset,mod) <<"]["<<tmps<<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
             if ( getDoa(call_oset,mod) == DOA_REQUESTED){
 
                 //check time
@@ -552,7 +566,8 @@ void COMAP::purgeDOA(void){
                     call_id_y2x[mod].erase(call_oset->getCallId_Y());
                     call_id_x2y[mod].erase(call_oset->getCallId_X());
 
-//					RELLOCK(&(call_oset->getSL_CO()->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
+                    //not useful
+					//RELLOCK(&(call_oset->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
                     DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex releasing", call_oset)
 
                     DELPTR(call_oset,"CALL_OSET");
