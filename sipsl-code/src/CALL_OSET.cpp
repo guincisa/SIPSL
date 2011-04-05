@@ -410,8 +410,17 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 }
 
 void CALL_OSET::call(MESSAGE* _message){
-	sl_co->call(_message);
-	RELLOCK(&(mutex),"CALL_OSET::mutex");
+
+	int modulus = 0;
+
+	int op = sl_co->call(_message, modulus);
+	RELLOCK(&(mutex),"CALL_OSET::mutex "<<mutex);
+
+	if (op == 1){
+		((SL_CC*)getENGINE())->getCOMAP()->setDoaRequested(this, modulus);
+	}
+
+	//set doa requested here
 }
 int CALL_OSET::getOverallState_CL(void){
 	return sl_co->OverallState_CL;
@@ -432,7 +441,7 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 }
 //**********************************************************************************
 //**********************************************************************************
-void SL_CO::call(MESSAGE* _message){
+int SL_CO::call(MESSAGE* _message, int& _r_modulus){
 
 
     TIMEDEF
@@ -441,6 +450,8 @@ void SL_CO::call(MESSAGE* _message){
     DEBMESSAGE("SL_CO::call incoming", _message)
 
     ACTION* action = 0x0;
+
+    int oper = 0;
 
     //MLF2 begin - alarm messages are not locked anymore and are not deleted by ~CALL_OSET
     //They are deleted once triggered
@@ -504,10 +515,12 @@ void SL_CO::call(MESSAGE* _message){
                 if(_message->getLock()){
                     DEBASSERT("Unexpected message to be ignored found locked")
                 }
-                int t = _message->getModulus();
+                oper = 1;
+                _r_modulus = _message->getModulus();
+                return oper;
                 //PURGEMESSAGE(_message)
-                ((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, t);
-                return;
+                //not here
+                //((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, t);
             }
             DEBINF("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
             call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
@@ -525,7 +538,7 @@ void SL_CO::call(MESSAGE* _message){
             if (action != 0x0){
                 PRINTDIFF("Before actionCall_SV")
                 SETNOW
-                actionCall_SV(action);
+                oper = actionCall_SV(action, _r_modulus);
                 PRINTDIFF("After actionCall_SV")
 
             }
@@ -592,7 +605,12 @@ void SL_CO::call(MESSAGE* _message){
                 if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
                     NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
                     SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-                    tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
+//                    //not here
+//                    _r_modulus = _message->getModulus();
+//                    _r_callidy = callidys;
+//                    _r_callid = call_oset->getCallId_X();
+//                    oper = 1;
+//                    //tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
                 }
                 else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
                     NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
@@ -632,7 +650,7 @@ void SL_CO::call(MESSAGE* _message){
         if (action != 0x0){
             PRINTDIFF("Before actionCall_CL")
             SETNOW
-            actionCall_CL(action);
+            oper = actionCall_CL(action, _r_modulus);
             PRINTDIFF("After actionCall_CL")
         }
         else {
@@ -661,12 +679,14 @@ void SL_CO::call(MESSAGE* _message){
     }
     //RELLOCK(&mutex,"mutex");
     PRINTDIFF("SL_CO::call")
-    return;
+    return oper;
 }
 
-void SL_CO::actionCall_SV(ACTION* action){
+int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
     // now get actions one by one
     stack<SingleAction> actionList = action->getActionList();
+
+    int oper = 0;
 
     while (!actionList.empty()){
 
@@ -688,8 +708,11 @@ void SL_CO::actionCall_SV(ACTION* action){
             }
             else{
                 DEBINF("SL_CO::actionCall_SV setDoaRequested",call_oset)
-                ((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
+                //not here
+                //((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
+				_r_modulus = _tmpMessage->getModulus();
                 PURGEMESSAGE(_tmpMessage)
+                oper = 1;
             }
         }
 
@@ -756,13 +779,17 @@ void SL_CO::actionCall_SV(ACTION* action){
         DEBINF("pop action","")
         actionList.pop();
     }
+    return oper;
 }
-void SL_CO::actionCall_CL(ACTION* action){
+int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 
 	// now read actions
 
 	stack<SingleAction> actionList;
 	actionList = action->getActionList();
+
+	int oper = 0;
+
 	while (!actionList.empty()){
 
 		MESSAGE* _tmpMessage = actionList.top().getMessage();
@@ -783,8 +810,11 @@ void SL_CO::actionCall_CL(ACTION* action){
 			}
 			else{
 				DEBINF("SL_CO::actionCall_CL setDoaRequested",call_oset)
-				((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
+				//not here
+				//((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
+				_r_modulus =  _tmpMessage->getModulus();
 				PURGEMESSAGE(_tmpMessage)
+				oper = 1;
 			}
 		}
 
@@ -889,6 +919,7 @@ void SL_CO::actionCall_CL(ACTION* action){
 		}
 		actionList.pop();
 	}
+	return oper;
 }
 
 

@@ -221,9 +221,9 @@ class ThreadWrapper {
 				string key(bu);\
 				m1->setKey(key);\
 				int j = getModulus(m1);\
-				GETLOCK(&messTableMtx[i],"&messTableMtx"<<i);\
+				GETLOCK(&messTableMtx[j],"&messTableMtx"<<j);\
 				globalMessTable[j].insert(pair<const MESSAGE*, MESSAGE*>(m1, m1));\
-				RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);}
+				RELLOCK(&messTableMtx[j],"&messTableMtx"<<j);}
 
 #define CREATENEWMESSAGE_EXT(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
 				SysTime inTime;\

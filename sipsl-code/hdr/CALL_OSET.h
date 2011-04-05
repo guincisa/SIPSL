@@ -39,6 +39,7 @@ class CALL_OSET {
 	friend class ALO;
 	friend class VALO;
 	friend class TRNSCT_SM;
+	friend class COMAP;
 
 	private:
 
@@ -96,7 +97,7 @@ class CALL_OSET {
 		~CALL_OSET(void);
 
 		string getCallId_Y(void);
-                string getCallId_X(void);
+        string getCallId_X(void);
 
 
 		int getOverallState_CL(void);
@@ -123,8 +124,8 @@ class SL_CO {
 
 	private:
 
-	void actionCall_SV(ACTION*);
-	void actionCall_CL(ACTION*);
+	int actionCall_SV(ACTION*, int& mod);
+	int actionCall_CL(ACTION*, int& mod);
 
 
 	public:
@@ -137,7 +138,11 @@ class SL_CO {
 
 		CALL_OSET* call_oset;
 
-		void call(MESSAGE*);
+
+		//operation
+		// 0 nothing
+		// 1 do
+		int call(MESSAGE*,int& modulus);
 
 };
 

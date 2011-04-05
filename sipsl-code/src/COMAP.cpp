@@ -210,7 +210,7 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
 }
 //**********************************************************************************
 //**********************************************************************************
-CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSPRT* _transport){
+CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSPRT* _transport, MESSAGE* _message, string _domain){
 
     PROFILE("COMAP::setCALL_OSET")
     TIMEDEF
@@ -274,6 +274,17 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
         DEBOUT("p_callx2y = call_id_x2y[_mod].find(_callId_X);",_callId_X )
         DEBASSERT("should not happen")
     }
+	char callIdtmp[512];
+	if (_mod < 10  && COMAPS_DIG > 1){
+		sprintf(callIdtmp, "CoMap0%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+	}else {
+		sprintf(callIdtmp, "CoMap%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+	}
+    string callIdtmpS(callIdtmp);
+    call_id_y2x[_mod].insert(pair<string, string>(callIdtmpS, _callId_X));
+    call_id_x2y[_mod].insert(pair<string, string>(_callId_X, callIdtmpS));
+    call_oset->setCallId_Y(callIdtmpS);
+
 
     //RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     PRINTDIFF("COMAP::setCALL_OSET end")
@@ -281,41 +292,41 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
 }
 //**********************************************************************************
 //**********************************************************************************
-void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
-
-    PROFILE("COMAP::setY2XCallId")
-    TIMEDEF
-    SETNOW
-
-    DEBINF("COMAP::setY2XCallId inserting ", _callId_Y << " " << _callId_X << " " <<_mod)
-    if (_mod >= COMAPS){
-            DEBASSERT("invalid comap index")
-    }
-
-    map<string,string>::iterator p_cally2x;
-    map<string,string>::iterator p_callx2y;
-
-    GETLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-    p_cally2x = call_id_y2x[_mod].find(_callId_Y);
-    if (p_cally2x != call_id_y2x[_mod].end()){
-        call_id_y2x[_mod].erase(p_cally2x);
-        DEBOUT("COMAP::setY2XCallId",_callId_Y << " " << _callId_X)
-    }
-    call_id_y2x[_mod].insert(pair<string, string>(_callId_Y, _callId_X));
-
-    p_callx2y = call_id_x2y[_mod].find(_callId_X);
-    if (p_callx2y != call_id_x2y[_mod].end()){
-        call_id_x2y[_mod].erase(p_callx2y);
-        DEBASSERT("COMAP::setY2XCallId")
-    }
-    call_id_x2y[_mod].insert(pair<string, string>(_callId_X, _callId_Y));
-
-
-    RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-
-    PRINTDIFF("COMAP::setY2XCallId end")
-
-}
+//void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
+//
+//    PROFILE("COMAP::setY2XCallId")
+//    TIMEDEF
+//    SETNOW
+//
+//    DEBINF("COMAP::setY2XCallId inserting ", _callId_Y << " " << _callId_X << " " <<_mod)
+//    if (_mod >= COMAPS){
+//            DEBASSERT("invalid comap index")
+//    }
+//
+//    map<string,string>::iterator p_cally2x;
+//    map<string,string>::iterator p_callx2y;
+//
+//    GETLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+//    p_cally2x = call_id_y2x[_mod].find(_callId_Y);
+//    if (p_cally2x != call_id_y2x[_mod].end()){
+//        call_id_y2x[_mod].erase(p_cally2x);
+//        DEBOUT("COMAP::setY2XCallId",_callId_Y << " " << _callId_X)
+//    }
+//    call_id_y2x[_mod].insert(pair<string, string>(_callId_Y, _callId_X));
+//
+//    p_callx2y = call_id_x2y[_mod].find(_callId_X);
+//    if (p_callx2y != call_id_x2y[_mod].end()){
+//        call_id_x2y[_mod].erase(p_callx2y);
+//        DEBASSERT("COMAP::setY2XCallId")
+//    }
+//    call_id_x2y[_mod].insert(pair<string, string>(_callId_X, _callId_Y));
+//
+//
+//    RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+//
+//    PRINTDIFF("COMAP::setY2XCallId end")
+//
+//}
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
@@ -410,7 +421,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 //    	 _call_oset->call(_message);
 //    	 PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
 //    }
-    GETLOCK(&(_call_oset->mutex),&(_call_oset->mutex));
+    GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
     RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     _call_oset->call(_message);
     if (!_message->getLock()){

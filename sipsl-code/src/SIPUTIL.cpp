@@ -173,7 +173,7 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 
 }
 
-void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
+void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, string _callidy){
 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 	//set new Via, is used by the b part to send replies
@@ -187,15 +187,15 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp){
         _gted->dumpVector();
 #endif
 	//Create new call id
-	char callIdtmp[512];
-        if (_gtor->getModulus() < 10  && COMAPS_DIG > 1){
-            sprintf(callIdtmp, "CoMap0%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
-        }else {
-            sprintf(callIdtmp, "CoMap%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
-        }
-
-	string callIdtmpS(callIdtmp);
-	_gted->setGenericHeader("Call-ID:", callIdtmpS);
+//	char callIdtmp[512];
+//        if (_gtor->getModulus() < 10  && COMAPS_DIG > 1){
+//            sprintf(callIdtmp, "CoMap0%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
+//        }else {
+//            sprintf(callIdtmp, "CoMap%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
+//        }
+//
+//	string callIdtmpS(callIdtmp);
+	_gted->setGenericHeader("Call-ID:", _callidy);
 
 	//From changes
 	// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48

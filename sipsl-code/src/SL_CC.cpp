@@ -134,16 +134,7 @@ void SL_CC::parse_s(void* __mess) {
 }
 //**********************************************************************************
 //**********************************************************************************
-void SL_CC::parse(void* __mess) {
-
-	int i = internalparse(__mess);
-	if (i != 0){
-		DEBOUT("UNRELEASED LOCK", __mess)
-		DEBASSERT("UNRELEASED LOCK")
-	}
-}
-
-int SL_CC::internalparse(void* __mess){
+void SL_CC::parse(void* __mess){
 
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 	MESSAGE* _mess = (MESSAGE*)__mess;
@@ -153,8 +144,6 @@ int SL_CC::internalparse(void* __mess){
 
     DEBOUT("SL_CC::parse", _mess)
     DEBMESSAGESHORT("SL_CC::parse", _mess)
-
-    int result = 0;
 
     //Maybe it has been delete by DOA when outside the call_oset
     //TODO needed???
@@ -175,7 +164,6 @@ int SL_CC::internalparse(void* __mess){
 
         //If found it will be locked here
         GETLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
-        result = 1;
 
         call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
@@ -207,10 +195,9 @@ int SL_CC::internalparse(void* __mess){
             else {
                 DEBY
             }
-            result = 0;
             //MEssage has been worked by SL_CO
             PRINTDIFF("SL_CC::parse end")
-            return result;
+            return;
         }
         // Then try to get call object using y side params
         else {
@@ -239,9 +226,8 @@ int SL_CC::internalparse(void* __mess){
 //                    DEBINF("Put this message into the locked messages table",_mess)
 //                    //MLF2 can be locked if creates a sm
 //                }
-                result = 0;
                 PRINTDIFF("SL_CC::parse end")
-                return result;
+                return;
             }
         }
         // call_oset == 0x0 always true here
@@ -263,7 +249,7 @@ int SL_CC::internalparse(void* __mess){
             //////////////////////////////
             //Start - Initialization block
             CALL_OSET* call_oset = 0x0;
-            call_oset = comap->setCALL_OSET(callids, modulus, this, transport);
+            call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain());
             //End
             //////////////////////////////
 
@@ -282,8 +268,7 @@ int SL_CC::internalparse(void* __mess){
                 DEBY
             }
             PRINTDIFF("SL_CC::parse end")
-            result = 0;
-            return result;
+            return;
         }
         else {
             DEBMESSAGE("Unexpected message ignored", _mess)
@@ -294,8 +279,7 @@ int SL_CC::internalparse(void* __mess){
             }
             PRINTDIFF("SL_CC::parse end")
         	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
-            result = 0;
-            return result;
+            return;
         }
     }
     else if (_mess->getGenEntity() == SODE_ALOPOINT || _mess->getGenEntity() == SODE_TRNSCT_CL || _mess->getGenEntity() == SODE_TRNSCT_SV){
@@ -325,7 +309,6 @@ int SL_CC::internalparse(void* __mess){
 
         //COMAP locked here
         GETLOCK(&(comap->unique_exx[modulus]) , "unique_exx" << modulus )
-        result = 1;
         call_oset = comap->getCALL_OSET_XMain(callids,modulus);
 
         //TODO may be deleted here?
@@ -347,8 +330,7 @@ int SL_CC::internalparse(void* __mess){
                     DEBY
                 }
                 PRINTDIFF("SL_CC::parse end")
-                result = 0;
-                return result;
+                return;
             }else{
                 //Not existent or deleted
             	//From alarm
@@ -361,8 +343,6 @@ int SL_CC::internalparse(void* __mess){
                 	DEBASSERT("Unexpected locked message")
                 }
             	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
-                result = 0;
-
             }
         }
         else {//!=0x0
@@ -381,8 +361,7 @@ int SL_CC::internalparse(void* __mess){
                 DEBY
             }
             PRINTDIFF("SL_CC::parse end")
-            result = 0;
-            return result;
+            return;
         }
     } else {
         DEBINF("Unexpected source of the message", _mess->getGenEntity())
@@ -390,5 +369,5 @@ int SL_CC::internalparse(void* __mess){
     }
     PRINTDIFF("SL_CC::parse end")
 
-    return result;
+    return;
 }
