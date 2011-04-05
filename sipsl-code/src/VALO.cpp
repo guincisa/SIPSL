@@ -178,7 +178,7 @@ void VALO::onInvite(MESSAGE* _message){
 	message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "INVITE");
 
 	//Standard changes
-	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP());
+	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP(), call_oset->getCallId_Y());
 	message->replaceHeadContact("<sip:sipsl@grog:5060>");
 	DEBALO("New CONTACT", message->getHeadContact()->getContent())
 

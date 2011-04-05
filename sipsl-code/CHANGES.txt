@@ -1,8 +1,13 @@
+4 aprile
+
+la call e le action_sv e cl ritornano -1 o mod se deve fare al setdoarequeste
+
+                    tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
+
+
 1 Aprile
 
-forse rimane locked e la call oset cancellata
-aumento TIMER_DOA x 10
-
+provare trylock nella usecalloset
 
 31 Marzo
 
