@@ -607,7 +607,7 @@ void COMAP::purgeDOA(void){
 
 void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
 
-    PROFILE("COMAP::resetDoaRequestTimer")
+    PROFILE("COMAP::resetDoaRequestTimer "<<_call_oset)
     TIMEDEF
     SETNOW
 
@@ -615,7 +615,8 @@ void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
     map<CALL_OSET*, lli>::iterator p_ttl;
     p_ttl = call_oset_ttl[_modulus].find(_call_oset);
     if (p_ttl == call_oset_ttl[_modulus].end()){
-        DEBASSERT("call_oset_ttl inexistent")
+        DEBWARNING("call_oset_ttl inexistent",_call_oset )
+        return;
     }
     SysTime afterT;
     GETTIME(afterT);
