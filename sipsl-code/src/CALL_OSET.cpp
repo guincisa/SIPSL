@@ -416,11 +416,13 @@ void CALL_OSET::call(MESSAGE* _message){
 	int op = sl_co->call(_message, modulus);
 	RELLOCK(&(mutex),"CALL_OSET::mutex "<<mutex);
 
+	//The call oset may have been deleted here
 	if (op == 1){
 		((SL_CC*)getENGINE())->getCOMAP()->setDoaRequested(this, modulus);
 	}
 
-	//set doa requested here
+	//setdoareq must be asynchronous
+	//then release the mutex
 }
 int CALL_OSET::getOverallState_CL(void){
 	return sl_co->OverallState_CL;
