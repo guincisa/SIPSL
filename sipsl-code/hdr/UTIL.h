@@ -88,8 +88,8 @@ class ThreadWrapper {
 #ifdef SPARC
 #define SUDPTH 5
 #define MAXTHREADS 264
-#define COMAPS 1
-#define COMAPS_DIG 1
+#define COMAPS 50
+#define COMAPS_DIG 2
 #define SIPENGINETH 128
 #define TRNSPRTTH 64
 #define SL_CCTH 264
