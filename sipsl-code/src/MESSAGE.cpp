@@ -384,7 +384,6 @@ MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity, SysTime _creaTime):
 	headCallId(""),
         sourceHeadCallId(_message->getHeadCallId().getContent()),
 	headCSeq(""){
-	DEBOUT("MESSAGE::MESSAGE(MESSAGE* _message, int _genEntity):","")
 
 	//source = _message;
         //Must be done esplicitely
@@ -484,7 +483,6 @@ int MESSAGE::getReqRepType(void){
 		return reqRep;
 	}
 	if(flex_line[0].substr(0,3).compare("SIP")==0){
-		DEBOUT("MESSAGE::getReqRepType", flex_line[0])
 		headSipReply.setContent(flex_line[0]);
 		reqRep = REPSUPP;
 	}

@@ -42,6 +42,7 @@ class ALMGR;
 //**********************************************************************************
 typedef struct tuple {
     SUDP * st;
+    int thid;
 } SUDPtuple;
 //**********************************************************************************
 //**********************************************************************************
@@ -70,7 +71,7 @@ class SUDP {
         //void abort(void);
 
         // listen is threaded
-        void listen(void);
+        void listen(int);
         string getDomain(void);
         int getPort(void);
         ALMGR* getAlmgr(void);
@@ -83,15 +84,13 @@ class SUDP {
     private:
 
         ENGINE* engine;
-        ThreadWrapper *listenerThread;
+        ThreadWrapper *listenerThread[SUDPTH];
         string domain;
         int sock;
         sockaddr_inX echoServAddr;
         unsigned short echoServPort;
         unsigned int cliAddrLen;
         sockaddr_inX echoClntAddr;
-        char echoBuffer[ECHOMAX];
-        int recvMsgSize;
 
         ALMGR* alarm;
 

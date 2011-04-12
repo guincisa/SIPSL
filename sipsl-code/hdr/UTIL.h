@@ -87,12 +87,12 @@ class ThreadWrapper {
 
 #ifdef SPARC
 #define SUDPTH 5
-#define MAXTHREADS 264
-#define COMAPS 50
+#define MAXTHREADS 64
+#define COMAPS 20
 #define COMAPS_DIG 2
-#define SIPENGINETH 128
-#define TRNSPRTTH 64
-#define SL_CCTH 264
+#define SIPENGINETH 32
+#define TRNSPRTTH 32
+#define SL_CCTH 64
 #define ARR 4000
 #define ARR_SHORT 30
 #define SPINC_MOD 50
@@ -103,7 +103,7 @@ class ThreadWrapper {
 #ifndef NOLOGATALL
 #define LOGMIN
 #define PROFILELOCK
-#define LOGSIPHIGH
+//#define LOGSIPHIGH
 //#define LOGSIPLOW
 #define LOGINF
 #define LOGMIN
@@ -117,6 +117,8 @@ class ThreadWrapper {
 #define DEBCODEALARM1
 //#define LOGLOK
 #endif
+
+
 #else
 #define LOGALO
 #define COMAPS 6
@@ -241,7 +243,8 @@ class ThreadWrapper {
 
 //**********************************************************
 #ifdef PROFILING
-#define PROFILE(m) DEBOUT("PROFILING",m)
+//#define PROFILE(m) DEBOUT("PROFILING",m)
+#define PROFILE(m)
 #define TIMEDEF SysTime mytime1111;
 #define SETNOW gettimeofday(&mytime1111.tv, &mytime1111.tz);
 #define PRINTDIFF(m) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\

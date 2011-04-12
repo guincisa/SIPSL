@@ -171,16 +171,18 @@ bool ENGINE::p_w(void* _m) {
     RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);
 #endif
 
-    bool r = sb.put(_m);
-    DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
-    if (!r){
-    	DEBOUT("ENGINE::p_w put returned false","")
-    }else {
-        //Otherwise the message is parsed
-        pthread_cond_signal(&(sb.condvar));
-    }
+    sb.put(_m);
+    pthread_cond_signal(&(sb.condvar));
+//    bool r = sb.put(_m);
+//    DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
+//    if (!r){
+//    	DEBOUT("ENGINE::p_w put returned false","")
+//    }else {
+//        //Otherwise the message is parsed
+//        pthread_cond_signal(&(sb.condvar));
+//    }
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-    return r;
+    return true;
 
 
 }

@@ -455,25 +455,12 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
 
     int oper = 0;
 
-    //MLF2 begin - alarm messages are not locked anymore and are not deleted by ~CALL_OSET
-    //They are deleted once triggered
-//    //Rule: message from Alarm must be TYPE_OP
-//    //Rule: message from Alarm must be locked and unlocked here
-//    if(_message->getTypeOfInternal() == TYPE_OP && _message->getTypeOfOperation() !=  TYPE_OP_SMCOMMAND){
-//        if (_message->getLock()){
-//            _message->unSetLock(call_oset);
-//        }else {
-//            DEBASSERT("Break rule: a message from alarm is found unlocked")
-//        }
-//    }
     if(_message->getTypeOfInternal() == TYPE_OP && _message->getTypeOfOperation() !=  TYPE_OP_SMCOMMAND){
 		if (_message->getLock()){
 			DEBOUT("Break rule: a message from alarm must not be locked", _message)
 			DEBASSERT("Break rule: a message from alarm must not be locked")
 		}
     }
-    //MLF2 end
-
 
     //Message is going to Server SM
     int dest = _message->getDestEntity();
@@ -520,9 +507,6 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 oper = 1;
                 _r_modulus = _message->getModulus();
                 return oper;
-                //PURGEMESSAGE(_message)
-                //not here
-                //((SL_CC*)call_oset->getENGINE())->getCOMAP()->setDoaRequested(call_oset, t);
             }
             DEBINF("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
             call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
@@ -545,21 +529,6 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
 
             }
             else {
-
-//                //_message must be deleted using an action and sode_kill
-//                DEBASSERT("Action cannot be null anymore")
-//
-//                DEBINF("SL_CO::event", "action is null nothing, event ignored")
-//                //Delete only if not locked
-//                if (!_message->getLock()){
-//                        //PURGEMESSAGE(_message)
-//                } else {
-//                    //TODO
-//                    //The message is locked for some reason but did not trigger any action...
-//                    //can be the 200 ok A
-//                    DEBMESSAGESHORT("Breaks rule: the message is locked for some reason but did not trigger any action...",_message)
-//                    DEBASSERT("Check this case out")
-//                }
 
             }
         }
@@ -584,8 +553,6 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 DEBASSERT("call_oset->lastTRNSCT_SM_ACK_CL NULL")
             }
         }
-        //MLF2
-        //}else {
         else if (_message->getReqRepType() == REPSUPP ){
             //Only Replies are recognized here
             string smid1 = _message->getHeadCSeq().getMethod().getContent();
@@ -607,12 +574,6 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
                     NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
                     SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-//                    //not here
-//                    _r_modulus = _message->getModulus();
-//                    _r_callidy = callidys;
-//                    _r_callid = call_oset->getCallId_X();
-//                    oper = 1;
-//                    //tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
                 }
                 else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
                     NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
@@ -626,11 +587,6 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 }
 
                 call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
-
-                //This is needed when a new request is coming from ALO
-                //B side call ID created by ALO has to be associated to the main call_id (from Aside)
-//                SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
-//                tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
 
             }else{
                 // but the call object has been recognized!!!
@@ -663,14 +619,6 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
             //TODO we mayn receive an alarm that is expired
             //so the sm has ignored it
             DEBINF("SL_CO::event", "action is null nothing, event ignored")
-//            if (!_message->getLock()){
-//                //TODO why I do this?
-//                _message->unSetLock(call_oset);
-//                //PURGEMESSAGE(_message)
-//            }
-//            else {
-//                DEBASSERT("Rule break: a message with no associated actions has been found locked")
-//            }
         }
     }
 
@@ -694,15 +642,6 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
 
         MESSAGE* _tmpMessage = actionList.top().getMessage();
         DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
-
-//        if (_tmpMessage->getDestEntity() == SODE_KILL){
-//            if (_tmpMessage->getLock()){
-//                DEBASSERT("Locked message directed to SODE_KILL")
-//            }
-//            else{
-//                PURGEMESSAGE(_tmpMessage)
-//            }
-//        }
 
         if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
             if (_tmpMessage->getLock()){
@@ -755,7 +694,7 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
                     DEBASSERT("Message to alarm found locked")
                 }
 
-                 call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
+                 call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime(),_tmpMessage->getModulus());
 
             }
             else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_OFF){
@@ -763,7 +702,7 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
                 DEBINF("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#")
                 string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->getOrderOfOperation()+ "#";
                 DEBINF("SL_CO::cancel alarm, callid", callid_alarm)
-                call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
+                call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm,_tmpMessage->getModulus());
                 if(!_tmpMessage->getLock()){
                         PURGEMESSAGE(_tmpMessage)
                 }
@@ -798,22 +737,12 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 
 		DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage)
 
-//		if (_tmpMessage->getDestEntity() == SODE_KILL){
-//			if (_tmpMessage->getLock()){
-//				DEBASSERT("Locked message directed to SODE_KILL")
-//			}
-//			else{
-//				PURGEMESSAGE(_tmpMessage)
-//			}
-//		}
 		if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
 			if (_tmpMessage->getLock()){
 				DEBASSERT("Locked message directed to SODE_KILL")
 			}
 			else{
 				DEBINF("SL_CO::actionCall_CL setDoaRequested",call_oset)
-				//not here
-				//((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
 				_r_modulus =  _tmpMessage->getModulus();
 				PURGEMESSAGE(_tmpMessage)
 				oper = 1;
@@ -834,29 +763,26 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 
 			DEBINF("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 			//To network
-			DEBDEV("Send to trnasport", _tmpMessage)
-            //WHY PARSE?
 			call_oset->getTRNSPRT()->p_w(_tmpMessage);
 
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
-			DEBINF("CLIENT SM send to Server SM", _tmpMessage->getLine(0))
-			DEBINF("CLIENT SM send to Server SM 2",  _tmpMessage->getHeadCallId().getContent())
-			bool ret = ((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-			DEBINF("bool ret = sl_cc->p_w(_tmpMess);", ret)
-			if(!ret){
-				DEBOUT("SL_CO::actionCall_CL p_w message rejected, put in rejection queue",_tmpMessage)
-				bool ret2 = ((SL_CC*)call_oset->getENGINE())->p_w_s(_tmpMessage);
-				if (!ret2){
-					if (!_tmpMessage->getLock()){
-						PURGEMESSAGE(_tmpMessage)
-					}else{
-						DEBASSERT("should be unlocked")
-					}
-
-				}
-
-			}
+			DEBINF("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << "]["<<_tmpMessage->getHeadCallId().getContent())
+			((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+//			DEBINF("bool ret = sl_cc->p_w(_tmpMess);", ret)
+//			if(!ret){
+//				DEBOUT("SL_CO::actionCall_CL p_w message rejected, put in rejection queue",_tmpMessage)
+//				bool ret2 = ((SL_CC*)call_oset->getENGINE())->p_w_s(_tmpMessage);
+//				if (!ret2){
+//					if (!_tmpMessage->getLock()){
+//						PURGEMESSAGE(_tmpMessage)
+//					}else{
+//						DEBASSERT("should be unlocked")
+//					}
+//
+//				}
+//
+//			}
 
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_OP ){
@@ -871,14 +797,17 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 					DEBOUT("Message to alarm found locked", _tmpMessage)
 					DEBASSERT("Message to alarm found locked")
 				}
-				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime(),_tmpMessage->getModulus());
 
 			} else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_OFF){
 
 				DEBINF("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#")
 				string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->getOrderOfOperation()+ "#";
 				DEBINF("SL_CO::cancel alarm, callid", callid_alarm)
-				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm);
+				//
+				//TODO
+				// here is synch!!!
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm,_tmpMessage->getModulus());
 
 				if(!_tmpMessage->getLock()){
 					PURGEMESSAGE(_tmpMessage)
@@ -890,26 +819,24 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 			}
 			else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
 				DEBMESSAGESHORT("SL_CO::call action is internal send to some SM", _tmpMessage )
-				bool ret = ((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-				DEBINF("bool ret = sl_cc->p_w(_tmpMess);", ret)
-				if(!ret){
-					DEBINF("SL_CO::actionCall_CL p_w message rejected, put in rejection queue",_tmpMessage)
-					bool ret2 = ((SL_CC*)call_oset->getENGINE())->p_w_s(_tmpMessage);
-					if (!ret2){
-						if (!_tmpMessage->getLock()){
-							PURGEMESSAGE(_tmpMessage)
-						}
-					}
-
-				}
+				((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+//				DEBINF("bool ret = sl_cc->p_w(_tmpMess);", ret)
+//				if(!ret){
+//					DEBINF("SL_CO::actionCall_CL p_w message rejected, put in rejection queue",_tmpMessage)
+//					bool ret2 = ((SL_CC*)call_oset->getENGINE())->p_w_s(_tmpMessage);
+//					if (!ret2){
+//						if (!_tmpMessage->getLock()){
+//							PURGEMESSAGE(_tmpMessage)
+//						}
+//					}
+//
+//				}
 
 
 			}
 			else {
 				DEBASSERT("SL_CO client operation type inconsistency")
 			}
-//			actionList.pop();
-//			continue;
 		}
 		else if (_tmpMessage->getDestEntity() == SODE_NOPOINT){
 			DEBINF("SL_CO::TEST, message is abandoned",_tmpMessage->getLine(0))

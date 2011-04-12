@@ -1,3 +1,16 @@
+8 aprile
+
+
+rivedere le trylock
+alarm e' collo di bottiglia
+la cancel va messa in p_w
+
+1. :alarm con modulus
+
+2. migliorare le struttura dati dell'allarme
+
+
+
 4 aprile
 
 la call e le action_sv e cl ritornano -1 o mod se deve fare al setdoarequeste

@@ -1,4 +1,13 @@
+grep "Wait on"    | awk -F/ '{print $2}' | awk  '{print $1" "$2" " $8}'
+
 awk -F/ '{print $2}'
 
 awk  '{print $1" "$2" " $8}'
 
+
+perf
+
+grep "SUDP:Message sent to SIPENGINE" log
+grep "SIPENGINE::parse end" log
+grep "SL_CC::parse end" log
+grep "ALMGR::cancelAlarm end" log
