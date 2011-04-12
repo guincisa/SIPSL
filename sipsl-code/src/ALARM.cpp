@@ -58,6 +58,7 @@
 //**********************************************************************************
 typedef struct tuple2 {
 	ALMGR* st;
+	int mod;
 } ALMGRtuple;
 //**********************************************************************************
 extern "C" void* ALARMSTACK (void*);
@@ -67,21 +68,29 @@ void * ALARMSTACK(void *_tgtObject) {
     DEBOUT("ALARMSTACK start","")
 
     ALMGRtuple *tgtObject = (ALMGRtuple *)_tgtObject;
-
-    tgtObject->st->alarmer();
-
+	tgtObject->st->alarmer(tgtObject->mod);
     DEBOUT("ALARMSTACK started","")
 
     return (NULL);
 }
 //**********************************************************************************
+#ifdef ALARMENGINE
+ALMGR::ALMGR(int _th, SL_CC* _sl_cc, __time_t _sec, long int _nsec):ENGINE(_th){
+#else
 ALMGR::ALMGR(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
+#endif
+
 	sleep_time.tv_sec = _sec;
 	sleep_time.tv_nsec = _nsec;
 	sl_cc = _sl_cc;
 	DEBOUT("ALMGR::ALMGR", "alarm created")
 }
+#ifdef ALARMENGINE
+ALMGR::ALMGR(int _th, SL_CC* _sl_cc, timespec _sleep_time):ENGINE(_th){
+#else
 ALMGR::ALMGR(SL_CC* _sl_cc, timespec _sleep_time){
+#endif
+
 	sleep_time = _sleep_time;
 	sl_cc = _sl_cc;
 	DEBOUT("ALMGR::ALMGR", "alarm created")
@@ -90,28 +99,30 @@ void ALMGR::initAlarm(void){
 
 	DEBOUT("ALMGR::initAlarm", "init")
 
-    NEWPTR2(listenerThread,ThreadWrapper, "ThreadWrapper");
-    ALMGRtuple *t1;
-    NEWPTR2(t1,ALMGRtuple, "ALMGRtuple");
-    t1->st = this;
-    int res;
+	for (int i = 0 ; i <COMAPS ; i++){
 
-    pthread_mutex_init(&mutex, NULL);
+		NEWPTR2(listenerThread[i],ThreadWrapper, "ThreadWrapper "<<i);
+		ALMGRtuple *t1[COMAPS];
+		NEWPTR2(t1[i],ALMGRtuple, "ALMGRtuple");
+		t1[i]->st = this;
+		t1[i]->mod = i;
 
-    res = pthread_create(&(listenerThread->thread), NULL, ALARMSTACK, (void *) t1 );
+		pthread_mutex_init(&mutex[i], NULL);
+    	pthread_create(&(listenerThread[i]->thread), NULL, ALARMSTACK, (void *) t1[i] );
+    }
 
     //TODO check consistency!!!
 
 	DEBOUT("ALMGR::initAlarm", "started")
     return;
 }
-void ALMGR::alarmer(void){
+void ALMGR::alarmer(int _mod){
 
 #ifdef DEBCODE
 	int jumper = 0;
 #endif
 
-    DEBOUT("ALMGR::alarmer", "begin")
+    DEBOUT("ALMGR::alarmer", "begin"<<"] mod ["<<_mod)
 
 	int trymaxlock = 0;
     for(;;){
@@ -137,13 +148,16 @@ void ALMGR::alarmer(void){
 //#endif
 
         //GETLOCK(&mutex,"mutex");
+
+        //for maps
+
         int trylok;
-        TRYLOCK(&mutex," ALARM loog mutex", trylok)
+        TRYLOCK(&mutex[_mod]," ALARM loog mutex"<<_mod, trylok)
         if(trylok != 0){
-        	DEBOUT("ALARM mutex busy", "")
+        	DEBOUT("ALARM mutex busy", _mod)
 			trymaxlock++;
         	if (trymaxlock > 10){
-        		DEBASSERT("ALARM mutex too busy" <<trymaxlock)
+        		DEBASSERT("ALARM mutex too busy" <<trymaxlock <<" mod "<< _mod)
         	}
         	continue;
         }
@@ -151,20 +165,20 @@ void ALMGR::alarmer(void){
         	trymaxlock = 0;
         }
 
-        if (!pq.empty()) {
-            trip = pq.top();
+        if (!pq[_mod].empty()) {
+            trip = pq[_mod].top();
             while ( trip.time <= curr && trip.time > 0){
-                DEBOUT("Found and alarm ready for trigger", trip.time << "][" << trip.cid << "][" << trip.alarm)
+                DEBOUT("Found and alarm ready for trigger", trip.time << "][" << trip.cid << "][" << trip.alarm <<"] mod ["<<_mod)
                 if ( trip.alarm->isActive()){
-                    DEBOUT("Alarm is active", trip.cid << "][" << trip.alarm)
-                    cid_iter = cidmap.find(trip.cid);
-                    if ( cid_iter == cidmap.end()){
-                        DEBOUT("Inconsistency 1 in ALARM, alarm was found active but cid is not in cidmap",trip.cid << "][" << trip.alarm)
+                    DEBOUT("Alarm is active", trip.cid << "][" << trip.alarm<<"] mod ["<<_mod)
+                    cid_iter = cidmap[_mod].find(trip.cid);
+                    if ( cid_iter == cidmap[_mod].end()){
+                        DEBOUT("Inconsistency 1 in ALARM, alarm was found active but cid is not in cidmap",trip.cid << "][" << trip.alarm<<"] mod ["<<_mod)
                         DEBASSERT("ALARM inconsistency 1")
                     }else {
                         if ( (ALARM*)(cid_iter->second) != trip.alarm){
-                            DEBOUT("Inconsistency 2 in ALARM, alarm was found active but cidmap points to different alarm",trip.cid << "][" << trip.alarm <<"]["<<(ALARM*)(cid_iter->second))
-                            DEBASSERT("ALARM inconsistency 2")
+                            DEBOUT("Inconsistency 2 in ALARM, alarm was found active but cidmap points to different alarm",trip.cid << "][" << trip.alarm <<"]["<<(ALARM*)(cid_iter->second)<<"] mod ["<<_mod)
+                            DEBASSERT("ALARM inconsistency 2"<<"] mod ["<<_mod)
                         } else {//Alarm structures ok
 //#ifdef DEBCODEALARM1
 //                            MESSAGE* _tmpMess = trip.alarm->getMessage();
@@ -190,34 +204,34 @@ void ALMGR::alarmer(void){
 //                            }
 //#endif
                             //Message is ok now
-                            DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", trip.cid<<"] Message["<<trip.alarm->getMessage())
+                            DEBOUT("ALMGR::alarmer sending alarm: operation TYPE_OP", trip.cid<<"] Message["<<trip.alarm->getMessage()<<"] mod ["<<_mod)
 							if (trip.alarm->getMessage()->getLock()){
-								 DEBASSERT("Locked alarm"<<trip.alarm->getMessage())
+								 DEBASSERT("Locked alarm"<<trip.alarm->getMessage()<<"] mod ["<<_mod)
 							}
-                            bool ret = sl_cc->p_w(trip.alarm->getMessage());
-                            DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
-                            if(!ret){
-                                DEBOUT("ALARM::alarmer message rejected, put in rejection queue",trip.alarm->getMessage())
-                                bool ret2 = sl_cc->p_w_s(trip.alarm->getMessage());
-                                if (!ret2){
-                                    if (!trip.alarm->getMessage()->getLock()){
-                                        MESSAGE* ttt = trip.alarm->getMessage();
-                                        PURGEMESSAGE( ttt )
-                                    }
-                                }
-                            }
+                            sl_cc->p_w(trip.alarm->getMessage());
+//                            DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
+//                            if(!ret){
+//                                DEBOUT("ALARM::alarmer message rejected, put in rejection queue",trip.alarm->getMessage())
+//                                bool ret2 = sl_cc->p_w_s(trip.alarm->getMessage());
+//                                if (!ret2){
+//                                    if (!trip.alarm->getMessage()->getLock()){
+//                                        MESSAGE* ttt = trip.alarm->getMessage();
+//                                        PURGEMESSAGE( ttt )
+//                                    }
+//                                }
+//                            }
                             //Alarm was sent now clean up
-                            cidmap.erase(trip.cid);
+                            cidmap[_mod].erase(trip.cid);
                             DELPTR(trip.alarm,"ALARM")
                         }
                     }
                 } else{// Not active
-                    DEBOUT("Alarm is not active", trip.cid << "][" << trip.alarm)
-                    cid_iter = cidmap.find(trip.cid);
+                    DEBOUT("Alarm is not active", trip.cid << "][" << trip.alarm<<"] mod ["<<_mod)
+                    cid_iter = cidmap[_mod].find(trip.cid);
                     if ( (cid_iter->second) == trip.alarm ){
-                            cidmap.erase(trip.cid);
+                            cidmap[_mod].erase(trip.cid);
                     }else {
-                         DEBOUT("Alarm is not active and active replacement exists", trip.cid << "][" << trip.alarm << "][" << (cid_iter->second))
+                         DEBOUT("Alarm is not active and active replacement exists", trip.cid << "][" << trip.alarm << "][" << (cid_iter->second)<<"] mod ["<<_mod)
                     }
 
                     //MLF2 delete message
@@ -227,9 +241,9 @@ void ALMGR::alarmer(void){
                     DELPTR(trip.alarm,"ALARM")
 
                 }
-                pq.pop();
-                if (!pq.empty()){
-                    trip = pq.top();
+                pq[_mod].pop();
+                if (!pq[_mod].empty()){
+                    trip = pq[_mod].top();
                 }
                 else {
                     trip.time = -1; //trick to exit the loop
@@ -239,7 +253,7 @@ void ALMGR::alarmer(void){
         }
         else {//empty pq
         }
-        RELLOCK(&mutex,"mutex");
+        RELLOCK(&mutex[_mod],"mutex");
     }
 }
 //void ALMGR::parse(MESSAGE* _message){
@@ -257,10 +271,48 @@ void ALMGR::alarmer(void){
 //void ALMGR::parse_s(MESSAGE* _message){
 //
 //}
+#ifdef ALARMENGINE
 void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
 
+	_message->setFireTime(_fireTime);
+	p_w((void*)_message);
+	return;
+}
+void ALMGR::parse(void *__mess){
+
+    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+
+	MESSAGE* _mess = (MESSAGE*)__mess;
+
+    PROFILE("ALMGR::parse start")
+    TIMEDEF
+    SETNOW
+
+    //Try lock here!
+    if (insertAlarmPrivate(_mess, _mess->getFireTime()) == 0){
+        PRINTDIFF("ALMGR::insertAlarm end")
+		return;
+    }else {
+    	p_w(__mess);
+    }
+
+
+    return;
+
+}
+void ALMGR::parse_s(void *){
+	DEBASSERT("WRONG!")
+}
+#endif
+
+#ifdef ALARMENGINE
+int ALMGR::insertAlarmPrivate(MESSAGE* _message, lli _fireTime, int _mod){
+#else
+void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
+#endif
+
     PROFILE("ALMGR::insertAlarm begin")
-    DEBOUT("ALMGR::insertAlarm message", _message)
+    DEBOUT("ALMGR::insertAlarm message", _message <<"] mod ["<<_mod)
 
 
 #ifdef DEBCODE
@@ -271,8 +323,19 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
     DEBOUT("ALMGR::insertAlarm delta", (lli) (_fireTime  - firetime) )
 #endif
 
+
+#ifdef USETRYLOCK
+    int trylok;
+    TRYLOCK(&mutex," ALARM loog mutex", trylok)
+    if(trylok != 0){
+    	return -1;
+    }
+#else
+    GETLOCK(&mutex[_mod]," ALARM loog mutex mod "<<_mod)
+#endif
+
     if ( _message->getTypeOfInternal() == TYPE_MESS ){
-        DEBOUT("ALMGR: invalid operation TYPE_MESS", _message->getHeadCallId().getContent() << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _message->getOrderOfOperation() << "#")
+        DEBOUT("ALMGR: invalid operation TYPE_MESS mod",_mod<<"] ["<< _message->getHeadCallId().getContent() << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") << "#" << _message->getOrderOfOperation() << "#")
         DEBASSERT("Invalid alarm")
     }
 
@@ -280,7 +343,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
     NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
 
     string cidbranch_alarm = alm->getCidbranch();
-    DEBOUT("Inserting Alarm id (cid+branch)", cidbranch_alarm << "]["<<alm);
+    DEBOUT("Inserting Alarm id (cid+branch)", cidbranch_alarm << "]["<<alm<<"] mod ["<<_mod);
 
     map<string, ALARM*>::iterator p;
 
@@ -289,62 +352,76 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
     trip.cid = cidbranch_alarm;
     trip.alarm = alm;
 
-    GETLOCK(&mutex,"mutex");
 
-    p = cidmap.find(cidbranch_alarm);
 
-    if (p != cidmap.end()){
-        DEBOUT("Inserting an alarm, cid already exists",p->first <<"][" << (ALARM*)(p->second))
+//    GETLOCK(&mutex,"mutex");
+
+    p = cidmap[_mod].find(cidbranch_alarm);
+
+    if (p != cidmap[_mod].end()){
+        DEBOUT("Inserting an alarm, cid already exists",p->first <<"][" << (ALARM*)(p->second) <<"] mod ["<<_mod)
         ((ALARM*)(p->second))->cancel();
-         DEBOUT("Deactivating alarm",p->first <<"][" << (ALARM*)(p->second))
+         DEBOUT("Deactivating alarm",p->first <<"][" << (ALARM*)(p->second) <<"] mod ["<<_mod)
         //PROBLEM: the existing alarm may be more in the future, it is a problem??
 
         //remove from cidmap
-        DEBOUT("Erasing from cidmap alarm",p->first <<"][" << (ALARM*)(p->second))
-        cidmap.erase(cidbranch_alarm);  
+        DEBOUT("Erasing from cidmap alarm",p->first <<"][" << (ALARM*)(p->second) <<"] mod ["<<_mod)
+        cidmap[_mod].erase(cidbranch_alarm);
     }
 
 
-    pq.push(trip);
-    cidmap.insert(pair<string,ALARM*>(cidbranch_alarm,alm));
+    pq[_mod].push(trip);
+    cidmap[_mod].insert(pair<string,ALARM*>(cidbranch_alarm,alm));
 
-    RELLOCK(&mutex,"mutex");
+    RELLOCK(&mutex[_mod],"mutex");
 
-    DEBOUT("Alarm Inserterd",_fireTime <<"][" << cidbranch_alarm << "]["<<alm)
+    DEBOUT("Alarm Inserterd",_fireTime <<"][" << cidbranch_alarm << "]["<<alm<<"] mod ["<<_mod)
 
-    PROFILE("ALMGR::insertAlarm end")
+    PROFILE("ALMGR::insertAlarm end"<<"] mod ["<<_mod)
 
     return;
 }
 
 
-void ALMGR::cancelAlarm(string _cidbranch){
+void ALMGR::cancelAlarm(string _cidbranch, int _mod){
 
-    PROFILE("ALMGR::cancelAlarm begin")
+    PROFILE("ALMGR::cancelAlarm begin mod "<< _mod)
 
-    DEBOUT("ALMGR::cancelAlarm", _cidbranch)
+	TIMEDEF
+	SETNOW
+
+    DEBOUT("ALMGR::cancelAlarm", _cidbranch<<"] mod ["<<_mod)
     // alarm is deactivated and the related message may have been
     // purged so
+#ifdef USETRYLOCK
+    int trylok;
+    TRYLOCK(&mutex," ALARM log mutex", trylok)
+    if(trylok != 0){
+    	return -1;
+    }
+#else
+    GETLOCK(&mutex[_mod],"mutex"<<"] mod ["<<_mod);
+#endif
 
-    GETLOCK(&mutex,"mutex");
-            internalCancelAlarm(_cidbranch);
-    RELLOCK(&mutex,"mutex");
+    internalCancelAlarm(_cidbranch, _mod);
+    RELLOCK(&mutex[_mod],"mutex"<<"] mod ["<<_mod);
     
-    PROFILE("ALMGR::cancelAlarm end")
+    PROFILE("ALMGR::cancelAlarm end"<<"] mod ["<<_mod)
+    PRINTDIFF("ALMGR::cancelAlarm end"<<"] mod ["<<_mod)
 
 
 }
-void ALMGR::internalCancelAlarm(string _cidbranch){
+void ALMGR::internalCancelAlarm(string _cidbranch, int _mod){
     
     map<string, ALARM*>::iterator p;
-    p = cidmap.find(_cidbranch);
+    p = cidmap[_mod].find(_cidbranch);
 
-    if (p != cidmap.end()){
+    if (p != cidmap[_mod].end()){
          ((ALARM*)(p->second))->cancel();
-         DEBOUT("Deactivating alarm",p->first <<"][" << (ALARM*)(p->second))
+         DEBOUT("Deactivating alarm",p->first <<"][" << (ALARM*)(p->second)<<"] mod ["<<_mod)
     }
     else{
-        DEBOUT("Cancel alarm does not exists",_cidbranch)
+        DEBOUT("Cancel alarm does not exists",_cidbranch<<"] mod ["<<_mod)
     }
 }
 //**********************************************************************************

@@ -198,27 +198,17 @@ ACTION* SM::event(MESSAGE* _event){
         }
     }
 
-//    //Default event is delete the message
-//    //TODO Will fail
-//    if(act == 0x0){
-//        NEWPTR2(act, ACTION(),"ACTION")
-//        _event->setDestEntity(SODE_KILL);
-//        _event->setGenEntity(SODE_TRNSCT_SV);
-//        SingleAction sa_1 = SingleAction(_event);
-//        act->addSingleAction(sa_1);
-//    }
-
     //DEBCODE
-    if(act != 0x0){
-		stack<SingleAction> actionList = act->getActionList();
-		while (!actionList.empty()){
-			MESSAGE* _tmpMessage = actionList.top().getMessage();
-			if (_tmpMessage == _event){
-				DEBASSERT("DID not duplicate event message")
-			}
-			actionList.pop();
-		}
-    }
+//    if(act != 0x0){
+//		stack<SingleAction> actionList = act->getActionList();
+//		while (!actionList.empty()){
+//			MESSAGE* _tmpMessage = actionList.top().getMessage();
+//			if (_tmpMessage == _event){
+//				DEBASSERT("DID not duplicate event message")
+//			}
+//			actionList.pop();
+//		}
+//    }
     return(act);
 }
 //**********************************************************************************

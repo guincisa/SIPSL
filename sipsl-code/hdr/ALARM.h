@@ -96,35 +96,44 @@ class PQ {
 
 
 
-
+#ifdef ALARMENGINE
+class ALMGR : public ENGINE {
+#else
 class ALMGR {
+#endif
 
     private:
 
-        priority_queue<triple, vector<triple>, CompareTriple> pq;
+        priority_queue<triple, vector<triple>, CompareTriple> pq[COMAPS];
         //PQ pq;
-        map<string,  ALARM* > cidmap;
+        map<string,  ALARM* > cidmap[COMAPS];
 
         timespec sleep_time;
         SL_CC* sl_cc;
 
-        ThreadWrapper *listenerThread;
+        ThreadWrapper *listenerThread[COMAPS];
 
-        pthread_mutex_t mutex;
+        pthread_mutex_t mutex[COMAPS];
 
-        void internalCancelAlarm(string cidbranch);
+        void internalCancelAlarm(string cidbranch, int modulus);
+
+        int insertAlarmPrivate(MESSAGE* message, lli fireTime, int modulus);
 
    public:
-        void alarmer(void);
+        void alarmer(int);
 
        //Alarm manager in a separate thread
+#ifdef ALARMENGINE
+       ALMGR(int th, SL_CC* sl_cc, timespec sleep_time);
+       ALMGR(int th, SL_CC* sl_cc, __time_t sec, long int nsec);
+#else
        ALMGR(SL_CC* sl_cc, timespec sleep_time);
        ALMGR(SL_CC* sl_cc, __time_t sec, long int nsec);
+#endif
 
         void initAlarm(void);
-        void insertAlarm(MESSAGE* message, lli fireTime);
 
-        void cancelAlarm(string cid_branch);
+        void cancelAlarm(string cid_branch, int modulus);
         //void cancelAlarm(MESSAGE* message);
 
         void purgeAlarm(ALARM*);
@@ -139,4 +148,9 @@ class ALMGR {
         //   l'allarme è disattivato solo se il messaggio da cancellare è un type_op
         //   tutti i type_op gia eliminati non possono disattivare l'allarme
         //
+        void insertAlarm(MESSAGE* message, lli fireTime, int modulus);
+#ifdef ALARMENGINE
+        void parse(void *);
+        void parse_s(void *);
+#endif
 };

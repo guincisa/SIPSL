@@ -105,7 +105,7 @@ void * SUDPSTACK(void *_tgtObject) {
 
     SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
 
-    tgtObject->st->listen();
+    tgtObject->st->listen(tgtObject->thid);
 
     DEBDEV("SUDPSTACK started","")
 
@@ -126,6 +126,8 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
     engine = _engine;
 
     echoServPort = _port;
+
+    cliAddrLen = sizeof(echoClntAddr);
 
     alarm = _alarm;
 
@@ -169,15 +171,20 @@ void SUDP::start(void) {
     // allocate thread and starts
 
     DEBDEV("SUDP::start","")
-    NEWPTR2(listenerThread, ThreadWrapper,"ThreadWrapper")
-    
-    SUDPtuple *t1;
-    NEWPTR2(t1, SUDPtuple,"SUDPtuple")
-    t1->st = this;
+	for (int i = 0 ; i <SUDPTH ; i++){
+	    NEWPTR2(listenerThread[i], ThreadWrapper,"ThreadWrapper"<<i)
 
-    //TODO result not used
+	    SUDPtuple *t1[SUDPTH];
+	    NEWPTR2(t1[i], SUDPtuple,"SUDPtuple")
+	    t1[i]->st = this;
+	    t1[i]->thid = i;
 
-    pthread_create(&(listenerThread->thread), NULL, SUDPSTACK, (void *) t1 );
+	    //TODO result not used
+
+	    pthread_create(&(listenerThread[i]->thread), NULL, SUDPSTACK, (void *) t1[i] );
+
+	}
+
 
 
     return;
@@ -186,22 +193,21 @@ void SUDP::start(void) {
 // *****************************************************************************************
 // Listen to network
 // *****************************************************************************************
-void SUDP::listen() {
+void SUDP::listen(int i) {
 
     TIMEDEF
 
-    DEBDEV("SUDP::listen","listen")
+    DEBDEV("SUDP::listen","listen " << i)
     for (;;){
         /* Set the size of the in-out parameter */
-        cliAddrLen = sizeof(echoClntAddr);
 
         /* Block until receive message from a client */
+        char echoBuffer[ECHOMAX];
         memset(&echoBuffer, 0x0, ECHOMAX);   /* Zero out structure */
-
+        int recvMsgSize;
         if ((recvMsgSize = recvfrom(sock, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
             DEBERROR("SUDP::listen() recvfrom() failed")
-            //return;
         }else {
             SETNOW
             PROFILE("SUDP:Message arrived from socket")
@@ -210,16 +216,16 @@ void SUDP::listen() {
             CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
-                bool r = engine->p_w((void*)message);
+                engine->p_w((void*)message);
                 PRINTDIFF("SUDP:Message sent to SIPENGINE")
-                if (!r){
-                    DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
-                    bool rr = engine->p_w_s((void*)message);
-                    if (!rr){
-                        DEBOUT("SUDP::listen() message rejected by s queue",message)
-                        PURGEMESSAGE(message)
-                    }
-                }
+//                if (!r){
+//                    DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
+//                    bool rr = engine->p_w_s((void*)message);
+//                    if (!rr){
+//                        DEBOUT("SUDP::listen() message rejected by s queue",message)
+//                        PURGEMESSAGE(message)
+//                    }
+//                }
             }else {
                 DEBERROR("SUDP::listen() could not allocate memory for incoming message")
             }

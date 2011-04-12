@@ -124,8 +124,6 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
     CALL_OSET* tmp = 0x0;
     map<string, CALL_OSET*>::iterator p;
 
-    //GETLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-
     p = comap_mm[_mod].find(_callId_X);
     if (p != comap_mm[_mod].end()){
         tmp = (CALL_OSET*)p->second;
@@ -138,7 +136,6 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
     }else {
         DEBINF("COMAP::getCALL_OSET not found", _callId_X << "]["<<_mod)
     }
-    //RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     PRINTDIFF("COMAP::getCALL_OSET_XMain end")
     return tmp;
 }
@@ -406,26 +403,23 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
         resetDoaRequestTimer(_call_oset,_mod);
     }
 
-//    int trylok;
-//    TRYLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)", trylok)
-//    if(trylok != 0){
-//    	//CALL OSET is locked reschedule in SL_CC
-//    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-//    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call repushed to sl_cc", _call_oset )
-//    	_call_oset->getENGINE()->p_w(_message);
-//    	PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
-//    }
-//    else {
-//    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-//    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
-//    	 _call_oset->call(_message);
-//    	 PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
-//    }
-    GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
-    RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-    _call_oset->call(_message);
-    if (!_message->getLock()){
-    	PURGEMESSAGE(_message)
+    //    GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
+    int trylok;
+    TRYLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)", trylok)
+    if(trylok != 0){
+    	//CALL OSET is locked reschedule in SL_CC
+    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call repushed to sl_cc", _call_oset )
+    	_call_oset->getENGINE()->p_w(_message);
+    	PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+    }
+    else {
+
+		RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+		_call_oset->call(_message);
+		if (!_message->getLock()){
+			PURGEMESSAGE(_message)
+		}
     }
     PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
     return 0;
