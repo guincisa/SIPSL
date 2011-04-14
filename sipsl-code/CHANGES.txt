@@ -1,3 +1,18 @@
+14 Aprile
+
+
+usare piu istanze di SL_CC???
+c'e' un bottleneck nella condvar
+
+quando arriva bye A mandare subito 200ok
+non aspettare il 200ok di b
+cambiato
+
+12 Aprile 
+
+rivedere le sm per il BYE
+perche il 180 non arriva?
+
 8 aprile
 
 

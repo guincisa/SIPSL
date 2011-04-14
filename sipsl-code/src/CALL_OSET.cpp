@@ -393,23 +393,26 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 
 	_trnsctSm->setId(stmp);
 
-	map<string, TRNSCT_SM*>::iterator it;
-	it = trnsctSmMap.find(stmp);
-	if (it != trnsctSmMap.end()){
+	pair<map<string, TRNSCT_SM*>::iterator, bool> ret;
+	ret = trnsctSmMap.insert(pair<string, TRNSCT_SM*>(stmp, _trnsctSm));
+	if(!ret.second){
 		DEBOUT("CALL_OSET::addTrnsctSm adding a exsiting sm", stmp <<"]["<<_trnsctSm)
 		DEBASSERT("CALL_OSET::addTrnsctSm")
 	}
-	trnsctSmMap.insert(pair<string, TRNSCT_SM*>(stmp, _trnsctSm));
 	DEBINF("CALL_OSET::addTrnsctSm", stmp<<"]["<<_trnsctSm)
 
 	// special for client sm Ack
-	if (_method.substr(0,3).compare("ACK") == 0 && _sode == SODE_TRNSCT_CL ){
+	if (_sode == SODE_TRNSCT_CL && _method.substr(0,3).compare("ACK") == 0 ){
 		DEBOUT_UTIL("CALL_OSET::addTrnsctSm special Ack sm cl pointer",_method <<"#"<< _sode <<"#"<<_branch <<"#"<<_trnsctSm)
 		lastTRNSCT_SM_ACK_CL = _trnsctSm;
 	}	return;
 }
 
 void CALL_OSET::call(MESSAGE* _message){
+
+    PROFILE("CALL_OSET::call() begin")
+    TIMEDEF
+    SETNOW
 
 	int modulus = 0;
 
@@ -420,6 +423,8 @@ void CALL_OSET::call(MESSAGE* _message){
 	if (op == 1){
 		((SL_CC*)getENGINE())->getCOMAP()->setDoaRequested(this, modulus);
 	}
+
+    PRINTDIFF("CALL_OSET::call() end")
 
 	//setdoareq must be asynchronous
 	//then release the mutex
@@ -479,26 +484,22 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
         //OVERALLSTATE lock usage start here
 
         if (trnsctSM == 0x0 ){
-            if (_message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST && OverallState_SV == OS_INIT){
+            if (OverallState_SV == OS_INIT && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST ){
                 call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
                 NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_SV")
             }
-            else if (_message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && OverallState_SV == OS_COMPLETED){
+            else if (OverallState_SV == OS_COMPLETED && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
                 NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
             }
-            else if (_message->getRequestDirection() == SODE_FWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && OverallState_SV == OS_CONFIRMED){
+            else if ( OverallState_SV == OS_CONFIRMED && _message->getRequestDirection() == SODE_FWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST ){
                 NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
             }
             //TODO To test
-            else if (_message->getRequestDirection() == SODE_BKWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST && OverallState_CL == OS_COMPLETED){
+            else if ( OverallState_CL == OS_COMPLETED && _message->getRequestDirection() == SODE_BKWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST ){
                 NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
             }
-            else if (_message->getReqRepType() == REPSUPP ){
+            else if (_message->getReqRepType() != REPSUPP ){
                 // but the call object has been recognized!!!
-                DEBINF("A unrecognized reply directed to server has reached the call object","")
-                DEBASSERT("Unrecognized Reply message sent to SV machine")
-            }
-            else {
                 // SL_CO not in correct state
                 DEBINF("Unexpected message ignored", _message)
                 if(_message->getLock()){
@@ -506,7 +507,13 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 }
                 oper = 1;
                 _r_modulus = _message->getModulus();
+                PRINTDIFF("SL_CO::call() end")
+
                 return oper;
+            }
+            else {
+                DEBINF("A unrecognized reply directed to server has reached the call object","")
+                DEBASSERT("Unrecognized Reply message sent to SV machine")
             }
             DEBINF("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
             call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
@@ -628,11 +635,16 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
         DELPTR(action,"ACTION");
     }
     //RELLOCK(&mutex,"mutex");
-    PRINTDIFF("SL_CO::call")
+    PRINTDIFF("SL_CO::call() ")
     return oper;
 }
 
 int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
+
+    TIMEDEF
+    SETNOW
+    PROFILE("SL_CO::actionCall_SV begin")
+
     // now get actions one by one
     stack<SingleAction> actionList = action->getActionList();
 
@@ -643,21 +655,7 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
         MESSAGE* _tmpMessage = actionList.top().getMessage();
         DEBMESSAGE("SL_CO::reading action stack server, message:", _tmpMessage)
 
-        if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
-            if (_tmpMessage->getLock()){
-                DEBASSERT("Locked message directed to SODE_KILLDOA")
-            }
-            else{
-                DEBINF("SL_CO::actionCall_SV setDoaRequested",call_oset)
-                //not here
-                //((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
-				_r_modulus = _tmpMessage->getModulus();
-                PURGEMESSAGE(_tmpMessage)
-                oper = 1;
-            }
-        }
-
-        else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+        if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
             //To ALO
             DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
             call_oset->getALO()->call(_tmpMessage);
@@ -672,11 +670,6 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
                 DEBASSERT("Message coming back form ALO locked")
             }
 
-        }
-        else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
-            //server sm sending to client sm should not happen
-            DEBINF("SL_CO::call action SV to CL directly","")
-            DEBASSERT("Server sm sending to client sm should not happen ")
         }
         else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
             //To network
@@ -711,6 +704,24 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
                 }
             }
         }
+        else if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
+            if (_tmpMessage->getLock()){
+                DEBASSERT("Locked message directed to SODE_KILLDOA")
+            }
+            else{
+                DEBINF("SL_CO::actionCall_SV setDoaRequested",call_oset)
+                //not here
+                //((SL_CC*)(call_oset->getENGINE()))->getCOMAP()->setDoaRequested(call_oset, _tmpMessage->getModulus());
+				_r_modulus = _tmpMessage->getModulus();
+                PURGEMESSAGE(_tmpMessage)
+                oper = 1;
+            }
+        }
+        else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_TRNSCT_CL){
+            //server sm sending to client sm should not happen
+            DEBINF("SL_CO::call action SV to CL directly","")
+            DEBASSERT("Server sm sending to client sm should not happen ")
+        }
         else {
             DEBMESSAGE("SL_CO::call action is unexpected",_tmpMessage)
             DEBINF("SL_CO::call action is unexpected - type of internal",_tmpMessage->getTypeOfInternal())
@@ -720,11 +731,15 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
         DEBINF("pop action","")
         actionList.pop();
     }
+    PRINTDIFF("SL_CO::actionCall_SV() ")
     return oper;
 }
 int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 
 	// now read actions
+    TIMEDEF
+    SETNOW
+    PROFILE("SL_CO::actionCall_CL begin")
 
 	stack<SingleAction> actionList;
 	actionList = action->getActionList();
@@ -737,19 +752,7 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 
 		DEBMESSAGE("SL_CO::reading action stack client, message:", _tmpMessage)
 
-		if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
-			if (_tmpMessage->getLock()){
-				DEBASSERT("Locked message directed to SODE_KILL")
-			}
-			else{
-				DEBINF("SL_CO::actionCall_CL setDoaRequested",call_oset)
-				_r_modulus =  _tmpMessage->getModulus();
-				PURGEMESSAGE(_tmpMessage)
-				oper = 1;
-			}
-		}
-
-		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
+		if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 			// send message to ALO
 			// 200OK B side
 			DEBINF("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
@@ -769,20 +772,6 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 			DEBINF("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << "]["<<_tmpMessage->getHeadCallId().getContent())
 			((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-//			DEBINF("bool ret = sl_cc->p_w(_tmpMess);", ret)
-//			if(!ret){
-//				DEBOUT("SL_CO::actionCall_CL p_w message rejected, put in rejection queue",_tmpMessage)
-//				bool ret2 = ((SL_CC*)call_oset->getENGINE())->p_w_s(_tmpMessage);
-//				if (!ret2){
-//					if (!_tmpMessage->getLock()){
-//						PURGEMESSAGE(_tmpMessage)
-//					}else{
-//						DEBASSERT("should be unlocked")
-//					}
-//
-//				}
-//
-//			}
 
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_OP ){
@@ -820,22 +809,20 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 			else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
 				DEBMESSAGESHORT("SL_CO::call action is internal send to some SM", _tmpMessage )
 				((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-//				DEBINF("bool ret = sl_cc->p_w(_tmpMess);", ret)
-//				if(!ret){
-//					DEBINF("SL_CO::actionCall_CL p_w message rejected, put in rejection queue",_tmpMessage)
-//					bool ret2 = ((SL_CC*)call_oset->getENGINE())->p_w_s(_tmpMessage);
-//					if (!ret2){
-//						if (!_tmpMessage->getLock()){
-//							PURGEMESSAGE(_tmpMessage)
-//						}
-//					}
-//
-//				}
-
-
 			}
 			else {
 				DEBASSERT("SL_CO client operation type inconsistency")
+			}
+		}
+		else if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
+			if (_tmpMessage->getLock()){
+				DEBASSERT("Locked message directed to SODE_KILL")
+			}
+			else{
+				DEBINF("SL_CO::actionCall_CL setDoaRequested",call_oset)
+				_r_modulus =  _tmpMessage->getModulus();
+				PURGEMESSAGE(_tmpMessage)
+				oper = 1;
 			}
 		}
 		else if (_tmpMessage->getDestEntity() == SODE_NOPOINT){
@@ -848,6 +835,7 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 		}
 		actionList.pop();
 	}
+    PRINTDIFF("SL_CO::actionCall_CL() ")
 	return oper;
 }
 

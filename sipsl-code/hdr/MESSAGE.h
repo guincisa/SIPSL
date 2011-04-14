@@ -405,8 +405,10 @@ class MESSAGE : public BASEMESSAGE {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //static multimap<const string, MESSAGE *> globalMessTable;
+#ifdef USEMESSAGEMAP
 extern map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
 extern pthread_mutex_t messTableMtx[MESSAGEMAPS];
+#endif
 extern MESSAGE* MainMessage;
 
 

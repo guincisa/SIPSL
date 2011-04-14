@@ -103,25 +103,10 @@ void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
 
     DEBNTW("TRNSPRT::upCall", _message)
     _sl_cc->p_w((void*)_message);
-//    if(!r){
-//		DEBOUT("TRNSPRT::upCall message rejected, put in rejection queue",_message)
-//		bool ret2 = _sl_cc->p_w_s((void*)_message);
-//		if (!ret2){
-//			if (!_message->getLock()){
-//				PURGEMESSAGE(_message)
-//			}
-//		}
-//
-//    }
+
     PRINTDIFF("TRNSPRT::upCall end ")
 
 }
-void TRNSPRT::parse_s(void* _message){
-
-            RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
-
-}
-
 void TRNSPRT::parse(void* __message){
 
 	//RETRANSMISSIONS
@@ -159,13 +144,14 @@ void TRNSPRT::parse(void* __message){
 	//for timeouts (
 	//for errors messages from network
 
+    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+
 	MESSAGE* _message = (MESSAGE*)__message;
 
         PROFILE("TRNSPRT::downCall start ")
         TIMEDEF
         SETNOW
 
-        RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
 
         DEBNTW("TRNSPRT::downCall", _message)
 

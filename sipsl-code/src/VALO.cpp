@@ -201,18 +201,7 @@ void VALO::onInvite(MESSAGE* _message){
 	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message->getSourceMessage() ));
 	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
 
-	bool ret = sl_cc->p_w(message);
-	DEBALO("bool ret = sl_cc->p_w(_tmpMess);", ret)
-	if(!ret){
-		DEBALO("VALO::onInvite p_w message rejected, put in rejection queue",message)
-		bool ret2 = sl_cc->p_w_s(message);
-		if (!ret2){
-			if (!message->getLock()){
-				PURGEMESSAGE(message)
-			}
-		}
-
-	}
+	sl_cc->p_w(message);
 
      PRINTDIFF("VALO::onInvite")
 
@@ -328,20 +317,8 @@ void VALO::onAck(MESSAGE* _message){
 
 
 	DEBMESSAGE("New outgoing b2b message", newack)
-	bool ret = sl_cc->p_w(newack);
-	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
-	if(!ret){
-		DEBOUT("VALO::onAck p_w message rejected, put in rejection queue",newack)
-		bool ret2 = sl_cc->p_w_s(newack);
-		if (!ret2){
-			if (!newack->getLock()){
-				PURGEMESSAGE(newack)
-			}
-		}
-
-	}
-
-        PRINTDIFF("VALO::onAck")
+	sl_cc->p_w(newack);
+    PRINTDIFF("VALO::onAck")
 
 
 }
@@ -507,18 +484,8 @@ void VALO::onBye(MESSAGE* _message){
 		//message->dumpVector();
 		//done in the client sm
 		//message->setLock();
-		bool ret = sl_cc->p_w(message);
-		DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
-		if(!ret){
-			DEBOUT("VALO::onBye p_w message rejected, put in rejection queue",message)
-			bool ret2 = sl_cc->p_w_s(message);
-			if (!ret2){
-				if (!message->getLock()){
-					PURGEMESSAGE(message)
-				}
-			}
+		sl_cc->p_w(message);
 
-		}
 
 
 	}
@@ -564,19 +531,7 @@ void VALO::onBye(MESSAGE* _message){
 		//done in client sm
 		//message->setLock();
 		//call_oset->insertLockedMessage(message);
-		bool ret = sl_cc->p_w(message);
-		DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
-		if(!ret){
-			DEBOUT("VALO::onBye message rejected, put in rejection queue",message)
-			bool ret2 = sl_cc->p_w_s(message);
-			if (!ret2){
-				if (!message->getLock()){
-					PURGEMESSAGE(message)
-				}
-			}
-
-		}
-
+		sl_cc->p_w(message);
 
 	}
         PRINTDIFF("VALO::onBye")
@@ -669,20 +624,8 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	//ok_x->dumpVector();
 
-	bool ret = sl_cc->p_w(ok_x);
-	DEBOUT("bool ret = sl_cc->p_w(_tmpMess);", ret)
-	if(!ret){
-		DEBOUT("VALO::on200ok message rejected, put in rejection queue",ok_x)
-		bool ret2 = sl_cc->p_w_s(ok_x);
-		if (!ret2){
-			if (!ok_x->getLock()){
-				PURGEMESSAGE(ok_x)
-			}
-		}
-
-	}
-
-        PRINTDIFF("VALO::on200Ok")
+	sl_cc->p_w(ok_x);
+    PRINTDIFF("VALO::on200Ok")
 
 
 }

@@ -122,22 +122,22 @@ ENGINE::ENGINE(int _i) {
 
 
     }
-    ENGtuple *ts[2];
-
-    int j;
-    for ( j = 0 ; j < 2 ; j++){
-
-    	NEWPTR2(ts[j], ENGtuple, "ENGtuple")
-
-        ts[j]->ps = this;
-        ts[j]->id = 0;
-
-    	NEWPTR2(parsethread_s[j], ThreadWrapper(), "ThreadWrapper()")
-
-        res = pthread_create(&(parsethread_s[j]->thread), NULL, threadparser_s, (void *) ts[j]);
-
-
-    }
+//    ENGtuple *ts[2];
+//
+//    int j;
+//    for ( j = 0 ; j < 2 ; j++){
+//
+//    	NEWPTR2(ts[j], ENGtuple, "ENGtuple")
+//
+//        ts[j]->ps = this;
+//        ts[j]->id = 0;
+//
+//    	NEWPTR2(parsethread_s[j], ThreadWrapper(), "ThreadWrapper()")
+//
+//        res = pthread_create(&(parsethread_s[j]->thread), NULL, threadparser_s, (void *) ts[j]);
+//
+//
+//    }
 
     sudp = 0x0;
 }
@@ -188,29 +188,29 @@ bool ENGINE::p_w(void* _m) {
 }
 //**********************************************************************************
 //**********************************************************************************
-bool ENGINE::p_w_s(void* _m) {
-
-    GETLOCK(&(rej.condvarmutex),"rej.condvarmutex");
-    bool r = rej.put(_m);
-    DEBOUT("ENGINE::p_w_s put returned",_m << " "<<r)
-    if (!r){
-    	DEBOUT("ENGINE::p_w_s put returned false", _m)
-    }else {
-        //Otherwise the message is parsed
-        pthread_cond_signal(&(rej.condvar));
-    }
-    RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
-    return r;
-
-}
-void ENGINE::lockBuffer(void){
-    DEBOUT("ENGINE::lockBuffer",this)
-    sb.lockBuffer();
-}
-void ENGINE::unLockBuffer(void){
-    DEBOUT("ENGINE::unLockBuffer",this)
-    sb.unLockBuffer();
-}
+//bool ENGINE::p_w_s(void* _m) {
+//
+//    GETLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+//    bool r = rej.put(_m);
+//    DEBOUT("ENGINE::p_w_s put returned",_m << " "<<r)
+//    if (!r){
+//    	DEBOUT("ENGINE::p_w_s put returned false", _m)
+//    }else {
+//        //Otherwise the message is parsed
+//        pthread_cond_signal(&(rej.condvar));
+//    }
+//    RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+//    return r;
+//
+//}
+//void ENGINE::lockBuffer(void){
+//    DEBOUT("ENGINE::lockBuffer",this)
+//    sb.lockBuffer();
+//}
+//void ENGINE::unLockBuffer(void){
+//    DEBOUT("ENGINE::unLockBuffer",this)
+//    sb.unLockBuffer();
+//}
 
 //**********************************************************************************
 //**********************************************************************************
@@ -259,32 +259,32 @@ void * threadparser (void * _pt){
 }
 //**********************************************************************************
 //**********************************************************************************
-void * threadparser_s (void * _pt){
-
-    ENGtuple *pt = (ENGtuple *)  _pt;
-    ENGINE * ps = pt->ps;
-    while(true) {
-        DEBOUT("ENGINE thread",_pt)
-            GETLOCK(&(ps->rej.condvarmutex),"ps->rej.condvarmutex");
-        while(ps->rej.isEmpty() ) {
-            DEBOUT("ENGINE thread is empty",_pt)
-            pthread_cond_wait(&(ps->rej.condvar), &(ps->rej.condvarmutex));
-        }
-        DEBOUT("ENGINE thread freed", _pt)
-        void* m = ps->rej.get();
-#ifdef USE_SPINB
-        if (m == NULL)  {
-            DEBOUT("ENGINE thread NULL",_pt)
-            ps->sb.move();
-            //aggiunta il 30 luglio 2010
-            RELLOCK(&(ps->sb.condvarmutex),"ps->rej.condvarmutex");
-        }
-        else {
-#endif
-            pt->ps->parse_s(m);
-#ifdef USE_SPINB
-        }
-#endif
-    }
-    return (NULL);
-}
+//void * threadparser_s (void * _pt){
+//
+//    ENGtuple *pt = (ENGtuple *)  _pt;
+//    ENGINE * ps = pt->ps;
+//    while(true) {
+//        DEBOUT("ENGINE thread",_pt)
+//            GETLOCK(&(ps->rej.condvarmutex),"ps->rej.condvarmutex");
+//        while(ps->rej.isEmpty() ) {
+//            DEBOUT("ENGINE thread is empty",_pt)
+//            pthread_cond_wait(&(ps->rej.condvar), &(ps->rej.condvarmutex));
+//        }
+//        DEBOUT("ENGINE thread freed", _pt)
+//        void* m = ps->rej.get();
+//#ifdef USE_SPINB
+//        if (m == NULL)  {
+//            DEBOUT("ENGINE thread NULL",_pt)
+//            ps->sb.move();
+//            //aggiunta il 30 luglio 2010
+//            RELLOCK(&(ps->sb.condvarmutex),"ps->rej.condvarmutex");
+//        }
+//        else {
+//#endif
+//            pt->ps->parse_s(m);
+//#ifdef USE_SPINB
+//        }
+//#endif
+//    }
+//    return (NULL);
+//}
