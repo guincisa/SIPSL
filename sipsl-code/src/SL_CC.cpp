@@ -116,31 +116,15 @@ void SL_CC::linkSipEngine(ENGINE* _sipengine){
 }
 //**********************************************************************************
 //**********************************************************************************
-void SL_CC::parse_s(void* __mess) {
-
-	MESSAGE* _mess = (MESSAGE*)__mess;
-
-    DEBOUT("SL_CC::parse_s", _mess)
-    RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
-
-    //Unlock it at the end
-    //sipengine->lockBuffer();
-
-    //Trick because the parse below does an unlock...
-    GETLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-    parse(_mess);
-    //sipengine->unLockBuffer();
-    return;
-}
-//**********************************************************************************
 //**********************************************************************************
 void SL_CC::parse(void* __mess){
 
     RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-	MESSAGE* _mess = (MESSAGE*)__mess;
-    PROFILE("SL_CC::parse start")
+    PROFILE("SL_CC::parse() start")
     TIMEDEF
     SETNOW
+
+	MESSAGE* _mess = (MESSAGE*)__mess;
 
     DEBOUT("SL_CC::parse", _mess)
     DEBMESSAGESHORT("SL_CC::parse", _mess)
@@ -196,7 +180,7 @@ void SL_CC::parse(void* __mess){
                 DEBY
             }
             //MEssage has been worked by SL_CO
-            PRINTDIFF("SL_CC::parse end")
+            PRINTDIFF("SL_CC::parse() end")
             return;
         }
         // Then try to get call object using y side params
@@ -226,7 +210,7 @@ void SL_CC::parse(void* __mess){
 //                    DEBINF("Put this message into the locked messages table",_mess)
 //                    //MLF2 can be locked if creates a sm
 //                }
-                PRINTDIFF("SL_CC::parse end")
+                PRINTDIFF("SL_CC::parse() end")
                 return;
             }
         }
@@ -267,7 +251,7 @@ void SL_CC::parse(void* __mess){
             }else {
                 DEBY
             }
-            PRINTDIFF("SL_CC::parse end")
+            PRINTDIFF("SL_CC::parse() end")
             return;
         }
         else {
@@ -277,8 +261,8 @@ void SL_CC::parse(void* __mess){
             }else {
                  DEBASSERT ("Unexpected message ignored found locked")
             }
-            PRINTDIFF("SL_CC::parse end")
         	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
+            PRINTDIFF("SL_CC::parse() end")
             return;
         }
     }
@@ -329,7 +313,7 @@ void SL_CC::parse(void* __mess){
                 } else{
                     DEBY
                 }
-                PRINTDIFF("SL_CC::parse end")
+                PRINTDIFF("SL_CC::parse() end")
                 return;
             }else{
                 //Not existent or deleted
@@ -360,14 +344,13 @@ void SL_CC::parse(void* __mess){
             }else{
                 DEBY
             }
-            PRINTDIFF("SL_CC::parse end")
+            PRINTDIFF("SL_CC::parse() end")
             return;
         }
     } else {
         DEBINF("Unexpected source of the message", _mess->getGenEntity())
         DEBASSERT("")
     }
-    PRINTDIFF("SL_CC::parse end")
-
+    PRINTDIFF("SL_CC::parse() end")
     return;
 }

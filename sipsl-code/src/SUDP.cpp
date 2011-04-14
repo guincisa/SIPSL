@@ -146,9 +146,11 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
     echoServAddr.sin_port = htons(echoServPort);      /* Local port */
 
     //Init mutex
+#ifdef USEMESSAGEMAP
     for (int i = 0; i < MESSAGEMAPS;i++){
     	pthread_mutex_init(&messTableMtx[i],NULL);
     }
+#endif
     /* Bind to the local address */
     if (bind(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
         DEBERROR("bind() failed)");
@@ -217,15 +219,7 @@ void SUDP::listen(int i) {
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
                 engine->p_w((void*)message);
-                PRINTDIFF("SUDP:Message sent to SIPENGINE")
-//                if (!r){
-//                    DEBOUT("SUDP::listen() message rejected, put in rejection queue",message)
-//                    bool rr = engine->p_w_s((void*)message);
-//                    if (!rr){
-//                        DEBOUT("SUDP::listen() message rejected by s queue",message)
-//                        PURGEMESSAGE(message)
-//                    }
-//                }
+                PRINTDIFF("SUDP::listen() Message sent to SIPENGINE")
             }else {
                 DEBERROR("SUDP::listen() could not allocate memory for incoming message")
             }

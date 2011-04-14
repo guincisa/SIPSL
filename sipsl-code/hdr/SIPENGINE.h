@@ -37,7 +37,6 @@ class SIPENGINE : public ENGINE {
     public:
 
         void parse(void *);
-        void parse_s(void *);
 
         SIPENGINE(int);
 

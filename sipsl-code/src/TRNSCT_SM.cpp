@@ -198,17 +198,18 @@ ACTION* SM::event(MESSAGE* _event){
         }
     }
 
-    //DEBCODE
-//    if(act != 0x0){
-//		stack<SingleAction> actionList = act->getActionList();
-//		while (!actionList.empty()){
-//			MESSAGE* _tmpMessage = actionList.top().getMessage();
-//			if (_tmpMessage == _event){
-//				DEBASSERT("DID not duplicate event message")
-//			}
-//			actionList.pop();
-//		}
-//    }
+#ifdef DEBCODE
+    if(act != 0x0){
+		stack<SingleAction> actionList = act->getActionList();
+		while (!actionList.empty()){
+			MESSAGE* _tmpMessage = actionList.top().getMessage();
+			if (_tmpMessage == _event){
+				DEBASSERT("DID not duplicate event message")
+			}
+			actionList.pop();
+		}
+    }
+#endif
     return(act);
 }
 //**********************************************************************************
@@ -1662,14 +1663,38 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(by);
 	action->addSingleAction(sa_1);
 
+//	//BYE V2
+	//new code
+	//**************************************
+	//Action 2: 100 TRY is created and sent to NTW
+	//This message is stored so it is meant for more thing so I have to lock it
+	CREATEMESSAGE(a200ok, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
+	SipUtil.genQuickReplyFromInvite(_message, a200ok,"SIP/2.0 200 OK");
+	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = a200ok;
+	DEBOUT("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
+	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
+	SingleAction sa_2 = SingleAction(a200ok);
+	action->addSingleAction(sa_2);
+
+	CREATEMESSAGE(___message, ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE, SODE_TRNSCT_SV, SODE_KILLDOA)
+	SingleAction sa_3 = SingleAction(___message);
+	action->addSingleAction(sa_3);
+
 
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
-	DEBOUT("TRSNCT_INV_SV::act_bye_to_alo move to state 1","")
-	_sm->State = 1;
+
+	//BYE V2
+	//DEBOUT("TRSNCT_INV_SV::act_bye_to_alo move to state 1","")
+	//_sm->State = 1;
+	DEBOUT("TRSNCT_INV_SV::act_bye_to_alo move to state 2","")
+	DEBOUT("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
+	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
+	DEBOUT("SM act_200ok_bye_to_a move to state 2","")
+	_sm->State = 2;
 
 	return action;
 
@@ -1680,32 +1705,35 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
-	//Store this 200 OK for retransmission
-
-	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = _message;
-	DEBOUT("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
-	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
-
-	//**************************************
-	//Action 1:
-	CREATEMESSAGE(mess, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
-	SingleAction sa_1 = SingleAction(mess);
-	action->addSingleAction(sa_1);
+	//BYE V2
+	//will never be triggered
+//	//Store this 200 OK for retransmission
+//
+//	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = _message;
+//	DEBOUT("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
+//	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
+//
+//	//**************************************
+//	//Action 1:
+//	CREATEMESSAGE(mess, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
+//	SingleAction sa_1 = SingleAction(mess);
+//	action->addSingleAction(sa_1);
 
 	//**************************************
 	//Action TIMER_S
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
-	CREATEMESSAGE(___message, _message, SODE_TRNSCT_SV, SODE_KILLDOA)
-	SingleAction sa_3 = SingleAction(___message);
-	action->addSingleAction(sa_3);
-
-
-	DEBOUT("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
-
-	DEBOUT("SM act_200ok_bye_to_a move to state 2","")
-	_sm->State = 2;
+	//BYE V2
+//	CREATEMESSAGE(___message, _message, SODE_TRNSCT_SV, SODE_KILLDOA)
+//	SingleAction sa_3 = SingleAction(___message);
+//	action->addSingleAction(sa_3);
+//
+//
+//	DEBOUT("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
+//	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
+//
+//	DEBOUT("SM act_200ok_bye_to_a move to state 2","")
+//	_sm->State = 2;
 
 	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
 
@@ -1720,9 +1748,16 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	//**************************************
 	//Action 1: resend 200 ok
-	CREATEMESSAGE(___message, ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE, SODE_TRNSCT_SV, SODE_KILLDOA)
-	SingleAction sa_1 = SingleAction(___message);
-	action->addSingleAction(sa_1);
+	//BYE V2
+//	CREATEMESSAGE(___message, ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE, SODE_TRNSCT_SV, SODE_KILLDOA)
+//	SingleAction sa_1 = SingleAction(___message);
+//	action->addSingleAction(sa_1);
+
+
+	//BYE V2
+	SingleAction sa_2 = SingleAction(((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE);
+	action->addSingleAction(sa_2);
+
 
 	//**************************************
 	//Action TIMER_S
@@ -1767,6 +1802,7 @@ TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGIN
 
 	STORED_MESSAGE = MainMessage;
 
+	//BYE V2 PA have wrong names
 	PA_BYE_0_1SV.predicate = &pre_bye_from_a;
 	PA_BYE_0_1SV.action = &act_bye_to_alo;
 
@@ -1937,7 +1973,8 @@ TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 		PA_BYE_1_1CL((SM*)this),
 		PA_BYE_1_99CL((SM*)this),
 		PA_BYE_1_2CL((SM*)this),
-		PA_BYE_S_CL((SM*)this){
+		PA_BYE_S_CL((SM*)this),
+		PA_BYE_2_2CL((SM*)this){
 
 	PA_BYE_0_1CL.predicate = &pre_bye_from_alo;
 	PA_BYE_0_1CL.action = &act_bye_to_b;
@@ -1954,6 +1991,11 @@ TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 	PA_BYE_S_CL.predicate = &pre_timer_s_cl;
 	PA_BYE_S_CL.action = &act_timer_s_cl;
 
+	//New sm rework
+	PA_BYE_2_2CL.predicate = &pre_200ok_from_b;
+	PA_BYE_2_2CL.action = &act_200ok_bye_to_alo;
+
+
 
 	insert_move(0,&PA_BYE_0_1CL);
 	insert_move(0,&PA_BYE_S_CL);
@@ -1964,6 +2006,9 @@ TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 	insert_move(1,&PA_BYE_1_99CL);
 
 	insert_move(1,&PA_BYE_1_2CL);
+
+	insert_move(2,&PA_BYE_2_2CL);
+
 
 	resend_bye = 1;
 

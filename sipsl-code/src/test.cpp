@@ -69,8 +69,10 @@
 #include "TRNSPRT.h"
 #endif
 
+#ifdef USEMESSAGEMAP
 map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
 pthread_mutex_t messTableMtx[MESSAGEMAPS];
+#endif
 MESSAGE* MainMessage;
 //CALL_OSET* MainOset;
 
@@ -79,6 +81,56 @@ void ex_program(int sig) {
 	DEBASSERT("...")
 // (void) signal(SIGINT, SIG_DFL);
 }
+
+class TESTMESS {
+public:
+	string message;
+	int id;
+};
+class TESTENGINE_1 : public ENGINE {
+
+    private:
+        int dummy;
+
+    public:
+
+        TESTENGINE_1(int);
+
+        void parse(void*); //downcall
+
+        pthread_mutex_t lockth[8];
+
+
+};
+
+TESTENGINE_1::TESTENGINE_1(int _i):ENGINE(_i){
+
+	pthread_mutex_lock(&lockth[0]);
+	pthread_mutex_lock(&lockth[1]);
+	pthread_mutex_lock(&lockth[2]);
+	pthread_mutex_lock(&lockth[3]);
+	pthread_mutex_lock(&lockth[4]);
+	pthread_mutex_lock(&lockth[5]);
+	pthread_mutex_lock(&lockth[6]);
+	pthread_mutex_lock(&lockth[7]);
+
+};
+
+void TESTENGINE_1::parse(void* __message){
+    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+    TIMEDEF
+    SETNOW
+
+    if (((TESTMESS*)__message)->id >= 0){
+		pthread_mutex_lock(&lockth[((TESTMESS*)__message)->id]);
+    }
+    else{
+
+    }
+    DEBOUT("TESTENGINE_1 parse Processed",((TESTMESS*)__message)->id)
+    PRINTDIFF("TESTENGINE_1::parse "<< ((TESTMESS*)__message)->id)
+};
+
 
 
 int main(int argc, const char* argv[]) {
@@ -145,6 +197,122 @@ int main(int argc, const char* argv[]) {
 		return 0;
 	}
 	else {
+		//Engine test
+		cout << "Engine test" << endl;
+
+		NEWPTR(TESTENGINE_1*, testengine, TESTENGINE_1(8),"TESTENGINE_1")
+
+		TESTMESS* mess0 = new TESTMESS;
+		mess0->id = 0;
+		TESTMESS* mess1 = new TESTMESS;
+		mess1->id = 1;
+		TESTMESS* mess2 = new TESTMESS;
+		mess2->id = 2;
+
+		TESTMESS* mess3 = new TESTMESS;
+		mess3->id = 3;
+
+		TESTMESS* mess4= new TESTMESS;
+		mess4->id = 4;
+
+		TESTMESS* mess5= new TESTMESS;
+		mess5->id = 5;
+
+		TESTMESS* mess6= new TESTMESS;
+		mess6->id = 6;
+
+		TESTMESS* mess7= new TESTMESS;
+		mess7->id = 7;
+
+		TESTMESS* mess8= new TESTMESS;
+		mess8->id = -8;
+
+		TESTMESS* mess9= new TESTMESS;
+		mess9->id = -9;
+
+		TESTMESS* mess10= new TESTMESS;
+		mess10->id = -10;
+
+
+        TIMEDEF
+
+        SETNOW
+		testengine->p_w((void*)mess0);
+        PRINTDIFF("testengine->p_w((void*)mess0)")
+
+        SETNOW
+		testengine->p_w((void*)mess1);
+        PRINTDIFF("testengine->p_w((void*)mess1)")
+
+        SETNOW
+		testengine->p_w((void*)mess2);
+        PRINTDIFF("testengine->p_w((void*)mess2)")
+
+        SETNOW
+		testengine->p_w((void*)mess3);
+        PRINTDIFF("testengine->p_w((void*)mess3)")
+
+        SETNOW
+		testengine->p_w((void*)mess4);
+        PRINTDIFF("testengine->p_w((void*)mess4)")
+        SETNOW
+		testengine->p_w((void*)mess5);
+        PRINTDIFF("testengine->p_w((void*)mess5)")
+        SETNOW
+		testengine->p_w((void*)mess6);
+        PRINTDIFF("testengine->p_w((void*)mess6)")
+        SETNOW
+		testengine->p_w((void*)mess7);
+        PRINTDIFF("testengine->p_w((void*)mess7)")
+
+
+        SETNOW
+		testengine->p_w((void*)mess8);
+        PRINTDIFF("testengine->p_w((void*)mess8)")
+
+        SETNOW
+		testengine->p_w((void*)mess9);
+        PRINTDIFF("testengine->p_w((void*)mess9)")
+
+        SETNOW
+		testengine->p_w((void*)mess10);
+        PRINTDIFF("testengine->p_w((void*)mess10)")
+
+
+		//Test per vedere tempo medio di inserimento
+//      SETNOW
+//		for (int ii = 0; ii < 1000 ; ii ++){
+//			testengine->p_w((void*)mess10);
+//		}
+//        PRINTDIFF("1000 inserts")
+
+
+        SETNOW
+			timespec sleep_time;
+			sleep_time.tv_sec = 120;
+			sleep_time.tv_nsec = 10000000;
+
+			nanosleep(&sleep_time,NULL);
+
+
+    	pthread_mutex_unlock(&testengine->lockth[0]);
+    	pthread_mutex_unlock(&testengine->lockth[1]);
+    	pthread_mutex_unlock(&testengine->lockth[2]);
+    	pthread_mutex_unlock(&testengine->lockth[3]);
+    	pthread_mutex_unlock(&testengine->lockth[4]);
+    	pthread_mutex_unlock(&testengine->lockth[5]);
+    	pthread_mutex_unlock(&testengine->lockth[6]);
+    	pthread_mutex_unlock(&testengine->lockth[7]);
+
+        PRINTDIFF("test")
+
+		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
+		int res = pthread_mutex_lock(&gu);
+		res = pthread_mutex_lock(&gu);
+		res = pthread_mutex_lock(&gu);
+
+
+		return 0;
 		cout << "test 1 Via" << endl;
 
 		string s = "SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bKb0a1b1f81282750073027419;rport";

@@ -86,12 +86,13 @@ class ThreadWrapper {
 #define SPINSTL
 
 #ifdef SPARC
+//#define USEMESSAGEMAP
 #define SUDPTH 5
 #define MAXTHREADS 64
-#define COMAPS 20
+#define COMAPS 40
 #define COMAPS_DIG 2
-#define SIPENGINETH 32
-#define TRNSPRTTH 32
+#define SIPENGINETH 64
+#define TRNSPRTTH 64
 #define SL_CCTH 64
 #define ARR 4000
 #define ARR_SHORT 30
@@ -198,6 +199,8 @@ class ThreadWrapper {
 #undef TRYCATCH
 #define TRYCATCH(m) try { m; } catch (exception& e) { DEBOUT("TRYCATCH", e.what()) DEBASSERT("Exception")}
 #undef PURGEMESSAGE
+
+#ifdef USEMESSAGEMAP
 #define PURGEMESSAGE(m1)  { \
 	if (m1 == MainMessage){DEBASSERT("Purging MainMessage")}\
 	if (m1->getLock()) {DEBASSERT("Purging a locked message")}\
@@ -240,7 +243,31 @@ class ThreadWrapper {
 				GETLOCK(&messTableMtx[i],"&messTableMtx"<<i);\
 				globalMessTable[i].insert(pair<const MESSAGE*, MESSAGE*>(__mess, __mess));\
 				RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);}}
+#else
+#define PURGEMESSAGE(m1)  DELPTR(m1,"MESSAGE")
+#define CREATEMESSAGE(m1, m2, gen, dest) MESSAGE* m1=0x0; {char bu[512];\
+				SysTime inTime;\
+				GETTIME(inTime);\
+				NEWPTR2(m1, MESSAGE(m2, gen, inTime),"MESSAGE");\
+				m1->setDestEntity(dest);\
+				int i= m1->getTotLines();\
+				DEBDEV("New MESSAGE"," " << i);\
+				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
+				sprintf(bu, "%x%llu",(unsigned int)m1,num);\
+				string key(bu);\
+				m1->setKey(key);}
 
+#define CREATENEWMESSAGE_EXT(__mess, __echob, __sock, __echoAddr, __sode) {char bu[512];\
+				SysTime inTime;\
+				GETTIME(inTime);\
+				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
+				DEBY \
+				if (__mess != 0x0 ) {long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
+				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
+				string key(bu);\
+				__mess->setKey(key);}}
+
+#endif
 //**********************************************************
 #ifdef PROFILING
 //#define PROFILE(m) DEBOUT("PROFILING",m)
@@ -480,7 +507,7 @@ class ThreadWrapper {
 inline int getModulus(void* pointer) {
 
 	//Addresses are all multiple of ADDRESSPACE
-	DEBOUT("MESSAGE pointer modulus",(long long unsigned int)pointer)
+	//DEBOUT("MESSAGE pointer modulus",(long long unsigned int)pointer)
 	int i = (int)((long long unsigned int)pointer % (MESSAGEMAPS*ADDRESSPACE));
 	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i/ADDRESSPACE)
 	return i/ADDRESSPACE;
