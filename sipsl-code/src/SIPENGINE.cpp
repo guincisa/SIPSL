@@ -113,9 +113,9 @@ void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
 //*********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-void SIPENGINE::parse(void* __mess) {
+void SIPENGINE::parse(void* __mess, int _mmod) {
 
-    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+    RELLOCK(&(sb[_mmod].condvarmutex),"sb"<<_mmod<<".condvarmutex");
 
     PROFILE("SIPENGINE::parse() start")
     TIMEDEF

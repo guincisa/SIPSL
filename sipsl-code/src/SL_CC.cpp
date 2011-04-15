@@ -117,9 +117,9 @@ void SL_CC::linkSipEngine(ENGINE* _sipengine){
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-void SL_CC::parse(void* __mess){
+void SL_CC::parse(void* __mess, int _mmod){
 
-    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+    RELLOCK(&(sb[_mmod].condvarmutex),"sb"<<_mmod<<".condvarmutex");
     PROFILE("SL_CC::parse() start")
     TIMEDEF
     SETNOW

@@ -218,6 +218,11 @@ void SUDP::listen(int i) {
             CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
+
+				//ENGINEMAPS
+				//problem if not sip...?
+                message->getTotLines();
+
                 engine->p_w((void*)message);
                 PRINTDIFF("SUDP::listen() Message sent to SIPENGINE")
             }else {
