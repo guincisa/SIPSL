@@ -38,6 +38,6 @@ class TRNSPRT : public ENGINE {
         TRNSPRT(int);
 
         void upCall(MESSAGE*, SL_CC*);
-        void parse(void*); //downcall
+        void parse(void*,int); //downcall
 
 };

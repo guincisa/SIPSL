@@ -279,6 +279,13 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(m2alo);
 	action->addSingleAction(sa_1);
 
+
+	//**************************************
+	//Action 3: TIMER_S
+	// A timer must be always sent locked
+	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
+	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
+
 	//**************************************
 	//Action 2: 100 TRY is created and sent to NTW
 	//This message is stored so it is meant for more thing so I have to lock it
@@ -288,13 +295,6 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock(_sm->getSL_CO()->call_oset);
 	SingleAction sa_2 = SingleAction(etry);
 	action->addSingleAction(sa_2);
-
-	//**************************************
-	//Action 3: TIMER_S
-	// A timer must be always sent locked
-	action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
-	//action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
-
 
 	//**************************************
 	//Local state 1

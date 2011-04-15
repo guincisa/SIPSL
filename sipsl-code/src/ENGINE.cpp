@@ -106,44 +106,72 @@ ENGINE::ENGINE(int _i) {
     if ( _i > MAXTHREADS)
     	_i = MAXTHREADS;
 
+    //Check if _i is divisible by ENGINEMAPS
+    //if not substract the rest
+    // if it gives 0 set to ENGINEMAPS
+    int r = _i % ENGINEMAPS;
+    if ( r != 0){
+    	_i = _i - r;
+    	if (_i == 0){
+    		_i = ENGINEMAPS;
+    	}
+    }
+
     ENGtuple *t[MAXTHREADS];
 
-    int i;
-    for ( i = 0 ; i < _i ; i++){
-
-    	NEWPTR2(t[i], ENGtuple, "ENGtuple")
-
-        t[i]->ps = this;
-        t[i]->id = 0;
-
-    	NEWPTR2(parsethread[i], ThreadWrapper(), "ThreadWrapper()")
-
-        res = pthread_create(&(parsethread[i]->thread), NULL, threadparser, (void *) t[i]);
-
-
-    }
-//    ENGtuple *ts[2];
+//    int i;
+//    for ( i = 0 ; i < _i ; i++){
 //
-//    int j;
-//    for ( j = 0 ; j < 2 ; j++){
+//    	NEWPTR2(t[i], ENGtuple, "ENGtuple")
 //
-//    	NEWPTR2(ts[j], ENGtuple, "ENGtuple")
+//        t[i]->ps = this;
+//        t[i]->id = 0;
 //
-//        ts[j]->ps = this;
-//        ts[j]->id = 0;
+//    	NEWPTR2(parsethread[i], ThreadWrapper(), "ThreadWrapper()")
 //
-//    	NEWPTR2(parsethread_s[j], ThreadWrapper(), "ThreadWrapper()")
-//
-//        res = pthread_create(&(parsethread_s[j]->thread), NULL, threadparser_s, (void *) ts[j]);
+//        res = pthread_create(&(parsethread[i]->thread), NULL, threadparser, (void *) t[i]);
 //
 //
 //    }
+
+    //TODO terrible!!!
+    // if _i not divisible by ENGINEMAPS
+    int k = 0;
+    int rapp = _i / ENGINEMAPS;
+	for ( int i = 0 ; i < ENGINEMAPS ; i++){
+		for (int j = 0 ; j < rapp; j ++){
+
+			NEWPTR2(t[k], ENGtuple, "ENGtuple"<<k)
+
+			t[k]->ps = this;
+			t[k]->id = 0;
+			t[k]->mmod = i;
+
+
+			NEWPTR2(parsethread[k], ThreadWrapper(), "ThreadWrapper()"<<k)
+
+			res = pthread_create(&(parsethread[k]->thread), NULL, threadparser, (void *) t[k]);
+
+			k ++;
+
+		}
+	}
 
     sudp = 0x0;
 }
 //**********************************************************************************
 //**********************************************************************************
-void ENGINE::parse(void* m) {
+
+int ENGINE::modEngineMap(MESSAGE* _message){
+
+	int mm = _message->getModulus() % ENGINEMAPS;
+	DEBOUT("ENGINE::modEngineMap", _message << "][" << _message->getModulus() <<"]["<<mm)
+	return mm;
+}
+
+//**********************************************************************************
+//**********************************************************************************
+void ENGINE::parse(void* m, int mm) {
     DEBERROR("ENGINE::parse illegal invocation")
 #ifndef TESTING
     assert(0);
@@ -161,8 +189,13 @@ SUDP* ENGINE::getSUDP(void){
 //**********************************************************************************
 bool ENGINE::p_w(void* _m) {
 
-    DEBOUT("bool ENGINE::p_w(void* _m) ", _m)
-    GETLOCK(&(sb.condvarmutex),"[" << this << "] sb.condvarmutex");
+	int mmod = modEngineMap((MESSAGE*)_m);
+    DEBOUT("bool ENGINE::p_w(void* _m) ", _m << "] modulus SP["<<mmod)
+
+    GETLOCK(&(sb[mmod].condvarmutex),"[" << this << "] sb["<< mmod << "].condvarmutex");
+
+    TIMEDEF
+    SETNOW
 
 #ifdef MESSAGEUSAGE
     int i = getModulus((MESSAGE*)_m);
@@ -171,8 +204,8 @@ bool ENGINE::p_w(void* _m) {
     RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);
 #endif
 
-    sb.put(_m);
-    pthread_cond_signal(&(sb.condvar));
+    sb[mmod].put(_m);
+    pthread_cond_signal(&(sb[mmod].condvar));
 //    bool r = sb.put(_m);
 //    DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
 //    if (!r){
@@ -181,7 +214,8 @@ bool ENGINE::p_w(void* _m) {
 //        //Otherwise the message is parsed
 //        pthread_cond_signal(&(sb.condvar));
 //    }
-    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
+    PRINTDIFF("ENGINE::p_w")
+    RELLOCK(&(sb[mmod].condvarmutex),"sb["<< mod<<"].condvarmutex");
     return true;
 
 
@@ -217,16 +251,17 @@ bool ENGINE::p_w(void* _m) {
 void * threadparser (void * _pt){
 
     ENGtuple *pt = (ENGtuple *)  _pt;
+    int mmod = ((ENGtuple *)  _pt)->mmod;
     ENGINE * ps = pt->ps;
     while(true) {
         DEBOUT("ENGINE thread",_pt)
-            GETLOCK(&(ps->sb.condvarmutex),"ps->sb.condvarmutex");
-        while(ps->sb.isEmpty() ) {
+            GETLOCK(&(ps->sb[mmod].condvarmutex),"ps->sb["<<mmod<<"].condvarmutex");
+        while(ps->sb[mmod].isEmpty() ) {
             DEBOUT("ENGINE thread is empty",_pt)
-            pthread_cond_wait(&(ps->sb.condvar), &(ps->sb.condvarmutex));
+            pthread_cond_wait(&(ps->sb[mmod].condvar), &(ps->sb[mmod].condvarmutex));
         }
         DEBOUT("ENGINE thread freed", _pt)
-        void* m = ps->sb.get();
+        void* m = ps->sb[mmod].get();
 #ifdef USE_SPINB
         if (m == NULL)  {
             DEBOUT("ENGINE thread NULL",_pt)
@@ -249,7 +284,7 @@ void * threadparser (void * _pt){
     RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);
 #endif
 
-            pt->ps->parse(m);
+            pt->ps->parse(m, mmod);
 
 #ifdef USE_SPINB
         }

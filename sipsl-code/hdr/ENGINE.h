@@ -41,6 +41,7 @@ class SPINS;
 typedef struct _ENGtuple {
     ENGINE * ps;
     int id;
+    int mmod;
 } ENGtuple;
 //**********************************************************************************
 //**********************************************************************************
@@ -57,12 +58,14 @@ class ENGINE {
 
         SUDP* sudp;
 
+        int modEngineMap(MESSAGE*);
+
     public:
 
 #ifdef TESTING
 		virtual void parse(void* message);
 #else
-		virtual void parse(void* message) = 0;
+		virtual void parse(void* message, int _mmod) = 0;
 
 #endif
 
@@ -75,8 +78,7 @@ class ENGINE {
 #ifdef USE_SPINB
     	SPINB sb;
 #else
-    	SPINC sb;
-    	SPINS rej;
+    	SPINC sb[ENGINEMAPS];
 
 #endif
 

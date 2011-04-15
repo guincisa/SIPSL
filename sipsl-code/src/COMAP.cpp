@@ -95,7 +95,7 @@
 COMAP::COMAP(void){
     for(int i = 0; i< COMAPS; i++){
         pthread_mutex_init(&unique_exx[i], NULL);
-        DEBDEV("comap unique_exx", &unique_exx)
+        DEBDEV("comap unique_exx", &unique_exx[i])
     }
 
     for (int i = 0; i < COMAPS; i++){

@@ -91,6 +91,7 @@ class ThreadWrapper {
 #define MAXTHREADS 64
 #define COMAPS 40
 #define COMAPS_DIG 2
+#define ENGINEMAPS 16
 #define SIPENGINETH 64
 #define TRNSPRTTH 64
 #define SL_CCTH 64
@@ -104,8 +105,10 @@ class ThreadWrapper {
 #ifndef NOLOGATALL
 #define LOGMIN
 #define PROFILELOCK
+
 //#define LOGSIPHIGH
 //#define LOGSIPLOW
+
 #define LOGINF
 #define LOGMIN
 #define LOGDEV
