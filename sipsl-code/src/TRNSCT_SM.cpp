@@ -89,6 +89,9 @@
 #ifndef TRNSCT_SM_H
 #include "TRNSCT_SM.h"
 #endif
+#ifndef TRNSPRT_H
+#include "TRNSPRT.h"
+#endif
 
 
 static SIPUTIL SipUtil;
@@ -293,8 +296,12 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	SipUtil.genTryFromInvite(_message, etry);
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1 = etry;
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock(_sm->getSL_CO()->call_oset);
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(etry);
+#else
 	SingleAction sa_2 = SingleAction(etry);
 	action->addSingleAction(sa_2);
+#endif
 
 	//**************************************
 	//Local state 1
@@ -378,8 +385,17 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	//Action 1: Duplicate and Forward the Reply
 	// The message ha been prepared by client so it's ready to be sent back
 	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_SV, SODE_NTWPOINT)
+	//**************************************
+	//Store the message to use it for retransmission
+	//cannot store the _message since I can't change destination
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 = m2netw;
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock(_sm->getSL_CO()->call_oset);
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(m2netw);
+#else
 	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
+#endif
 
 
 	//**************************************
@@ -387,11 +403,6 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
-	//**************************************
-	//Store the message to use it for retransmission
-	//cannot store the _message since I can't change destination
-	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 = m2netw;
-	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock(_sm->getSL_CO()->call_oset);
 
 	//**************************************
 	//Local state 2
@@ -467,9 +478,12 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	}
 	//MLF2
 	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_SV, SODE_NTWPOINT)
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(m2netw);
+#else
 	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
-
+#endif
 
 	//**************************************
 	//Action 2: copy the 200 OK and send to ALARM
@@ -525,8 +539,12 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 		DEBASSERT("OK from alarm but STOREMESS_1_3 empty")
 	}
 	CREATEMESSAGE(mnetw, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_NTWPOINT)
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(mnetw);
+#else
 	SingleAction sa_1 = SingleAction(mnetw);
 	action->addSingleAction(sa_1);
+#endif
 
 	//**************************************
 	//Action 2: copy the 200 OK and send to ALARM
@@ -582,9 +600,12 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 		DEBASSERT("OK from alarm but STOREMESS_1_3 empty")
 	}
 	CREATEMESSAGE(mnetw, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_NTWPOINT)
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(mnetw);
+#else
 	SingleAction sa_1 = SingleAction(mnetw);
 	action->addSingleAction(sa_1);
-
+#endif
 	//**************************************
 	//Action 2: copy the 200 OK and send to ALARM
 	//This will be sent to A which will resend the ACK
@@ -952,9 +973,12 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: send message to NTW
 	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_CL, SODE_NTWPOINT)
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(m2netw);
+#else
 	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
-
+#endif
 
 	//**************************************
 	//Action 2: send message to ALARM
@@ -1559,8 +1583,12 @@ ACTION* act_ack_to_b(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: ack is from ALO
 	CREATEMESSAGE(ack,_message, SODE_TRNSCT_CL,SODE_NTWPOINT)
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(ack);
+#else
 	SingleAction sa_1 = SingleAction(ack);
 	action->addSingleAction(sa_1);
+#endif
 
 	DEBOUT("SM act_ack_to_b move to state","1")
 	_sm->State = 1;
@@ -1602,8 +1630,9 @@ ACTION* act_resend_ack_to_b(SM* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: send ack to B
 	CREATEMESSAGE(__message, ((TRNSCT_SM*)_sm)->getMatrixMessage(), SODE_TRNSCT_CL,SODE_NTWPOINT)
-	SingleAction sa_1 = SingleAction(__message);
-	action->addSingleAction(sa_1);
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(__message);
+//	SingleAction sa_1 = SingleAction(__message);
+//	action->addSingleAction(sa_1);
 	DEBMESSAGE("SECOND ACK B", __message)
 
 	return action;
@@ -1673,8 +1702,12 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = a200ok;
 	DEBOUT("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(a200ok);
+#else
 	SingleAction sa_2 = SingleAction(a200ok);
 	action->addSingleAction(sa_2);
+#endif
 
 	CREATEMESSAGE(___message, ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE, SODE_TRNSCT_SV, SODE_KILLDOA)
 	SingleAction sa_3 = SingleAction(___message);
@@ -1884,8 +1917,12 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
     //Action 1: send to NTW
     CREATEMESSAGE(_m,_message,SODE_TRNSCT_CL,SODE_NTWPOINT)
     _m->setSourceMessage(_message);
-    SingleAction sa_1 = SingleAction(_m);
+#ifdef USEFASTSEND
+	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(_m);
+#else
+	SingleAction sa_1 = SingleAction(_m);
     action->addSingleAction(sa_1);
+#endif
 
     //**************************************
     //Action 2: send to alarm

@@ -189,12 +189,13 @@ SUDP* ENGINE::getSUDP(void){
 //**********************************************************************************
 bool ENGINE::p_w(void* _m) {
 
+    TIMEDEF
+
 	int mmod = modEngineMap((MESSAGE*)_m);
     DEBOUT("bool ENGINE::p_w(void* _m) ", _m << "] modulus SP["<<mmod)
 
     GETLOCK(&(sb[mmod].condvarmutex),"[" << this << "] sb["<< mmod << "].condvarmutex");
 
-    TIMEDEF
     SETNOW
 
 #ifdef MESSAGEUSAGE

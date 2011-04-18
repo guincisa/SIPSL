@@ -55,7 +55,6 @@ class CALL_OSET {
 		SL_CO* getSL_CO(void);
 		ALO* getALO(void);
 		void setALO(ALO*);
-		TRNSPRT* getTRNSPRT(void);
 
 		int modulus;
 
@@ -113,6 +112,9 @@ class CALL_OSET {
 		ENGINE* getENGINE(void);
 
 		pthread_mutex_t mutex;
+
+		TRNSPRT* getTRNSPRT(void);
+
 
 };
 //**********************************************************************************

@@ -1,3 +1,18 @@
+18 Aprile
+Tuning
+
+run minimo					FMIN	=	10
+run sostenuto senza ritrasm FMAX	= 	30
+run con ritrasm				FOVR	=   70
+
+210 messaggi
+durata 20 secondi senza sovrapposizione BYE
+
+con sovrapposizione BYE
+
+
+
+
 15 aprile
 
 
