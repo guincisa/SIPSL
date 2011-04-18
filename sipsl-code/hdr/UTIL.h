@@ -86,22 +86,32 @@ class ThreadWrapper {
 #define SPINSTL
 
 #ifdef SPARC
+
 //#define USEMESSAGEMAP
-#define SUDPTH 5
+#define USEFASTSEND
+//#define USETRYLOCK
+
+
+#define SUDPTH 10
 #define MAXTHREADS 64
-#define COMAPS 40
-#define COMAPS_DIG 2
-#define ENGINEMAPS 16
 #define SIPENGINETH 64
 #define TRNSPRTTH 64
 #define SL_CCTH 64
+
+
+#define COMAPS 40
+#define COMAPS_DIG 2
+#define ENGINEMAPS 8
+#define ADDRESSPACE 8
+#define MESSAGEMAPS 100
+
 #define ARR 4000
 #define ARR_SHORT 30
 #define SPINC_MOD 50
 #define DOA_CLEANUP 1
 #define TIMER_DOA 5000000
-#define ADDRESSPACE 8
-#define MESSAGEMAPS 100
+
+
 #ifndef NOLOGATALL
 #define LOGMIN
 #define PROFILELOCK
