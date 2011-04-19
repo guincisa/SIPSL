@@ -104,16 +104,16 @@ class ALMGR {
 
     private:
 
-        priority_queue<triple, vector<triple>, CompareTriple> pq[COMAPS];
+        priority_queue<triple, vector<triple>, CompareTriple> pq[ALARMMAPS];
         //PQ pq;
-        map<string,  ALARM* > cidmap[COMAPS];
+        map<string,  ALARM* > cidmap[ALARMMAPS];
 
         timespec sleep_time;
         SL_CC* sl_cc;
 
-        ThreadWrapper *listenerThread[COMAPS];
+        ThreadWrapper *listenerThread[ALARMMAPS];
 
-        pthread_mutex_t mutex[COMAPS];
+        pthread_mutex_t mutex[ALARMMAPS];
 
         void internalCancelAlarm(string cidbranch, int modulus);
 

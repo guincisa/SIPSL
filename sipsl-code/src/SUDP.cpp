@@ -134,10 +134,16 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
     doa = _doa;
 
     /* Create socket for sending/receiving datagrams */
-    if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-        DEBASSERT("socket() failed)")
-        return;
-    }
+	for (int i = 0 ; i <SUDPTH ; i++){
+		if ((sock_se[i] = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+			DEBASSERT("socket() failed)")
+			return;
+		}
+	}
+	if ((sock_re = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+		DEBASSERT("socket() failed)")
+		return;
+	}
 
     /* Construct local address structure */
     memset(&echoServAddr, 0, sizeof(echoServAddr));   /* Zero out structure */
@@ -152,10 +158,9 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
     }
 #endif
     /* Bind to the local address */
-    if (bind(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
-        DEBERROR("bind() failed)");
-        return;
-    }
+	if (bind(sock_re, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
+		DEBERROR("bind() failed)");
+	}
 
     _engine->linkSUDP(this);
 
@@ -173,10 +178,11 @@ void SUDP::start(void) {
     // allocate thread and starts
 
     DEBDEV("SUDP::start","")
-	for (int i = 0 ; i <SUDPTH ; i++){
+	SUDPtuple *t1[SUDPTH*2];
+
+	for (int i = 0 ; i <(2*SUDPTH) ; i++){
 	    NEWPTR2(listenerThread[i], ThreadWrapper,"ThreadWrapper"<<i)
 
-	    SUDPtuple *t1[SUDPTH];
 	    NEWPTR2(t1[i], SUDPtuple,"SUDPtuple")
 	    t1[i]->st = this;
 	    t1[i]->thid = i;
@@ -207,7 +213,14 @@ void SUDP::listen(int i) {
         char echoBuffer[ECHOMAX];
         memset(&echoBuffer, 0x0, ECHOMAX);   /* Zero out structure */
         int recvMsgSize;
-        if ((recvMsgSize = recvfrom(sock, echoBuffer, ECHOMAX, 0,
+        int _sok;
+        if ( i < SUDPTH ){
+        	_sok = sock_se[i];
+        }
+        else {
+        	_sok = sock_re;
+        }
+        if ((recvMsgSize = recvfrom(_sok, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
             DEBERROR("SUDP::listen() recvfrom() failed")
         }else {
@@ -215,7 +228,7 @@ void SUDP::listen(int i) {
             PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
-            CREATENEWMESSAGE_EXT(message, echoBuffer, sock, echoClntAddr, SODE_NTWPOINT)
+            CREATENEWMESSAGE_EXT(message, echoBuffer, sock_se[i], echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
 
@@ -260,7 +273,10 @@ void SUDP::sendRequest(MESSAGE* _message){
 //	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 //		DEBASSERT ("Can't set request address")
 //	}
-    sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+
+    int i = _message->getModulus() % SUDPTH;
+
+    sendto(sock_se[i], _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
@@ -287,7 +303,10 @@ void SUDP::sendReply(MESSAGE* _message){
     if( inet_pton(AF_INET, viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
             DEBASSERT ("can set reply address")
     }
-    sendto(sock, _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+
+    int i = _message->getModulus() % SUDPTH;
+
+    sendto(sock_se[i], _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
     if (!_message->getLock()){
         PURGEMESSAGE(_message)

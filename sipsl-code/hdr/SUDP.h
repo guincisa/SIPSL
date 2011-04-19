@@ -84,9 +84,10 @@ class SUDP {
     private:
 
         ENGINE* engine;
-        ThreadWrapper *listenerThread[SUDPTH];
+        ThreadWrapper *listenerThread[2*SUDPTH];
         string domain;
-        int sock;
+        int sock_se[SUDPTH];
+        int sock_re;
         sockaddr_inX echoServAddr;
         unsigned short echoServPort;
         unsigned int cliAddrLen;
