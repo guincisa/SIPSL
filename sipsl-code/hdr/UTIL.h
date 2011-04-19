@@ -92,16 +92,18 @@ class ThreadWrapper {
 //#define USETRYLOCK
 
 
-#define SUDPTH 10
-#define MAXTHREADS 64
-#define SIPENGINETH 64
-#define TRNSPRTTH 64
-#define SL_CCTH 64
+#define SUDPTH 6
+#define MAXTHREADS 32
+#define SIPENGINETH 16
+#define TRNSPRTTH 8
+#define SL_CCTH 32
 
-
-#define COMAPS 40
-#define COMAPS_DIG 2
 #define ENGINEMAPS 8
+#define ALARMMAPS 8
+
+
+#define COMAPS 32
+#define COMAPS_DIG 2
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100
 

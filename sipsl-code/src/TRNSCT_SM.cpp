@@ -1681,17 +1681,6 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 
 	DEBOUT("SM act_bye_to_alo called",_message)
 
-	NEWPTR(ACTION*, action, ACTION(),"ACTION")
-
-	//**************************************
-	//Action 1:
-	//_message changes its dest and gen
-	// remember initial generation  is used for backward messages like bye coming from B
-	CREATEMESSAGE(by, _message, SODE_TRNSCT_SV,SODE_ALOPOINT)
-	by->setSourceMessage(_message);
-	SingleAction sa_1 = SingleAction(by);
-	action->addSingleAction(sa_1);
-
 //	//BYE V2
 	//new code
 	//**************************************
@@ -1708,6 +1697,19 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_2 = SingleAction(a200ok);
 	action->addSingleAction(sa_2);
 #endif
+
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	//**************************************
+	//Action 1:
+	//_message changes its dest and gen
+	// remember initial generation  is used for backward messages like bye coming from B
+	CREATEMESSAGE(by, _message, SODE_TRNSCT_SV,SODE_ALOPOINT)
+	by->setSourceMessage(_message);
+	SingleAction sa_1 = SingleAction(by);
+	action->addSingleAction(sa_1);
+
 
 	CREATEMESSAGE(___message, ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE, SODE_TRNSCT_SV, SODE_KILLDOA)
 	SingleAction sa_3 = SingleAction(___message);
