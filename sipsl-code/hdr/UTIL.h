@@ -93,12 +93,17 @@ class ThreadWrapper {
 
 
 #define SUDPTH 6
-#define MAXTHREADS 60
-#define SIPENGINETH 15
-#define TRNSPRTTH 10
-#define SL_CCTH 60
+#define MAXTHREADS 64
+#define SIPENGINETH 18
+#define SIPENGINMAPS 6
 
-#define ENGINEMAPS 5
+#define TRNSPRTTH 16
+#define TRNSPRTMAPS 4
+
+#define SL_CCTH 64
+#define SL_CCMAPS 16
+
+//#define ENGINEMAPS 5
 
 #define ALARMMAPS 10
 

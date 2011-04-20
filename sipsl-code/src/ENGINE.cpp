@@ -96,10 +96,13 @@ ThreadWrapper::ThreadWrapper(void) {
 
 //**********************************************************************************
 //**********************************************************************************
-ENGINE::ENGINE(int _i) {
+ENGINE::ENGINE(int _i, int _em) {
 
     DEBDEV("ENGINE::ENGINE()","")
     DEBDEV("ENGINE::ENGINE() spin buffer ",&sb)
+
+
+    EngineMaps = _em;
 
     int res;
 
@@ -109,11 +112,11 @@ ENGINE::ENGINE(int _i) {
     //Check if _i is divisible by ENGINEMAPS
     //if not substract the rest
     // if it gives 0 set to ENGINEMAPS
-    int r = _i % ENGINEMAPS;
+    int r = _i % EngineMaps;
     if ( r != 0){
     	_i = _i - r;
     	if (_i == 0){
-    		_i = ENGINEMAPS;
+    		_i = EngineMaps;
     	}
     }
     DEBOUT("ENGINE::ENGINE _i", _i)
@@ -137,8 +140,11 @@ ENGINE::ENGINE(int _i) {
     //TODO terrible!!!
     // if _i not divisible by ENGINEMAPS
     int k = 0;
-    int rapp = _i / ENGINEMAPS;
-	for ( int i = 0 ; i < ENGINEMAPS ; i++){
+    int rapp = _i / EngineMaps;
+	for ( int i = 0 ; i < EngineMaps ; i++){
+
+		sb[i] = new SPINC();
+
 		for (int j = 0 ; j < rapp; j ++){
 
 			NEWPTR2(t[k], ENGtuple, "ENGtuple"<<k)
@@ -164,7 +170,7 @@ ENGINE::ENGINE(int _i) {
 
 int ENGINE::modEngineMap(MESSAGE* _message){
 
-	int mm = _message->getModulus() % ENGINEMAPS;
+	int mm = _message->getModulus() % EngineMaps;
 	DEBDEV("ENGINE::modEngineMap", _message << "][" << _message->getModulus() <<"]["<<mm)
 	return mm;
 }
@@ -194,7 +200,7 @@ bool ENGINE::p_w(void* _m) {
 	int mmod = modEngineMap((MESSAGE*)_m);
     DEBDEV("bool ENGINE::p_w(void* _m) ", _m << "] modulus SP["<<mmod)
 
-    GETLOCK(&(sb[mmod].condvarmutex),"[" << this << "] sb["<< mmod << "].condvarmutex");
+    GETLOCK(&(sb[mmod]->condvarmutex),"[" << this << "] sb["<< mmod << "].condvarmutex");
 
     SETNOW
 
@@ -205,8 +211,8 @@ bool ENGINE::p_w(void* _m) {
     RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);
 #endif
 
-    sb[mmod].put(_m);
-    pthread_cond_signal(&(sb[mmod].condvar));
+    sb[mmod]->put(_m);
+    pthread_cond_signal(&(sb[mmod]->condvar));
 //    bool r = sb.put(_m);
 //    DEBDEV("ENGINE::p_w put returned",_m << " "<<r)
 //    if (!r){
@@ -216,7 +222,7 @@ bool ENGINE::p_w(void* _m) {
 //        pthread_cond_signal(&(sb.condvar));
 //    }
     PRINTDIFF("ENGINE::p_w")
-    RELLOCK(&(sb[mmod].condvarmutex),"sb["<< mod<<"].condvarmutex");
+    RELLOCK(&(sb[mmod]->condvarmutex),"sb["<< mod<<"].condvarmutex");
     return true;
 
 
@@ -256,13 +262,13 @@ void * threadparser (void * _pt){
     ENGINE * ps = pt->ps;
     while(true) {
         DEBDEV("ENGINE thread",_pt)
-            GETLOCK(&(ps->sb[mmod].condvarmutex),"ps->sb["<<mmod<<"].condvarmutex");
-        while(ps->sb[mmod].isEmpty() ) {
+            GETLOCK(&(ps->sb[mmod]->condvarmutex),"ps->sb["<<mmod<<"].condvarmutex");
+        while(ps->sb[mmod]->isEmpty() ) {
             DEBDEV("ENGINE thread is empty",_pt)
-            pthread_cond_wait(&(ps->sb[mmod].condvar), &(ps->sb[mmod].condvarmutex));
+            pthread_cond_wait(&(ps->sb[mmod]->condvar), &(ps->sb[mmod]->condvarmutex));
         }
         DEBDEV("ENGINE thread freed", _pt)
-        void* m = ps->sb[mmod].get();
+        void* m = ps->sb[mmod]->get();
 #ifdef USE_SPINB
         if (m == NULL)  {
             DEBDEV("ENGINE thread NULL",_pt)
