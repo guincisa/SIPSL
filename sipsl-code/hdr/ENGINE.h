@@ -60,6 +60,8 @@ class ENGINE {
 
         int modEngineMap(MESSAGE*);
 
+        int EngineMaps;
+
     public:
 
 #ifdef TESTING
@@ -78,11 +80,11 @@ class ENGINE {
 #ifdef USE_SPINB
     	SPINB sb;
 #else
-    	SPINC sb[ENGINEMAPS];
+    	SPINC* sb[MAXTHREADS];
 
 #endif
 
-		ENGINE(int numthreads);
+		ENGINE(int numthreads, int enginemaps);
 
 	    void lockBuffer(void);
 	    void unLockBuffer(void);

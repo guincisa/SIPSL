@@ -102,7 +102,7 @@
 
 //**********************************************************************************
 //**********************************************************************************
-SL_CC::SL_CC(int _i):ENGINE(_i) {
+SL_CC::SL_CC(int _i, int _m):ENGINE(_i, _m) {
     NEWPTR2(comap, COMAP(),"COMAP()")
 }
 COMAP* SL_CC::getCOMAP(void){
@@ -119,7 +119,7 @@ void SL_CC::linkSipEngine(ENGINE* _sipengine){
 //**********************************************************************************
 void SL_CC::parse(void* __mess, int _mmod){
 
-    RELLOCK(&(sb[_mmod].condvarmutex),"sb"<<_mmod<<".condvarmutex");
+    RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
     PROFILE("SL_CC::parse() start")
     TIMEDEF
     SETNOW

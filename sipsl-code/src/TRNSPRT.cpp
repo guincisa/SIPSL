@@ -93,7 +93,7 @@
 #include "TRNSPRT.h"
 #endif
 
-TRNSPRT::TRNSPRT(int _i):ENGINE(_i){}
+TRNSPRT::TRNSPRT(int _i, int _m):ENGINE(_i, _m){}
 
 void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
 
@@ -144,7 +144,7 @@ void TRNSPRT::parse(void* __message, int _mmod){
 	//for timeouts (
 	//for errors messages from network
 
-    RELLOCK(&(sb[_mmod].condvarmutex),"sb"<<_mmod<<".condvarmutex");
+    RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
 
 	MESSAGE* _message = (MESSAGE*)__message;
 

@@ -90,7 +90,7 @@
 
 //**********************************************************************************
 //**********************************************************************************
-SIPENGINE::SIPENGINE(int _i):ENGINE(_i){}
+SIPENGINE::SIPENGINE(int _i, int _m):ENGINE(_i,_m){}
 //**********************************************************************************
 //**********************************************************************************
 ENGINE * SIPENGINE::getSL_CC(void){
@@ -115,7 +115,7 @@ void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
 //**********************************************************************************
 void SIPENGINE::parse(void* __mess, int _mmod) {
 
-    RELLOCK(&(sb[_mmod].condvarmutex),"sb"<<_mmod<<".condvarmutex");
+    RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
 
     PROFILE("SIPENGINE::parse() start")
     TIMEDEF
