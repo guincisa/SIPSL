@@ -319,7 +319,7 @@ void TupleVector::buildContent(void){
     if (contentReady) {
 		return;
 	}
-    DEBOUT("tv content before", content)
+    DEBSIP("tv content before", content)
 
     try {
 		map<string,string>::iterator theIterator;
@@ -338,7 +338,7 @@ void TupleVector::buildContent(void){
 		}
 		contentReady = true;
 		parsed = true;
-		DEBOUT("tv content", content)
+		DEBSIP("tv content", content)
     }
     catch(...){
     	correct = false;
@@ -1386,7 +1386,7 @@ void C_AttContactElem::doParse(void){
         return;
 
     string line;
-    DEBOUT("content",content)
+    DEBSIP("content",content)
     int q = hasQuote(content);
     if (q >=0){
     	string line1 = replaceHttpChars(content.substr(q+1, -1));
@@ -1397,16 +1397,16 @@ void C_AttContactElem::doParse(void){
     else {
     	line = trimUseless(content);
     }
-    DEBOUT("line after",line)
+    DEBSIP("line after",line)
 
     Tuple s1 = brkin2(line, "<");
     nameUri = s1.Lvalue; // "Mr. Watson"
     string tmp = "<" + s1.Rvalue;
-    DEBOUT("rvalue", tmp)
+    DEBSIP("rvalue", tmp)
 
     Tuple s2 = brkin2(tmp, ";");
-    DEBOUT("rvalue2", s2.Lvalue)
-    DEBOUT("rvalue3", s2.Rvalue)
+    DEBSIP("rvalue2", s2.Lvalue)
+    DEBSIP("rvalue3", s2.Rvalue)
     sipUri.setContent(s2.Lvalue);
     uriParms.setContent(s2.Rvalue);
 
@@ -1779,7 +1779,7 @@ void C_HeadVia::buildContent(void){
 //    content = "Via: " + "SIP/" + via.S_AttSipVersion().getContent() + "/" + via.getTransport() + " " + via.getS_HostHostPort().getContent() +
 //    		";" + via.getViaParms().getContent();
 
-    DEBOUT("C_HeadVia::buildContent", content);
+    DEBSIP("C_HeadVia::buildContent", content);
 
 	if (contentReady) {
 		return;
@@ -1788,7 +1788,7 @@ void C_HeadVia::buildContent(void){
     	//TODO
     	contentReady = true;
     	via.getContent();
-    	DEBOUT("void C_HeadVia::buildContent(void)", via.getContent())
+    	DEBSIP("void C_HeadVia::buildContent(void)", via.getContent())
     }
 
 }
@@ -1946,7 +1946,7 @@ void C_HeadTo::doParse(void){
     if(parsed)
         return;
 
-    DEBOUT("C_HeadTo::doParse",content)
+    DEBSIP("C_HeadTo::doParse",content)
 
     string newCo = content;
     string line;
@@ -2065,14 +2065,14 @@ C_HeadFrom::C_HeadFrom(string _content) :
 //    S_AttGeneric(x.content),
 //    sipUri(""),
 //    uriParms(""){
-//    DEBOUT("C_AttContactElem copy constructor", x.content)
+//    DEBSIP("C_AttContactElem copy constructor", x.content)
 //
 //    //content = x.copyContent();
 //    parsed = false;
 //}
 void C_HeadFrom::doParse(void){
 
-    DEBOUT("C_HeadFrom::doParse", content)
+    DEBSIP("C_HeadFrom::doParse", content)
 
     if(parsed)
         return;
@@ -2090,7 +2090,7 @@ void C_HeadFrom::doParse(void){
 		line = s.Lvalue;
 	}
 
-	//DEBOUT("C_HeadFrom::doParse newCo", newCo)
+	//DEBSIP("C_HeadFrom::doParse newCo", newCo)
 	int q = hasQuote(line);
 	if( line.length() > 0 && q > 0){
     	string line1 = replaceHttpChars(line.substr(q+1, -1));
@@ -2100,12 +2100,12 @@ void C_HeadFrom::doParse(void){
     	nameUri = trimUseless(line);
     }
 
-    //DEBOUT("C_HeadFrom::doParse nameUri", nameUri)
+    //DEBSIP("C_HeadFrom::doParse nameUri", nameUri)
 
     Tuple s2 = brkin2(newCo, ">");
 
-    //DEBOUT("C_HeadFrom::doParse s2.Lvalue plus >", s2.Lvalue+ ">")
-    //DEBOUT("C_HeadFrom::doParse s2.Rvalue", s2.Rvalue )
+    //DEBSIP("C_HeadFrom::doParse s2.Lvalue plus >", s2.Lvalue+ ">")
+    //DEBSIP("C_HeadFrom::doParse s2.Rvalue", s2.Rvalue )
 
     sipUri.setContent(s2.Lvalue + ">");
     uriParms.setContent(s2.Rvalue);
@@ -2263,7 +2263,7 @@ C_HeadCSeq::C_HeadCSeq(string _content):
 }
 void C_HeadCSeq::doParse(void){
 
-	DEBOUT("C_HeadCSeq::doParse", content)
+	DEBSIP("C_HeadCSeq::doParse", content)
 
 	if(parsed)
 		return;

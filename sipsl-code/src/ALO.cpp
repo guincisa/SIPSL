@@ -71,7 +71,7 @@ ALO::ALO(ENGINE* _sl_cc, CALL_OSET* _oset){
 //V6
 void ALO::call(MESSAGE* _message) {
 
-	DEBOUT("ALO","call")
+	DEBALO("ALO","call")
 	//V6
 	//pthread_mutex_unlock(&(sb.condvarmutex));
 
@@ -79,19 +79,19 @@ void ALO::call(MESSAGE* _message) {
 
 	if (_message->getReqRepType() == REQSUPP){
 		if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
-			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBALO("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 			onInvite(_message);
 		}
 		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && _message->getTypeOfInternal() == TYPE_MESS && _message->getType_trnsct() == TYPE_TRNSCT){
-			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBALO("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 			onAck(_message);
 		}
 		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST && _message->getTypeOfInternal() == TYPE_MESS && _message->getType_trnsct() == TYPE_NNTRNSCT ){
-			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBALO("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 			onAckNoTrnsct(_message);
 		}
 		else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
-			DEBOUT("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBALO("ALO Dispatches ",_message->getHeadSipRequest().getContent())
 			onBye(_message);
 		}
 		else {
@@ -100,7 +100,7 @@ void ALO::call(MESSAGE* _message) {
 	}
 	else if (_message->getReqRepType() == REPSUPP){
 		if (_message->getHeadSipReply().getReply().getCode() == OK_200){
-			DEBOUT("ALO Dispatches ",_message->getHeadSipReply().getContent())
+			DEBALO("ALO Dispatches ",_message->getHeadSipReply().getContent())
 			on200Ok(_message);
 		}
 		else {
@@ -125,7 +125,7 @@ void ALO::onAckNoTrnsct(MESSAGE* m){
 }
 void ALO::noCallBack(MESSAGE* _message){
 
-	DEBOUT("ALO noCallBack - Decoupling ",_message->getHeadSipRequest().getContent())
+	DEBALO("ALO noCallBack - Decoupling ",_message->getHeadSipRequest().getContent())
 	if(_message->getGenEntity() == SODE_SMCLPOINT)
 		_message->setDestEntity(SODE_SMSVPOINT);
 	else if (_message->getGenEntity() == SODE_SMSVPOINT)

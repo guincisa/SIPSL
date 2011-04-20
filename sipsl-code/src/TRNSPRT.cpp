@@ -157,7 +157,7 @@ void TRNSPRT::parse(void* __message, int _mmod){
 
 	if(_message->getTypeOfInternal() == TYPE_OP){
 		//Thsi rule is needed to clear alarms when running ~CALL_OSET
-		DEBOUT("RULE Break, can't send a message with type op",this)
+		DEBDEV("RULE Break, can't send a message with type op",this)
 		DEBASSERT("RULE Break, can't send a message with type op")
 	}
 

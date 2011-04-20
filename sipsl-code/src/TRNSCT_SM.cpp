@@ -151,7 +151,7 @@ string TRNSCT_SM::getId(void){
 }
 SingleAction TRNSCT_SM::generateTimerS(int genPoint){
 
-    DEBOUT("TRNSCT_SM::generateTimerS genpoint",genPoint )
+    DEBDEV("TRNSCT_SM::generateTimerS genpoint",genPoint )
 
     CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
     SysTime afterT;
@@ -170,7 +170,7 @@ SingleAction TRNSCT_SM::generateTimerS(int genPoint){
 }
 SingleAction TRNSCT_SM::clearTimerS(int genPoint){
 
-    DEBOUT("TRNSCT_SM::clearTimerS genpoint",genPoint )
+    DEBDEV("TRNSCT_SM::clearTimerS genpoint",genPoint )
 
     CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
     timer_s->setTypeOfInternal(TYPE_OP);
@@ -188,7 +188,7 @@ ACTION* SM::event(MESSAGE* _event){
 
     ACTION* act=0x0;
 
-    DEBOUT("SM::event Look for state", State)
+    DEBDEV("SM::event Look for state", State)
     pair<multimap<const int,PREDICATE_ACTION*>::iterator,multimap<const int,PREDICATE_ACTION*>::iterator> ret;
     multimap<const int,PREDICATE_ACTION*>::iterator iter;
     ret = move_sm.equal_range(State);
@@ -254,24 +254,24 @@ PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
 //*****************************************************************
 bool pre_invite_from_a(SM* _sm, MESSAGE* _message){
 
-    DEBOUT("TRNSCT_INV_SV pre_invite_from_a called",_message)
+    DEBDEV("TRNSCT_INV_SV pre_invite_from_a called",_message)
     if (_message->getReqRepType() == REQSUPP
             && (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
             && _message->getDestEntity() == SODE_TRNSCT_SV
             && _message->getGenEntity() ==  SODE_NTWPOINT){
-        DEBOUT("TRNSCT_INV_SV pre_invite_from_a","true")
+        DEBDEV("TRNSCT_INV_SV pre_invite_from_a","true")
         return true;
     }
     else {
-        DEBOUT("TRNSCT_INV_SV pre_invite_from_a","false")
+        DEBDEV("TRNSCT_INV_SV pre_invite_from_a","false")
         return false;
     }
 }
 //*****************************************************************
 ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV::act_invite_to_alo", _message)
-	DEBOUT("TRSNCT_INV_SV::act_invite_to_alo", _message->getHeadSipRequest().getContent())
+	DEBDEV("TRSNCT_INV_SV::act_invite_to_alo", _message)
+	DEBDEV("TRSNCT_INV_SV::act_invite_to_alo", _message->getHeadSipRequest().getContent())
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -305,12 +305,12 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Local state 1
-	DEBOUT("TRSNCT_INV_SV::act_invite_to_alo move to state 1","")
+	DEBDEV("TRSNCT_INV_SV::act_invite_to_alo move to state 1","")
 	_sm->State = 1;
 
 	//**************************************
 	//OverallState_SV = OS_PROCEEDING
-	DEBOUT("TRSNCT_INV_SV::act_invite_to_alo move OverallState_SV to ","OS_PROCEEDING")
+	DEBDEV("TRSNCT_INV_SV::act_invite_to_alo move OverallState_SV to ","OS_PROCEEDING")
 	_sm->getSL_CO()->OverallState_SV = OS_PROCEEDING;
 
 	//OVERALL
@@ -330,8 +330,8 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 	//***********************************************************
 	//RETRANSMIT THE TRY
 	//***********************************************************
-	DEBOUT("TRSNCT_INV_SV::act_resend_try_to_a", _message)
-	DEBOUT("TRSNCT_INV_SV::act_resend_try_to_a", _message->getHeadSipRequest().getContent())
+	DEBDEV("TRSNCT_INV_SV::act_resend_try_to_a", _message)
+	DEBDEV("TRSNCT_INV_SV::act_resend_try_to_a", _message->getHeadSipRequest().getContent())
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -356,18 +356,18 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
  bool pre_provrep_from_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_provreply_from_b called",_message)
+	DEBDEV("TRSNCT_INV_SV pre_provreply_from_b called",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
 				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
-			DEBOUT("SM_SV pre_provreply_from_b","true")
+			DEBDEV("SM_SV pre_provreply_from_b","true")
 			return true;
 		}
 		else {
-			DEBOUT("SM_SV pre_provreply_from_b","false")
+			DEBDEV("SM_SV pre_provreply_from_b","false")
 			return false;
 		}
 }
@@ -376,8 +376,8 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 
 	//_message riciclato
 
-	DEBOUT("TRSNCT_INV_SV::act_provreply_to_a",  _message)
-	DEBOUT("TRSNCT_INV_SV::act_provreply_to_a",  _message->getHeadSipReply().getContent() )
+	DEBDEV("TRSNCT_INV_SV::act_provreply_to_a",  _message)
+	DEBDEV("TRSNCT_INV_SV::act_provreply_to_a",  _message->getHeadSipReply().getContent() )
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -406,12 +406,12 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Local state 2
-	DEBOUT("TRSNCT_INV_SV::act_provreply_to_a move to state 2","")
+	DEBDEV("TRSNCT_INV_SV::act_provreply_to_a move to state 2","")
 	_sm->State = 2;
 
 	//**************************************
 	//OverallState_SV OS_PROCEEDING
-	DEBOUT("TRSNCT_INV_SV::act_provreply_to_a move OverallState_SV","OS_PROCEEDING")
+	DEBDEV("TRSNCT_INV_SV::act_provreply_to_a move OverallState_SV","OS_PROCEEDING")
 	_sm->getSL_CO()->OverallState_SV = OS_PROCEEDING;
 
 	return action;
@@ -419,7 +419,7 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 ACTION* act_resend_provreply_to_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV::act_resend_provreply_to_a",  _message )
+	DEBDEV("TRSNCT_INV_SV::act_resend_provreply_to_a",  _message )
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -442,24 +442,24 @@ ACTION* act_resend_provreply_to_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_200ok_from_alo(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_200ok_from_alo",_message)
+	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alo",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-			DEBOUT("SM_V5 pre_200ok_from_alo","true")
+			DEBDEV("SM_V5 pre_200ok_from_alo","true")
 			return true;
 	}
 	else {
-		DEBOUT("SM pre_200ok_from_alo","false")
+		DEBDEV("SM pre_200ok_from_alo","false")
 		return false;
 	}
 }
 //*****************************************************************
 ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_200ok_fwdto_a called",_message)
+	DEBDEV("TRSNCT_INV_SV act_200ok_fwdto_a called",_message)
 
 	//200ok from ALO
 	//send to A
@@ -471,7 +471,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	//Action 1: Forward 200 OK to A
 	if( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 == MainMessage && _message->getReqRepType() == REPSUPP){
 		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 = _message;
-		DEBOUT("STORED_MESSAGE_1_3", ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3)
+		DEBDEV("STORED_MESSAGE_1_3", ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3)
 		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock(_sm->getSL_CO()->call_oset);
 	}else {
 		DEBASSERT("Don't know what to do")
@@ -509,10 +509,10 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_SV));
 	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
-	DEBOUT("SM act_200ok_to_a move to state 3","")
+	DEBDEV("SM act_200ok_to_a move to state 3","")
 	_sm->State = 3;
 
-	DEBOUT("SM act_200ok_to_a move OverallState_SV","OS_COMPLETED")
+	DEBDEV("SM act_200ok_to_a move OverallState_SV","OS_COMPLETED")
 	_sm->getSL_CO()->OverallState_SV = OS_COMPLETED;
 
 	return action;
@@ -525,7 +525,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_200ok_refwdto_a called",_message)
+	DEBDEV("TRSNCT_INV_SV act_200ok_refwdto_a called",_message)
 
 	//200ok from ALARM
 	//send to a
@@ -585,7 +585,7 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_200ok_resendto_a called",_message)
+	DEBDEV("TRSNCT_INV_SV act_200ok_resendto_a called",_message)
 
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -651,7 +651,7 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_200ok_from_alarm(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_200ok_from_alarm",_message)
+	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
@@ -659,11 +659,11 @@ bool pre_200ok_from_alarm(SM* _sm, MESSAGE* _message){
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  ((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok < MAX_INVITE_RESEND
 		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
-			DEBOUT("SM_V5 pre_200ok_from_alarm","true")
+			DEBDEV("SM_V5 pre_200ok_from_alarm","true")
 			return true;
 	}
 	else {
-		DEBOUT("SM pre_200ok_from_alarm","false")
+		DEBDEV("SM pre_200ok_from_alarm","false")
 		return false;
 	}
 }
@@ -672,7 +672,7 @@ bool pre_200ok_from_alarm(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 bool pre_200ok_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_200ok_from_alarm_maxreach",_message)
+	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm_maxreach",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
@@ -680,18 +680,18 @@ bool pre_200ok_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  ((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok >= MAX_INVITE_RESEND
 		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
-			DEBOUT("SM_V5 pre_200ok_from_alarm_maxreach","true")
+			DEBDEV("SM_V5 pre_200ok_from_alarm_maxreach","true")
 			return true;
 	}
 	else {
-		DEBOUT("pre_200ok_from_alarm_maxreach","false")
+		DEBDEV("pre_200ok_from_alarm_maxreach","false")
 		return false;
 	}
 }
 //*****************************************************************
 ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_terminate_sv ",_message)
+	DEBDEV("TRSNCT_INV_SV act_terminate_sv ",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -707,10 +707,10 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
-	DEBOUT("SM act_terminate_sv move to state 5","")
+	DEBDEV("SM act_terminate_sv move to state 5","")
 	_sm->State = 5;
 
-	DEBOUT("SM act_terminate_sv move OverallState_SV","OS_TERMINATED")
+	DEBDEV("SM act_terminate_sv move OverallState_SV","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
 
 	return (action);
@@ -720,25 +720,25 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_200ok_from_alarm_confirm(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_200ok_from_alarm_confirm",_message)
+	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm_confirm",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  _sm->getSL_CO()->OverallState_SV == OS_CONFIRMED) {
-			DEBOUT("SM_V5 pre_200ok_from_alarm_confirm","true")
+			DEBDEV("SM_V5 pre_200ok_from_alarm_confirm","true")
 			return true;
 	}
 	else {
-		DEBOUT("pre_200ok_from_alarm_confirm","false")
+		DEBDEV("pre_200ok_from_alarm_confirm","false")
 		return false;
 	}
 }
 //*****************************************************************
 ACTION* act_null_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_SV act_null_sv",_message)
+	DEBDEV("TRSNCT_INV_SV act_null_sv",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -754,25 +754,25 @@ ACTION* act_null_sv(SM* _sm, MESSAGE* _message) {
 }
 bool pre_N_99_inv_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRSNCT_INV_SV pre_N_99_inv_sv",_message)
+	DEBDEV("TRSNCT_INV_SV pre_N_99_inv_sv",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& _message->getHeadSipReply().getReply().getCode() == SU_503
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
-			DEBOUT("SM_V5 pre_N_99_inv_sv","true")
+			DEBDEV("SM_V5 pre_N_99_inv_sv","true")
 			return true;
 	}
 	else {
-		DEBOUT("SM pre_N_99_inv_sv","false")
+		DEBDEV("SM pre_N_99_inv_sv","false")
 		return false;
 	}
 }
 ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
 
 	//Send temination signal to client machine
-	DEBOUT("TRSNCT_INV_SV act_N_99_inv_sv",_message)
+	DEBDEV("TRSNCT_INV_SV act_N_99_inv_sv",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -786,10 +786,10 @@ ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_SV));
 
 
-	DEBOUT("SM act_N_99_inv_sv move to state 99","")
+	DEBDEV("SM act_N_99_inv_sv move to state 99","")
 	_sm->State = 99;
 
-	DEBOUT("SM act_N_99_inv_sv move OverallState_SV","OS_TERMINATED")
+	DEBDEV("SM act_N_99_inv_sv move OverallState_SV","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
 
 	//TODO finish here
@@ -801,24 +801,24 @@ ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_timer_s_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_SV pre_timer_s",_message)
+	DEBDEV("TRNSCT_INV_SV pre_timer_s",_message)
 	if (_message->getTypeOfInternal() == TYPE_OP
 			&& _message->getOrderOfOperation().compare("TIMER_S") == 0
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 			&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED){
-		DEBOUT("TRNSCT_INV_SV pre_timer_s","true")
+		DEBDEV("TRNSCT_INV_SV pre_timer_s","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_INV_SV pre_timer_s","false")
+		DEBDEV("TRNSCT_INV_SV pre_timer_s","false")
 		return false;
 	}
 }
 ACTION* act_timer_s_sv(SM* _sm, MESSAGE* _message) {
 
 	//Send temination signal to client machine
-	DEBOUT("TRSNCT_INV_SV act_timer_s",_message)
+	DEBDEV("TRSNCT_INV_SV act_timer_s",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -826,12 +826,12 @@ ACTION* act_timer_s_sv(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(killd);
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SM act_timer_s move to state 99","")
+	DEBDEV("SM act_timer_s move to state 99","")
 	_sm->State = 99;
 
-	DEBOUT("SM act_timer_s move OverallState_SV","OS_TERMINATED")
+	DEBDEV("SM act_timer_s move OverallState_SV","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
-	DEBOUT("SM act_timer_s killed by timer s",_sm->getSL_CO())
+	DEBDEV("SM act_timer_s killed by timer s",_sm->getSL_CO())
 
 	return(action);
 
@@ -927,16 +927,16 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 //*****************************************************************
 bool pre_invite_from_sv(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_invite_from_sv",_message)
+	DEBDEV("TRNSCT_INV_CL pre_invite_from_sv",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-		DEBOUT("TRNSCT_INV_CL pre_invite_from_sv","true")
+		DEBDEV("TRNSCT_INV_CL pre_invite_from_sv","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_INV_CL pre_invite_from_sv","false")
+		DEBDEV("TRNSCT_INV_CL pre_invite_from_sv","false")
 		return false;
 	}
 }
@@ -948,17 +948,17 @@ bool pre_invite_from_sv(SM* _sm, MESSAGE* _message){
 // This invite could be deleted, currently is inserted into insertLockedMessage table
 bool pre_invite_from_alarm(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_invite_from_alarm",_message)
+	DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite < MAX_INVITE_RESEND) {
-		DEBOUT("TRNSCT_INV_CL pre_invite_from_alarm","true")
+		DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_INV_CL pre_invite_from_alarm","false")
+		DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm","false")
 		return false;
 	}
 }
@@ -966,7 +966,7 @@ bool pre_invite_from_alarm(SM* _sm, MESSAGE* _message){
 //act_1_1_inv_cl
 ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_INV_CL act_invite_to_b",_message)
+	DEBDEV("TRNSCT_INV_CL act_invite_to_b",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -987,7 +987,7 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 	SysTime afterT;
 	GETTIME(afterT);
 	lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite);
-	DEBOUT("TRNSCT_INV_CL act_invite_to_b creating alarm ", pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite) << " " << firetime)
+	DEBDEV("TRNSCT_INV_CL act_invite_to_b creating alarm ", pow(2,((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite) << " " << firetime)
 	__timedmessage->setFireTime(firetime);
 	__timedmessage->setTypeOfInternal(TYPE_OP);
 	__timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
@@ -1003,11 +1003,11 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 
 	((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite++;
 
-	DEBOUT("TRNSCT_SM_INVITE_CL act_invite_to_b resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
+	DEBDEV("TRNSCT_SM_INVITE_CL act_invite_to_b resend value", ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite)
 
-	DEBOUT("SM act_invite_to_b move to state","1")
+	DEBDEV("SM act_invite_to_b move to state","1")
 	_sm->State = 1;
-	DEBOUT("SM act_invite_to_b move OverallState_CL","OS_CALLING")
+	DEBDEV("SM act_invite_to_b move OverallState_CL","OS_CALLING")
 	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
 
 	return action;
@@ -1018,24 +1018,24 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 // pre_1_99_inv_cl
 bool pre_invite_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_invite_from_alarm_maxreach",_message)
+	DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm_maxreach",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite >= MAX_INVITE_RESEND) {
-		DEBOUT("TRNSCT_INV_CL pre_invite_from_alarm_maxreach","true")
+		DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm_maxreach","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_INV_CL pre_invite_from_alarm_maxreach","false")
+		DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm_maxreach","false")
 		return false;
 	}
 }
 //act_1_99_inv_cl
 ACTION* act_terminate_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_INV_CL act_terminate_cl *** incomplete *** ",_message)
+	DEBDEV("TRNSCT_INV_CL act_terminate_cl *** incomplete *** ",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1049,9 +1049,9 @@ ACTION* act_terminate_cl(SM* _sm, MESSAGE* _message) {
 	// bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
-	DEBOUT("SM act_terminate_cl move OverallState_CL to","OS_TERMINATED")
+	DEBDEV("SM act_terminate_cl move OverallState_CL to","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_CL = OS_TERMINATED;
-	DEBOUT("SM act_terminate_cl move to",99)
+	DEBDEV("SM act_terminate_cl move to",99)
 	_sm->State = 99;
 
 	return (action);
@@ -1063,17 +1063,17 @@ ACTION* act_terminate_cl(SM* _sm, MESSAGE* _message) {
 //pre_1_2_inv_cl
 bool pre_try_from_b(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_try_from_b",_message)
+	DEBDEV("TRNSCT_INV_CL pre_try_from_b",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == TRYING_100
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-			DEBOUT("TRNSCT_INV_CL pre_try_from_b","true")
+			DEBDEV("TRNSCT_INV_CL pre_try_from_b","true")
 			return true;
 		}
 		else {
-			DEBOUT("TRNSCT_INV_CL pre_try_from_b","false")
+			DEBDEV("TRNSCT_INV_CL pre_try_from_b","false")
 			return false;
 		}
 }
@@ -1081,9 +1081,9 @@ bool pre_try_from_b(SM* _sm, MESSAGE* _message){
 //act_1_2_inv_cl
 ACTION* act_clear_invite_alarm(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_INV_CL act_clear_invite_alarm",_message)
+	DEBDEV("TRNSCT_INV_CL act_clear_invite_alarm",_message)
 
-	DEBOUT("TRNSCT_INV_CL act_clear_invite_alarm",_message->getHeadSipReply().getReply().getCode())
+	DEBDEV("TRNSCT_INV_CL act_clear_invite_alarm",_message->getHeadSipReply().getReply().getCode())
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1102,9 +1102,9 @@ ACTION* act_clear_invite_alarm(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
-	DEBOUT("SM act_clear_invite_alarm move to state","2")
+	DEBDEV("SM act_clear_invite_alarm move to state","2")
 	_sm->State = 2;
-	DEBOUT("SM act_clear_invite_alarm move OverallState_CL to ","OS_PROCEEDING")
+	DEBDEV("SM act_clear_invite_alarm move OverallState_CL to ","OS_PROCEEDING")
 	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
 	return action;
@@ -1115,18 +1115,18 @@ ACTION* act_clear_invite_alarm(SM* _sm, MESSAGE* _message) {
 //pre_1_3_inv_cl
 bool pre_provrep_from_b(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_provrep_from",_message)
+	DEBDEV("SM_CL pre_provrep_from",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
 				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-			DEBOUT("SM_CL pre_provrep_from","true")
+			DEBDEV("SM_CL pre_provrep_from","true")
 			return true;
 		}
 		else {
-			DEBOUT("SM_CL pre_provrep_from","false")
+			DEBDEV("SM_CL pre_provrep_from","false")
 			return false;
 		}
 }
@@ -1134,7 +1134,7 @@ bool pre_provrep_from_b(SM* _sm, MESSAGE* _message){
 //act_1_3_inv_cl
 ACTION* act_provrep_to_sv(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM_CL act_provrep_to_sv",_message)
+	DEBDEV("SM_CL act_provrep_to_sv",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1143,12 +1143,12 @@ ACTION* act_provrep_to_sv(SM* _sm, MESSAGE* _message) {
 	// the message contains the to tag that we must save
 	// or store it in valo during 200ok
 	MESSAGE* __message = ((TRNSCT_SM*)_sm)->getA_Matrix();
-	DEBOUT("MESSAGE GENERATOR", __message)
+	DEBDEV("MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_CL, SODE_TRNSCT_SV)
 	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
 	reply_x->purgeSDP();
 	reply_x->compileMessage();
-	DEBOUT("CONTACT", reply_x->getHeadContact()->getContent())
+	DEBDEV("CONTACT", reply_x->getHeadContact()->getContent())
 	SingleAction sa_1 = SingleAction(reply_x);
 	action->addSingleAction(sa_1);
 
@@ -1169,10 +1169,10 @@ ACTION* act_provrep_to_sv(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
-	DEBOUT("SM act_provrep_to_sv move to state","3")
+	DEBDEV("SM act_provrep_to_sv move to state","3")
 	_sm->State = 3;
 
-	DEBOUT("SM act_provrep_to_sv move OverallState_CL to","OS_PROCEEDING")
+	DEBDEV("SM act_provrep_to_sv move OverallState_CL to","OS_PROCEEDING")
 	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
 
@@ -1186,17 +1186,17 @@ ACTION* act_provrep_to_sv(SM* _sm, MESSAGE* _message) {
 //pre_1_4_inv_cl
 bool pre_200ok_from_b(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_200ok_from_b",_message)
+	DEBDEV("SM pre_200ok_from_b",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-			DEBOUT("SM pre_200ok_from_b","true")
+			DEBDEV("SM pre_200ok_from_b","true")
 			return true;
 		}
 		else {
-			DEBOUT("SM pre_200ok_from_b","false")
+			DEBDEV("SM pre_200ok_from_b","false")
 			return false;
 		}
 }
@@ -1204,7 +1204,7 @@ bool pre_200ok_from_b(SM* _sm, MESSAGE* _message){
 //act_1_4_inv_cl
 ACTION* act_200ok_inv_to_alo(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_200ok_inv_to_alo",_message)
+	DEBDEV("SM act_200ok_inv_to_alo",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1231,9 +1231,9 @@ ACTION* act_200ok_inv_to_alo(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
 
-	DEBOUT("SM act_200ok_inv_to_alo move to state","4")
+	DEBDEV("SM act_200ok_inv_to_alo move to state","4")
 	_sm->State = 4;
-	DEBOUT("SM act_200ok_inv_to_alo move OverallState_CL to","OS_PROCEEDING")
+	DEBDEV("SM act_200ok_inv_to_alo move OverallState_CL to","OS_PROCEEDING")
 	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
 
 
@@ -1253,18 +1253,18 @@ ACTION* act_200ok_inv_to_alo(SM* _sm, MESSAGE* _message) {
 //pre_4_4a_inv_cl
 bool pre_200ok_from_b_proceeding(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_200ok_from_b_proceeding",_message)
+	DEBDEV("SM_CL pre_200ok_from_b_proceeding",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT
 		&& _sm->getSL_CO()->OverallState_CL == OS_PROCEEDING){
-			DEBOUT("SM pre_200ok_from_b_proceeding","true")
+			DEBDEV("SM pre_200ok_from_b_proceeding","true")
 			return true;
 		}
 		else {
-			DEBOUT("SM pre_200ok_from_b_proceeding","false")
+			DEBDEV("SM pre_200ok_from_b_proceeding","false")
 			return false;
 		}
 }
@@ -1273,7 +1273,7 @@ bool pre_200ok_from_b_proceeding(SM* _sm, MESSAGE* _message){
 //ACTION* act_null(SM* _sm, MESSAGE* _message) {
 //
 //
-//	DEBOUT("SM act_4_4a_inv_cl",_message)
+//	DEBDEV("SM act_4_4a_inv_cl",_message)
 //	return 0x0;
 //
 //}
@@ -1285,18 +1285,18 @@ bool pre_200ok_from_b_proceeding(SM* _sm, MESSAGE* _message){
 //pre_4_4b_inv_cl
 bool pre_200ok_from_b_completed(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM_CL pre_200ok_from_b_completed",_message)
+	DEBDEV("SM_CL pre_200ok_from_b_completed",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 		&&_message->getHeadSipReply().getReply().getCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT
 		&& _sm->getSL_CO()->OverallState_CL == OS_COMPLETED){
-			DEBOUT("SM pre_200ok_from_b_completed","true")
+			DEBDEV("SM pre_200ok_from_b_completed","true")
 			return true;
 		}
 		else {
-			DEBOUT("SM pre_200ok_from_b_completed","false")
+			DEBDEV("SM pre_200ok_from_b_completed","false")
 			return false;
 		}
 }
@@ -1304,7 +1304,7 @@ bool pre_200ok_from_b_completed(SM* _sm, MESSAGE* _message){
 ACTION* act_resend_ack(SM* _sm, MESSAGE* _message) {
 
 
-	DEBOUT("SM act_resend_ack",_message)
+	DEBDEV("SM act_resend_ack",_message)
 	//Need to resend ACK
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -1333,7 +1333,7 @@ ACTION* act_resend_ack(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 ACTION* act_null_cl(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRSNCT_INV_CL act_null_cl",_message)
+	DEBDEV("TRSNCT_INV_CL act_null_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1354,24 +1354,24 @@ ACTION* act_null_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_timer_s_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_CL pre_timer_s_cl",_message)
+	DEBDEV("TRNSCT_INV_CL pre_timer_s_cl",_message)
 	if (_message->getTypeOfInternal() == TYPE_OP
 			&& _message->getOrderOfOperation().compare("TIMER_S") == 0
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 			&& _sm->getSL_CO()->OverallState_CL != OS_COMPLETED){
-		DEBOUT("TRNSCT_INV_CL pre_timer_s_cl","true")
+		DEBDEV("TRNSCT_INV_CL pre_timer_s_cl","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_INV_CL pre_timer_s_cl","false")
+		DEBDEV("TRNSCT_INV_CL pre_timer_s_cl","false")
 		return false;
 	}
 }
 ACTION* act_timer_s_cl(SM* _sm, MESSAGE* _message) {
 
 	//Send temination signal to client machine
-	DEBOUT("TRSNCT_INV_CL act_timer_s_cl",_message)
+	DEBDEV("TRSNCT_INV_CL act_timer_s_cl",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1380,12 +1380,12 @@ ACTION* act_timer_s_cl(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(killd);
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SM act_timer_s move to state 99","")
+	DEBDEV("SM act_timer_s move to state 99","")
 	_sm->State = 99;
 
-	DEBOUT("SM act_timer_s move OverallState_CL","OS_TERMINATED")
+	DEBDEV("SM act_timer_s move OverallState_CL","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_CL = OS_TERMINATED;
-	DEBOUT("SM act_timer_s killed by timer s",_sm->getSL_CO())
+	DEBDEV("SM act_timer_s killed by timer s",_sm->getSL_CO())
 
 	return(action);
 
@@ -1480,23 +1480,23 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 //pre_0_1_ack_sv
 bool pre_ack_from_a(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_ack_from_a called",_message)
+	DEBDEV("SM pre_ack_from_a called",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_NTWPOINT) {
-		DEBOUT("SM pre_ack_from_a","true")
+		DEBDEV("SM pre_ack_from_a","true")
 		return true;
 	}
 	else {
-		DEBOUT("SM pre_ack_from_a","false")
+		DEBDEV("SM pre_ack_from_a","false")
 		return false;
 	}
 }
 //act_0_1_ack_sv
 ACTION* act_ack_to_alo(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_ack_to_alo called",_message)
+	DEBDEV("SM act_ack_to_alo called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1507,9 +1507,9 @@ ACTION* act_ack_to_alo(SM* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(ack);
 	action->addSingleAction(sa_1);
 
-	DEBOUT("SM act_ack_to_alo move to state 1","")
+	DEBDEV("SM act_ack_to_alo move to state 1","")
 	_sm->State = 1;
-	DEBOUT("SM act_ack_to_alo move OverallState_SV to 1","OS_CONFIRMED")
+	DEBDEV("SM act_ack_to_alo move OverallState_SV to 1","OS_CONFIRMED")
 	_sm->getSL_CO()->OverallState_SV = OS_CONFIRMED;
 
 	//TODO
@@ -1522,7 +1522,7 @@ ACTION* act_ack_to_alo(SM* _sm, MESSAGE* _message) {
 //act_null
 //ACTION* act_1_1_ack_sv(SM* _sm, MESSAGE* _message) {
 //
-//	DEBOUT("SM act_1_1_ack_sv called",_message)
+//	DEBDEV("SM act_1_1_ack_sv called",_message)
 //
 //	//**************************************
 //	//Action 1: ACK has been resent by A : ignore
@@ -1555,23 +1555,23 @@ TRNSCT_SM_ACK_SV::TRNSCT_SM_ACK_SV(int _requestType, MESSAGE* _matrixMess, ENGIN
 //pre_0_1_ack_cl
 bool pre_ack_from_alo(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_ack_from_alo",_message)
+	DEBDEV("SM pre_ack_from_alo",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-		DEBOUT("SM pre_ack_from_alo","true")
+		DEBDEV("SM pre_ack_from_alo","true")
 		return true;
 	}
 	else {
-		DEBOUT("SM pre_ack_from_alo","false")
+		DEBDEV("SM pre_ack_from_alo","false")
 		return false;
 	}
 }
 //act_0_1_ack_cl
 ACTION* act_ack_to_b(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_ack_to_b",_message)
+	DEBDEV("SM act_ack_to_b",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1590,9 +1590,9 @@ ACTION* act_ack_to_b(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_1);
 #endif
 
-	DEBOUT("SM act_ack_to_b move to state","1")
+	DEBDEV("SM act_ack_to_b move to state","1")
 	_sm->State = 1;
-	DEBOUT("SM act_ack_to_b move OverallState_CL to","OS_COMPLETED")
+	DEBDEV("SM act_ack_to_b move OverallState_CL to","OS_COMPLETED")
 	_sm->getSL_CO()->OverallState_CL = OS_COMPLETED;
 
 
@@ -1606,24 +1606,24 @@ ACTION* act_ack_to_b(SM* _sm, MESSAGE* _message) {
 //pre_1_1_ack_cl
 bool pre_200ok_from_inv_cl(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("SM pre_200ok_from_inv_cl",_message)
+	DEBDEV("SM pre_200ok_from_inv_cl",_message)
 
 	if (_message->getReqRepType() == REPSUPP
 			&&_message->getHeadSipReply().getReply().getCode() == OK_200
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
-		DEBOUT("SM pre_200ok_from_inv_cl","true")
+		DEBDEV("SM pre_200ok_from_inv_cl","true")
 		return true;
 	}
 	else {
-		DEBOUT("SM pre_200ok_from_inv_cl","false")
+		DEBDEV("SM pre_200ok_from_inv_cl","false")
 		return false;
 	}
 }
 //act_1_1_ack_cl
 ACTION* act_resend_ack_to_b(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_resend_ack_to_b","resend ACK [" << _message)
+	DEBDEV("SM act_resend_ack_to_b","resend ACK [" << _message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1663,23 +1663,23 @@ TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 //pre_0_1_bye_sv
 bool pre_bye_from_a(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_INV_SV pre_bye_from_a called",_message)
+	DEBDEV("TRNSCT_INV_SV pre_bye_from_a called",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& ( _message->getGenEntity() ==  SODE_NTWPOINT)) {
-		DEBOUT("TRNSCT_INV_SV pre_bye_from_a","true")
+		DEBDEV("TRNSCT_INV_SV pre_bye_from_a","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_INV_SV pre_bye_from_a","false")
+		DEBDEV("TRNSCT_INV_SV pre_bye_from_a","false")
 		return false;
 	}
 }
 //act_0_1_bye_sv
 ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_bye_to_alo called",_message)
+	DEBDEV("SM act_bye_to_alo called",_message)
 
 //	//BYE V2
 	//new code
@@ -1689,7 +1689,7 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	CREATEMESSAGE(a200ok, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
 	SipUtil.genQuickReplyFromInvite(_message, a200ok,"SIP/2.0 200 OK");
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = a200ok;
-	DEBOUT("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
+	DEBDEV("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
 #ifdef USEFASTSEND
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(a200ok);
@@ -1723,12 +1723,12 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 
 
 	//BYE V2
-	//DEBOUT("TRSNCT_INV_SV::act_bye_to_alo move to state 1","")
+	//DEBDEV("TRSNCT_INV_SV::act_bye_to_alo move to state 1","")
 	//_sm->State = 1;
-	DEBOUT("TRSNCT_INV_SV::act_bye_to_alo move to state 2","")
-	DEBOUT("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
+	DEBDEV("TRSNCT_INV_SV::act_bye_to_alo move to state 2","")
+	DEBDEV("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
-	DEBOUT("SM act_200ok_bye_to_a move to state 2","")
+	DEBDEV("SM act_200ok_bye_to_a move to state 2","")
 	_sm->State = 2;
 
 	return action;
@@ -1736,7 +1736,7 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_200ok_bye_to_a called",_message)
+	DEBDEV("SM act_200ok_bye_to_a called",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1745,7 +1745,7 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 //	//Store this 200 OK for retransmission
 //
 //	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = _message;
-//	DEBOUT("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
+//	DEBDEV("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
 //	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
 //
 //	//**************************************
@@ -1764,10 +1764,10 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 //	action->addSingleAction(sa_3);
 //
 //
-//	DEBOUT("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
+//	DEBDEV("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
 //	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
 //
-//	DEBOUT("SM act_200ok_bye_to_a move to state 2","")
+//	DEBDEV("SM act_200ok_bye_to_a move to state 2","")
 //	_sm->State = 2;
 
 	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
@@ -1777,7 +1777,7 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("SM act_resend_200ok_to_a called",_message)
+	DEBDEV("SM act_resend_200ok_to_a called",_message)
 
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
@@ -1811,17 +1811,17 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 bool pre_timer_s_sv_bye(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_BYE_SV pre_timer_s_sv_bye",_message)
+	DEBDEV("TRNSCT_BYE_SV pre_timer_s_sv_bye",_message)
 	if (_message->getTypeOfInternal() == TYPE_OP
 			&& _message->getOrderOfOperation().compare("TIMER_S") == 0
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 			&& _sm->getSL_CO()->OverallState_SV != OS_TERMINATED){
-		DEBOUT("TRNSCT_BYE_SV pre_timer_s_sv_bye","true")
+		DEBDEV("TRNSCT_BYE_SV pre_timer_s_sv_bye","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_BYE_SV pre_timer_s_sv_bye","false")
+		DEBDEV("TRNSCT_BYE_SV pre_timer_s_sv_bye","false")
 		return false;
 	}
 }
@@ -1879,40 +1879,40 @@ TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGIN
 //pre_0_1_bye_cl
 bool pre_bye_from_alo(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_SM_BYE_CL pre_bye_from_alo",_message)
+	DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alo",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
-		DEBOUT("TRNSCT_SM_BYE_CL pre_bye_from_alo","true")
+		DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alo","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_SM_BYE_CL pre_bye_from_alo","false")
+		DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alo","false")
 		return false;
 	}
 
 }
 bool pre_bye_from_alarm(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_SM_BYE_CL pre_bye_from_alarm",_message)
+	DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye < MAX_INVITE_RESEND) {
-		DEBOUT("TRNSCT_SM_BYE_CL pre_bye_from_alarm","true")
+		DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alarm","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_SM_BYE_CL pre_bye_from_alarm","false")
+		DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alarm","false")
 		return false;
 	}
 }
 //act_1_1_bye_cl
 ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
 
-    DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b",_message)
+    DEBDEV("TRNSCT_SM_BYE_CL act_bye_to_b",_message)
 
     NEWPTR(ACTION*, action, ACTION(),"ACTION")
     //**************************************
@@ -1936,7 +1936,7 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
     SysTime afterT;
     GETTIME(afterT);
     lli firetime = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec + TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye);
-    DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b creating alarm ", TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye) << " " << firetime)
+    DEBDEV("TRNSCT_SM_BYE_CL act_bye_to_b creating alarm ", TIMER_1 * pow(2,((TRNSCT_SM_BYE_CL*)_sm)->resend_bye) << " " << firetime)
     __timedmessage->setFireTime(firetime);
     __timedmessage->setTypeOfInternal(TYPE_OP);
     __timedmessage->setTypeOfOperation(TYPE_OP_TIMER_ON);
@@ -1949,7 +1949,7 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
     // bug timer s action->addSingleAction(((TRNSCT_SM*)_sm)->generateTimerS(SODE_TRNSCT_CL));
     action->addSingleAction(((TRNSCT_SM*)_sm)->clearTimerS(SODE_TRNSCT_CL));
 
-    DEBOUT("TRNSCT_SM_BYE_CL act_bye_to_b move to state 1","")
+    DEBDEV("TRNSCT_SM_BYE_CL act_bye_to_b move to state 1","")
     _sm->State = 1;
 
     ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye++;
@@ -1959,7 +1959,7 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
 }
 ACTION* act_200ok_bye_to_alo(SM* _sm, MESSAGE* _message) {
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_200ok_bye_to_alo",_message)
+	DEBDEV("TRNSCT_SM_BYE_CL act_200ok_bye_to_alo",_message)
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
@@ -1979,10 +1979,10 @@ ACTION* act_200ok_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	action->addSingleAction(sa_2);
 
 
-	DEBOUT("SM act_200ok_bye_to_alo move OverallState_CL to","OS_TERMINATED")
+	DEBDEV("SM act_200ok_bye_to_alo move OverallState_CL to","OS_TERMINATED")
 	_sm->getSL_CO()->OverallState_CL = OS_TERMINATED;
 
-	DEBOUT("TRNSCT_SM_BYE_CL act_200ok_bye_to_alo move to state 2","")
+	DEBDEV("TRNSCT_SM_BYE_CL act_200ok_bye_to_alo move to state 2","")
 	_sm->State = 2;
 
 	return action;
@@ -1991,17 +1991,17 @@ ACTION* act_200ok_bye_to_alo(SM* _sm, MESSAGE* _message) {
 //pre_1_99_bye_cl
 bool pre_bye_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 
-	DEBOUT("TRNSCT_BYE_CL pre_bye_from_alarm",_message)
+	DEBDEV("TRNSCT_BYE_CL pre_bye_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
 			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye >= MAX_INVITE_RESEND) {
-		DEBOUT("TRNSCT_BYE_CL pre_bye_from_alarm","true")
+		DEBDEV("TRNSCT_BYE_CL pre_bye_from_alarm","true")
 		return true;
 	}
 	else {
-		DEBOUT("TRNSCT_INV_CL pre_bye_from_alarm","false")
+		DEBDEV("TRNSCT_INV_CL pre_bye_from_alarm","false")
 		return false;
 	}
 }

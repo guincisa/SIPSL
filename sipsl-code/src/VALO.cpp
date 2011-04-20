@@ -212,7 +212,7 @@ void VALO::onAck(MESSAGE* _message){
     SETNOW
     PROFILE("VALO::onAck")
 
-	DEBOUT("VALO::onAck",_message->getHeadSipRequest().getContent())
+	DEBALO("VALO::onAck",_message->getHeadSipRequest().getContent())
 
 	//V5 trying to build the ACK using the ACK_A instead of INVITE b
 	CREATEMESSAGE(newack, _message, SODE_ALOPOINT, SODE_SMCLPOINT)
@@ -221,17 +221,17 @@ void VALO::onAck(MESSAGE* _message){
 
 	//Remove route
 	try {
-		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute()->getRoute().getHostName())
-		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute()->getRoute().getPort())
-		DEBOUT("VALO","remove route")
+		DEBALO("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute()->getRoute().getHostName())
+		DEBALO("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute()->getRoute().getPort())
+		DEBALO("VALO","remove route")
 		newack->removeHeadRoute();
 	}
 	catch(HeaderException e){
-		DEBOUT("Exception ", e.getMessage())
+		DEBALO("Exception ", e.getMessage())
 	}
 
 	//change request
-	DEBOUT("VALO ", newack->getHeadSipRequest().getContent())
+	DEBALO("VALO ", newack->getHeadSipRequest().getContent())
 	stringstream tmps ;
 	tmps << "ACK sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
 	newack->setHeadSipRequest(tmps.str());
@@ -242,7 +242,7 @@ void VALO::onAck(MESSAGE* _message){
 //	char buff[64];
 //	sprintf(buff, "%d ACK", call_oset->getNextSequence("ACK"));
 //	newack->replaceHeadCSeq(buff);
-//	DEBOUT("VALO","Cseq")
+//	DEBALO("VALO","Cseq")
 
 	//Purge SDP
 	newack->purgeSDP();
@@ -255,24 +255,24 @@ void VALO::onAck(MESSAGE* _message){
 	string toTagB = *((string*)p->second);
 	sprintf(toTmp, "%s %s;tag=%s",newack->getHeadTo()->getNameUri().c_str(), newack->getHeadTo()->getC_AttSipUri().getContent().c_str(),toTagB.c_str());
 	string toTmpS(toTmp);
-	DEBOUT("******** TO new" , toTmpS)
+	DEBALO("******** TO new" , toTmpS)
 	newack->replaceHeadTo(toTmpS);
-	DEBOUT("TO",newack->getHeadTo()->getContent())
-	DEBOUT("TO",newack->getHeadTo()->getC_AttSipUri().getContent())
-	DEBOUT("TO",newack->getHeadTo()->getNameUri())
-	DEBOUT("TO",newack->getHeadTo()->getC_AttUriParms().getContent())
+	DEBALO("TO",newack->getHeadTo()->getContent())
+	DEBALO("TO",newack->getHeadTo()->getC_AttSipUri().getContent())
+	DEBALO("TO",newack->getHeadTo()->getNameUri())
+	DEBALO("TO",newack->getHeadTo()->getC_AttUriParms().getContent())
 
-	DEBOUT("New ACK via","")
+	DEBALO("New ACK via","")
 	map<string, void*> ::iterator p2;
 	p2 = ctxt_store.find("allvia_200ok_b");
 	string allVia = *((string*)p2->second);
 	newack->purgeSTKHeadVia();
 	newack->pushHeadVia(allVia);
-	DEBOUT("New ACK via",allVia.c_str())
+	DEBALO("New ACK via",allVia.c_str())
 
 	// THIS ACK needs the B_INVITE call id and
 	// 200 ok from B from and to headers!!!
-	DEBOUT("CHECK THIS CALLID +++++++++++", call_oset->getCallId_Y());
+	DEBALO("CHECK THIS CALLID +++++++++++", call_oset->getCallId_Y());
 
 	p = ctxt_store.find("tohead_200ok_b");
 	string tohead_200ok_b = *((string*)p->second);
@@ -285,12 +285,12 @@ void VALO::onAck(MESSAGE* _message){
 	//TODO cseq for ACK
 	int CSeqB2BINVITE = *((int*)p->second);
 
-	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
-	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
-	DEBOUT("CHECK THIS CSeq  +++++++++++", CSeqB2BINVITE);
+	DEBALO("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
+	DEBALO("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
+	DEBALO("CHECK THIS CSeq  +++++++++++", CSeqB2BINVITE);
 
-	DEBOUT("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
-	DEBOUT("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
+	DEBALO("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
+	DEBALO("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
 
 //	!!!!
 //	To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
@@ -306,7 +306,7 @@ void VALO::onAck(MESSAGE* _message){
 	string viatmpS(viatmp);
 	newack->purgeSTKHeadVia();
 	newack->pushHeadVia(viatmpS);
-	DEBOUT("newack->pushHeadVia(viatmpS);", viatmpS)
+	DEBALO("newack->pushHeadVia(viatmpS);", viatmpS)
 
 	newack->compileMessage();
 	//newack->dumpVector();
@@ -326,11 +326,11 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 
 	DEBASSERT("VALO::onAckNoTrnsct")
 
-//	DEBOUT("VALO::onAckNoTrnsct",_message->getHeadSipRequest().getContent())
+//	DEBALO("VALO::onAckNoTrnsct",_message->getHeadSipRequest().getContent())
 //
 //	//V4
 //	//get invite sent to b
-////	DEBOUT("VALO onAck", call_oset->getInviteB()->getIncBuffer())
+////	DEBALO("VALO onAck", call_oset->getInviteB()->getIncBuffer())
 ////	CREATEMESSAGE(message, call_oset->getInviteB(), SODE_ALOPOINT)
 ////	//CREATEMESSAGE(message, _message, SODE_ALOPOINT)
 //
@@ -342,24 +342,24 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 //
 //	//Remove route
 //	try {
-//		DEBOUT("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute().getRoute().getHostName())
-//		DEBOUT("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute().getRoute().getPort())
-//		DEBOUT("VALO","remove route")
+//		DEBALO("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute().getRoute().getHostName())
+//		DEBALO("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute().getRoute().getPort())
+//		DEBALO("VALO","remove route")
 //		newack->removeHeadRoute();
 //	}
 //	catch(HeaderException e){
-//		DEBOUT("Exception ", e.getMessage())
+//		DEBALO("Exception ", e.getMessage())
 //	}
 //
 //	//change request
-//	DEBOUT("VALO ", newack->getHeadSipRequest().getContent())
+//	DEBALO("VALO ", newack->getHeadSipRequest().getContent())
 //	newack->setHeadSipRequest("ACK sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 //
 //	//don't change CSEQ
 ////	char buff[64];
 ////	sprintf(buff, "%d ACK", call_oset->getNextSequence("ACK"));
 ////	newack->replaceHeadCSeq(buff);
-////	DEBOUT("VALO","Cseq")
+////	DEBALO("VALO","Cseq")
 //
 //	//Purge SDP
 //	newack->purgeSDP();
@@ -373,27 +373,27 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 //	string toTagB = *((string*)p->second);
 //	sprintf(toTmp, "%s %s;tag=%s",newack->getHeadTo().getNameUri().c_str(), newack->getHeadTo().getC_AttSipUri().getContent().c_str(),toTagB.c_str());
 //	string toTmpS(toTmp);
-//	DEBOUT("******** TO new" , toTmpS)
+//	DEBALO("******** TO new" , toTmpS)
 //	newack->replaceHeadTo(toTmpS);
-//	DEBOUT("TO",newack->getHeadTo().getContent())
-//	DEBOUT("TO",newack->getHeadTo().getC_AttSipUri().getContent())
-//	DEBOUT("TO",newack->getHeadTo().getNameUri())
-//	DEBOUT("TO",newack->getHeadTo().getC_AttUriParms().getContent())
+//	DEBALO("TO",newack->getHeadTo().getContent())
+//	DEBALO("TO",newack->getHeadTo().getC_AttSipUri().getContent())
+//	DEBALO("TO",newack->getHeadTo().getNameUri())
+//	DEBALO("TO",newack->getHeadTo().getC_AttUriParms().getContent())
 //
-//	DEBOUT("NEW ACK via","")
+//	DEBALO("NEW ACK via","")
 //	map<string, void*> ::iterator p2;
 //	p2 = ctxt_store.find("allvia");
 //	string allVia = *((string*)p2->second);
 //	newack->purgeSTKHeadVia();
 //	newack->pushHeadVia(allVia);
-//	DEBOUT("NEW ACK via",allVia.c_str())
+//	DEBALO("NEW ACK via",allVia.c_str())
 //
 //	newack->compileMessage();
 //	newack->dumpVector();
 //
 //	// THIS ACK needs the B_INVITE call id and
 //	// 200 ok from B from and to headers!!!
-//	DEBOUT("CHECK THIS CALLID +++++++++++", call_oset->getCallId_Y());
+//	DEBALO("CHECK THIS CALLID +++++++++++", call_oset->getCallId_Y());
 //
 //	p = ctxt_store.find("tohead_200ok_b");
 //	string tohead_200ok_b = *((string*)p->second);
@@ -404,12 +404,12 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 //	p = ctxt_store.find("CSeqB2BINIVTE");
 //	int CSeqB2BINIVTE = *((int*)p->second);
 //
-//	DEBOUT("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
-//	DEBOUT("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
-//	DEBOUT("CHECK THIS CSeq  +++++++++++", CSeqB2BINIVTE);
+//	DEBALO("CHECK THIS TO HEAD +++++++++++", tohead_200ok_b);
+//	DEBALO("CHECK THIS FROM HEAD +++++++++++", fromhead_200ok_b);
+//	DEBALO("CHECK THIS CSeq  +++++++++++", CSeqB2BINIVTE);
 //
-//	DEBOUT("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
-//	DEBOUT("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
+//	DEBALO("CHECK THIS CALL ID from context map +++++++++++", callid_200ok_b);
+//	DEBALO("CHECK THIS CALL ID from call_oset +++++++++++", call_oset->getCallId_Y());
 //
 ////	!!!!
 ////	To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
@@ -447,7 +447,7 @@ void VALO::onBye(MESSAGE* _message){
 	message->setSourceMessage(_message->getSourceMessage());
 
 
-	DEBOUT("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
+	DEBALO("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
 
 	if (_message->getRequestDirection() == SODE_FWD ) {
 
@@ -466,7 +466,7 @@ void VALO::onBye(MESSAGE* _message){
 		//TODO FIX THIS!
 		//must understadn here which dialog I am closing
 		message->replaceHeadCSeq(call_oset->getNextSequence("INVITE_B"), "BYE");
-		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
+		DEBALO("VALO Cseq new", message->getGenericHeader("CSeq"))
 
 		map<string, void*> ::iterator p;
 		p = ctxt_store.find("tohead_200ok_b");
@@ -495,7 +495,7 @@ void VALO::onBye(MESSAGE* _message){
 		p = ctxt_store.find("invite_a");
 		MESSAGE* __message = (MESSAGE*)p->second;
 
-		DEBOUT("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
+		DEBALO("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
 		//message->setDestEntity(SODE_TRNSCT_CL);
 
 		//Request has to be made using INVITE_A via address
@@ -513,7 +513,7 @@ void VALO::onBye(MESSAGE* _message){
 		//TODO FIX THIS!
 		//must understadn here which dialog I am closing
 		message->replaceHeadCSeq(call_oset->getCurrentSequence("INVITE_A"), "BYE");
-		DEBOUT("VALO Cseq new", message->getGenericHeader("CSeq"))
+		DEBALO("VALO Cseq new", message->getGenericHeader("CSeq"))
 
 		p = ctxt_store.find("tohead_200ok_a");
 		string tohead_200ok_a = *((string*)p->second);
@@ -554,13 +554,13 @@ void VALO::on200Ok(MESSAGE* _message){
 	//The 200OK is called twice so we are leaking
 	if (ctxt_store.find("totag_200ok_b") == ctxt_store.end()){
 		NEWPTR(string*, totag, string(_message->getHeadTo()->getC_AttUriParms().getTuples().findRvalue("tag")),"totag_200ok_b")
-		DEBOUT("STORE totag", totag)
+		DEBALO("STORE totag", totag)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("totag_200ok_b", (void*) totag )))
 	}
 
 	if (ctxt_store.find("allvia_200ok_b") == ctxt_store.end()){
 		NEWPTR(string*, allvia, string(_message->getSTKHeadVia().top()->getC_AttVia().getContent()),"allvia_200ok_b")
-		DEBOUT("STORE totag", allvia)
+		DEBALO("STORE totag", allvia)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("allvia_200ok_b", (void*) allvia )))
 	}
 
@@ -568,28 +568,28 @@ void VALO::on200Ok(MESSAGE* _message){
 	// To create the ACK
 	if (ctxt_store.find("tohead_200ok_b") == ctxt_store.end()){
 		NEWPTR(string*, tohead,  string(_message->getHeadTo()->getContent()),"tohead_200ok_b")
-		DEBOUT("STORE TO HEAD ok 200 ok from B", tohead)
+		DEBALO("STORE TO HEAD ok 200 ok from B", tohead)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_b", (void*) tohead )))
 	}
 	if (ctxt_store.find("fromhead_200ok_b") == ctxt_store.end()){
 		NEWPTR(string*, fromhead, string(_message->getHeadFrom()->getContent()),"fromhead_200ok_b")
-		DEBOUT("STORE FROM HEAD of 200 ok", fromhead)
+		DEBALO("STORE FROM HEAD of 200 ok", fromhead)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_b", (void*) fromhead )))
 	}
 
 	//this shoudl go into call_oset call_idy
 	if (ctxt_store.find("callid_200ok_b") == ctxt_store.end()){
 		NEWPTR(string*, callid_200ok_b, string(_message->getHeadCallId().getContent()),"callid_200ok_b")
-		DEBOUT("STORE CALL ID of 200 ok", callid_200ok_b)
+		DEBALO("STORE CALL ID of 200 ok", callid_200ok_b)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
 	}
 
-	DEBOUT("on200Ok MESSAGE GENERATOR", __message)
+	DEBALO("on200Ok MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT , SODE_TRNSCT_SV)
 
 	//ok_x->setTypeOfInternal(TYPE_MESS);
 
-	DEBOUT("ok_x","SIP/2.0 200 OK")
+	DEBALO("ok_x","SIP/2.0 200 OK")
 
 	if (ok_x->getSDPSize() != 0 ){
 		//SDP must copy the SDP from incoming OK and put here
@@ -597,7 +597,7 @@ void VALO::on200Ok(MESSAGE* _message){
 		ok_x->purgeSDP();
 		ok_x->dropHeader("Content-Length:");
 
-		DEBOUT("PURGED SDP","")
+		DEBALO("PURGED SDP","")
 		//ok_x->dumpVector();
 		ok_x->importSDP(__sdp);
 		//ok_x->dumpVector();
@@ -609,12 +609,12 @@ void VALO::on200Ok(MESSAGE* _message){
 	ok_x->compileMessage();
 
 	if (ctxt_store.find("tohead_200ok_a") == ctxt_store.end()){
-		DEBOUT("STORE tags of 200 OK to A",ok_x->getHeadTo()->getContent() << "]["<<ok_x->getHeadFrom()->getContent())
+		DEBALO("STORE tags of 200 OK to A",ok_x->getHeadTo()->getContent() << "]["<<ok_x->getHeadFrom()->getContent())
 		NEWPTR(string*, tohead_a, string(ok_x->getHeadTo()->getContent()),"tohead_200ok_a")
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a )))
 	}
 	if (ctxt_store.find("fromhead_200ok_a") == ctxt_store.end()){
-		DEBOUT("STORE FROM HEAD of 200 ok", ok_x->getHeadTo()->getContent())
+		DEBALO("STORE FROM HEAD of 200 ok", ok_x->getHeadTo()->getContent())
 		NEWPTR(string*, fromhead_a, string(ok_x->getHeadFrom()->getContent()),"fromhead_200ok_a")
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 	}

@@ -134,14 +134,14 @@ CALL_OSET::~CALL_OSET(void){
 	//Need to lock here!
 	GETLOCK(&(mutex),"CALL_OSET::mutex");
 
-	DEBOUT("CALL_OSET ACCESS CALL_OSET::~CALL_OSET begin", this)
+	DEBDEV("CALL_OSET ACCESS CALL_OSET::~CALL_OSET begin", this)
 	if (sl_co != 0x0){
 		DEBY
 		//purge states machines
 		//must delete specific SM!
 		map<string, TRNSCT_SM*> ::iterator p;
 		for (p = trnsctSmMap.begin() ; p != trnsctSmMap.end() ; p++) {
-			DEBOUT("(p->first)", (p->first))
+			DEBDEV("(p->first)", (p->first))
 			if ( (p->first).substr(0,8).compare("INVITE#4") == 0){
 				DELPTR((TRNSCT_SM_INVITE_CL*)p->second,"(TRNSCT_SM_INVITE_CL*)p->second");
 				continue;
@@ -180,9 +180,9 @@ CALL_OSET::~CALL_OSET(void){
 	MESSAGE* m = getNextLockedMessage();
 	while (m != MainMessage){
 
-		DEBOUT("MESSAGE to be deleted", m)
+		DEBDEV("MESSAGE to be deleted", m)
 		if (!m->getLock() || m->getTypeOfInternal()==  TYPE_OP){
-			DEBOUT("CALL_OSET::~CALL_OSET invalid message", m)
+			DEBDEV("CALL_OSET::~CALL_OSET invalid message", m)
 			DEBASSERT("CALL_OSET::~CALL_OSET message invalid["<< m <<"]")
 		}
 
@@ -212,7 +212,7 @@ CALL_OSET::~CALL_OSET(void){
 		m->unSetLock(this);
 		PURGEMESSAGE(m);
 		DEBY
-		DEBOUT("Message to be deleted", m)
+		DEBDEV("Message to be deleted", m)
 		m = getNextLockedMessage();
 	}
 	RELLOCK(&(mutex),"SL_CO::mutex");
@@ -243,7 +243,7 @@ void CALL_OSET::insertSequence(string _method, int _i){
 	map<string, int> ::iterator p;
 	p = sequenceMap.find(_method);
 	if (p != sequenceMap.end()){
-		DEBOUT("CALL_OSET::insertSequence exists", _method <<"]["<<_i)
+		DEBDEV("CALL_OSET::insertSequence exists", _method <<"]["<<_i)
 		sequenceMap.erase(p);
 	}
 
@@ -338,12 +338,12 @@ void CALL_OSET::removeLockedMessage(MESSAGE* _message){
 	map<MESSAGE*,int>::iterator p;
 	p=lockedMessages.find(_message);
 	if (p!=lockedMessages.end()){
-		DEBOUT("CALL_OSET::removeLockedMessage found", _message)
+		DEBDEV("CALL_OSET::removeLockedMessage found", _message)
 		//MESSAGE* t = (MESSAGE*)p->first;
 		lockedMessages.erase(p);
 	}
 	else {
-		DEBOUT("CALL_OSET::removeLockedMessage not found", _message)
+		DEBDEV("CALL_OSET::removeLockedMessage not found", _message)
 	}
 
 }
@@ -396,7 +396,7 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 	pair<map<string, TRNSCT_SM*>::iterator, bool> ret;
 	ret = trnsctSmMap.insert(pair<string, TRNSCT_SM*>(stmp, _trnsctSm));
 	if(!ret.second){
-		DEBOUT("CALL_OSET::addTrnsctSm adding a exsiting sm", stmp <<"]["<<_trnsctSm)
+		DEBDEV("CALL_OSET::addTrnsctSm adding a exsiting sm", stmp <<"]["<<_trnsctSm)
 		DEBASSERT("CALL_OSET::addTrnsctSm")
 	}
 	DEBINF("CALL_OSET::addTrnsctSm", stmp<<"]["<<_trnsctSm)
@@ -462,7 +462,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
 
     if(_message->getTypeOfInternal() == TYPE_OP && _message->getTypeOfOperation() !=  TYPE_OP_SMCOMMAND){
 		if (_message->getLock()){
-			DEBOUT("Break rule: a message from alarm must not be locked", _message)
+			DEBDEV("Break rule: a message from alarm must not be locked", _message)
 			DEBASSERT("Break rule: a message from alarm must not be locked")
 		}
     }
@@ -600,7 +600,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 // the sm may have been deleted
                 DEBWARNING("An unexpected reply directed to client has reached the call object", _message)
                 DEBMESSAGE("An unexpected reply directed to client has reached the call object", _message)
-                DEBOUT("An unexpected reply directed to client has reached the call object", _message <<"]["<<_message->getTypeOfInternal())
+                DEBDEV("An unexpected reply directed to client has reached the call object", _message <<"]["<<_message->getTypeOfInternal())
                 call_oset->dumpTrnsctSm();
                 action = 0x0;
                 DEBASSERT("An unexpected reply directed to client has reached the call object")
@@ -660,13 +660,13 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
             DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
             call_oset->getALO()->call(_tmpMessage);
             if(!_tmpMessage->getLock()){
-                    DEBOUT("Message coming back form ALO not locked, deleted", _tmpMessage)
-                    PURGEMESSAGE(_tmpMessage)
+            	DEBDEV("Message coming back form ALO not locked, deleted", _tmpMessage)
+				PURGEMESSAGE(_tmpMessage)
             }
 
             //MLF2
             else {
-                DEBOUT("Message coming back form ALO locked", _tmpMessage)
+            	DEBDEV("Message coming back form ALO locked", _tmpMessage)
                 DEBASSERT("Message coming back form ALO locked")
             }
 
@@ -683,7 +683,7 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
                 DEBINF("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#");
                 // Rule : timer on must be unlocked
                 if (_tmpMessage->getLock()){
-                    DEBOUT("Message to alarm found locked", _tmpMessage)
+                	DEBDEV("Message to alarm found locked", _tmpMessage)
                     DEBASSERT("Message to alarm found locked")
                 }
 
@@ -783,7 +783,7 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 
 				//MLF2
 				if (_tmpMessage->getLock()){
-					DEBOUT("Message to alarm found locked", _tmpMessage)
+					DEBDEV("Message to alarm found locked", _tmpMessage)
 					DEBASSERT("Message to alarm found locked")
 				}
 				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime(),_tmpMessage->getModulus());
@@ -801,7 +801,7 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 				if(!_tmpMessage->getLock()){
 					PURGEMESSAGE(_tmpMessage)
 				}else {
-					DEBOUT("Rule break timer off message found locked",_tmpMessage)
+					DEBDEV("Rule break timer off message found locked",_tmpMessage)
 					DEBASSERT("Rule break timer off message found locked")
 				}
 

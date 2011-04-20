@@ -89,13 +89,13 @@ extern "C" void* DOASTACK (void*);
 //**********************************************************************************
 void * DOASTACK(void *_tgtObject) {
 
-    DEBOUT("DOASTACK start","")
+    DEBDEV("DOASTACK start","")
 
 		DOAtuple *tgtObject = (DOAtuple *)_tgtObject;
 
     tgtObject->st->doa();
 
-    DEBOUT("DOASTACK started","")
+    DEBDEV("DOASTACK started","")
 
     return (NULL);
 }
@@ -104,11 +104,11 @@ DOA::DOA(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
 	sleep_time.tv_sec = _sec;
 	sleep_time.tv_nsec = _nsec;
 	sl_cc = _sl_cc;
-	DEBOUT("DOA::DOA", "DOA created")
+	DEBDEV("DOA::DOA", "DOA created")
 }
 
 void DOA::init(void) {
-	DEBOUT("DOA::init", "init")
+	DEBDEV("DOA::init", "init")
 
     NEWPTR2(listenerThread,ThreadWrapper,"ThreadWrapper");
 	DOAtuple *t1;
@@ -120,14 +120,14 @@ void DOA::init(void) {
     //TODO check consistency!!!
     pthread_mutex_init(&mutex, NULL);
 
-	DEBOUT("DOA::init", "started")
+	DEBDEV("DOA::init", "started")
     return;
 
 }void DOA::doa(void) {
 
 	for(;;) {
 		nanosleep(&sleep_time,NULL);
-		DEBOUT("DOA::doa", "started")
+		DEBDEV("DOA::doa", "started")
 		//DUMPMESSTABLE
 		sl_cc->getCOMAP()->purgeDOA();
 	}
