@@ -98,8 +98,8 @@ ThreadWrapper::ThreadWrapper(void) {
 //**********************************************************************************
 ENGINE::ENGINE(int _i) {
 
-    DEBOUT("ENGINE::ENGINE()","")
-    DEBOUT("ENGINE::ENGINE() spin buffer ",&sb)
+    DEBDEV("ENGINE::ENGINE()","")
+    DEBDEV("ENGINE::ENGINE() spin buffer ",&sb)
 
     int res;
 
@@ -116,7 +116,7 @@ ENGINE::ENGINE(int _i) {
     		_i = ENGINEMAPS;
     	}
     }
-
+    DEBOUT("ENGINE::ENGINE _i", _i)
     ENGtuple *t[MAXTHREADS];
 
 //    int i;
@@ -165,7 +165,7 @@ ENGINE::ENGINE(int _i) {
 int ENGINE::modEngineMap(MESSAGE* _message){
 
 	int mm = _message->getModulus() % ENGINEMAPS;
-	DEBOUT("ENGINE::modEngineMap", _message << "][" << _message->getModulus() <<"]["<<mm)
+	DEBDEV("ENGINE::modEngineMap", _message << "][" << _message->getModulus() <<"]["<<mm)
 	return mm;
 }
 
@@ -192,7 +192,7 @@ bool ENGINE::p_w(void* _m) {
     TIMEDEF
 
 	int mmod = modEngineMap((MESSAGE*)_m);
-    DEBOUT("bool ENGINE::p_w(void* _m) ", _m << "] modulus SP["<<mmod)
+    DEBDEV("bool ENGINE::p_w(void* _m) ", _m << "] modulus SP["<<mmod)
 
     GETLOCK(&(sb[mmod].condvarmutex),"[" << this << "] sb["<< mmod << "].condvarmutex");
 
@@ -208,9 +208,9 @@ bool ENGINE::p_w(void* _m) {
     sb[mmod].put(_m);
     pthread_cond_signal(&(sb[mmod].condvar));
 //    bool r = sb.put(_m);
-//    DEBOUT("ENGINE::p_w put returned",_m << " "<<r)
+//    DEBDEV("ENGINE::p_w put returned",_m << " "<<r)
 //    if (!r){
-//    	DEBOUT("ENGINE::p_w put returned false","")
+//    	DEBDEV("ENGINE::p_w put returned false","")
 //    }else {
 //        //Otherwise the message is parsed
 //        pthread_cond_signal(&(sb.condvar));
@@ -227,9 +227,9 @@ bool ENGINE::p_w(void* _m) {
 //
 //    GETLOCK(&(rej.condvarmutex),"rej.condvarmutex");
 //    bool r = rej.put(_m);
-//    DEBOUT("ENGINE::p_w_s put returned",_m << " "<<r)
+//    DEBDEV("ENGINE::p_w_s put returned",_m << " "<<r)
 //    if (!r){
-//    	DEBOUT("ENGINE::p_w_s put returned false", _m)
+//    	DEBDEV("ENGINE::p_w_s put returned false", _m)
 //    }else {
 //        //Otherwise the message is parsed
 //        pthread_cond_signal(&(rej.condvar));
@@ -239,11 +239,11 @@ bool ENGINE::p_w(void* _m) {
 //
 //}
 //void ENGINE::lockBuffer(void){
-//    DEBOUT("ENGINE::lockBuffer",this)
+//    DEBDEV("ENGINE::lockBuffer",this)
 //    sb.lockBuffer();
 //}
 //void ENGINE::unLockBuffer(void){
-//    DEBOUT("ENGINE::unLockBuffer",this)
+//    DEBDEV("ENGINE::unLockBuffer",this)
 //    sb.unLockBuffer();
 //}
 
@@ -255,17 +255,17 @@ void * threadparser (void * _pt){
     int mmod = ((ENGtuple *)  _pt)->mmod;
     ENGINE * ps = pt->ps;
     while(true) {
-        DEBOUT("ENGINE thread",_pt)
+        DEBDEV("ENGINE thread",_pt)
             GETLOCK(&(ps->sb[mmod].condvarmutex),"ps->sb["<<mmod<<"].condvarmutex");
         while(ps->sb[mmod].isEmpty() ) {
-            DEBOUT("ENGINE thread is empty",_pt)
+            DEBDEV("ENGINE thread is empty",_pt)
             pthread_cond_wait(&(ps->sb[mmod].condvar), &(ps->sb[mmod].condvarmutex));
         }
-        DEBOUT("ENGINE thread freed", _pt)
+        DEBDEV("ENGINE thread freed", _pt)
         void* m = ps->sb[mmod].get();
 #ifdef USE_SPINB
         if (m == NULL)  {
-            DEBOUT("ENGINE thread NULL",_pt)
+            DEBDEV("ENGINE thread NULL",_pt)
             ps->sb.move();
             //aggiunta il 30 luglio 2010
             RELLOCK(&(ps->sb.condvarmutex),"ps->sb.condvarmutex");
@@ -278,7 +278,7 @@ void * threadparser (void * _pt){
     int i = getModulus((MESSAGE*)m);
     GETLOCK(&messTableMtx[i],"&messTableMtx"<<i);
     if ( ((MESSAGE*)m)->inuse != 0){
-    	DEBOUT("MESSAGE ALREADY RUNNING", m << "]["<<((MESSAGE*)m)->inuse)
+    	DEBDEV("MESSAGE ALREADY RUNNING", m << "]["<<((MESSAGE*)m)->inuse)
     	DEBASSERT("MESSAGE ALREADY RUNNING")
     }
     ((MESSAGE*)m)->inuse = (int) pthread_self();
@@ -300,17 +300,17 @@ void * threadparser (void * _pt){
 //    ENGtuple *pt = (ENGtuple *)  _pt;
 //    ENGINE * ps = pt->ps;
 //    while(true) {
-//        DEBOUT("ENGINE thread",_pt)
+//        DEBDEV("ENGINE thread",_pt)
 //            GETLOCK(&(ps->rej.condvarmutex),"ps->rej.condvarmutex");
 //        while(ps->rej.isEmpty() ) {
-//            DEBOUT("ENGINE thread is empty",_pt)
+//            DEBDEV("ENGINE thread is empty",_pt)
 //            pthread_cond_wait(&(ps->rej.condvar), &(ps->rej.condvarmutex));
 //        }
-//        DEBOUT("ENGINE thread freed", _pt)
+//        DEBDEV("ENGINE thread freed", _pt)
 //        void* m = ps->rej.get();
 //#ifdef USE_SPINB
 //        if (m == NULL)  {
-//            DEBOUT("ENGINE thread NULL",_pt)
+//            DEBDEV("ENGINE thread NULL",_pt)
 //            ps->sb.move();
 //            //aggiunta il 30 luglio 2010
 //            RELLOCK(&(ps->sb.condvarmutex),"ps->rej.condvarmutex");

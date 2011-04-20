@@ -104,7 +104,7 @@ BASEMESSAGE::BASEMESSAGE(BASEMESSAGE* _basemessage, int _genEntity, SysTime _cre
 	sprintf(bu, "%x#%lld",this,inTime.tv.tv_sec*1000000+inTime.tv.tv_usec);
 	string key(bu);
 	*/
-    DEBOUT("BASEMESSAGE::BASEMESSAGE copy",_basemessage)
+    DEBSIP("BASEMESSAGE::BASEMESSAGE copy",_basemessage)
     echoClntAddr = _basemessage->getAddress();
     sock = _basemessage->getSock();
 
@@ -219,7 +219,7 @@ void BASEMESSAGE::setGenEntity(int _genEntity){
 
 	//MLF2
 	if (genEntity != 0){
-		DEBOUT("BASEMESSAGE::setGenEntity is not null cannot be changed anymore",genEntity << " new["<<_genEntity)
+		DEBSIP("BASEMESSAGE::setGenEntity is not null cannot be changed anymore",genEntity << " new["<<_genEntity)
 		DEBASSERT("BASEMESSAGE::setGenEntity is not null cannot be changed anymore")
 	}
 
@@ -471,7 +471,7 @@ void MESSAGE::dumpVector(void){
 
     vector<string>::iterator theIterator;
     for( theIterator = flex_line.begin(); theIterator != flex_line.end(); theIterator++ ) {
-    	DEBOUT("Message vector", (string)*theIterator)
+    	DEBSIP("Message vector", (string)*theIterator)
     }
 }
 int MESSAGE::getReqRepType(void){
@@ -722,7 +722,7 @@ void MESSAGE::pushHeadVia(string _content){
 	}
 	else {
 		theIterator = getSDPposition();
-		DEBOUT("string tmp", _content)
+		DEBSIP("string tmp", _content)
 		flex_line.insert(theIterator ,1 , "Via: " + _content);
 	}
 }
@@ -924,7 +924,7 @@ void MESSAGE::replaceHeadFrom(string _content){
 		}
 	}
 	if (!found) {
-		DEBOUT("MESSAGE::replaceHeadFrom from header is missing","")
+		DEBSIP("MESSAGE::replaceHeadFrom from header is missing","")
 	}
 }
 void MESSAGE::replaceHeadTo(string _content){
@@ -951,7 +951,7 @@ void MESSAGE::replaceHeadTo(string _content){
 		}
 	}
 	if (!found) {
-		DEBOUT("MESSAGE::replaceHeadTo from header is missing","")
+		DEBSIP("MESSAGE::replaceHeadTo from header is missing","")
 	}
 }
 
@@ -1060,7 +1060,7 @@ C_HeadRoute* MESSAGE::getHeadRoute(void) throw (HeaderException){
 		NEWPTR2(headRoute, C_HeadRoute(""),"C_HeadRoute")
 	}
 	if(headRoute_e){
-		DEBOUT("MESSAGE::getHeadRoute","No Route header")
+		DEBSIP("MESSAGE::getHeadRoute","No Route header")
 		DELPTR(headRoute,"C_HeadRoute")
 		headRoute = NULL;
 		throw HeaderException("No Route header");
@@ -1086,7 +1086,7 @@ C_HeadRoute* MESSAGE::getHeadRoute(void) throw (HeaderException){
 		headRoute_e = true;
 		DELPTR(headRoute,"C_HeadRoute")
 		headRoute = NULL;
-		DEBOUT("MESSAGE::getHeadRoute","No Route header")
+		DEBSIP("MESSAGE::getHeadRoute","No Route header")
 		throw HeaderException("No Route header");
 	}
 }
@@ -1205,7 +1205,7 @@ void MESSAGE::dropHeader(string _header){
 		}
 	}
 	if (!found) {
-		DEBOUT("MESSAGE::removeHeader not found",_header)
+		DEBSIP("MESSAGE::removeHeader not found",_header)
 	}
 }
 void MESSAGE::setGenericHeader(string _header, string _content){
@@ -1213,7 +1213,7 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		DEBASSERT("MESSAGE::setGenericHeader invalid")
 
 
-	DEBOUT("MESSAGE::setGenericHeader", _header + " " + _content)
+	DEBSIP("MESSAGE::setGenericHeader", _header + " " + _content)
 	if (_header.compare("To:") == 0){
 		DEBASSERT("DON'T USE")
 	}
@@ -1238,7 +1238,7 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		}
 	}
 	if (!found) {
-		DEBOUT("MESSAGE::setGenericHeader not found",_header)
+		DEBSIP("MESSAGE::setGenericHeader not found",_header)
 	}
 }
 string MESSAGE::getGenericHeader(string _header){
@@ -1246,19 +1246,19 @@ string MESSAGE::getGenericHeader(string _header){
 		DEBASSERT("MESSAGE::getGenericHeader invalid")
 
 
-	DEBOUT("MESSAGE::getGenericHeader", _header)
+	DEBSIP("MESSAGE::getGenericHeader", _header)
 	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
 		if(flex_line[i].substr(0,_header.size()).compare(_header)==0){
 			Tuple s = brkin2(flex_line[i], " ");
 			found = true;
-			DEBOUT("found header",_header << "***"<< s.Rvalue)
+			DEBSIP("found header",_header << "***"<< s.Rvalue)
 			return s.Rvalue;
 		}
 	}
 	if (!found) {
-		DEBOUT("MESSAGE::setGenericHeader not found",_header)
+		DEBSIP("MESSAGE::setGenericHeader not found",_header)
 	}
 	return "";
 
@@ -1270,7 +1270,7 @@ void MESSAGE::addGenericHeader(string _header, string _content){
 		DEBASSERT("MESSAGE::addGenericHeader invalid")
 
 
-	DEBOUT("MESSAGE::addGenericHeader",_header << " " << _content)
+	DEBSIP("MESSAGE::addGenericHeader",_header << " " << _content)
 
 	flex_line.push_back(_header + " " + _content);
 
@@ -1308,7 +1308,7 @@ string MESSAGE::getDialogExtendedCID(void){
 		DEBASSERT("MESSAGE::getDialogExtendedCID invalid")
 
 	//Call id and FromTag
-	DEBOUT_UTIL("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag"))
+	DEBSIP("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag"))
 	return getHeadCallId().getNormCallId() + getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag");
 }
 void MESSAGE::setLock(CALL_OSET* _call_oset){
@@ -1328,7 +1328,7 @@ void MESSAGE::unSetLock(CALL_OSET* _call_oset){
 	if (invalid == 1){
 		DEBASSERT("MESSAGE::unSetLock invalid")}
 
-	DEBOUT("MESSAGE::unSetLock ", this)
+	DEBSIP("MESSAGE::unSetLock ", this)
 	_call_oset->removeLockedMessage(this);
 	lock=false;
 }
@@ -1356,7 +1356,7 @@ void MESSAGE::setTypeOfInternal(int _i){
 		DEBASSERT("MESSAGE::setTypeOfInternal invalid")
 
 	if( typeOfInternal == TYPE_OP && _i != TYPE_OP){
-		DEBOUT("MESSAGE::setTypeOfInternal changing from TYPE_OP",this)
+		DEBSIP("MESSAGE::setTypeOfInternal changing from TYPE_OP",this)
 		DEBASSERT("MESSAGE::setTypeOfInternal changing from TYPE_OP")
 	}
 	typeOfInternal = _i;

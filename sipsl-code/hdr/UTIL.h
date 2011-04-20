@@ -93,16 +93,17 @@ class ThreadWrapper {
 
 
 #define SUDPTH 6
-#define MAXTHREADS 32
-#define SIPENGINETH 16
-#define TRNSPRTTH 8
-#define SL_CCTH 32
+#define MAXTHREADS 60
+#define SIPENGINETH 15
+#define TRNSPRTTH 10
+#define SL_CCTH 60
 
-#define ENGINEMAPS 8
-#define ALARMMAPS 8
+#define ENGINEMAPS 5
+
+#define ALARMMAPS 10
 
 
-#define COMAPS 32
+#define COMAPS 50
 #define COMAPS_DIG 2
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100
@@ -121,9 +122,9 @@ class ThreadWrapper {
 //#define LOGSIPHIGH
 //#define LOGSIPLOW
 
-#define LOGINF
+//#define LOGINF
 #define LOGMIN
-#define LOGDEV
+//#define LOGDEV
 #define LOGMEM
 #define LOGNTW
 #define SELFCHECK
@@ -358,10 +359,6 @@ class ThreadWrapper {
 #define DEBINF(m1,m2) BDEBUG("DEBINF", m1 << "[" << m2)
 //#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 	//**********************************************************
-#undef DEBOUT
-//#define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
-#define DEBOUT(m1,m2) BDEBUG("DEBOUT", m1 << "[" << m2 << "]")
-	//**********************************************************
 #undef DEBOUT_UTIL
 #define DEBOUT_UTIL(m1,m2)  {stringstream xx ; xx << "DEBOUT_UTIL [" << pthread_self() << "]"<<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 	//**********************************************************
@@ -381,6 +378,10 @@ class ThreadWrapper {
 #undef DEBERROR
 #define DEBERROR(m1)  {stringstream xx ; xx << "**** RUNTIME ERROR **** " << __FILE__ <<" " <<__LINE__<< "[" << m1 << "]\n";cout << xx.str();cout.flush();}
 	//**********************************************************
+//**********************************************************
+#undef DEBOUT
+//#define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#define DEBOUT(m1,m2) BDEBUG("DEBOUT", m1 << "[" << m2 << "]")
 #else
 #define DEBERROR(m)
 #endif

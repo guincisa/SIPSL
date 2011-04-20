@@ -126,7 +126,7 @@ void SL_CC::parse(void* __mess, int _mmod){
 
 	MESSAGE* _mess = (MESSAGE*)__mess;
 
-    DEBOUT("SL_CC::parse", _mess)
+    DEBDEV("SL_CC::parse", _mess)
     DEBMESSAGESHORT("SL_CC::parse", _mess)
 
     //Maybe it has been delete by DOA when outside the call_oset

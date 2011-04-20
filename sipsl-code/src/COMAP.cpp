@@ -185,7 +185,7 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
         map<string, string>::iterator p3;
         p3 = call_id_x2y[_mod].find(tmp2);
         if (p3 ==call_id_x2y[_mod].end()){
-            DEBOUT("COMAP::getCALL_OSET_YDerived inconsystency in call_id_x2y",tmp2)
+            DEBDEV("COMAP::getCALL_OSET_YDerived inconsystency in call_id_x2y",tmp2)
             DEBASSERT("COMAP::getCALL_OSET_YDerived inconsystency in call_id_x2y")
         }
     }
@@ -229,7 +229,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     pair<map<string, CALL_OSET*>::iterator, bool> ret1;
     ret1 = comap_mm[_mod].insert(pair<string, CALL_OSET*>(_callId_X, call_oset));
     if (!ret1.second){
-        DEBOUT("p_comap_mm = comap_mm[_mod].find(_callId_X)",_callId_X )
+        DEBDEV("p_comap_mm = comap_mm[_mod].find(_callId_X)",_callId_X )
         DEBASSERT("should not happen")
     }
 
@@ -237,7 +237,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     pair<map<CALL_OSET*,int>::iterator,bool> ret2;
     ret2 = call_oset_doa_state[_mod].insert(pair<CALL_OSET*, int>(call_oset, NOT_DOA));
     if(!ret2.second){
-        DEBOUT("p_doamap = call_oset_doa_state[_mod].find(call_oset)",call_oset )
+        DEBDEV("p_doamap = call_oset_doa_state[_mod].find(call_oset)",call_oset )
         DEBASSERT("should not happen")
     }
 
@@ -245,14 +245,14 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     pair<map<CALL_OSET*, lli>::iterator,bool> ret3;
     ret3 = call_oset_ttl[_mod].insert(pair<CALL_OSET*, lli>(call_oset, 0));
     if(!ret3.second){
-        DEBOUT("p_ttl = call_oset_ttl[_mod].find(call_oset);",call_oset )
+        DEBDEV("p_ttl = call_oset_ttl[_mod].find(call_oset);",call_oset )
         DEBASSERT("should not happen")
     }
 
     //ttldel
     ret3 = call_oset_ttl_delete[_mod].insert(pair<CALL_OSET*, lli>(call_oset, 0));
     if(!ret3.second){
-        DEBOUT("p_ttl = call_oset_ttl[_mod].find(call_oset);",call_oset )
+        DEBDEV("p_ttl = call_oset_ttl[_mod].find(call_oset);",call_oset )
         DEBASSERT("should not happen")
     }
 
@@ -269,7 +269,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     string callIdtmpS(callIdtmp);
     ret4 = call_id_y2x[_mod].insert(pair<string, string>(callIdtmpS, _callId_X));
     if(!ret4.second){
-        DEBOUT("p_callx2y = call_id_x2y[_mod].find(_callId_X);",_callId_X )
+        DEBDEV("p_callx2y = call_id_x2y[_mod].find(_callId_X);",_callId_X )
         DEBASSERT("should not happen")
     }
     ret5 = call_id_x2y[_mod].insert(pair<string, string>(_callId_X, callIdtmpS));
@@ -300,7 +300,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
 //    p_cally2x = call_id_y2x[_mod].find(_callId_Y);
 //    if (p_cally2x != call_id_y2x[_mod].end()){
 //        call_id_y2x[_mod].erase(p_cally2x);
-//        DEBOUT("COMAP::setY2XCallId",_callId_Y << " " << _callId_X)
+//        DEBDEV("COMAP::setY2XCallId",_callId_Y << " " << _callId_X)
 //    }
 //    call_id_y2x[_mod].insert(pair<string, string>(_callId_Y, _callId_X));
 //
@@ -490,10 +490,10 @@ void COMAP::purgeDOA(void){
 					 call_oset = (CALL_OSET*)p_comap_mm->second;
 					 TRYLOCK(&(call_oset->mutex)," call_oset test"<<mod, trylock2)
 					 if( trylock2 !=0 ){
-						 DEBOUT("purgeDOA trylock failed and call_oset locked ", mod << "][" << call_oset <<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
+						 DEBDEV("purgeDOA trylock failed and call_oset locked ", mod << "][" << call_oset <<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
 					 }
 					 else{
-						 DEBOUT("purgeDOA trylock failed and call_oset not locked ", mod << "][" << call_oset<<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
+						 DEBDEV("purgeDOA trylock failed and call_oset not locked ", mod << "][" << call_oset<<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
 						 RELLOCK(&(call_oset->mutex),"call_oset released")
 					 }
 				}
@@ -572,7 +572,7 @@ void COMAP::purgeDOA(void){
 
                     //not useful
 					//RELLOCK(&(call_oset->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
-                    DEBOUT("purgeDOA CALL_OSET::SL_CO::mutex releasing", call_oset)
+                    DEBDEV("purgeDOA CALL_OSET::SL_CO::mutex releasing", call_oset)
 
                     DELPTR(call_oset,"CALL_OSET");
                     call_oset = 0x0;
