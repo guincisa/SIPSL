@@ -93,7 +93,7 @@
 #include "TRNSPRT.h"
 #endif
 
-TRNSPRT::TRNSPRT(int _i, int _m):ENGINE(_i, _m){}
+TRNSPRT::TRNSPRT(int _i, int _m, string _s):ENGINE(_i, _m, _s){}
 
 void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
 

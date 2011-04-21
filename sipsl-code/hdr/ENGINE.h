@@ -62,6 +62,8 @@ class ENGINE {
 
         int EngineMaps;
 
+        string objectType;
+
     public:
 
 #ifdef TESTING
@@ -84,7 +86,7 @@ class ENGINE {
 
 #endif
 
-		ENGINE(int numthreads, int enginemaps);
+		ENGINE(int numthreads, int enginemaps, string type);
 
 	    void lockBuffer(void);
 	    void unLockBuffer(void);

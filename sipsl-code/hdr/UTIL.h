@@ -60,7 +60,7 @@ typedef struct {
 class ThreadWrapper {
     public:
         pthread_t thread;
-        pthread_mutex_t mutex;
+        //pthread_mutex_t mutex;
         ThreadWrapper();
 };
 
@@ -87,28 +87,31 @@ class ThreadWrapper {
 
 #ifdef SPARC
 
+#define NOBUFFERENGINE
+
 //#define USEMESSAGEMAP
 #define USEFASTSEND
 //#define USETRYLOCK
 
 
 #define SUDPTH 6
-#define MAXTHREADS 64
-#define SIPENGINETH 18
-#define SIPENGINMAPS 6
+#define MAXTHREADS 128
 
-#define TRNSPRTTH 16
-#define TRNSPRTMAPS 4
+#define SIPENGINETH 64
+#define SIPENGINMAPS 16
 
-#define SL_CCTH 64
-#define SL_CCMAPS 16
+#define TRNSPRTTH 64
+#define TRNSPRTMAPS 16
+
+#define SL_CCTH 128
+#define SL_CCMAPS 32
 
 //#define ENGINEMAPS 5
 
-#define ALARMMAPS 10
+#define ALARMMAPS 32
 
 
-#define COMAPS 50
+#define COMAPS 32
 #define COMAPS_DIG 2
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100

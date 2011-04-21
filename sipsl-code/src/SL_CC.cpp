@@ -102,7 +102,7 @@
 
 //**********************************************************************************
 //**********************************************************************************
-SL_CC::SL_CC(int _i, int _m):ENGINE(_i, _m) {
+SL_CC::SL_CC(int _i, int _m, string _s):ENGINE(_i, _m, _s) {
     NEWPTR2(comap, COMAP(),"COMAP()")
 }
 COMAP* SL_CC::getCOMAP(void){
@@ -145,7 +145,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         int modulus = _mess->getModulus();
 
         DEBSIP("SL_CC::parse CALLOSET normal ID",callids)
-
+        DEBOUT("MODULUS",modulus<<"]["<<callids)
         //If found it will be locked here
         GETLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
 
