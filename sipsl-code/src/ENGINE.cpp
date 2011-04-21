@@ -90,19 +90,21 @@ extern "C" void* threadparser (void*);
 extern "C" void* threadparser_s (void*);
 
 ThreadWrapper::ThreadWrapper(void) {
-    pthread_mutex_init(&mutex, NULL);
+    //pthread_mutex_init(&mutex, NULL);
     return;
 };
 
 //**********************************************************************************
 //**********************************************************************************
-ENGINE::ENGINE(int _i, int _em) {
+ENGINE::ENGINE(int _i, int _em, string _type) {
 
     DEBDEV("ENGINE::ENGINE()","")
     DEBDEV("ENGINE::ENGINE() spin buffer ",&sb)
 
 
     EngineMaps = _em;
+
+    objectType = _type;
 
     int res;
 
@@ -200,7 +202,7 @@ bool ENGINE::p_w(void* _m) {
 	int mmod = modEngineMap((MESSAGE*)_m);
     DEBDEV("bool ENGINE::p_w(void* _m) ", _m << "] modulus SP["<<mmod)
 
-    GETLOCK(&(sb[mmod]->condvarmutex),"[" << this << "] sb["<< mmod << "].condvarmutex");
+    GETLOCK(&(sb[mmod]->condvarmutex),"[" << objectType << "] sb["<< mmod << "].condvarmutex");
 
     SETNOW
 
@@ -221,8 +223,8 @@ bool ENGINE::p_w(void* _m) {
 //        //Otherwise the message is parsed
 //        pthread_cond_signal(&(sb.condvar));
 //    }
-    PRINTDIFF("ENGINE::p_w")
-    RELLOCK(&(sb[mmod]->condvarmutex),"sb["<< mod<<"].condvarmutex");
+    PRINTDIFF("ENGINE"<<objectType<<"::p_w")
+    RELLOCK(&(sb[mmod]->condvarmutex),objectType<<" sb["<< mod<<"].condvarmutex");
     return true;
 
 

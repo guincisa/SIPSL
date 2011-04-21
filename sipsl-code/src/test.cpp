@@ -157,17 +157,17 @@ int main(int argc, const char* argv[]) {
 		NEWPTR(SUDP*, mystack, SUDP(),"SUDP")
 		//SUDP* mystack ;
 
-		NEWPTR(TRNSPRT*, transport, TRNSPRT(TRNSPRTTH,TRNSPRTMAPS),"TRNSPRT")
+		NEWPTR(TRNSPRT*, transport, TRNSPRT(TRNSPRTTH,TRNSPRTMAPS,"TRNSPRT"),"TRNSPRT")
 		transport->linkSUDP(mystack);
 
 		//Second stage engine: Call Control
-		NEWPTR(SL_CC*, sl_cc, SL_CC(SL_CCTH,SL_CCMAPS),"SL_CC")
+		NEWPTR(SL_CC*, sl_cc, SL_CC(SL_CCTH,SL_CCMAPS,"SL_CC"),"SL_CC")
 		//SL_CC sl_cc(SL_CCTH);
 		sl_cc->linkTransport(transport);
 		sl_cc->linkSUDP(mystack);
 
 		//First stage engine: Lazy parser
-		NEWPTR(SIPENGINE*, gg, SIPENGINE(SIPENGINETH,SIPENGINMAPS), "SIPENGINE")
+		NEWPTR(SIPENGINE*, gg, SIPENGINE(SIPENGINETH,SIPENGINMAPS,"SIPENGINE"), "SIPENGINE")
 //		SIPENGINE gg(SIPENGINETH);
 		gg->setSL_CC(sl_cc);
 		gg->linkSUDP(mystack);

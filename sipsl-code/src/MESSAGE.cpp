@@ -1406,10 +1406,11 @@ int MESSAGE::getModulus(void){
 		int k = 64<s.length() ? 64 : s.length();
 		sprintf(x,"%s", s.substr(0,k).c_str());
 		long long int tot=0;
-		for (int i = 0; i < k; i++){
-			tot = (long long int) atol(s.substr(i,1).c_str()) + tot;
+		for (int i = 0; i < k ; i++){
+			tot =  (long long int) atol(s.substr(i,3).c_str()) + tot;
 		}
-		modulus = (tot+COMAPS)%COMAPS;
+		DEBOUT("MODULUS tot", tot)
+		modulus = tot%COMAPS;
 	}
 	DEBDEV("Modulus found", modulus<<"]["<< s)
 	return modulus;

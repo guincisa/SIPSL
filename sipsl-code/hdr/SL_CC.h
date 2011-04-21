@@ -31,7 +31,7 @@ class SL_CC : public ENGINE {
 
     public:
         void parse(void*, int);
-        SL_CC(int,int);
+        SL_CC(int,int,string);
         COMAP* getCOMAP(void);
         void linkTransport(TRNSPRT*);
         void linkSipEngine(ENGINE*);
