@@ -412,9 +412,19 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 		}
     }
 #else
+
+#ifdef WRONGLOCKMGMT
+	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
+#else
     GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-	_call_oset->call(_message);
+#endif
+
+
+
+
+    _call_oset->call(_message);
 	if (!_message->getLock()){
 		PURGEMESSAGE(_message)
 	}

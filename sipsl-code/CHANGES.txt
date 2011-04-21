@@ -1,3 +1,13 @@
+21 Aprile
+
+ottimizzare la NONESTEDPW 
+
+migliorare allarmi che cora sempre
+
+capire se invertendo il lock c'e' rischio di core
+
+
+
 18 Aprile
 Tuning
 

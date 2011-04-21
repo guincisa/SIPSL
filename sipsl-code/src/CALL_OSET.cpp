@@ -771,8 +771,11 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
 			DEBINF("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << "]["<<_tmpMessage->getHeadCallId().getContent())
+#ifdef NONESTEDPW
+			call_oset->getSL_CO()->call(_tmpMessage,_r_modulus);
+#else
 			((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
-
+#endif
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_OP ){
 
@@ -808,7 +811,11 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 			}
 			else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
 				DEBMESSAGESHORT("SL_CO::call action is internal send to some SM", _tmpMessage )
+#ifdef NONESTEDPW
+				call_oset->getSL_CO()->call(_tmpMessage,_r_modulus);
+#else
 				((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
+#endif
 			}
 			else {
 				DEBASSERT("SL_CO client operation type inconsistency")
