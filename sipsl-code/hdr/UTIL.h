@@ -87,7 +87,9 @@ class ThreadWrapper {
 
 #ifdef SPARC
 
-#define NOBUFFERENGINE
+#define NONESTEDPW
+
+//#define WRONGLOCKMGMT
 
 //#define USEMESSAGEMAP
 #define USEFASTSEND
@@ -95,6 +97,7 @@ class ThreadWrapper {
 
 
 #define SUDPTH 6
+
 #define MAXTHREADS 128
 
 #define SIPENGINETH 64

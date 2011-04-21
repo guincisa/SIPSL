@@ -201,7 +201,12 @@ void VALO::onInvite(MESSAGE* _message){
 	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message->getSourceMessage() ));
 	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
 
+#ifdef NONESTEDPW
+	int r;
+	call_oset->getSL_CO()->call(message,r);
+#else
 	sl_cc->p_w(message);
+#endif
 
      PRINTDIFF("VALO::onInvite")
 
@@ -317,7 +322,14 @@ void VALO::onAck(MESSAGE* _message){
 
 
 	DEBMESSAGE("New outgoing b2b message", newack)
+#ifdef NONESTEDPW
+	int r;
+	call_oset->getSL_CO()->call(newack,r);
+#else
 	sl_cc->p_w(newack);
+#endif
+
+
     PRINTDIFF("VALO::onAck")
 
 
@@ -484,7 +496,13 @@ void VALO::onBye(MESSAGE* _message){
 		//message->dumpVector();
 		//done in the client sm
 		//message->setLock();
+#ifdef NONESTEDPW
+		int r;
+		call_oset->getSL_CO()->call(message,r);
+#else
 		sl_cc->p_w(message);
+#endif
+
 
 
 
@@ -531,7 +549,12 @@ void VALO::onBye(MESSAGE* _message){
 		//done in client sm
 		//message->setLock();
 		//call_oset->insertLockedMessage(message);
+#ifdef NONESTEDPW
+		int r;
+		call_oset->getSL_CO()->call(message,r);
+#else
 		sl_cc->p_w(message);
+#endif
 
 	}
         PRINTDIFF("VALO::onBye")
@@ -623,8 +646,13 @@ void VALO::on200Ok(MESSAGE* _message){
 //	PURGEMESSAGE(_message)
 
 	//ok_x->dumpVector();
+#ifdef NONESTEDPW
+		int r;
+		call_oset->getSL_CO()->call(ok_x,r);
+#else
+		sl_cc->p_w(ok_x);
+#endif
 
-	sl_cc->p_w(ok_x);
     PRINTDIFF("VALO::on200Ok")
 
 
