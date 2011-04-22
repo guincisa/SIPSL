@@ -687,21 +687,27 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
                     DEBASSERT("Message to alarm found locked")
                 }
 
-                 call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime(),_tmpMessage->getModulus());
+                 call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
 
             }
             else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_OFF){
 
                 DEBINF("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#")
-                string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->getOrderOfOperation()+ "#";
-                DEBINF("SL_CO::cancel alarm, callid", callid_alarm)
-                call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm,_tmpMessage->getModulus());
-                if(!_tmpMessage->getLock()){
-                        PURGEMESSAGE(_tmpMessage)
-                }
-                else{
-                        DEBASSERT("Rule break: a timer off message found locked")
-                }
+#ifdef ALARMENGINE
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(_tmpMessage);
+#else
+				string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->getOrderOfOperation()+ "#";
+				DEBINF("SL_CO::cancel alarm, callid", callid_alarm)
+
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(callid_alarm,_tmpMessage->getModulus());
+				if(!_tmpMessage->getLock()){
+						PURGEMESSAGE(_tmpMessage)
+				}
+				else{
+						DEBASSERT("Rule break: a timer off message found locked")
+				}
+#endif
+
             }
         }
         else if (_tmpMessage->getDestEntity() == SODE_KILLDOA){
@@ -789,10 +795,13 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 					DEBDEV("Message to alarm found locked", _tmpMessage)
 					DEBASSERT("Message to alarm found locked")
 				}
-				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime(),_tmpMessage->getModulus());
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->insertAlarm(_tmpMessage, _tmpMessage->getFireTime());
 
 			} else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_OFF){
 
+#ifdef ALARMENGINE
+				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(_tmpMessage);
+#else
 				DEBINF("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#")
 				string callid_alarm = _tmpMessage->getHeadCallId().getContent() +  ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _tmpMessage->getOrderOfOperation()+ "#";
 				DEBINF("SL_CO::cancel alarm, callid", callid_alarm)
@@ -807,6 +816,9 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 					DEBDEV("Rule break timer off message found locked",_tmpMessage)
 					DEBASSERT("Rule break timer off message found locked")
 				}
+#endif
+
+
 
 			}
 			else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_SMCOMMAND){

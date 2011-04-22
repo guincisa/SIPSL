@@ -75,7 +75,7 @@ void * ALARMSTACK(void *_tgtObject) {
 }
 //**********************************************************************************
 #ifdef ALARMENGINE
-ALMGR::ALMGR(int _th, SL_CC* _sl_cc, __time_t _sec, long int _nsec):ENGINE(_th){
+ALMGR::ALMGR(int _th, int _map, string _obname, SL_CC* _sl_cc, __time_t _sec, long int _nsec):ENGINE(_th,_map,_obname){
 #else
 ALMGR::ALMGR(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
 #endif
@@ -83,16 +83,20 @@ ALMGR::ALMGR(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
 	sleep_time.tv_sec = _sec;
 	sleep_time.tv_nsec = _nsec;
 	sl_cc = _sl_cc;
+
+
 	DEBDEV("ALMGR::ALMGR", "alarm created")
 }
 #ifdef ALARMENGINE
-ALMGR::ALMGR(int _th, SL_CC* _sl_cc, timespec _sleep_time):ENGINE(_th){
+ALMGR::ALMGR(int _th, int _map, string _obname, SL_CC* _sl_cc, timespec _sleep_time):ENGINE(_th,_map,_obname){
 #else
 ALMGR::ALMGR(SL_CC* _sl_cc, timespec _sleep_time){
 #endif
 
 	sleep_time = _sleep_time;
 	sl_cc = _sl_cc;
+
+
 	DEBDEV("ALMGR::ALMGR", "alarm created")
 }
 void ALMGR::initAlarm(void){
@@ -125,11 +129,12 @@ void ALMGR::alarmer(int _mod){
 
 	DEBDEV("ALMGR::alarmer", "begin"<<"] mod ["<<_mod)
 
+//	timespec tsleep_time;
+
 	int trymaxlock = 0;
     for(;;){
 
         nanosleep(&sleep_time,NULL);
-
 
         //extract from priority queue
         SysTime mytime;
@@ -157,9 +162,13 @@ void ALMGR::alarmer(int _mod){
         if(trylok != 0){
         	DEBDEV("ALARM mutex busy", _mod)
 			trymaxlock++;
-        	if (trymaxlock > 10){
+        	DEBOUT("ALARM mutex busy",_mod <<"]["<<trymaxlock)
+        	if (trymaxlock > TRYMAXLOCKALARM){
         		DEBASSERT("ALARM mutex too busy" <<trymaxlock <<" mod "<< _mod)
         	}
+//        	tsleep_time.tv_sec = 0;
+//        	tsleep_time.tv_nsec = sleep_time.tv_nsec * (2^trymaxlock);
+//        	nanosleep(&tsleep_time,NULL);
         	continue;
         }
         else{
@@ -261,54 +270,52 @@ void ALMGR::alarmer(int _mod){
         RELLOCK(&mutex[_mod],"mutex");
     }
 }
-//void ALMGR::parse(MESSAGE* _message){
-//
-//
-//    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-//
-//    if (_message->getFireTime() > 0){
-//        insertAlarm(_message, _message->getFireTime());
-//    }else {
-//        cancelAlarm(_message->getHeadCallId().getContent() +  ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") + "#" + _message->getOrderOfOperation()+ "#");
-//    }
-//}
-//
-//void ALMGR::parse_s(MESSAGE* _message){
-//
-//}
-#ifdef ALARMENGINE
 void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
 
 	_message->setFireTime(_fireTime);
 	p_w((void*)_message);
 	return;
 }
-void ALMGR::parse(void *__mess){
+void ALMGR::parse(void *__mess,int _mod){
 
-    RELLOCK(&(sb.condvarmutex),"sb.condvarmutex");
-
-	MESSAGE* _mess = (MESSAGE*)__mess;
+    RELLOCK(&(sb[_mod]->condvarmutex),"sb[" <<_mod<<"]->condvarmutex");
 
     PROFILE("ALMGR::parse start")
     TIMEDEF
     SETNOW
 
+	MESSAGE* _mess = (MESSAGE*)__mess;
+
+	if (_mess->getFireTime() ==  (lli)0){
+	    GETLOCK(&mutex[_mod],"mutex mod ["<<_mod);
+		string callid_alarm = _mess->getHeadCallId().getContent() +
+				((C_HeadVia*) _mess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") +
+				"#" + _mess->getOrderOfOperation()+ "#";
+	    internalCancelAlarm(callid_alarm, _mod);
+		if(!_mess->getLock()){
+			PURGEMESSAGE(_mess)
+		}else {
+			DEBDEV("Rule break timer off message found locked",_mess)
+			DEBASSERT("Rule break timer off message found locked")
+		}
+
+	    RELLOCK(&mutex[_mod],"mutex"<<"] mod ["<<_mod);
+
+	    return;
+	}
+
+
     //Try lock here!
-    if (insertAlarmPrivate(_mess, _mess->getFireTime()) == 0){
+    if (insertAlarmPrivate(_mess, _mess->getFireTime(),_mod) == 0){
         PRINTDIFF("ALMGR::insertAlarm end")
 		return;
     }else {
-    	p_w(__mess);
+    	p_w(_mess);
     }
-
 
     return;
 
 }
-void ALMGR::parse_s(void *){
-	DEBASSERT("WRONG!")
-}
-#endif
 
 #ifdef ALARMENGINE
 int ALMGR::insertAlarmPrivate(MESSAGE* _message, lli _fireTime, int _mod){
@@ -319,7 +326,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
     TIMEDEF
     SETNOW
 
-    int __mod = _mod % ALARMMAPS;
+    //int __mod = _mod % ALARMMAPS;
 
 
     PROFILE("ALMGR::insertAlarm begin")
@@ -342,7 +349,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
     	return -1;
     }
 #else
-    GETLOCK(&mutex[__mod]," ALARM log mutex mod "<<__mod)
+    GETLOCK(&mutex[_mod]," ALARM log mutex mod "<<_mod)
 #endif
 
 #ifdef CONSICHECK
@@ -365,29 +372,35 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
     trip.alarm = alm;
 
 
-    pq[__mod].push(trip);
+    pq[_mod].push(trip);
 
     pair<map<string, ALARM*>::iterator,bool> ret;
-    ret = cidmap[__mod].insert(pair<string,ALARM*>(cidbranch_alarm,alm));
+    ret = cidmap[_mod].insert(pair<string,ALARM*>(cidbranch_alarm,alm));
     if(!ret.second){
-    	DEBDEV("Inserting an alarm, cid already exists", (ALARM*)ret.first->second <<"] mod ["<<__mod)
+    	DEBDEV("Inserting an alarm, cid already exists", (ALARM*)ret.first->second <<"] mod ["<<_mod)
 		((ALARM*)(ret.first->second))->cancel();
-        cidmap[__mod].erase(ret.first);
-        cidmap[__mod].insert(pair<string,ALARM*>(cidbranch_alarm,alm));
+        cidmap[_mod].erase(ret.first);
+        cidmap[_mod].insert(pair<string,ALARM*>(cidbranch_alarm,alm));
     }
 
-    RELLOCK(&mutex[__mod],"mutex");
+    RELLOCK(&mutex[_mod],"mutex");
 
-    DEBDEV("Alarm Inserterd",_fireTime <<"][" << cidbranch_alarm << "]["<<alm<<"] mod ["<<__mod)
+    DEBDEV("Alarm Inserterd",_fireTime <<"][" << cidbranch_alarm << "]["<<alm<<"] mod ["<<_mod)
 
-    PROFILE("ALMGR::insertAlarm end"<<"] mod ["<<__mod)
+    PROFILE("ALMGR::insertAlarm end"<<"] mod ["<<_mod)
 
     PRINTDIFF("ALMGR::insertAlarm() end")
 
-    return;
+    return 0;
 }
 
+#ifdef ALARMENGINE
+void ALMGR::cancelAlarm(MESSAGE* _message){
 
+	insertAlarm(_message, (lli)0);
+}
+
+#else
 void ALMGR::cancelAlarm(string _cidbranch, int _mod){
 
     PROFILE("ALMGR::cancelAlarm begin mod "<< _mod)
@@ -420,6 +433,7 @@ void ALMGR::cancelAlarm(string _cidbranch, int _mod){
 
 
 }
+#endif
 void ALMGR::internalCancelAlarm(string _cidbranch, int _mod){
     
     map<string, ALARM*>::iterator p;

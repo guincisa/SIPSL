@@ -124,20 +124,6 @@ ENGINE::ENGINE(int _i, int _em, string _type) {
     DEBOUT("ENGINE::ENGINE _i", _i)
     ENGtuple *t[MAXTHREADS];
 
-//    int i;
-//    for ( i = 0 ; i < _i ; i++){
-//
-//    	NEWPTR2(t[i], ENGtuple, "ENGtuple")
-//
-//        t[i]->ps = this;
-//        t[i]->id = 0;
-//
-//    	NEWPTR2(parsethread[i], ThreadWrapper(), "ThreadWrapper()")
-//
-//        res = pthread_create(&(parsethread[i]->thread), NULL, threadparser, (void *) t[i]);
-//
-//
-//    }
 
     //TODO terrible!!!
     // if _i not divisible by ENGINEMAPS

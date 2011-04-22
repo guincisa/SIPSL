@@ -54,7 +54,6 @@ class ENGINE {
 	private:
 
 		ThreadWrapper* parsethread[MAXTHREADS];
-//		ThreadWrapper* parsethread_s[2];
 
         SUDP* sudp;
 
@@ -77,7 +76,6 @@ class ENGINE {
         SUDP* getSUDP(void);
 
     	bool p_w(void* message);
-//    	bool p_w_s(void* message);
 
 #ifdef USE_SPINB
     	SPINB sb;
