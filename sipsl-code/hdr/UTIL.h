@@ -87,19 +87,29 @@ class ThreadWrapper {
 
 #ifdef SPARC
 
+//The call_oset and valo do not reinject the message
+//but recall the sl_co->call
 #define NONESTEDPW
 
-//#define WRONGLOCKMGMT
+//Invert the get call_oset lock and release comap lok
+//should core if imverted
+#define WRONGLOCKMGMT
 
+//Use the gobalmessagetable
 //#define USEMESSAGEMAP
+
+//The state machine will send the message directly to transport
 #define USEFASTSEND
+
 //#define USETRYLOCK
 
-
+//Sudp threads
 #define SUDPTH 6
 
+//Max engine threads
 #define MAXTHREADS 128
 
+//
 #define SIPENGINETH 64
 #define SIPENGINMAPS 16
 
@@ -110,9 +120,10 @@ class ThreadWrapper {
 #define SL_CCMAPS 32
 
 //#define ENGINEMAPS 5
-
-#define ALARMMAPS 32
-
+#define ALARMTH 16
+#define ALARMMAPS 8
+#define ALARMENGINE
+#define TRYMAXLOCKALARM 9
 
 #define COMAPS 32
 #define COMAPS_DIG 2

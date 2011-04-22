@@ -180,7 +180,7 @@ int main(int argc, const char* argv[]) {
 
 		//Alarm setup
 		//sec , nsec
-		NEWPTR(ALMGR*, alarm, ALMGR(sl_cc, 0, 10000000), "ALMGR")
+		NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH,ALARMMAPS,"ALMGR",sl_cc, 0, 10000000), "ALMGR")
 //		ALMGR alarm(&sl_cc, 0, 10000000);
 		alarm->initAlarm();
 
@@ -196,7 +196,37 @@ int main(int argc, const char* argv[]) {
 
 		return 0;
 	}
-//	else {
+	else {
+		//NANOSPEE TEST
+		timespec sleep_time;
+
+		sleep_time.tv_sec = 0;
+		sleep_time.tv_nsec = 10000000;
+
+		TIMEDEF
+		SETNOW
+		nanosleep(&sleep_time,NULL);
+		PRINTDIFF("10000000")
+
+		SETNOW
+		sleep_time.tv_sec = 0;
+		sleep_time.tv_nsec = 20000000;
+		nanosleep(&sleep_time,NULL);
+		PRINTDIFF("20000000")
+
+		SETNOW
+		sleep_time.tv_sec = 0;
+		sleep_time.tv_nsec = 40000000;
+		nanosleep(&sleep_time,NULL);
+		PRINTDIFF("40000000")
+
+		SETNOW
+		sleep_time.tv_sec = 1;
+		sleep_time.tv_nsec = 0;
+		nanosleep(&sleep_time,NULL);
+		PRINTDIFF("1 sec")
+
+	}
 //		//Engine test
 //		cout << "Engine test" << endl;
 //

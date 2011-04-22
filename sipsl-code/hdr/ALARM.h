@@ -124,17 +124,14 @@ class ALMGR {
 
        //Alarm manager in a separate thread
 #ifdef ALARMENGINE
-       ALMGR(int th, SL_CC* sl_cc, timespec sleep_time);
-       ALMGR(int th, SL_CC* sl_cc, __time_t sec, long int nsec);
+       ALMGR(int th, int map, string obname, SL_CC* sl_cc, timespec sleep_time);
+       ALMGR(int th, int map, string obname, SL_CC* sl_cc, __time_t sec, long int nsec);
 #else
        ALMGR(SL_CC* sl_cc, timespec sleep_time);
        ALMGR(SL_CC* sl_cc, __time_t sec, long int nsec);
 #endif
 
         void initAlarm(void);
-
-        void cancelAlarm(string cid_branch, int modulus);
-        //void cancelAlarm(MESSAGE* message);
 
         void purgeAlarm(ALARM*);
 
@@ -148,9 +145,12 @@ class ALMGR {
         //   l'allarme è disattivato solo se il messaggio da cancellare è un type_op
         //   tutti i type_op gia eliminati non possono disattivare l'allarme
         //
-        void insertAlarm(MESSAGE* message, lli fireTime, int modulus);
 #ifdef ALARMENGINE
-        void parse(void *);
-        void parse_s(void *);
+        void parse(void *, int);
+        void cancelAlarm(MESSAGE* message);
+#else
+        void cancelAlarm(string cid_branch, int modulus);
+
 #endif
+        void insertAlarm(MESSAGE* message, lli fireTime);
 };
