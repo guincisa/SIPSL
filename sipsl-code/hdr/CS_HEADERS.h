@@ -246,7 +246,7 @@ class HeaderException  {
 // Virtual class
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class S_HeadGeneric { //i
+class S_HeadGeneric {
 
 	protected:
         bool parsed;
@@ -266,7 +266,9 @@ class S_HeadGeneric { //i
         string &getContent(void);
         string copyContent(void);
 
-        void setContent(string buff);
+        void setContent(char*);
+        void setContent(string);
+
 
         S_HeadGeneric(string buff);
 
@@ -719,8 +721,7 @@ class C_AttContactList : public S_AttGeneric {
 // C_HeadSipRequest "Method RequestURI SipVersion<CRLF>"
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class C_HeadSipRequest : public S_HeadGeneric { //i //t
-//NEW REVISION
+class C_HeadSipRequest : public S_HeadGeneric {
 
     private:
         void doParse(void);
