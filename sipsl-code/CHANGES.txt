@@ -1,3 +1,11 @@
+29 Aprile
+
+riscrittura del parser
+via+messaggio+sdp
+implemtentare solo le parti che servono
+
+
+
 21 Aprile
 
 ottimizzare la NONESTEDPW 

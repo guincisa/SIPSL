@@ -234,7 +234,7 @@ void SUDP::listen(int i) {
 
 				//ENGINEMAPS
 				//problem if not sip...?
-                message->getTotLines();
+                message->fillIn();
 
                 engine->p_w((void*)message);
                 PRINTDIFF("SUDP::listen() Message sent to SIPENGINE")

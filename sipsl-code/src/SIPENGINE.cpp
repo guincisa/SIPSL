@@ -125,7 +125,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
 
     //Check if Request or Reply
-    _mess->getTotLines();
+    //_mess->fillIn();
     DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getLine(0) << "] [" <<_mess->getKey())
 
     int type = _mess->getReqRepType();

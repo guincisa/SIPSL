@@ -113,6 +113,15 @@ void S_HeadGeneric::setContent(string _content) {
     return;
 
 }
+void S_HeadGeneric::setContent(char* _content) {
+
+    content = _content;
+    parsed = false;
+    correct = true;
+    contentReady = true;
+    return;
+
+}
 
 string &S_HeadGeneric::getContent(void) {
 	if (contentReady){

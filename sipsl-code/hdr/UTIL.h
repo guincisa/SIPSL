@@ -232,6 +232,9 @@ class ThreadWrapper {
 #undef DELPTR
 #define DELPTR(m1, mess) \
 		delete m1;
+#undef DELPTRARR
+#define DELPTRARR(m1, mess) \
+		delete m1[];
 
 
 #undef TRYCATCH
@@ -481,6 +484,10 @@ class ThreadWrapper {
 #define DELPTR(m1, mess) \
 		DEBOUT("DELPTR",mess<<"]["<<m1)\
 		delete m1;
+#undef DELPTRARR
+#define DELPTRARR(m1, mess) \
+		DEBOUT("DELPTRARR",mess<<"]["<<m1)\
+		delete[] m1;
 
 #else
 #define DEBMEM(m1,m2)

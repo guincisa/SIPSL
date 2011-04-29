@@ -110,6 +110,107 @@ class CALL_OSET;
 
 typedef struct sockaddr_in sockaddr_inX;
 
+class MESSAGE {
+
+	public:
+		MESSAGE(char* incMessBuff,
+				int genEntity,
+				SysTime inc_ts,
+				int sock,
+				struct sockaddr_in echoClntAddr);
+
+		MESSAGE(MESSAGE*,
+				int genEntity,
+				SysTime creaTime);
+
+		~MESSAGE();
+
+		void setValid(int);
+
+        string &getKey(void);
+        void setKey(string key);
+
+		//Will just run the strtok
+		int fillIn(void);
+		bool isFilled(void);
+		//Exact length of the original buffer
+		int getDimString(void);
+		char* getOriginalString(void);
+
+		//char* getLine(int); issue with Via
+
+		bool hasSDP(void);
+
+		//Network
+		int getSock(void);
+		struct sockaddr_in getEchoClntAddr(void);
+
+		//Routing
+        int getRequestDirection(void);
+        void setRequestDirection(int);
+        int getGenEntity(void);
+        void setGenEntity(int);
+        void setDestEntity(int);
+        int getDestEntity(void);
+
+        //SIP headers
+
+    	void setGenericHeader(string header, string content);
+    	string getGenericHeader(string header);
+    	bool queryGenericHeader(string header); //if is present
+    	void addGenericHeader(string header, string content);
+    	void dropHeader(string header);
+
+
+        int getReqRepType(void);
+    	void setHeadSipRequest(string content);
+    	void setHeadSipReply(string content);
+    	C_HeadSipReply &getHeadSipReply(void);
+    	C_HeadSipRequest &getHeadSipRequest(void);
+
+
+
+	private:
+		//Buffer and Parsing
+		//tokenized
+		char* message_char;
+		//this does not change
+		char* original_message;
+		//char* and bool true if the line is new false if it is pointing to the strtok
+		vector< pair<char*, bool> > message_line;
+		vector< pair<char*, bool> > via_line;
+		vector< pair<char*, bool> > sdp_line;
+
+		bool filledIn;
+		bool hasSdp;
+		bool hasvialines;
+    	string key;
+
+		MESSAGE* sourceMessage;
+
+
+		//Network
+        int sock;
+        sockaddr_inX echoClntAddr;
+        SysTime inc_ts;
+
+
+        //MainMessage
+        int invalid;
+
+        //Mem management
+    	string key;
+
+    	//Routing
+    	int requestDirection;
+
+    	//SIP
+    	int reqRep;
+    	C_HeadSipRequest 	headSipRequest;
+    	C_HeadSipReply   	headSipReply;
+
+}
+
 class BASEMESSAGE {
 
     public:
@@ -190,18 +291,13 @@ class BASEMESSAGE {
         bool arrayFilled;
 
         vector<int> linePosition;
-
-
-
-
-
-};
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //// MESSAGE
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-class MESSAGE : public BASEMESSAGE {
+class O_MESSAGE : public BASEMESSAGE {
 
     private:
     	//Headers
@@ -244,7 +340,7 @@ class MESSAGE : public BASEMESSAGE {
 
     	// Used to generate a message from an incoming one
     	// tipically a reply
-    	MESSAGE* source;
+    	O_MESSAGE* source;
 
     	// if false then the message comes from the
     	// network and cannot be changed
@@ -272,7 +368,7 @@ class MESSAGE : public BASEMESSAGE {
 
     public:
 
-        MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
+        O_MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
                     struct sockaddr_in echoClntAddr);
         //MESSAGE(string incMessBuff, SysTime inc_ts);
 
@@ -280,9 +376,9 @@ class MESSAGE : public BASEMESSAGE {
         //MESSAGE(void);
 
         //
-        MESSAGE(MESSAGE*, int genEntity, SysTime creaTime);
+        MESSAGE(O_MESSAGE*, int genEntity, SysTime creaTime);
 
-        ~MESSAGE();
+        ~O_MESSAGE();
 
 //        MESSAGE(const MESSAGE& x);
 
