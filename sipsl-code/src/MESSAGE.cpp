@@ -81,6 +81,9 @@ MESSAGE::MESSAGE(char* _incMessBuff,
 
 	hasvialines = false;
 
+	lock = false;
+
+
 
 }
 
@@ -100,9 +103,9 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 
 	invalid = 0;
 
-	hasSdp = _sourceMessage->hasSDP();;
+	hasSdp = _sourceMessage->hasSDP();
 
-
+	lock = false;
 
 	NEWPTR2(original_message, char[_sourceMessage->getDimString()+1],"original_message "<<_sourceMessage->getDimString()+1)
 	strcpy(original_message, _sourceMessage->getOriginalString());
@@ -122,6 +125,12 @@ void MESSAGE::setKey(string _key){
 		DEBASSERT("MESSAGE::setKey invalid")
 
 	key = _key;
+}
+bool MESSAGE::getLock(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getLock invalid")
+
+	return lock;
 }
 
 int MESSAGE::getRequestDirection(void){
@@ -163,6 +172,30 @@ void MESSAGE::setDestEntity(int _destEntity){
 		DEBASSERT("FMESSAGE::setDestEntity invalid")
 
 	destEntity = _destEntity;
+}
+void MESSAGE::setFireTime(lli _firetime){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setFireTime invalid")
+
+	fireTime = _firetime;
+}
+lli MESSAGE::getFireTime(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getFireTime invalid")
+
+	return fireTime;
+}
+string MESSAGE::getOrderOfOperation(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getOrderOfOperation invalid")
+
+	return orderOfOperation;
+}
+void MESSAGE::setOrderOfOperation(string _s){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setOrderOfOperation invalid")
+
+	orderOfOperation = _s;
 }
 
 int MESSAGE::getSock(void){
@@ -280,6 +313,19 @@ bool MESSAGE::hasVia(void){
 	fillIn();
 	return hasvialines;
 }
+string MESSAGE::getViaLine(void){
+
+	if (invalid == 1)
+		DEBASSERT("FMESSAGE::isFilled invalid")
+
+	fillIn();
+
+	if (hasVia){
+		return via_line.back().first;
+	}
+
+}
+
 void MESSAGE::setGenericHeader(string _header, string _content){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setGenericHeader invalid")
@@ -298,6 +344,9 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 	if (_header.compare("Route:") == 0){
 		replaceHeadRoute(_content);
 	}
+	if (_header.compare("Via:") == 0){
+		DEBASSERT("MESSAGE::setGenericHeader invalid for via")
+	}
 
 
 	size_t i;
@@ -310,7 +359,8 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 				DELPTRARR(message_line[i].first,"message_line[i].first"<<i)
 			}
 			char* newheader;
-			NEWPTR2(newheader, char[_header.length() + 1 + _content.lenght() + 1],"message_char "<<strlen(original_message)+1)
+			NEWPTR2(newheader, char[_header.length() + 1 + _content.lenght() + 1],"newheader")
+			message_line[i].first = newheader;
 			sprintf(message_line[i].first,"%s %s",_header.c_str(), _content.c_str());
 			message_line[i].second = true;
 			found = true;
@@ -327,10 +377,18 @@ string MESSAGE::getGenericHeader(string _header){
 
 
 	DEBSIP("MESSAGE::getGenericHeader", _header)
+
+	if (_header.compare("Via:") == 0){
+		int vl = via_line.size();
+		if( vl !=0 ){
+			return via_line[vl-1].first + 5;
+		}
+	}
+
 	size_t i;
 	bool found = false;
 	for(i = 1; i < flex_line.size(); i ++){
-		if(strcmp(message_line[i].first,_header.c_str(), _header.size())==0){
+		if(strncmp(message_line[i].first,_header.c_str(), _header.size())==0){
 			return (message_line[i].first + _header.size() + 1);
 		}
 	}
@@ -340,26 +398,49 @@ string MESSAGE::getGenericHeader(string _header){
 	return "";
 
 }
-void O_MESSAGE::addGenericHeader(string _header, string _content){
+void MESSAGE::addGenericHeader(string _header, string _content){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::addGenericHeader invalid")
 
 
 	DEBSIP("MESSAGE::addGenericHeader",_header << " " << _content)
 
-	flex_line.push_back(_header + " " + _content);
-
+	if (_header.compare("Via:") == 0){
+		DEBASSERT("MESSAGE::addGenericHeader invalid for via")
+		return;
+	}
+	string s = getGenericHeader(_header);
+	if (s.length() != 0){
+		setGenericHeader(_header, _content);
+	}
+	else{
+		char* newheader;
+		NEWPTR2(newheader, char[_header.length() + 1 + _content.lenght() + 1],"newheader")
+		sprintf(newheader,"%s %s",_header.c_str(), _content.c_str());
+		message_line.push_back(make_pair(newheader,true));
+	}
 }
 void MESSAGE::dropHeader(string _header){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::dropHeader invalid")
 
+	if (_header.compare("Via:") == 0){
+		DEBASSERT("MESSAGE::dropHeader invalid for via")
+		return;
+	}
+
 
 	size_t i;
 	bool found = false;
-	for(i = 1; i < flex_line.size(); i ++){
-		if(flex_line[i].substr(0,_header.size()).compare(_header)==0){
-			removeHeader(i);
+	for(i = 1; i < message_line.size(); i ++){
+		if(strncmp(message_line[i],_header.c_str(), _header.length()) ==0 ){
+			if (message_line[i].second){
+				DELPTRARR(message_line[i].first,"message_line[i].first"<<i)
+			}
+			char* newheader;
+			NEWPTR2(newheader, char[6],"newheader")
+			sprintf(newheader,"xxDxx");
+			message_line[i].first = newheader;
 			found = true;
 			break;
 		}
@@ -368,6 +449,33 @@ void MESSAGE::dropHeader(string _header){
 		DEBSIP("MESSAGE::removeHeader not found",_header)
 	}
 }
+
+//string MESSAGE::getProperty(string,string){
+//	if (invalid == 1)
+//		DEBASSERT("MESSAGE::dropHeader invalid")
+//
+//	if (_header.compare("Via:") == 0){
+//		DEBASSERT("MESSAGE::getProperty invalid for via")
+//		return;
+//	}
+//
+//
+//
+//}
+string MESSAGE::getViaProperty(string token){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getViaProperty invalid")
+
+		char* h = 0x0;
+		char* e = 0x0;
+		char* token = token.s_str();
+		char* instr = via_line.back().first;
+
+		getPropertyPointers(instr, token, h, e);
+
+		//copy here...
+}
+
 int MESSAGE::getReqRepType(void){
 
 	if (invalid == 1)
@@ -416,6 +524,20 @@ C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
 	}
 	DEBASSERT("MESSAGE::getHeadSipRequest illegal instruction");
 }
+C_HeadSipReply &MESSAGE::getHeadSipReply(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipReply invalid")
+
+	if(reqRep == 0){
+		reqRep = getReqRepType();
+	}
+
+	if (reqRep == REPSUPP || reqRep == REPUNSUPP){
+		return headSipReply;
+	}
+	DEBASSERT("MESSAGE::getHeadSipReply illegal instruction");
+}
+
 //void MESSAGE::setHeadSipRequest(string _content){
 //	if (invalid == 1)
 //		DEBASSERT("MESSAGE::setHeadSipRequest invalid")

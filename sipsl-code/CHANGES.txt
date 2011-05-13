@@ -1,3 +1,13 @@
+13 maggio
+
+per ora gli header si maneggiano solo con genericHeader
+per evitare di riempire di CSHEaders la classe messaggio
+
+riscrittura del parser
+via+messaggio+sdp
+implemtentare solo le parti che servono
+
+
 29 Aprile
 
 riscrittura del parser
