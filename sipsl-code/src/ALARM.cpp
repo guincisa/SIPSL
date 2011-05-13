@@ -288,8 +288,8 @@ void ALMGR::parse(void *__mess,int _mod){
 
 	if (_mess->getFireTime() ==  (lli)0){
 	    GETLOCK(&mutex[_mod],"mutex mod ["<<_mod);
-		string callid_alarm = _mess->getHeadCallId().getContent() +
-				((C_HeadVia*) _mess->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch") +
+		string callid_alarm = _mess->getGenericHeader("Call-ID:") +
+				_mess->getViaProperty("branch") +
 				"#" + _mess->getOrderOfOperation()+ "#";
 	    internalCancelAlarm(callid_alarm, _mod);
 		if(!_mess->getLock()){

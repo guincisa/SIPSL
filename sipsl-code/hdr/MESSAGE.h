@@ -127,6 +127,8 @@ class MESSAGE {
 
 		void setValid(int);
 
+		bool getLock(void);
+
         string &getKey(void);
         void setKey(string key);
 
@@ -136,8 +138,6 @@ class MESSAGE {
 		//Exact length of the original buffer
 		int getDimString(void);
 		char* getOriginalString(void);
-
-		//char* getLine(int); issue with Via
 
 		bool hasSDP(void);
 
@@ -153,6 +153,14 @@ class MESSAGE {
         void setDestEntity(int);
         int getDestEntity(void);
 
+        //Timer
+        lli MESSAGE::getFireTime(void);
+		void MESSAGE::setFireTime(lli);
+
+		string getOrderOfOperation(void);
+		void setOrderOfOperation(string);
+
+
         //SIP headers
 
     	void setGenericHeader(string header, string content);
@@ -161,6 +169,13 @@ class MESSAGE {
     	void addGenericHeader(string header, string content);
     	void dropHeader(string header);
 
+    	//manage via
+    	string getViaLine(void);
+    	string getViaProperty(string);
+
+    	//get a value in a header
+    	//like CalllId: and tag
+    	string getProperty(string,string);
 
         int getReqRepType(void);
     	void setHeadSipRequest(string content);
@@ -168,9 +183,12 @@ class MESSAGE {
     	C_HeadSipReply &getHeadSipReply(void);
     	C_HeadSipRequest &getHeadSipRequest(void);
 
+    	//Call id
+    	C_HeadCallId &getHeadCallId(void);
 
 
 	private:
+    	bool lock;
 		//Buffer and Parsing
 		//tokenized
 		char* message_char;
@@ -184,9 +202,17 @@ class MESSAGE {
 		bool filledIn;
 		bool hasSdp;
 		bool hasvialines;
-    	string key;
+
+		//input is the string to be parsed,
+		//token is the property
+		//head is the begin of the found propery
+		//end is the end of the property
+		void getPropertyPointers(char* input, char* token, char* head, char* end);
 
 		MESSAGE* sourceMessage;
+
+		//Timer support
+		lli fireTime;
 
 
 		//Network
@@ -204,297 +230,300 @@ class MESSAGE {
     	//Routing
     	int requestDirection;
 
+    	string orderOfOperation;
+
     	//SIP
     	int reqRep;
     	C_HeadSipRequest 	headSipRequest;
     	C_HeadSipReply   	headSipReply;
+//    	C_HeadCallId 		headCallId;
 
-}
-
-class BASEMESSAGE {
-
-    public:
-
-        BASEMESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
-                    struct sockaddr_in echoClntAddr);
-        BASEMESSAGE(string incMessBuff, SysTime inc_ts);
-
-        BASEMESSAGE(BASEMESSAGE*, int genEntity, SysTime creaTime);
-
-//        BASEMESSAGE(const BASEMESSAGE& x);
-
-
-        string &getLine(int);
-        int getTotLines(void);
-
-
-
-        string &getIncBuffer(void);
-
-        int getGenEntity(void);
-        void setGenEntity(int);
-
-        int getRequestDirection(void);
-        void setRequestDirection(int);
-
-        void setDestEntity(int);
-        int getDestEntity(void);
-
-        void setEndPoints(int from, int to);
-
-
-        string &getKey(void);
-        void setKey(string key);
-
-        struct sockaddr_in getAddress(void);
-        int getSock(void);
-
-        SysTime getCreationTime(void);
-
-        void setValid(int);
-
-
-    protected:
-        int genEntity;
-        int destEntity;
-        int requestDirection;
-        vector<string> flex_line;
-        SysTime inc_ts;
-
-        vector<string> getLines(void);
-
-        void removeHeader(int pos);
-
-        int id; //Used in spin buffer
-
-
-    protected:
-        string  incMessBuff;
-
-        // reply network info
-
-        int sock;
-        sockaddr_inX echoClntAddr;
-
-        //V4 workaround to avoid deletion of the sent INVITE
-
-    protected:
-        //Memory protection
-        int invalid;
-
-    private:
-    	//used to store in message map
-    	string key;
-
-        void fillLineArray(void);
-        int totLines;
-        bool arrayFilled;
-
-        vector<int> linePosition;
-}
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//// MESSAGE
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-class O_MESSAGE : public BASEMESSAGE {
-
-    private:
-    	//Headers
-    	C_HeadSipRequest 	headSipRequest;
-    	C_HeadSipReply   	headSipReply;
-
-    	//S_HeadGeneric	headSipReqRep;
-    	// REQSUPP request supported, REPSUPP reply supported
-    	// REQUNSUPP request unsupported, REPUNSUPP reply unsupported ??? defined latefr
-    	int reqRep;
-
-    	stack<C_HeadVia*>	s_headVia;
-    	bool 				s_headVia_p;
-    	S_HeadMaxFwd	 	headMaxFwd;
-    	bool 				headMaxFwd_p;
-    	C_HeadContact*	 	headContact;
-    	bool 				headContact_p;
-    	C_HeadTo*	     	headTo;
-    	bool 				headTo_p;
-    	C_HeadFrom*       	headFrom;
-    	bool 				headFrom_p;
-    	C_HeadCallId     	headCallId;
-    	bool 				headCallId_p;
-    	C_HeadCSeq			headCSeq;
-    	bool 				headCSeq_p;
-    	C_HeadRoute*		headRoute;
-							//parsed, exists, correct
-    	bool 				headRoute_p, headRoute_e;
-
-    	vector<string>		sdpVector;
-    	bool				sdpVector_p;
-    	bool				sdpVecrot_e; // exists
-    	int					sdpSize;
-
-    	//Modulus to reach the correct comap
-    	int					modulus;
-
-    	//Allows to purge retranmissions
-    	bool 				lock;
-
-    	// Used to generate a message from an incoming one
-    	// tipically a reply
-    	O_MESSAGE* source;
-
-    	// if false then the message comes from the
-    	// network and cannot be changed
-    	// if true then it has been generated internally and
-    	// can be modified
-    	bool isInternal;
-
-    	int typeOfInternal; // Message or operation
-    	int typeOfOperation; // Type of operation
-    	string orderOfOperation; //Alarm id in case more alarms are triggered with the same message
-    	//int specialAction; //delete co
-
-        //Timer support
-        lli fireTime;
-
-
-    	//Needed for ACK
-    	int type_trnsct;
-
-        //Need to eliminate the source message
-        //SL_CC
-        C_HeadCallId sourceHeadCallId;
-        int sourceModulus;
-
-
-    public:
-
-        O_MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
-                    struct sockaddr_in echoClntAddr);
-        //MESSAGE(string incMessBuff, SysTime inc_ts);
-
-        // this is temporary and needed to create internal messages
-        //MESSAGE(void);
-
-        //
-        MESSAGE(O_MESSAGE*, int genEntity, SysTime creaTime);
-
-        ~O_MESSAGE();
-
-//        MESSAGE(const MESSAGE& x);
-
-
-    	// also use for getting the callIDx to retrieve CALL_OSET SV side
-    	MESSAGE* getSourceMessage(void);
-    	void setSourceMessage(MESSAGE*);
-
-        //translates the flex_line into a string to be sent to network
-        void compileMessage(void);
-
-    	int getReqRepType(void);
-
-    	//S_HeadGeneric 	&getHeadSipReqRep(void);
-    	C_HeadSipReply   	&getHeadSipReply(void);
-    	C_HeadSipRequest 	&getHeadSipRequest(void);
-
-    	stack<C_HeadVia*>	&getSTKHeadVia(void);
-    	//TODO is this one ok?
-    	void				popSTKHeadVia(void);
-    	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
-    	C_HeadContact*	 	getHeadContact(void);
-    	C_HeadTo*	     	getHeadTo(void);
-    	C_HeadFrom*       	getHeadFrom(void);
-    	C_HeadCallId     	&getHeadCallId(void);
-    	C_HeadCSeq			&getHeadCSeq(void);
-    	C_HeadContentType	&getHeadContentType(void);
-    	S_HeadContentLength &getHeadContentLenght(void);
-    	C_SDPInfo			&getHeadSDPInfo(void);
-    	C_HeadAllow			&getHeadAllow(void);
-    	C_HeadSubject		&getHeadSubject(void);
-    	C_HeadRoute*		getHeadRoute(void) throw (HeaderException);
-
-    	//string getExtendedInternalCID(void);
-
-    	string getTransactionExtendedCID(void);
-
-    	string getDialogExtendedCID(void);
-
-    	void removeHeadRoute(void);
-
-    	void dropHeader(string header);
-
-    	void setHeadSipRequest(string content);
-    	void setHeadSipReply(string content);
-
-    	void replaceHeadCSeq(string content);
-    	void replaceHeadCSeq(int cseq, string method);
-
-
-    	//SDP management
-    	void purgeSDP(void);
-    	void importSDP(vector<string> sdp);
-    	vector<string> getSDP(void);
-    	int getSDPSize(void);
-
-		//purge all vias
-    	void purgeSTKHeadVia(void);
-    	//insert via
-    	void pushHeadVia(string content);
-
-    	void replaceHeadFrom(string content);
-    	void replaceHeadTo(string content);
-
-
-    	void replaceHeadContact(string content);
-
-    	void removeMaxForwards(void);
-    	void increaseMaxForwards(void);
-
-    	void setGenericHeader(string header, string content);
-    	string getGenericHeader(string header);
-    	bool queryGenericHeader(string header); //if is present
-    	void addGenericHeader(string header, string content);
-
-    	// position of first line of SDP
-    	// it is needed when I need to add headers
-    	// which have to be inserted before
-    	// it is found by searching "=" in second position
-    	// it is calculated every time it is invoked...
-    	vector<string>::iterator getSDPposition(void);
-    	void dumpVector(void);
-
-    	void setFireTime(lli fireTime);
-    	lli getFireTime(void);
-
-
-    	int getModulus(void);
-
-    	void setLock(CALL_OSET*);
-    	bool getLock(void);
-    	void unSetLock(CALL_OSET*);
-
-    	string getOrderOfOperation(void);
-    	void setOrderOfOperation(string);
-
-    	int getTypeOfInternal(void);
-    	void setTypeOfInternal(int);
-
-    	int getType_trnsct(void);
-    	void setType_trnsct(int);
-
-    	int getTypeOfOperation(void);
-    	void setTypeOfOperation(int);
-
-
-        C_HeadCallId& getSourceHeadCallId();
-	int getSourceModulus();
-        void setSourceHeadCallId(string);
-	void setSourceModulus(int);
-
-
-#ifdef MESSAGEUSAGE
-		int inuse;
-#endif
 };
+
+//class BASEMESSAGE {
+//
+//    public:
+//
+//        BASEMESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
+//                    struct sockaddr_in echoClntAddr);
+//        BASEMESSAGE(string incMessBuff, SysTime inc_ts);
+//
+//        BASEMESSAGE(BASEMESSAGE*, int genEntity, SysTime creaTime);
+//
+////        BASEMESSAGE(const BASEMESSAGE& x);
+//
+//
+//        string &getLine(int);
+//        int getTotLines(void);
+//
+//
+//
+//        string &getIncBuffer(void);
+//
+//        int getGenEntity(void);
+//        void setGenEntity(int);
+//
+//        int getRequestDirection(void);
+//        void setRequestDirection(int);
+//
+//        void setDestEntity(int);
+//        int getDestEntity(void);
+//
+//        void setEndPoints(int from, int to);
+//
+//
+//        string &getKey(void);
+//        void setKey(string key);
+//
+//        struct sockaddr_in getAddress(void);
+//        int getSock(void);
+//
+//        SysTime getCreationTime(void);
+//
+//        void setValid(int);
+//
+//
+//    protected:
+//        int genEntity;
+//        int destEntity;
+//        int requestDirection;
+//        vector<string> flex_line;
+//        SysTime inc_ts;
+//
+//        vector<string> getLines(void);
+//
+//        void removeHeader(int pos);
+//
+//        int id; //Used in spin buffer
+//
+//
+//    protected:
+//        string  incMessBuff;
+//
+//        // reply network info
+//
+//        int sock;
+//        sockaddr_inX echoClntAddr;
+//
+//        //V4 workaround to avoid deletion of the sent INVITE
+//
+//    protected:
+//        //Memory protection
+//        int invalid;
+//
+//    private:
+//    	//used to store in message map
+//    	string key;
+//
+//        void fillLineArray(void);
+//        int totLines;
+//        bool arrayFilled;
+//
+//        vector<int> linePosition;
+//}
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+////// MESSAGE
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//class O_MESSAGE : public BASEMESSAGE {
+//
+//    private:
+//    	//Headers
+//    	C_HeadSipRequest 	headSipRequest;
+//    	C_HeadSipReply   	headSipReply;
+//
+//    	//S_HeadGeneric	headSipReqRep;
+//    	// REQSUPP request supported, REPSUPP reply supported
+//    	// REQUNSUPP request unsupported, REPUNSUPP reply unsupported ??? defined latefr
+//    	int reqRep;
+//
+//    	stack<C_HeadVia*>	s_headVia;
+//    	bool 				s_headVia_p;
+//    	S_HeadMaxFwd	 	headMaxFwd;
+//    	bool 				headMaxFwd_p;
+//    	C_HeadContact*	 	headContact;
+//    	bool 				headContact_p;
+//    	C_HeadTo*	     	headTo;
+//    	bool 				headTo_p;
+//    	C_HeadFrom*       	headFrom;
+//    	bool 				headFrom_p;
+//    	C_HeadCallId     	headCallId;
+//    	bool 				headCallId_p;
+//    	C_HeadCSeq			headCSeq;
+//    	bool 				headCSeq_p;
+//    	C_HeadRoute*		headRoute;
+//							//parsed, exists, correct
+//    	bool 				headRoute_p, headRoute_e;
+//
+//    	vector<string>		sdpVector;
+//    	bool				sdpVector_p;
+//    	bool				sdpVecrot_e; // exists
+//    	int					sdpSize;
+//
+//    	//Modulus to reach the correct comap
+//    	int					modulus;
+//
+//    	//Allows to purge retranmissions
+//    	bool 				lock;
+//
+//    	// Used to generate a message from an incoming one
+//    	// tipically a reply
+//    	O_MESSAGE* source;
+//
+//    	// if false then the message comes from the
+//    	// network and cannot be changed
+//    	// if true then it has been generated internally and
+//    	// can be modified
+//    	bool isInternal;
+//
+//    	int typeOfInternal; // Message or operation
+//    	int typeOfOperation; // Type of operation
+//    	string orderOfOperation; //Alarm id in case more alarms are triggered with the same message
+//    	//int specialAction; //delete co
+//
+//        //Timer support
+//        lli fireTime;
+//
+//
+//    	//Needed for ACK
+//    	int type_trnsct;
+//
+//        //Need to eliminate the source message
+//        //SL_CC
+//        C_HeadCallId sourceHeadCallId;
+//        int sourceModulus;
+//
+//
+//    public:
+//
+//        O_MESSAGE(string incMessBuff, int genEntity, SysTime inc_ts, int sock,
+//                    struct sockaddr_in echoClntAddr);
+//        //MESSAGE(string incMessBuff, SysTime inc_ts);
+//
+//        // this is temporary and needed to create internal messages
+//        //MESSAGE(void);
+//
+//        //
+//        O_MESSAGE(O_MESSAGE*, int genEntity, SysTime creaTime);
+//
+//        ~O_MESSAGE();
+//
+////        MESSAGE(const MESSAGE& x);
+//
+//
+//    	// also use for getting the callIDx to retrieve CALL_OSET SV side
+//        O_MESSAGE* getSourceMessage(void);
+//    	void setSourceMessage(O_MESSAGE*);
+//
+//        //translates the flex_line into a string to be sent to network
+//        void compileMessage(void);
+//
+//    	int getReqRepType(void);
+//
+//    	//S_HeadGeneric 	&getHeadSipReqRep(void);
+//    	C_HeadSipReply   	&getHeadSipReply(void);
+//    	C_HeadSipRequest 	&getHeadSipRequest(void);
+//
+//    	stack<C_HeadVia*>	&getSTKHeadVia(void);
+//    	//TODO is this one ok?
+//    	void				popSTKHeadVia(void);
+//    	S_HeadMaxFwd	 	&getHeadMaxFwd(void);
+//    	C_HeadContact*	 	getHeadContact(void);
+//    	C_HeadTo*	     	getHeadTo(void);
+//    	C_HeadFrom*       	getHeadFrom(void);
+//    	C_HeadCallId     	&getHeadCallId(void);
+//    	C_HeadCSeq			&getHeadCSeq(void);
+//    	C_HeadContentType	&getHeadContentType(void);
+//    	S_HeadContentLength &getHeadContentLenght(void);
+//    	C_SDPInfo			&getHeadSDPInfo(void);
+//    	C_HeadAllow			&getHeadAllow(void);
+//    	C_HeadSubject		&getHeadSubject(void);
+//    	C_HeadRoute*		getHeadRoute(void) throw (HeaderException);
+//
+//    	//string getExtendedInternalCID(void);
+//
+//    	string getTransactionExtendedCID(void);
+//
+//    	string getDialogExtendedCID(void);
+//
+//    	void removeHeadRoute(void);
+//
+//    	void dropHeader(string header);
+//
+//    	void setHeadSipRequest(string content);
+//    	void setHeadSipReply(string content);
+//
+//    	void replaceHeadCSeq(string content);
+//    	void replaceHeadCSeq(int cseq, string method);
+//
+//
+//    	//SDP management
+//    	void purgeSDP(void);
+//    	void importSDP(vector<string> sdp);
+//    	vector<string> getSDP(void);
+//    	int getSDPSize(void);
+//
+//		//purge all vias
+//    	void purgeSTKHeadVia(void);
+//    	//insert via
+//    	void pushHeadVia(string content);
+//
+//    	void replaceHeadFrom(string content);
+//    	void replaceHeadTo(string content);
+//
+//
+//    	void replaceHeadContact(string content);
+//
+//    	void removeMaxForwards(void);
+//    	void increaseMaxForwards(void);
+//
+//    	void setGenericHeader(string header, string content);
+//    	string getGenericHeader(string header);
+//    	bool queryGenericHeader(string header); //if is present
+//    	void addGenericHeader(string header, string content);
+//
+//    	// position of first line of SDP
+//    	// it is needed when I need to add headers
+//    	// which have to be inserted before
+//    	// it is found by searching "=" in second position
+//    	// it is calculated every time it is invoked...
+//    	vector<string>::iterator getSDPposition(void);
+//    	void dumpVector(void);
+//
+//    	void setFireTime(lli fireTime);
+//    	lli getFireTime(void);
+//
+//
+//    	int getModulus(void);
+//
+//    	void setLock(CALL_OSET*);
+//    	bool getLock(void);
+//    	void unSetLock(CALL_OSET*);
+//
+//    	string getOrderOfOperation(void);
+//    	void setOrderOfOperation(string);
+//
+//    	int getTypeOfInternal(void);
+//    	void setTypeOfInternal(int);
+//
+//    	int getType_trnsct(void);
+//    	void setType_trnsct(int);
+//
+//    	int getTypeOfOperation(void);
+//    	void setTypeOfOperation(int);
+//
+//
+//        C_HeadCallId& getSourceHeadCallId();
+//	int getSourceModulus();
+//        void setSourceHeadCallId(string);
+//	void setSourceModulus(int);
+//
+//
+//#ifdef MESSAGEUSAGE
+//		int inuse;
+//#endif
+//};
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //// ALLOCATED MESSAGES TABLE
