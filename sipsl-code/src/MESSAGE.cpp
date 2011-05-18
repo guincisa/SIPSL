@@ -462,18 +462,35 @@ void MESSAGE::dropHeader(string _header){
 //
 //
 //}
-string MESSAGE::getViaProperty(string token){
+string MESSAGE::getViaProperty(string propname){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getViaProperty invalid")
 
-		char* h = 0x0;
-		char* e = 0x0;
-		char* token = token.s_str();
-		char* instr = via_line.back().first;
+		//char * via_line.back().first
 
-		getPropertyPointers(instr, token, h, e);
+		char* instr;
+		NEWPTR2(instr, char[strlen(via_line.back().first) +1],"instr")
 
-		//copy here...
+		strcpy(instr,via_line.back().first);
+		char* token = strstr(instr, propname.c_str());
+		char* prop = 0x0;
+		if (token!=NULL){
+			//found
+			prop = strchr(token,';');
+
+			if (prop != NULL){
+				//not the last couple
+				//put a end of line
+				prop = '\0';
+			}
+		}
+		else{
+			return "";
+		}
+		string risultato(token + propname.length() + 1);
+		DELPTRARR(instr,"instr")
+		return risultato;
+
 }
 
 int MESSAGE::getReqRepType(void){
