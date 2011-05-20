@@ -1,3 +1,18 @@
+19 maggio
+
+controllare che tutte le vasr sono inizializzate nel costruttore
+
+fare tutti glie header e properties cosi:
+
+getViaBranch(){
+	if parsedBranch
+		return branch
+	else
+		branch = propgetProperty("Via:","branch)
+		parsedBranch = true;
+}
+
+
 13 maggio
 
 per ora gli header si maneggiano solo con genericHeader

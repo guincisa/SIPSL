@@ -289,7 +289,7 @@ void ALMGR::parse(void *__mess,int _mod){
 	if (_mess->getFireTime() ==  (lli)0){
 	    GETLOCK(&mutex[_mod],"mutex mod ["<<_mod);
 		string callid_alarm = _mess->getGenericHeader("Call-ID:") +
-				_mess->getViaProperty("branch") +
+				_mess->getViaBranch() +
 				"#" + _mess->getOrderOfOperation()+ "#";
 	    internalCancelAlarm(callid_alarm, _mod);
 		if(!_mess->getLock()){
@@ -454,7 +454,8 @@ ALARM::ALARM(MESSAGE *_message, lli _fireTime){
 	fireTime = _fireTime;
 	active = true;
 	DEBDEV("ALARM::ALARM firetime", fireTime)
-	cidbranch = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->getOrderOfOperation()+ "#";
+	//cidbranch = _message->getHeadCallId().getContent() + ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _message->getOrderOfOperation()+ "#";
+	cidbranch = _message->getHeadCallId() + _message->getViaBranch()+ "#" + _message->getOrderOfOperation()+ "#";
 
 }
 ALARM::ALARM(void){
