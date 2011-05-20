@@ -478,25 +478,25 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
 
         //First look for an existing SM using METHOD+SM_SV+branch
         DEBDEV("((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue(\"branch\")",((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
-        trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getViaBranch());
+        trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_SV, _message->getViaBranch());
         //There are no sm, create it
 
         //OVERALLSTATE lock usage start here
 
         if (trnsctSM == 0x0 ){
-            if (OverallState_SV == OS_INIT && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST ){
-                call_oset->insertSequence("INVITE_A", _message->getHeadCSeq().getSequence());
-                NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_SV")
+            if (OverallState_SV == OS_INIT && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == INVITE_REQUEST ){
+                call_oset->insertSequence("INVITE_A", _message->getHeadCSeq());
+                NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequestCode(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_SV")
             }
-            else if (OverallState_SV == OS_COMPLETED && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
-                NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
+            else if (OverallState_SV == OS_COMPLETED && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == ACK_REQUEST){
+                NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequestCode(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
             }
-            else if ( OverallState_SV == OS_CONFIRMED && _message->getRequestDirection() == SODE_FWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST ){
-                NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
+            else if ( OverallState_SV == OS_CONFIRMED && _message->getRequestDirection() == SODE_FWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == BYE_REQUEST ){
+                NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequestCode(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
             }
             //TODO To test
-            else if ( OverallState_CL == OS_COMPLETED && _message->getRequestDirection() == SODE_BKWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST ){
-                NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
+            else if ( OverallState_CL == OS_COMPLETED && _message->getRequestDirection() == SODE_BKWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == BYE_REQUEST ){
+                NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequestCode(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
             }
             else if (_message->getReqRepType() != REPSUPP ){
                 // but the call object has been recognized!!!
@@ -548,7 +548,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
     //Message is going to Client SM
     else if (dest == SODE_TRNSCT_CL){
 
-        string callidys = _message->getHeadCallId().getContent();
+        string callidys = _message->getHeadCallId();
         DEBINF("SL_CO::call client state machine", callidys)
 
         TRNSCT_SM* trnsct_cl = 0x0;
@@ -563,13 +563,13 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
         }
         else if (_message->getReqRepType() == REPSUPP ){
             //Only Replies are recognized here
-            string smid1 = _message->getHeadCSeq().getMethod().getContent();
-            string smid2 = ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch");
+            string smid1 = _message->getHeadCSeqMethod();
+            string smid2 = _message->getViaBranch();
             DEBINF("call_oset->getTrnsctSm",smid1 <<"#"<< SODE_TRNSCT_CL <<"#"<<smid2 )
             trnsct_cl = call_oset->getTrnsctSm(smid1,SODE_TRNSCT_CL,smid2);
         }else {
             DEBDEV("((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue(\"branch\")",((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
-				trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
+				trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_CL, _message->getViaBranch());
         }
 
         //OVERALLSTATE lock begin ?
@@ -579,22 +579,22 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
             DEBINF("Creating Trnsct Client machine callidy", callidys)
             // All those request are generated by ALO
             if(_message->getReqRepType() == REQSUPP){
-                if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
-                    NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
+                if (_message->getHeadSipRequestCode() == INVITE_REQUEST){
+                    NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequestCode(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
                     SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
                 }
-                else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST){
-                    NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
+                else if (_message->getHeadSipRequestCode() == ACK_REQUEST){
+                    NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequestCode(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
                     if (call_oset->lastTRNSCT_SM_ACK_CL != 0x0){
                             DEBASSERT("An ACK CL SM already exists")
                     }
                     call_oset->lastTRNSCT_SM_ACK_CL = trnsct_cl;
                 }
-                else if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST){
-                    NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_BYE_CL")
+                else if (_message->getHeadSipRequestCode() == BYE_REQUEST){
+                    NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequestCode(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_BYE_CL")
                 }
 
-                call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsct_cl);
+                call_oset->addTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_CL, _message->getViaBranch(), trnsct_cl);
 
             }else{
                 // but the call object has been recognized!!!
@@ -658,7 +658,7 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
 
         if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
             //To ALO
-            DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getDialogExtendedCID())
+            DEBOUT("SL_CO::call action is send to ALO", _tmpMessage->getFirstLine() << " ** " << _tmpMessage->getDialogExtendedCID())
             call_oset->getALO()->call(_tmpMessage);
             if(!_tmpMessage->getLock()){
             	DEBDEV("Message coming back form ALO not locked, deleted", _tmpMessage)

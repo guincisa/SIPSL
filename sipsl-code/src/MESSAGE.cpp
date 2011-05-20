@@ -517,7 +517,8 @@ string MESSAGE::getProperty(string _header,string _property){
 	if (_header.compare("Via:") == 0){
 
 		char* instr;
-		NEWPTR2(instr, char[strlen(via_line.back().first) +1],"instr")
+		char instr[[strlen(via_line.back().first) +1];
+		//NEWPTR2(instr, char[strlen(via_line.back().first) +1],"instr")
 
 		strcpy(instr,via_line.back().first);
 		char* token = strstr(instr, _property.c_str());
@@ -535,7 +536,7 @@ string MESSAGE::getProperty(string _header,string _property){
 			return result;
 		}
 		result  = token + _property.length() + 1;
-		DELPTRARR(instr,"instr")
+		//DELPTRARR(instr,"instr")
 		return result;
 
 	}
@@ -567,11 +568,6 @@ string MESSAGE::getProperty(string _header,string _property){
 	return "";
 
 }
-
-
-
-
-
 string MESSAGE::getHeadCallId(void){
 
 	if (invalid == 1)
@@ -584,7 +580,32 @@ string MESSAGE::getHeadCallId(void){
 	return callId;
 
 }
+string MESSAGE::getDialogExtendedCID(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getDialogExtendedCID invalid")
 
+	//Call id and FromTag
+	DEBSIP("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag"))
+
+	if(!parsedCallId){
+		getHeadCallId();
+	}
+	if(!parsedFromTag){
+		getFromTag();
+	}
+	return callId + fromTag;
+}
+string MESSAGE::getFromTag(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getFromTag invalid")
+
+	if(!parsedFromTag){
+		fromTag = getProperty("From:", "tag");
+		parsedFromTag = true;
+	}
+	return fromTag;
+
+}
 int MESSAGE::getReqRepType(void){
 
 	if (invalid == 1)
@@ -672,6 +693,34 @@ string  MESSAGE::getHeadSipReply(void){
 	return headSipReply;
 
 }
+string MESSAGE::getHeadCSeqMethod(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadCSeqMethod invalid")
+
+	if(!parsedCseq){
+		getHeadCSeq();
+	}
+	return cSeqMethod;
+
+}
+int MESSAGE::getHeadCSeq(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadCSeq invalid")
+
+	if(!parsedCseq){
+		string sh = getGenericHeader("CSeq:");
+		char tsmp[sh.length()+1];
+		strcpy(tsmp, sh.c_str());
+		char* token = strchr(tsmp, ' ');
+		*token = '\0';
+		cSeq = atoi(tsmp);
+		cSeqMethod = token+1;
+		parsedCseq = true;
+	}
+	return cSeq;
+
+}
+
 int MESSAGE::getType_trnsct(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getType_trnsct invalid")

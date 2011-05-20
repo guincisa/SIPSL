@@ -157,6 +157,7 @@ class MESSAGE {
 		int getDimString(void);
 		char* getOriginalString(void);
 		bool hasSDP(void);
+		string getFirstLine(void);
 	private:
 		char* message_char;
 		//this does not change
@@ -251,9 +252,17 @@ class MESSAGE {
 		////////////////////////////////
 	public:
     	string getHeadCallId(void);
+    	string getDialogExtendedCID();
 	private:
     	string callId;
     	bool parsedCallId;
+
+		////////////////////////////////
+	public:
+    	string getFromTag(void);
+	private:
+    	string fromTag;
+    	bool parsedFromTag;
 
 		////////////////////////////////
     	//REQUEST-REPLY
@@ -274,9 +283,11 @@ class MESSAGE {
 
 		////////////////////////////////
 	public:
-    	getHeadCSeq
+    	string getHeadCSeqMethod(void);
+    	int getHeadCSeq(void);
 	private:
-    	string cSeq;
+    	string cSeqMethod;
+    	int cSeq;
     	bool parsedCseq;
 
 
