@@ -478,7 +478,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
 
         //First look for an existing SM using METHOD+SM_SV+branch
         DEBDEV("((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue(\"branch\")",((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
-        trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"));
+        trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, _message->getViaBranch());
         //There are no sm, create it
 
         //OVERALLSTATE lock usage start here
@@ -516,7 +516,8 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 DEBASSERT("Unrecognized Reply message sent to SV machine")
             }
             DEBINF("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
-            call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
+            //call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
+            call_oset->addTrnsctSm(_message->getGenericHeader("CSeq:"), SODE_TRNSCT_SV, _message->getViaBranch(), trnsctSM);
             DEBINF("call_oset->addTrnsctSm","done")
 
         }

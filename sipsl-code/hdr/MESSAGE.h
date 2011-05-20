@@ -112,85 +112,52 @@ typedef struct sockaddr_in sockaddr_inX;
 
 class MESSAGE {
 
+	////////////////////////////////
 	public:
 		MESSAGE(char* incMessBuff,
 				int genEntity,
 				SysTime inc_ts,
 				int sock,
 				struct sockaddr_in echoClntAddr);
-
 		MESSAGE(MESSAGE*,
 				int genEntity,
 				SysTime creaTime);
-
 		~MESSAGE();
 
+		////////////////////////////////
+	private:
+		MESSAGE* sourceMessage;
+
+		////////////////////////////////
+	public:
 		void setValid(int);
+        //MainMessage
+	private:
+        int invalid;
 
+		////////////////////////////////
+	public:
 		bool getLock(void);
+		void unSetLock(CALL_OSET*);
+	private:
+    	bool lock;
 
+		////////////////////////////////
+	public:
         string &getKey(void);
         void setKey(string key);
+	private:
+    	string key;
 
-		//Will just run the strtok
+		////////////////////////////////
+	public:
 		int fillIn(void);
 		bool isFilled(void);
 		//Exact length of the original buffer
 		int getDimString(void);
 		char* getOriginalString(void);
-
 		bool hasSDP(void);
-
-		//Network
-		int getSock(void);
-		struct sockaddr_in getEchoClntAddr(void);
-
-		//Routing
-        int getRequestDirection(void);
-        void setRequestDirection(int);
-        int getGenEntity(void);
-        void setGenEntity(int);
-        void setDestEntity(int);
-        int getDestEntity(void);
-
-        //Timer
-        lli MESSAGE::getFireTime(void);
-		void MESSAGE::setFireTime(lli);
-
-		string getOrderOfOperation(void);
-		void setOrderOfOperation(string);
-
-
-        //SIP headers
-
-    	void setGenericHeader(string header, string content);
-    	string getGenericHeader(string header);
-    	bool queryGenericHeader(string header); //if is present
-    	void addGenericHeader(string header, string content);
-    	void dropHeader(string header);
-
-    	//manage via
-    	string getViaLine(void);
-    	string getViaProperty(string);
-
-    	//get a value in a header
-    	//like CalllId: and tag
-    	string getProperty(string,string);
-
-        int getReqRepType(void);
-    	void setHeadSipRequest(string content);
-    	void setHeadSipReply(string content);
-    	C_HeadSipReply &getHeadSipReply(void);
-    	C_HeadSipRequest &getHeadSipRequest(void);
-
-    	//Call id
-    	C_HeadCallId &getHeadCallId(void);
-
-
 	private:
-    	bool lock;
-		//Buffer and Parsing
-		//tokenized
 		char* message_char;
 		//this does not change
 		char* original_message;
@@ -198,45 +165,120 @@ class MESSAGE {
 		vector< pair<char*, bool> > message_line;
 		vector< pair<char*, bool> > via_line;
 		vector< pair<char*, bool> > sdp_line;
-
 		bool filledIn;
-		bool hasSdp;
 		bool hasvialines;
+		bool hasSdp;
 
-		//input is the string to be parsed,
-		//token is the property
-		//head is the begin of the found propery
-		//end is the end of the property
-		void getPropertyPointers(char* input, char* token, char* head, char* end);
-
-		MESSAGE* sourceMessage;
-
-		//Timer support
-		lli fireTime;
-
-
+		////////////////////////////////
+		//Network
+	public:
+		int getSock(void);
+		struct sockaddr_in getEchoClntAddr(void);
+	private:
 		//Network
         int sock;
         sockaddr_inX echoClntAddr;
         SysTime inc_ts;
 
-
-        //MainMessage
-        int invalid;
-
-        //Mem management
-    	string key;
-
-    	//Routing
+		////////////////////////////////
+	public:
+		//Routing
+        int getRequestDirection(void);
+        void setRequestDirection(int);
+        int getGenEntity(void);
+        void setGenEntity(int);
+        void setDestEntity(int);
+        int getDestEntity(void);
+	private:
     	int requestDirection;
+		int genEntity;
+		int destEntity;
 
+		////////////////////////////////
+        //Timer
+	public:
+        lli MESSAGE::getFireTime(void);
+		void MESSAGE::setFireTime(lli);
+		//Timer support
+	private:
+		lli fireTime;
+
+		////////////////////////////////
+	public:
+		string getOrderOfOperation(void);
+		void setOrderOfOperation(string);
+		int getType_trnsct(void);
+		void setType_trnsct(int);
+		int getTypeOfInternal(void);
+		void setTypeOfInternal(int);
+		int getTypeOfOperation(void);
+		void setTypeOfOperation(int);
+	private:
     	string orderOfOperation;
+    	int type_trnsct;
+    	int typeOfInternal;
+    	int typeOfOperation;
 
-    	//SIP
+		////////////////////////////////
+	public:
+		int getModulus(void);
+	private:
+        int modulus;
+
+
+
+		////////////////////////////////
+        //SIP headers
+	public:
+    	void setGenericHeader(string header, string content);
+    	string getGenericHeader(string header);
+    	bool queryGenericHeader(string header); //if is present
+    	void addGenericHeader(string header, string content);
+    	void dropHeader(string header);
+    	string getProperty(string,string); //header name, property
+
+
+		////////////////////////////////
+    	//MOST USED INFORMATION
+    	//Via (last row)
+	public:
+    	string getViaLine(void);
+    	string getViaBranch(void);
+	private:
+    	string branch;
+    	bool parsedBranch;
+
+		////////////////////////////////
+	public:
+    	string getHeadCallId(void);
+	private:
+    	string callId;
+    	bool parsedCallId;
+
+		////////////////////////////////
+    	//REQUEST-REPLY
+	public:
+        int getReqRepType(void);
+    	void setHeadSipRequest(string content);
+    	void setHeadSipReply(string content);
+    	int getHeadSipRequestCode(void);
+    	string getHeadSipRequest(void);
+    	int getHeadSipReplyCode(void);
+    	string getHeadSipReply(void);
+	private:
     	int reqRep;
-    	C_HeadSipRequest 	headSipRequest;
-    	C_HeadSipReply   	headSipReply;
-//    	C_HeadCallId 		headCallId;
+    	string headSipRequest;
+    	string headSipReply;
+    	int replyCode;
+    	int requestCode;
+
+		////////////////////////////////
+	public:
+    	getHeadCSeq
+	private:
+    	string cSeq;
+    	bool parsedCseq;
+
 
 };
 

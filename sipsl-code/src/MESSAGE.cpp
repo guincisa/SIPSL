@@ -80,9 +80,25 @@ MESSAGE::MESSAGE(char* _incMessBuff,
 	hasSdp = false;
 
 	hasvialines = false;
+	branch = "";
+	parsedBranch = false;
+
+	////////////////////////////////
+	callId = "";
+	parsedCallId = false;
+
+	reqRep = 0;
+	requestCode = 0;
 
 	lock = false;
 
+	type_trnsct = TYPE_TRNSCT;
+	typeOfInternal = TYPE_MESS; // Message or operation
+	typeOfOperation = TYPE_OP_NOOP; // Type of operation
+	orderOfOperation = ""; //Alarm id in case more alarms are triggered with the same message
+
+//	cSeq = "";
+//	parsedCseq = false;
 
 
 }
@@ -106,6 +122,27 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	hasSdp = _sourceMessage->hasSDP();
 
 	lock = false;
+
+	type_trnsct = TYPE_TRNSCT;
+	typeOfInternal = TYPE_MESS; // Message or operation
+	typeOfOperation = TYPE_OP_NOOP; // Type of operation
+	orderOfOperation = ""; //Alarm id in case more alarms are triggered with the same message
+
+	////////////////////////////////
+	callId = "";
+	parsedCallId = false;
+
+
+	branch = "";
+	parsedBranch = false;
+
+	reqRep = 0;
+	requestCode = 0;
+
+
+//	cSeq = "";
+//	parsedCseq = false;
+
 
 	NEWPTR2(original_message, char[_sourceMessage->getDimString()+1],"original_message "<<_sourceMessage->getDimString()+1)
 	strcpy(original_message, _sourceMessage->getOriginalString());
@@ -132,7 +169,14 @@ bool MESSAGE::getLock(void){
 
 	return lock;
 }
+void MESSAGE::unSetLock(CALL_OSET* _call_oset){
+	if (invalid == 1){
+		DEBASSERT("MESSAGE::unSetLock invalid")}
 
+	DEBSIP("MESSAGE::unSetLock ", this)
+	_call_oset->removeLockedMessage(this);
+	lock=false;
+}
 int MESSAGE::getRequestDirection(void){
 
 	if (invalid == 1)
@@ -184,18 +228,6 @@ lli MESSAGE::getFireTime(void){
 		DEBASSERT("MESSAGE::getFireTime invalid")
 
 	return fireTime;
-}
-string MESSAGE::getOrderOfOperation(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getOrderOfOperation invalid")
-
-	return orderOfOperation;
-}
-void MESSAGE::setOrderOfOperation(string _s){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::setOrderOfOperation invalid")
-
-	orderOfOperation = _s;
 }
 
 int MESSAGE::getSock(void){
@@ -322,6 +354,9 @@ string MESSAGE::getViaLine(void){
 
 	if (hasVia){
 		return via_line.back().first;
+	}
+	else{
+		return "";
 	}
 
 }
@@ -462,34 +497,91 @@ void MESSAGE::dropHeader(string _header){
 //
 //
 //}
-string MESSAGE::getViaProperty(string propname){
+string MESSAGE::getViaBranch(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getViaProperty invalid")
 
-		//char * via_line.back().first
+	//char * via_line.back().first
+
+	if (!parsedBranch){
+		branch = getProperty("Via:", "branch");
+		parsedBranch = true;
+	}
+
+	return branch;
+}
+string MESSAGE::getProperty(string _header,string _property){
+
+	string result;
+
+	if (_header.compare("Via:") == 0){
 
 		char* instr;
 		NEWPTR2(instr, char[strlen(via_line.back().first) +1],"instr")
 
 		strcpy(instr,via_line.back().first);
-		char* token = strstr(instr, propname.c_str());
+		char* token = strstr(instr, _property.c_str());
 		char* prop = 0x0;
 		if (token!=NULL){
 			//found
 			prop = strchr(token,';');
 
 			if (prop != NULL){
-				//not the last couple
-				//put a end of line
 				prop = '\0';
 			}
 		}
 		else{
-			return "";
+			result = "";
+			return result;
 		}
-		string risultato(token + propname.length() + 1);
+		result  = token + _property.length() + 1;
 		DELPTRARR(instr,"instr")
-		return risultato;
+		return result;
+
+	}
+	else{
+
+		char* instr;
+		string foundh = getGenericHeader(_header);
+		NEWPTR2(instr, char[foundh.length() +1],"instr")
+
+		strcpy(instr,foundh.c_str());
+		char* token = strstr(instr, _property.c_str());
+		char* prop = 0x0;
+		if (token!=NULL){
+			//found
+			prop = strchr(token,';');
+
+			if (prop != NULL){
+				prop = '\0';
+			}
+		}
+		else{
+			result = "";
+			return result;
+		}
+		result  = token + _property.length() + 1;
+		DELPTRARR(instr,"instr")
+		return result;
+	}
+	return "";
+
+}
+
+
+
+
+
+string MESSAGE::getHeadCallId(void){
+
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadCallId invalid")
+
+	if(!parsedCallId){
+		callId = getGenericHeader("Call-ID:");
+		parsedCallId = true;
+	}
+	return callId;
 
 }
 
@@ -502,59 +594,149 @@ int MESSAGE::getReqRepType(void){
 		return reqRep;
 	}
 	if(strncmp(message_line[0].first,"SIP",3) == 0){
-		headSipReply.setContent(message_line[0].first);
 		reqRep = REPSUPP;
+		//Parse "SIP/2.0 200 OK"
+		char num[4];
+		strncpy(num, message_line[0].first+8, 3);
+		num[3] = '\0';
+		replyCode = atoi(num);
+		char snum[strlen(message_line[0].first) +1];
+		strcpy(snum, message_line[0].first+8);
+		headSipReply = snum;
 	}
 	if(strncmp(message_line[0].first,"INVITE",6) == 0){
-		headSipRequest.setContent(message_line[0].first);
 		reqRep = REQSUPP;
+		requestCode = INVITE_REQUEST;
+		headSipRequest = "INVITE";
 	}
 	if(strncmp(message_line[0].first,"ACK",3) == 0){
-		headSipRequest.setContent(message_line[0].first);
 		reqRep = REQSUPP;
+		requestCode = ACK_REQUEST;
+		headSipRequest = "ACK";
 	}
 	else if(strncmp(message_line[0].first,"BYE",3) == 0){
-		headSipRequest.setContent(message_line[0].first);
 		reqRep = REQSUPP;
+		requestCode = BYE_REQUEST;
+		headSipRequest = "BYE";
 	}
 	else if(strncmp(message_line[0].first,"CANCEL",6) == 0){
-		headSipRequest.setContent(message_line[0].first);
 		reqRep = REQSUPP;
+		requestCode = CANCEL_REQUEST;
+		headSipRequest = "CANCEL";
 	}
 	else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
-		headSipRequest.setContent(message_line[0].first);
 		reqRep = REQUNSUPP;
-
+		headSipRequest = "";
+	}else{
+		reqRep = REQUNSUPP;
+		headSipRequest = "";
+	}
 	return reqRep;
 
 }
-C_HeadSipRequest &MESSAGE::getHeadSipRequest(void){
+int  MESSAGE::getHeadSipRequestCode(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipRequestCode invalid")
+
+	if (reqRep == 0){
+		getReqRepType();
+	}
+	return requestCode;
+}
+string  MESSAGE::getHeadSipRequest(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadSipRequest invalid")
 
-	if(reqRep == 0){
-		reqRep = getReqRepType();
+	if (reqRep == 0){
+		getReqRepType();
 	}
-
-	if (reqRep == REQSUPP || reqRep == REQUNSUPP){
-		return headSipRequest;
-	}
-	DEBASSERT("MESSAGE::getHeadSipRequest illegal instruction");
+	return headSipRequest;
 }
-C_HeadSipReply &MESSAGE::getHeadSipReply(void){
+int  MESSAGE::getHeadSipReplyCode(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipReplyCode invalid")
+
+	if (reqRep == 0){
+		getReqRepType();
+	}
+	return replyCode;
+
+}
+string  MESSAGE::getHeadSipReply(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadSipReply invalid")
 
-	if(reqRep == 0){
-		reqRep = getReqRepType();
+	if (reqRep == 0){
+		getReqRepType();
 	}
+	return headSipReply;
 
-	if (reqRep == REPSUPP || reqRep == REPUNSUPP){
-		return headSipReply;
-	}
-	DEBASSERT("MESSAGE::getHeadSipReply illegal instruction");
 }
+int MESSAGE::getType_trnsct(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getType_trnsct invalid")
 
+	return type_trnsct;
+}
+void MESSAGE::setType_trnsct(int _t){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setType_trnsct invalid")
+
+	type_trnsct = _t;
+}
+string MESSAGE::getOrderOfOperation(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getOrderOfOperation invalid")
+
+	return orderOfOperation;
+}
+void MESSAGE::setOrderOfOperation(string _s){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setOrderOfOperation invalid")
+
+	orderOfOperation = _s;
+}
+int MESSAGE::getTypeOfOperation(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getTypeOfOperation invalid")
+
+	return typeOfOperation;
+}
+void MESSAGE::setTypeOfOperation(int _t){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setTypeOfOperation invalid")
+
+	typeOfOperation = _t;
+}
+int MESSAGE::getModulus(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getModulus invalid")
+
+	if (modulus != -1){
+		return modulus;
+	}
+	//is calculated in two ways:
+	// if first 5 chars of call id is "CoMap" then
+	// the modulus is the number after it (two digits)
+	// otherwise is calculated
+
+	string s = getHeadCallId().getContent();
+	if (s.substr(0,5).compare("CoMap") == 0){
+		modulus = atoi(s.substr(5,COMAPS_DIG).c_str());
+	}else {
+		char x[64];
+		int k = 64<s.length() ? 64 : s.length();
+		sprintf(x,"%s", s.substr(0,k).c_str());
+		long long int tot=0;
+		for (int i = 0; i < k ; i++){
+			tot =  (long long int) atol(s.substr(i,3).c_str()) + tot;
+		}
+		DEBOUT("MODULUS tot", tot)
+		modulus = tot%COMAPS;
+	}
+	DEBDEV("Modulus found", modulus<<"]["<< s)
+	return modulus;
+}
 //void MESSAGE::setHeadSipRequest(string _content){
 //	if (invalid == 1)
 //		DEBASSERT("MESSAGE::setHeadSipRequest invalid")
