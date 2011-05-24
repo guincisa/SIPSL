@@ -87,7 +87,7 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	//Must define here the to tag
 	//only if empty...
 
-	_gted->replaceHeadContact("<sip:sipsl@grog:5060>");
+	_gted->setGenericHeader("Contact:","<sip:sipsl@grog:5060>");
 
 
 	if ( _gted->getHeadTo()->getC_AttUriParms().getContent().length() == 0){
