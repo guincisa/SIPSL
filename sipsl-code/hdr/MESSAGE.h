@@ -125,8 +125,14 @@ class MESSAGE {
 		~MESSAGE();
 
 		////////////////////////////////
+	public:
+		MESSAGE* getSourceMessage(void);
+		void setSourceMessage(MESSAGE*);
+
 	private:
 		MESSAGE* sourceMessage;
+		string sourceHeadCallId;
+		int sourceModulus;
 
 		////////////////////////////////
 	public:
@@ -245,6 +251,7 @@ class MESSAGE {
 	public:
     	string getViaLine(void);
     	string getViaBranch(void);
+    	bool hasVia(void);
 	private:
     	string branch;
     	bool parsedBranch;

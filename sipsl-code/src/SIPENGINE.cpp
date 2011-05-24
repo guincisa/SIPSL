@@ -134,7 +134,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
         DEBSIP("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest().getContent())
 
-        int method = _mess->getHeadSipRequest().getS_AttMethod().getMethodID();
+        int method = _mess->getHeadSipRequestCode();
 
         if (	// Supported methods
             method != INVITE_REQUEST &&
