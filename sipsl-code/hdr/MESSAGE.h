@@ -243,7 +243,7 @@ class MESSAGE {
     	void addGenericHeader(string header, string content);
     	void dropHeader(string header);
     	string getProperty(string,string); //header name, property
-
+    	void compileMessage(void);
 
 		////////////////////////////////
     	//MOST USED INFORMATION
@@ -270,6 +270,21 @@ class MESSAGE {
 	private:
     	string fromTag;
     	bool parsedFromTag;
+
+		////////////////////////////////
+    	// To: <Name> <Uri>;<params>
+    	// To: sut <sip:service@10.21.99.79:5062>;tag=25297SIPpTag011
+	public:
+    	string getHeadTo(void);
+    	string getHeadToName(void);
+    	string getHeadToUri(void);
+    	string getHeadToParams(void);
+    	string
+	private:
+    	string headTo;
+    	string headToName;
+    	string headToUri;
+    	string headToParms;
 
 		////////////////////////////////
     	//REQUEST-REPLY

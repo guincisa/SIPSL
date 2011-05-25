@@ -87,25 +87,70 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	//Must define here the to tag
 	//only if empty...
 
+
+	/*
+	SIP/2.0 200 OK
+	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK1a21801306247463264072;rport
+	From: sipp <sip:sipp@10.21.99.79:5061>;tag=1a78b81306247463273504
+	To: sut <sip:service@10.21.99.79:5062>;tag=25297SIPpTag011
+	Call-ID: CoMap121a21801306247463264072@sipsl.gugli.com
+	CSeq: 1 INVITE
+	Contact: <sip:10.21.99.79:5062;transport=UDP>
+	Content-Type: application/sdp
+	Content-Length:   133
+
+	v=0
+	o=user1 53655765 2353687637 IN IP4 10.21.99.79
+	s=-
+	c=IN IP4 10.21.99.79
+	t=0 0
+	m=audio 6000 RTP/AVP 0
+	a=rtpmap:0 PCMU/8000
+
+	SIP/2.0 200 OK
+	Via: SIP/2.0/UDP 10.21.99.79:5061;branch=z9hG4bK-29057-1-0
+	From: sipp <sip:sipp@10.21.99.79:5061>;tag=29057SIPpTag001
+	To: sut <sip:service@10.21.99.79:5062>
+	Call-ID: 1-29057@10.21.99.79
+	CSeq: 1 INVITE
+	Contact: <sip:sipsl@grog:5060>
+	Subject: Performance Test
+	Content-Type: application/sdp
+	Content-Length: 133
+
+	v=0
+	o=user1 53655765 2353687637 IN IP4 10.21.99.79
+	s=-
+	c=IN IP4 10.21.99.79
+	t=0 0
+	m=audio 6000 RTP/AVP 0
+	a=rtpmap:0 PCMU/8000
+	 */
+
 	_gted->setGenericHeader("Contact:","<sip:sipsl@grog:5060>");
 
-
-	if ( _gted->getHeadTo()->getC_AttUriParms().getContent().length() == 0){
-		//DEBOUT("_gted->getHeadTo().getC_AttUriParms()).getContent()",_gted->getHeadTo()->getC_AttUriParms().getContent())
-		char totmp[512];
-		if (__gtor->getHeadTo()->getNameUri().length()!= 0){
-			sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo()->getNameUri().c_str(), __gtor->getHeadTo()->getC_AttSipUri().getContent().c_str(),(unsigned int)__gtor);
-		}else {
-			sprintf(totmp, "%s;tag=%x",__gtor->getHeadTo()->getC_AttSipUri().getContent().c_str(),(unsigned int)__gtor);
+//	if ( _gted->getHeadTo()->getC_AttUriParms().getContent().length() == 0){
+//		char totmp[512];
+//		if (__gtor->getHeadTo()->getNameUri().length()!= 0){
+//			sprintf(totmp, "%s %s;tag=%x",__gtor->getHeadTo()->getNameUri().c_str(), __gtor->getHeadTo()->getC_AttSipUri().getContent().c_str(),(unsigned int)__gtor);
+//		}else {
+//			sprintf(totmp, "%s;tag=%x",__gtor->getHeadTo()->getC_AttSipUri().getContent().c_str(),(unsigned int)__gtor);
+//		}
+//		string totmpS(totmp);
+//		_gted->replaceHeadTo(totmpS);
+//	}
+	if (_gted->getHeadToParams().length() == 0){
+		string totmp;
+		if (__gtor->getHeadToName().length()!=0){
+			totmp = __gtor->getHeadToName() + " " + __gtor->getHeadToUri() + ";tag=" + (unsigned int)__gtor);
 		}
-		string totmpS(totmp);
-		//DEBOUT("******** TO new" , totmpS)
-		_gted->replaceHeadTo(totmpS);
-		//DEBOUT("TO",_gted->getHeadTo()->getContent())
-		//DEBOUT("TO",_gted->getHeadTo()->getC_AttSipUri().getContent())
-		//DEBOUT("TO",_gted->getHeadTo()->getNameUri())
-		//DEBOUT("TO",_gted->getHeadTo()->getC_AttUriParms().getContent())
+		else{
+			totmp = __gtor->getHeadToUri() + ";tag=" + (unsigned int)__gtor);
+		}
+		_gted->setGenericHeader("To:", totmp);
 	}
+
+	//new parser here
 
 
 	//TODO qui fare dialoge_x...
