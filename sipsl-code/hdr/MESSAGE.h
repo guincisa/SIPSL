@@ -128,7 +128,10 @@ class MESSAGE {
 	public:
 		MESSAGE* getSourceMessage(void);
 		void setSourceMessage(MESSAGE*);
-
+		string getSourceMessageCallId(void);
+		void setSourceHeadCallId(string);
+		void setSourceModulus(int);
+		int getSourceModulus(void);
 	private:
 		MESSAGE* sourceMessage;
 		string sourceHeadCallId;
@@ -145,6 +148,7 @@ class MESSAGE {
 	public:
 		bool getLock(void);
 		void unSetLock(CALL_OSET*);
+		void setLock(CALL_OSET*);
 	private:
     	bool lock;
 
@@ -164,9 +168,11 @@ class MESSAGE {
 		char* getOriginalString(void);
 		bool hasSDP(void);
 		string getFirstLine(void);
+		char* getMessageBuffer(void);
+		void dumpMessageBuffer(void);
 	private:
 		char* message_char;
-		//this does not change
+		//this does not change:
 		char* original_message;
 		//char* and bool true if the line is new false if it is pointing to the strtok
 		vector< pair<char*, bool> > message_line;
@@ -232,7 +238,12 @@ class MESSAGE {
 	private:
         int modulus;
 
-
+		////////////////////////////////
+        //SDP
+	public:
+        void purgeSDP(void);
+		vector< pair<char*, bool> > getSDP(void);
+		void setSDP(vector< pair<char*, bool> >);
 
 		////////////////////////////////
         //SIP headers
@@ -243,15 +254,18 @@ class MESSAGE {
     	void addGenericHeader(string header, string content);
     	void dropHeader(string header);
     	string getProperty(string,string); //header name, property
+    	void setProperty(string,string,string);
     	void compileMessage(void);
 
 		////////////////////////////////
     	//MOST USED INFORMATION
-    	//Via (last row)
+    	//Via (top row)
 	public:
     	string getViaLine(void);
     	string getViaBranch(void);
     	bool hasVia(void);
+    	void popVia(void);
+    	void pushNewVia(string);
 	private:
     	string branch;
     	bool parsedBranch;
@@ -277,9 +291,7 @@ class MESSAGE {
 	public:
     	string getHeadTo(void);
     	string getHeadToName(void);
-    	string getHeadToUri(void);
     	string getHeadToParams(void);
-    	string
 	private:
     	string headTo;
     	string headToName;
@@ -304,6 +316,19 @@ class MESSAGE {
     	int requestCode;
 
 		////////////////////////////////
+    	//URI
+    	//"sip:alice:secretword@atlanta.com;transport=tcp"
+		//        bool isSecure; //sip or sips
+		//        S_AttUserInfo userInfo; // alice:secretword@
+		//        S_AttHostPort hostPort; // gateway.conm:123
+		//        C_AttUriParms uriParms; // transport=tcp;ttl=15;...
+		//        C_AttUriHeaders uriHeads; // ?to=alice%40atalnta.com&priority=urgent&...
+    	//argument is the header, or "REQUEST"
+	public:
+    	bool isUriSecure(string header);
+    	string getUriHostPort(string header);
+    	string getUriHost(string header);
+    	int getUriPort(string header);
 	public:
     	string getHeadCSeqMethod(void);
     	int getHeadCSeq(void);

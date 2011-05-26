@@ -139,82 +139,41 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 //		string totmpS(totmp);
 //		_gted->replaceHeadTo(totmpS);
 //	}
-	if (_gted->getHeadToParams().length() == 0){
-		string totmp;
-		if (__gtor->getHeadToName().length()!=0){
-			totmp = __gtor->getHeadToName() + " " + __gtor->getHeadToUri() + ";tag=" + (unsigned int)__gtor);
-		}
-		else{
-			totmp = __gtor->getHeadToUri() + ";tag=" + (unsigned int)__gtor);
-		}
-		_gted->setGenericHeader("To:", totmp);
-	}
+//	if (_gted->getHeadToParams().length() == 0){
+//		string totmp ("");
+//		if (__gtor->getHeadToName().length()!=0){
+//			totmp += __gtor->getHeadToName();
+//			totmp += " ";
+//		}
+//		totmp += __gtor->getHeadToUri();
+//		totmp += ";tag=";
+//		totmp += (unsigned int)__gtor;
+//	}
 
-	//new parser here
-
-
-	//TODO qui fare dialoge_x...
-	//DEBOUT("_gted","SIP/2.0 " << _gtor->getHeadSipReply().getContent())
-	_gted->setHeadSipReply(_gtor->getHeadSipReply().getContent());
-//	DEBOUT("reply_x","Purge sdp")
-//	_gted->purgeSDP();
-	//DEBOUT("reply_x","delete User-Agent:")
+	string ttt(""); ttt += (unsigned int) __gtor;
+	_gted->setProperty("To:", "tag", ttt);
+	_gted->setHeadSipReply(_gtor->getHeadSipReply());
 	_gted->dropHeader("User-Agent:");
-	//DEBOUT("reply_x","delete Max-Forwards:")
-	_gted->removeMaxForwards();
-	//DEBOUT("reply_x","delete Allow:")
+	_gted->dropHeader("Max-Forwards:");
 	_gted->dropHeader("Allow:");
-	//DEBOUT("reply_x","delete Route:")
 	_gted->dropHeader("Route:");
-	//DEBOUT("reply_x","delete Date:")
 	_gted->dropHeader("Date:");
-//	DEBOUT("reply_x","delete Content-Type:")
-//	_gted->dropHeader("Content-Type:");
-
-	//_gted->setGenericHeader("Content-Length:","0");
-	//crash here...
-
-	//via add rport
-	C_HeadVia* viatmp = (C_HeadVia*) _gted->getSTKHeadVia().top();
-	//TODO 124??
-	//DEBOUT("viatmp->getContent", viatmp->getContent())
-	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-//	_gted->popSTKHeadVia();
-//	_gted->pushHeadVia(viatmp.getC_AttVia().getContent());
-
-
-
+	_gted->setProperty("Via:","rport","1234");
 
 }
 
 void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 
-	//TODO qui fare etry...
-	//DEBOUT("GTED","Purge sdp")
 	_gted->purgeSDP();
-	//DEBOUT("GTED","delete User-Agent:")
 	_gted->dropHeader("User-Agent:");
-	//DEBOUT("GTED","delete Max-Forwards:")
-	_gted->removeMaxForwards();
-	//DEBOUT("GTED","delete Content-Type:")
+	_gted->dropHeader("Max-Forwards:");
 	_gted->dropHeader("Content-Type:");
-	//DEBOUT("GTED","delete Allow:")
 	_gted->dropHeader("Allow:");
-	//DEBOUT("GTED","delete Route:")
 	_gted->dropHeader("Route:");
-	//DEBOUT("GTED","delete Date:")
 	_gted->dropHeader("Date:");
-
 	_gted->setGenericHeader("Content-Length:","0");
 
-	//via add rport
-	C_HeadVia* viatmp = (C_HeadVia*) _gted->getSTKHeadVia().top();
-	//TODO 124??
-	viatmp->getChangeC_AttVia().getChangeViaParms().replaceRvalue("rport", "124");
-
-//	DEBOUT("GTED via", viatmp.getC_AttVia().getContent())
-//	_gted->popSTKHeadVia();
-//	_gted->pushHeadVia(viatmp.getC_AttVia().getContent());
+	_gted->setProperty("Via:","rport","124");
 
 }
 
@@ -222,54 +181,27 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 	//set new Via, is used by the b part to send replies
-	char viatmp[512];
-	sprintf(viatmp, "SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",sudp->getDomain().c_str(),sudp->getPort(),_gtor->getKey().c_str());
-	string viatmpS(viatmp);
-	_gted->purgeSTKHeadVia();
-	_gted->pushHeadVia(viatmpS);
-	//DEBOUT("_gted->pushHeadVia(viatmpS);", viatmpS)
+	_gted->popVia();
+	string viatmp("SIP/2.0/UDP ");
+	viatmp += sudp->getDomain();
+	viatmp +=":";
+	viatmp += sudp->getPort();
+	viatmp += ";branch=z9hG4bK";
+	viatmp += _gtor->getKey();
+	viatmp += ";rport";
+	_gted->pushNewVia(viatmp);
+
 #ifdef LOGSIP
         _gted->dumpVector();
 #endif
-	//Create new call id
-//	char callIdtmp[512];
-//        if (_gtor->getModulus() < 10  && COMAPS_DIG > 1){
-//            sprintf(callIdtmp, "CoMap0%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
-//        }else {
-//            sprintf(callIdtmp, "CoMap%i%s@%s", _gtor->getModulus(),_gtor->getKey().c_str(), sudp->getDomain().c_str());
-//        }
-//
-//	string callIdtmpS(callIdtmp);
 	_gted->setGenericHeader("Call-ID:", _callidy);
 
-	//From changes
-	// in From: <sip:guic@172.21.160.184>;tag=0ac37672-6a86-de11-992a-001d7206fe48
-	// out From: <sip:guic@172.21.160.184>;tag=YKcAvQ
-	//DEBOUT("FROM",_gted->getHeadFrom()->getContent())
-	//DEBOUT("FROM",_gted->getHeadFrom()->getC_AttSipUri().getContent())
-	//DEBOUT("FROM",_gted->getHeadFrom()->getNameUri())
-	//DEBOUT("FROM",_gted->getHeadFrom()->getC_AttUriParms().getContent())
-	// change tag
-	char fromtmp[512];
-	if (_gted->getHeadFrom()->getNameUri().length() == 0)
-		sprintf(fromtmp, "%s;tag=%s",_gted->getHeadFrom()->getC_AttSipUri().getContent().c_str(),_gted->getKey().c_str());
-	else
-		sprintf(fromtmp, "%s %s;tag=%s",_gted->getHeadFrom()->getNameUri().c_str(), _gted->getHeadFrom()->getC_AttSipUri().getContent().c_str(),_gted->getKey().c_str());
-	string fromtmpS(fromtmp);
-	//DEBOUT("******** FROM new" , fromtmpS)
-	_gted->replaceHeadFrom(fromtmpS);
-	//DEBOUT("FROM",_gted->getHeadFrom()->getContent())
-	//DEBOUT("FROM",_gted->getHeadFrom()->getC_AttSipUri().getContent())
-	//DEBOUT("FROM",_gted->getHeadFrom()->getNameUri())
-	//DEBOUT("FROM",_gted->getHeadFrom()->getC_AttUriParms().getContent())
+	_gted->setProperty("From:", "tag", _gted->getKey());
 
-
-	if (_gtor->getSDPSize() != 0 ){
+	if (_gtor->hasSDP()){
 		//SDP must copy the SDP from incoming OK and put here
-		vector<string> __sdp = _gtor->getSDP();
 		_gted->purgeSDP();
-		DEBALO("PURGED SDP","")
-		_gted->importSDP(__sdp);
+		_gted->setSDP(_gtor->getSDP());
 	}
 
 }

@@ -1,3 +1,11 @@
+26 maggio
+
+implementare i metodi di MESSAGE
+
+ma il via che conta e' quello in cima o in basso???
+dalla SUDP sembra quello in cima!!!!
+
+
 19 maggio
 
 controllare che tutte le vasr sono inizializzate nel costruttore
