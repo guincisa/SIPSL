@@ -256,7 +256,7 @@ bool pre_invite_from_a(SM* _sm, MESSAGE* _message){
 
     DEBDEV("TRNSCT_INV_SV pre_invite_from_a called",_message)
     if (_message->getReqRepType() == REQSUPP
-            && (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST)
+            && (_message->getHeadSipRequestCode() == INVITE_REQUEST)
             && _message->getDestEntity() == SODE_TRNSCT_SV
             && _message->getGenEntity() ==  SODE_NTWPOINT){
         DEBDEV("TRNSCT_INV_SV pre_invite_from_a","true")
@@ -359,8 +359,8 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 	DEBDEV("TRSNCT_INV_SV pre_provreply_from_b called",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
-				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
+		&& (_message->getHeadSipReplyCode() == DIALOGE_101
+				|| _message->getHeadSipReplyCode() == RINGING_180)
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
 			DEBDEV("SM_SV pre_provreply_from_b","true")
@@ -445,7 +445,7 @@ bool pre_200ok_from_alo(SM* _sm, MESSAGE* _message){
 	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alo",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&& _message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_ALOPOINT) {
 			DEBDEV("SM_V5 pre_200ok_from_alo","true")
@@ -654,7 +654,7 @@ bool pre_200ok_from_alarm(SM* _sm, MESSAGE* _message){
 	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&& _message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  ((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok < MAX_INVITE_RESEND
@@ -675,7 +675,7 @@ bool pre_200ok_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm_maxreach",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&& _message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  ((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok >= MAX_INVITE_RESEND
@@ -723,7 +723,7 @@ bool pre_200ok_from_alarm_confirm(SM* _sm, MESSAGE* _message){
 	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm_confirm",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&& _message->getHeadSipReply().getReply().getCode() == OK_200
+		&& _message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  _sm->getSL_CO()->OverallState_SV == OS_CONFIRMED) {
@@ -757,7 +757,7 @@ bool pre_N_99_inv_sv(SM* _sm, MESSAGE* _message){
 	DEBDEV("TRSNCT_INV_SV pre_N_99_inv_sv",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&& _message->getHeadSipReply().getReply().getCode() == SU_503
+		&& _message->getHeadSipReplyCode() == SU_503
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
@@ -929,7 +929,7 @@ bool pre_invite_from_sv(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_CL pre_invite_from_sv",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getHeadSipRequestCode() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
 		DEBDEV("TRNSCT_INV_CL pre_invite_from_sv","true")
@@ -950,7 +950,7 @@ bool pre_invite_from_alarm(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getHeadSipRequestCode() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite < MAX_INVITE_RESEND) {
@@ -1020,7 +1020,7 @@ bool pre_invite_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm_maxreach",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST
+			&& _message->getHeadSipRequestCode() == INVITE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_INVITE_CL*)_sm)->resend_invite >= MAX_INVITE_RESEND) {
@@ -1066,7 +1066,7 @@ bool pre_try_from_b(SM* _sm, MESSAGE* _message){
 	DEBDEV("TRNSCT_INV_CL pre_try_from_b",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&&_message->getHeadSipReply().getReply().getCode() == TRYING_100
+		&&_message->getHeadSipReplyCode() == TRYING_100
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 			DEBDEV("TRNSCT_INV_CL pre_try_from_b","true")
@@ -1118,8 +1118,8 @@ bool pre_provrep_from_b(SM* _sm, MESSAGE* _message){
 	DEBDEV("SM_CL pre_provrep_from",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&& (_message->getHeadSipReply().getReply().getCode() == DIALOGE_101
-				|| _message->getHeadSipReply().getReply().getCode() == RINGING_180)
+		&& (_message->getHeadSipReplyCode() == DIALOGE_101
+				|| _message->getHeadSipReplyCode() == RINGING_180)
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 			DEBDEV("SM_CL pre_provrep_from","true")
@@ -1189,7 +1189,7 @@ bool pre_200ok_from_b(SM* _sm, MESSAGE* _message){
 	DEBDEV("SM pre_200ok_from_b",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&&_message->getHeadSipReply().getReply().getCode() == OK_200
+		&&_message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 			DEBDEV("SM pre_200ok_from_b","true")
@@ -1256,7 +1256,7 @@ bool pre_200ok_from_b_proceeding(SM* _sm, MESSAGE* _message){
 	DEBDEV("SM_CL pre_200ok_from_b_proceeding",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&&_message->getHeadSipReply().getReply().getCode() == OK_200
+		&&_message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT
 		&& _sm->getSL_CO()->OverallState_CL == OS_PROCEEDING){
@@ -1288,7 +1288,7 @@ bool pre_200ok_from_b_completed(SM* _sm, MESSAGE* _message){
 	DEBDEV("SM_CL pre_200ok_from_b_completed",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-		&&_message->getHeadSipReply().getReply().getCode() == OK_200
+		&&_message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT
 		&& _sm->getSL_CO()->OverallState_CL == OS_COMPLETED){
@@ -1315,9 +1315,9 @@ ACTION* act_resend_ack(SM* _sm, MESSAGE* _message) {
 	reack->setTypeOfInternal(TYPE_OP);
 	reack->setTypeOfOperation(TYPE_OP_SMCOMMAND);
 	//TODO need the branch!!!
-	reack->replaceHeadCSeq(1,"ACK");
+	reack->setGenericHeader("CSeq:","1 ACK");
 	reack->compileMessage();
-	reack->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId().getContent());
+	reack->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId());
 	reack->setSourceModulus(((TRNSCT_SM*)_sm)->getMatrixMessage()->getModulus());
 	SingleAction sa_1 = SingleAction(reack);
 	action->addSingleAction(sa_1);
@@ -1482,7 +1482,7 @@ bool pre_ack_from_a(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("SM pre_ack_from_a called",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST)
+			&& (_message->getHeadSipRequestCode() == ACK_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_NTWPOINT) {
 		DEBDEV("SM pre_ack_from_a","true")
@@ -1557,7 +1557,7 @@ bool pre_ack_from_alo(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("SM pre_ack_from_alo",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == ACK_REQUEST
+			&& _message->getHeadSipRequestCode() == ACK_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
 		DEBDEV("SM pre_ack_from_alo","true")
@@ -1609,7 +1609,7 @@ bool pre_200ok_from_inv_cl(SM* _sm, MESSAGE* _message){
 	DEBDEV("SM pre_200ok_from_inv_cl",_message)
 
 	if (_message->getReqRepType() == REPSUPP
-			&&_message->getHeadSipReply().getReply().getCode() == OK_200
+			&&_message->getHeadSipRequestCode() == OK_200
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL) {
 		DEBDEV("SM pre_200ok_from_inv_cl","true")
@@ -1665,7 +1665,7 @@ bool pre_bye_from_a(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_SV pre_bye_from_a called",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST)
+			&& (_message->getHeadSipRequestCode() == BYE_REQUEST)
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& ( _message->getGenEntity() ==  SODE_NTWPOINT)) {
 		DEBDEV("TRNSCT_INV_SV pre_bye_from_a","true")
@@ -1881,7 +1881,7 @@ bool pre_bye_from_alo(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alo",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
+			&& _message->getHeadSipRequestCode() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_ALOPOINT) {
 		DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alo","true")
@@ -1897,7 +1897,7 @@ bool pre_bye_from_alarm(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
+			&& _message->getHeadSipRequestCode() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye < MAX_INVITE_RESEND) {
@@ -1993,7 +1993,7 @@ bool pre_bye_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_BYE_CL pre_bye_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
-			&& _message->getHeadSipRequest().getS_AttMethod().getMethodID() == BYE_REQUEST
+			&& _message->getHeadSipRequestCode() == BYE_REQUEST
 			&& _message->getDestEntity() == SODE_TRNSCT_CL
 			&& _message->getGenEntity() ==  SODE_TRNSCT_CL
 			&& ((TRNSCT_SM_BYE_CL*)_sm)->resend_bye >= MAX_INVITE_RESEND) {

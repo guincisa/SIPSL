@@ -267,16 +267,16 @@ void SUDP::sendRequest(MESSAGE* _message){
     DEBSIP("Request message ", _message->getLine(0))
 
     si_part.sin_family = AF_INET;
-    host = gethostbyname(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str());
+    host = gethostbyname(_message->getUriHost("REQUEST").c_str());
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-    si_part.sin_port = htons(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort());
+    si_part.sin_port = htons(_message->getUriPort("REQUEST"));
 //	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 //		DEBASSERT ("Can't set request address")
 //	}
 
     int i = _message->getModulus() % SUDPTH;
 
-    sendto(sock_se[i], _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    sendto(sock_se[i], _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
@@ -287,7 +287,6 @@ void SUDP::sendRequest(MESSAGE* _message){
 void SUDP::sendReply(MESSAGE* _message){
 
     //Reply uses topmost Via header
-    C_HeadVia* viatmp = (C_HeadVia*) _message->getSTKHeadVia().top();
 
     struct sockaddr_in si_part;
     struct hostent *host;
@@ -297,16 +296,18 @@ void SUDP::sendReply(MESSAGE* _message){
     DEBSIP("Reply message ", _message->getLine(0))
 
     si_part.sin_family = AF_INET;
-    host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
+    host = gethostbyname(_message->getUriHost("Via:").c_str());
+    //host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-    si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
-    if( inet_pton(AF_INET, viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
+    si_part.sin_port = htons(_message->getUriPort("Via:"));
+    //si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
+    if( inet_pton(AF_INET, _message->getUriHost("Via:").c_str(), &si_part.sin_addr) == 0 ){
             DEBASSERT ("can set reply address")
     }
 
     int i = _message->getModulus() % SUDPTH;
 
-    sendto(sock_se[i], _message->getIncBuffer().c_str(), _message->getIncBuffer().length() , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    sendto(sock_se[i],  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
     if (!_message->getLock()){
         PURGEMESSAGE(_message)

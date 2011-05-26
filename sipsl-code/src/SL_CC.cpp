@@ -141,7 +141,7 @@ void SL_CC::parse(void* __mess, int _mmod){
 
         CALL_OSET* call_oset = 0x0;
 
-        string callids = _mess->getHeadCallId().getContent();
+        string callids = _mess->getSourceMessageCallId();
         int modulus = _mess->getModulus();
 
         DEBSIP("SL_CC::parse CALLOSET normal ID",callids)
@@ -221,7 +221,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         //MLF2 begin
         //if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP) {
         //Only the invite from network can generate call oset
-        if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST) {
+        if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == INVITE_REQUEST) {
         //MLF2 end
 
             //new call Server (originating) side
@@ -273,7 +273,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         //Careful with source message
         //Ok if coming from server: its the retransmission of 200ok for A
 
-        string callids = _mess->getSourceHeadCallId().getContent();
+        string callids = _mess->getSourceMessageCallId();
         int modulus = _mess->getModulus();
 
         if (callids.length() == 0){

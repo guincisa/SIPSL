@@ -350,7 +350,7 @@ string MESSAGE::getViaLine(void){
 	fillIn();
 
 	if (hasvialines){
-		return via_line.back().first;
+		return via_line.front().first;
 	}
 	else{
 		return "";
@@ -502,9 +502,9 @@ string MESSAGE::getProperty(string _header,string _property){
 
 	if (_header.compare("Via:") == 0){
 
-		char instr[strlen(via_line.back().first) +1];
+		char instr[strlen(via_line.front().first) +1];
 
-		strcpy(instr,via_line.back().first);
+		strcpy(instr,via_line.front().first);
 		char* token = strstr(instr, _property.c_str());
 		char* prop = 0x0;
 		if (token!=NULL){
