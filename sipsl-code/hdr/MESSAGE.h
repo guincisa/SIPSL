@@ -112,6 +112,18 @@ typedef struct sockaddr_in sockaddr_inX;
 
 class MESSAGE {
 
+
+	//Message lifecycle
+	//New message: original_message has the buffer
+	//parse:
+	// original_message not touched, compiled = true
+	// message_char is for working
+	//change some header
+	// compiled = false
+	// compileMessage-> replaces the original_message with new
+	// message_char purged
+	// fillin false
+
 	////////////////////////////////
 	public:
 		MESSAGE(char* incMessBuff,
@@ -154,7 +166,7 @@ class MESSAGE {
 
 		////////////////////////////////
 	public:
-        string &getKey(void);
+        string getKey(void);
         void setKey(string key);
 	private:
     	string key;
@@ -169,6 +181,7 @@ class MESSAGE {
 		bool hasSDP(void);
 		string getFirstLine(void);
 		char* getMessageBuffer(void);
+    	void compileMessage(void);
 		void dumpMessageBuffer(void);
 	private:
 		char* message_char;
@@ -181,6 +194,7 @@ class MESSAGE {
 		bool filledIn;
 		bool hasvialines;
 		bool hasSdp;
+		bool compiled;
 
 		////////////////////////////////
 		//Network
@@ -255,7 +269,6 @@ class MESSAGE {
     	void dropHeader(string header);
     	string getProperty(string,string); //header name, property
     	void setProperty(string,string,string);
-    	void compileMessage(void);
 
 		////////////////////////////////
     	//MOST USED INFORMATION
@@ -281,9 +294,13 @@ class MESSAGE {
 		////////////////////////////////
 	public:
     	string getFromTag(void);
+    	string getToTag(void);
+
 	private:
     	string fromTag;
     	bool parsedFromTag;
+    	string toTag;
+    	bool parsedToTag;
 
 		////////////////////////////////
     	// To: <Name> <Uri>;<params>
@@ -297,6 +314,7 @@ class MESSAGE {
     	string headToName;
     	string headToUri;
     	string headToParms;
+    	bool parsedTo;
 
 		////////////////////////////////
     	//REQUEST-REPLY
