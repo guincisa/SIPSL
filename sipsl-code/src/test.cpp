@@ -146,8 +146,8 @@ int main(int argc, const char* argv[]) {
 		//any method call to the main message generates assert
 		string empty="EMPTY";
 		sockaddr_inX echoClntAddr;
-		SysTime inTime;\
-		GETTIME(inTime);\
+		SysTime inTime;
+		GETTIME(inTime);
 		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
 		MainMessage->setValid(1);
 
