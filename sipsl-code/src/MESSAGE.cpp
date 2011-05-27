@@ -75,6 +75,9 @@ MESSAGE::MESSAGE(char* _incMessBuff,
 	message_char			= 0x0;
 
 	original_message		= _incMessBuff;
+	NEWPTR2(original_message, char[strlen(_incMessBuff)+1],"original_message "<<strlen(_incMessBuff)+1)
+	strcpy(original_message, _incMessBuff);
+
 
 	filledIn				= false;
 	hasvialines				= false;
@@ -265,7 +268,7 @@ void MESSAGE::setLock(CALL_OSET* _call_oset){
 		DEBASSERT("MESSAGE::setLock invalid")}
 
 	DEBSIP("MESSAGE::unSetLock ", this)
-	_call_oset->removeLockedMessage(this);
+	_call_oset->insertLockedMessage(this);
 	lock=true;
 }
 string MESSAGE::getKey(void){
@@ -283,10 +286,6 @@ void MESSAGE::setKey(string _key){
 int MESSAGE::fillIn(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::fillIn invalid")
-
-	if (!compiled){
-		compileMessage();
-	}
 
 	if(filledIn){
 		return message_line.size();
@@ -313,7 +312,7 @@ int MESSAGE::fillIn(void){
 			}
 		}
 		else{
-			sdp_line.push_back(make_pair(tok,false));
+			sdp_line.push_back( make_pair(tok,false));
 		}
 		tok = strtok(NULL, "\n");
 	}
@@ -358,11 +357,6 @@ char* MESSAGE::getMessageBuffer(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getMessageBuffer invalid")
 
-	fillIn();
-
-	if(!compiled){
-    	compileMessage(void);
-	}
 	return original_message;
 }
 void MESSAGE::compileMessage(void){
