@@ -263,8 +263,7 @@ void SUDP::sendRequest(MESSAGE* _message){
     struct hostent *host;
     memset((char *) &si_part, 0, sizeof(si_part));
 
-    DEBSIP("Request address ", _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName() <<":"<< _message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getPort())
-    DEBSIP("Request message ", _message->getLine(0))
+    DEBMESSAGE("Request address ", _message)
 
     si_part.sin_family = AF_INET;
     host = gethostbyname(_message->getUriHost("REQUEST").c_str());
@@ -292,8 +291,7 @@ void SUDP::sendReply(MESSAGE* _message){
     struct hostent *host;
     memset((char *) &si_part, 0, sizeof(si_part));
 
-    DEBSIP("Reply address ", viatmp->getC_AttVia().getS_HostHostPort().getHostName() <<":"<< viatmp->getC_AttVia().getS_HostHostPort().getPort())
-    DEBSIP("Reply message ", _message->getLine(0))
+    DEBMESSAGE("Reply message ", _message)
 
     si_part.sin_family = AF_INET;
     host = gethostbyname(_message->getUriHost("Via:").c_str());

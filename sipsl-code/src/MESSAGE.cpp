@@ -56,7 +56,7 @@
 // *****************************************************************************************
 // *****************************************************************************************
 // *****************************************************************************************
-MESSAGE::MESSAGE(char* _incMessBuff,
+MESSAGE::MESSAGE(const char* _incMessBuff,
 				int _genEntity,
 				SysTime _inc_ts,
 				int _sock,
@@ -74,7 +74,6 @@ MESSAGE::MESSAGE(char* _incMessBuff,
 
 	message_char			= 0x0;
 
-	original_message		= _incMessBuff;
 	NEWPTR2(original_message, char[strlen(_incMessBuff)+1],"original_message "<<strlen(_incMessBuff)+1)
 	strcpy(original_message, _incMessBuff);
 
@@ -119,6 +118,9 @@ MESSAGE::MESSAGE(char* _incMessBuff,
 	headToUri				= "";
 	headToParms				= "";
 	parsedTo				= false;
+	parsedToName			= false;
+	parsedToUri				= false;
+	parsedToParms			= false;
 
 
 	reqRep					= 0;
@@ -194,6 +196,9 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	headToUri				= "";
 	headToParms				= "";
 	parsedTo				= false;
+	parsedToName			= false;
+	parsedToUri				= false;
+	parsedToParms			= false;
 
 
 	reqRep					= 0;
@@ -206,6 +211,21 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	cSeqMethod				= "";
 	cSeq					= 0;
 	parsedCseq				= false;
+
+}
+MESSAGE::~MESSAGE(){
+
+	DELPTRARR(original_message,"original_message")
+
+	if(filledIn){
+		DELPTRARR(message_char,"message_char")
+	}
+	for(int i = 1; i < message_line.size(); i ++){
+		if(message_line[i].second){
+			DELPTRARR(message_line[i].first,"newheader")
+		}
+	}
+	DEBWARNING("MESSAGE::~MESSAGE() incomplete code",this)
 
 }
 MESSAGE* MESSAGE::getSourceMessage(void){
@@ -525,10 +545,10 @@ void MESSAGE::purgeSDP(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::purgeSDP invalid")
 
-	DEBASSERT("")
 	if(hasSdp){
 		// do it
 	}
+	hasSdp = false;
 }
 vector< pair<char*, bool> > MESSAGE::getSDP(void){
 	if (invalid == 1)
@@ -559,6 +579,14 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 
 	if (_header.compare("Via:") == 0){
 		DEBASSERT("MESSAGE::setGenericHeader invalid for via")
+	}
+	if (_header.compare("REQUESTREPLY") == 0){
+		char* newfirstline;
+		NEWPTR2(newfirstline, char[_content.length() + 1],"newfirstline")
+		strcpy(newfirstline,_content.c_str());
+		message_line[0].first = newfirstline;
+		message_line[0].second = true;
+		return;
 	}
 
 
@@ -611,7 +639,7 @@ string MESSAGE::getGenericHeader(string _header){
 	}
 	return "";
 }
-bool queryGenericHeader(string _header){
+bool MESSAGE::queryGenericHeader(string _header){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::queryGenericHeader invalid")
 
@@ -673,64 +701,164 @@ string MESSAGE::getProperty(string _header,string _property){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getProperty invalid")
 
-	string result;
+	fillIn();
+	string tmpr;
 
 	if (_header.compare("Via:") == 0){
-
-		char instr[strlen(via_line.front().first) +1];
-
-		strcpy(instr,via_line.front().first);
-		char* token = strstr(instr, _property.c_str());
-		char* prop = 0x0;
-		if (token!=NULL){
-			//found
-			prop = strchr(token,';');
-
-			if (prop != NULL){
-				prop = '\0';
+		if (hasvialines){
+			tmpr = _getProperty(via_line[0].first, _property);
+			if (tmpr.compare("xxdxxdxx") == 0){
+				return "";
 			}
+			return tmpr;
 		}
 		else{
-			result = "";
-			return result;
+			return "";
 		}
-		result  = token + _property.length() + 1;
-		return result;
-
 	}
 	else{
-
-		char* instr;
-		string foundh = getGenericHeader(_header);
-		NEWPTR2(instr, char[foundh.length() +1],"instr")
-
-		strcpy(instr,foundh.c_str());
-		char* token = strstr(instr, _property.c_str());
-		char* prop = 0x0;
-		if (token!=NULL){
-			//found
-			prop = strchr(token,';');
-
-			if (prop != NULL){
-				prop = '\0';
+		for (int i = 0; i < message_line.size(); i++){
+			if(strncmp(message_line[i].first,_header.c_str(), _header.length()) == 0){
+				tmpr = _getProperty(message_line[i].first, _property);
 			}
+			if (tmpr.compare("xxdxxdxx") == 0){
+				return "";
+			}
+			return tmpr;
 		}
-		else{
-			result = "";
-			return result;
-		}
-		result  = token + _property.length() + 1;
-		DELPTRARR(instr,"instr")
-		return result;
+		return "";
+
 	}
-	return "";
+}
+string MESSAGE::_getProperty(string _fullstring,string __property){
+
+
+	char xxx[_fullstring.length() +1];
+	strcpy(xxx,_fullstring.c_str());
+	string _property = ";" + __property;
+
+	char* aaa = strstr(xxx + _property.length(), _property.c_str());
+
+	if ( aaa != NULL ){
+		if (strncmp(aaa + _property.length(),";",1) == 0){
+			//caso a senza valore ma in mezzo
+			DEBY
+			return "";
+		}
+		else if (strncmp(aaa + _property.length(),"\0",1) == 0){
+			//caso b senza valore alla fine
+			DEBY
+			return "";
+		}
+		else if (strncmp(aaa + _property.length(),"=",1) == 0){
+			//caso con valore
+			char* bbb;
+			if (aaa!=NULL){
+				bbb = strchr(aaa+_property.length(),';');
+			}
+			if (bbb != NULL){
+				sprintf(bbb,"");
+			}
+			DEBY
+			return (aaa+_property.length());
+		}
+	}
+	else {
+		//no data
+		return "xxdxxdxx";
+	}
 
 }
-void MESSAGE::setProperty(string _head,string _prop,string _value){
+void MESSAGE::setProperty(string _head,string __property,string _value){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setProperty invalid")
 
-	DEBASSERT("")
+	fillIn();
+	string _fullstring = "";
+	int type_of = 0;
+	int idx = 0;
+
+	if (_header.compare("Via:") == 0){
+		if (hasvialines){
+			_fullstring = via_line[0].first;
+			type_of = 1;
+		}else{
+			return;
+		}
+	}else{
+		for (int i = 0; i < message_line.size(); i++){
+			if(strncmp(message_line[i].first,_head.c_str(), _head.length()) == 0){
+				_fullstring = message_line[i].first;
+				type_of = 2;
+				idx = i;
+			}
+		}
+	}
+	if (type_of == 0){
+		return;
+	}
+
+
+	char xxx[_fullstring.length() +1];
+	strcpy(xxx,_fullstring.c_str());
+	string _property = ";" + __property;
+
+	char* aaa = strstr(xxx + _property.length(), _property.c_str());
+
+	if ( aaa != NULL ){
+		if (strncmp(aaa + _property.length(),";",1) == 0){
+			//caso a senza valore ma in mezzo
+			DEBY
+			char* yyy = aaa+1;
+			sprintf(yyy,"");
+			DEBOUT("first part",xxx);
+			yyy = aaa+propname.length();
+			DEBOUT("first part",yyy);
+			string newinse = xxx;
+			newinse += _propname;
+			newinse += "=";
+			newinse += newvalue;
+			newinse += yyy;
+			DEBOUT("first part",newinse);
+			if(type_of == 1){
+				DEBASSERT("")
+			}
+			if(type_of == 2){
+				char* nx;
+				NEWPTR2(nx, char[newinse.length()+1],"nx")
+				strcpy(nx,newinse.c_str());
+				message_line[i].first = nx;
+				message_line[i].second = true;
+
+
+
+				qui
+			}
+		}
+		else if (strncmp(aaa + _property.length(),"\0",1) == 0){
+			//caso b senza valore alla fine
+			DEBY
+			return "";
+		}
+		else if (strncmp(aaa + _property.length(),"=",1) == 0){
+			//caso con valore
+			char* bbb;
+			if (aaa!=NULL){
+				bbb = strchr(aaa+_property.length(),';');
+			}
+			if (bbb != NULL){
+				sprintf(bbb,"");
+			}
+			DEBY
+			return (aaa+_property.length());
+		}
+	}
+	else {
+		//no data
+		return "xxdxxdxx";
+	}
+
+
 }
 string MESSAGE::getViaLine(void){
 	if (invalid == 1)
@@ -760,11 +888,273 @@ string MESSAGE::getViaBranch(void){
 }
 bool MESSAGE::hasVia(void){
 	if (invalid == 1)
-		DEBASSERT("FMESSAGE::isFilled invalid")
+		DEBASSERT("MESSAGE::hasVia invalid")
 
 	fillIn();
 	return hasvialines;
 }
+void MESSAGE::popVia(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::popVia invalid")
+
+	fillIn();
+	DEBASSERT("")
+}
+void MESSAGE::pushNewVia(string _via){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::pushNewVia invalid")
+
+	fillIn();
+	DEBASSERT("")
+
+}
+string MESSAGE::getHeadCallId(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadCallId invalid")
+
+	if(!parsedCallId){
+		callId = getGenericHeader("Call-ID:");
+		parsedCallId = true;
+	}
+	return callId;
+
+}
+string MESSAGE::getDialogExtendedCID(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getDialogExtendedCID invalid")
+
+
+	if(!parsedCallId){
+		getHeadCallId();
+	}
+	if(!parsedFromTag){
+		getFromTag();
+	}
+	return callId + fromTag;
+}
+string MESSAGE::getFromTag(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getFromTag invalid")
+
+	if(!parsedFromTag){
+		fromTag = getProperty("From:", "tag");
+		parsedFromTag = true;
+	}
+	return fromTag;
+}
+string MESSAGE::getToTag(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getToTag invalid")
+
+	if(!parsedToTag){
+		toTag = getProperty("To:", "tag");
+		parsedToTag = true;
+	}
+	return toTag;
+}
+string MESSAGE::getHeadTo(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadTo invalid")
+
+	if(!parsedTo){
+		headTo = getGenericHeader("To:");
+		parsedTo = true;
+	}
+	return headTo;
+}
+string MESSAGE::getHeadToName(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadToName invalid")
+
+		if(!parsedToName){
+			DEBASSERT("")
+		}
+		return headToName;
+}
+string MESSAGE::getHeadToUri(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadToUri invalid")
+
+		if(!parsedToUri){
+			DEBASSERT("")
+		}
+		return headToUri;
+}
+string MESSAGE::getHeadToParams(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadToParms invalid")
+
+		if(!parsedToParms){
+			DEBASSERT("")
+		}
+		return headToParms;
+}
+int MESSAGE::getReqRepType(void){
+
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getReqRepType invalid")
+
+	fillIn();
+
+	if (reqRep != 0) {
+		return reqRep;
+	}
+	if(strncmp(message_line[0].first,"SIP",3) == 0){
+		reqRep = REPSUPP;
+		//Parse "SIP/2.0 200 OK"
+		char num[4];
+		strncpy(num, message_line[0].first+8, 3);
+		num[3] = '\0';
+		replyCode = atoi(num);
+		char snum[strlen(message_line[0].first) +1];
+		strcpy(snum, message_line[0].first+8);
+		headSipReply = snum;
+	}
+	else if(strncmp(message_line[0].first,"INVITE",6) == 0){
+		reqRep = REQSUPP;
+		requestCode = INVITE_REQUEST;
+		headSipRequest = "INVITE";
+	}
+	else if(strncmp(message_line[0].first,"ACK",3) == 0){
+		reqRep = REQSUPP;
+		requestCode = ACK_REQUEST;
+		headSipRequest = "ACK";
+	}
+	else if(strncmp(message_line[0].first,"BYE",3) == 0){
+		reqRep = REQSUPP;
+		requestCode = BYE_REQUEST;
+		headSipRequest = "BYE";
+	}
+	else if(strncmp(message_line[0].first,"CANCEL",6) == 0){
+		reqRep = REQSUPP;
+		requestCode = CANCEL_REQUEST;
+		headSipRequest = "CANCEL";
+	}
+	else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
+		reqRep = REQUNSUPP;
+		headSipRequest = "";
+	}else{
+		reqRep = REQUNSUPP;
+		headSipRequest = "";
+	}
+	return reqRep;
+
+}
+void MESSAGE::setHeadSipRequest(string _content){
+
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setHeadSipRequest invalid")
+
+	fillIn();
+	setGenericHeader("REQUESTREPLY", _content);
+
+}
+void MESSAGE::setHeadSipReply(string _content){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setHeadSipReply invalid")
+
+	fillIn();
+	setGenericHeader("REQUESTREPLY", _content);
+
+}
+int  MESSAGE::getHeadSipRequestCode(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipRequestCode invalid")
+
+	if (reqRep == 0){
+		getReqRepType();
+	}
+	return requestCode;
+}
+string  MESSAGE::getHeadSipRequest(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipRequest invalid")
+
+	if (reqRep == 0){
+		getReqRepType();
+	}
+	return headSipRequest;
+}
+int  MESSAGE::getHeadSipReplyCode(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipReplyCode invalid")
+
+	if (reqRep == 0){
+		getReqRepType();
+	}
+	return replyCode;
+
+}
+string  MESSAGE::getHeadSipReply(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipReply invalid")
+
+	if (reqRep == 0){
+		getReqRepType();
+	}
+	return headSipReply;
+
+}
+bool MESSAGE::isUriSecure(string header){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::isUriSecure invalid")
+
+}
+string MESSAGE::getUriHostPort(string header){
+
+}
+string MESSAGE::getUriHost(string header){
+
+}
+int MESSAGE::getUriPort(string header){
+
+}
+string MESSAGE::getHeadCSeqMethod(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadCSeqMethod invalid")
+
+	if(!parsedCseq){
+		getHeadCSeq();
+	}
+	return cSeqMethod;
+
+}
+int MESSAGE::getHeadCSeq(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadCSeq invalid")
+
+	if(!parsedCseq){
+		string sh = getGenericHeader("CSeq:");
+		char tsmp[sh.length()+1];
+		strcpy(tsmp, sh.c_str());
+		char* token = strchr(tsmp, ' ');
+		*token = '\0';
+		cSeq = atoi(tsmp);
+		cSeqMethod = token+1;
+		parsedCseq = true;
+	}
+	return cSeq;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -808,158 +1198,7 @@ bool MESSAGE::hasVia(void){
 //
 //
 //}
-string MESSAGE::getHeadCallId(void){
 
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadCallId invalid")
-
-	if(!parsedCallId){
-		callId = getGenericHeader("Call-ID:");
-		parsedCallId = true;
-	}
-	return callId;
-
-}
-string MESSAGE::getDialogExtendedCID(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getDialogExtendedCID invalid")
-
-	//Call id and FromTag
-	DEBSIP("MESSAGE::getDialogExtendedCID(void) fromtag part", getHeadFrom()->getC_AttUriParms().getTuples().findRvalue("tag"))
-
-	if(!parsedCallId){
-		getHeadCallId();
-	}
-	if(!parsedFromTag){
-		getFromTag();
-	}
-	return callId + fromTag;
-}
-string MESSAGE::getFromTag(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getFromTag invalid")
-
-	if(!parsedFromTag){
-		fromTag = getProperty("From:", "tag");
-		parsedFromTag = true;
-	}
-	return fromTag;
-
-}
-int MESSAGE::getReqRepType(void){
-
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getReqRepType invalid")
-
-	if (reqRep != 0) {
-		return reqRep;
-	}
-	if(strncmp(message_line[0].first,"SIP",3) == 0){
-		reqRep = REPSUPP;
-		//Parse "SIP/2.0 200 OK"
-		char num[4];
-		strncpy(num, message_line[0].first+8, 3);
-		num[3] = '\0';
-		replyCode = atoi(num);
-		char snum[strlen(message_line[0].first) +1];
-		strcpy(snum, message_line[0].first+8);
-		headSipReply = snum;
-	}
-	if(strncmp(message_line[0].first,"INVITE",6) == 0){
-		reqRep = REQSUPP;
-		requestCode = INVITE_REQUEST;
-		headSipRequest = "INVITE";
-	}
-	if(strncmp(message_line[0].first,"ACK",3) == 0){
-		reqRep = REQSUPP;
-		requestCode = ACK_REQUEST;
-		headSipRequest = "ACK";
-	}
-	else if(strncmp(message_line[0].first,"BYE",3) == 0){
-		reqRep = REQSUPP;
-		requestCode = BYE_REQUEST;
-		headSipRequest = "BYE";
-	}
-	else if(strncmp(message_line[0].first,"CANCEL",6) == 0){
-		reqRep = REQSUPP;
-		requestCode = CANCEL_REQUEST;
-		headSipRequest = "CANCEL";
-	}
-	else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
-		reqRep = REQUNSUPP;
-		headSipRequest = "";
-	}else{
-		reqRep = REQUNSUPP;
-		headSipRequest = "";
-	}
-	return reqRep;
-
-}
-int  MESSAGE::getHeadSipRequestCode(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadSipRequestCode invalid")
-
-	if (reqRep == 0){
-		getReqRepType();
-	}
-	return requestCode;
-}
-string  MESSAGE::getHeadSipRequest(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadSipRequest invalid")
-
-	if (reqRep == 0){
-		getReqRepType();
-	}
-	return headSipRequest;
-}
-int  MESSAGE::getHeadSipReplyCode(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadSipReplyCode invalid")
-
-	if (reqRep == 0){
-		getReqRepType();
-	}
-	return replyCode;
-
-}
-string  MESSAGE::getHeadSipReply(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadSipReply invalid")
-
-	if (reqRep == 0){
-		getReqRepType();
-	}
-	return headSipReply;
-
-}
-string MESSAGE::getHeadCSeqMethod(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadCSeqMethod invalid")
-
-	if(!parsedCseq){
-		getHeadCSeq();
-	}
-	return cSeqMethod;
-
-}
-int MESSAGE::getHeadCSeq(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadCSeq invalid")
-
-	if(!parsedCseq){
-		string sh = getGenericHeader("CSeq:");
-		char tsmp[sh.length()+1];
-		strcpy(tsmp, sh.c_str());
-		char* token = strchr(tsmp, ' ');
-		*token = '\0';
-		cSeq = atoi(tsmp);
-		cSeqMethod = token+1;
-		parsedCseq = true;
-	}
-	return cSeq;
-
-}
 
 //void MESSAGE::setHeadSipRequest(string _content){
 //	if (invalid == 1)

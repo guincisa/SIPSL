@@ -126,7 +126,7 @@ class MESSAGE {
 
 	////////////////////////////////
 	public:
-		MESSAGE(char* incMessBuff,
+		MESSAGE(const char* incMessBuff,
 				int genEntity,
 				SysTime inc_ts,
 				int sock,
@@ -269,6 +269,8 @@ class MESSAGE {
     	void dropHeader(string header);
     	string getProperty(string,string); //header name, property
     	void setProperty(string,string,string);
+	private:
+    	string _getProperty(string,string);
 
 		////////////////////////////////
     	//MOST USED INFORMATION
@@ -308,6 +310,7 @@ class MESSAGE {
 	public:
     	string getHeadTo(void);
     	string getHeadToName(void);
+    	string getHeadToUri(void);
     	string getHeadToParams(void);
 	private:
     	string headTo;
@@ -315,6 +318,10 @@ class MESSAGE {
     	string headToUri;
     	string headToParms;
     	bool parsedTo;
+    	bool parsedToName;
+    	bool parsedToUri;
+    	bool parsedToParms;
+
 
 		////////////////////////////////
     	//REQUEST-REPLY
