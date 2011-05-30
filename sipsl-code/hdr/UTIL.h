@@ -141,8 +141,8 @@ class ThreadWrapper {
 #define LOGMIN
 #define PROFILELOCK
 
-//#define LOGSIPHIGH
-//#define LOGSIPLOW
+#define LOGSIPHIGH
+#define LOGSIPLOW
 
 //#define LOGINF
 #define LOGMIN
@@ -346,10 +346,10 @@ class ThreadWrapper {
 #endif
 #ifdef LOGSIPHIGH
 #undef DEBMESSAGE
-#define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "] Gen [" <<m2->getGenEntity() << "] Dest ["<<m2->getDestEntity() <<"]\n["<< m2->getIncBuffer() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
+#define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "] Gen [" <<m2->getGenEntity() << "] Dest ["<<m2->getDestEntity() <<"]\n["<< m2->getOriginalString() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBMESSAGESHORT
-#define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" << m2 << "]\n[" <<m2->getKey() << "]\n["<< m2->getLine(0) << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
+#define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" << m2 << "]\n[" <<m2->getKey() << "]\n["<< m2->getFirstLine() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
 #endif
 //**********************************************************
 //**********************************************************

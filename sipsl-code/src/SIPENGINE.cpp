@@ -126,13 +126,13 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
     //Check if Request or Reply
     //_mess->fillIn();
-    DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getLine(0) << "] [" <<_mess->getKey())
 
     int type = _mess->getReqRepType();
+    DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getFirstLine() << "] type[" <<type)
 
     if (type == REQSUPP) {
 
-        DEBSIP("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest().getContent())
+        DEBSIP("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest())
 
         int method = _mess->getHeadSipRequestCode();
 
@@ -141,7 +141,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
             method != BYE_REQUEST &&
             method != ACK_REQUEST) {
 
-                DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getIncBuffer())
+                DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getOriginalString())
                 PURGEMESSAGE(_mess)
 
         } else {
@@ -150,7 +150,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
     }
     else if ( type == REPSUPP) {
 
-        DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply().getContent())
+        DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply())
 
         //All replies must be considered
         transport->upCall(_mess, (SL_CC*)sl_cc);
