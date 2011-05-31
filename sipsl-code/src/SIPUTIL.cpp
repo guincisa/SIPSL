@@ -173,7 +173,7 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 	_gted->dropHeader("Date:");
 	_gted->setGenericHeader("Content-Length:","0");
 
-	_gted->setProperty("Via:","rport","124");
+	//_gted->setProperty("Via:","rport","124");
 
 }
 

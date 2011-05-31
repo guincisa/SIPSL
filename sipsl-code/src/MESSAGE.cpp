@@ -222,9 +222,10 @@ MESSAGE::~MESSAGE(){
 	}
 	for(int i = 1; i < message_line.size(); i ++){
 		if(message_line[i].second){
-			DELPTRARR(message_line[i].first,"newheader")
+			DELPTRARR(message_line[i].first,"message_line")
 		}
 	}
+	DELPTRARR(original_message,"original_message")
 	DEBWARNING("MESSAGE::~MESSAGE() incomplete code",this)
 
 }
@@ -322,16 +323,23 @@ int MESSAGE::fillIn(void){
 			fillSDP = true;
 			hasSdp = true;
 		}
+		//cut ^M
+		int ll = strlen(tok);
+		char* trok = tok + ll - 1 ;
+		sprintf(trok,"");
 		if (!fillSDP){
 			if (strncmp(tok,"Via:", 4) == 0){
+				DEBOUT("MESSAGE::fillIn via", tok)
 				hasvialines = true;
 				via_line.push_back( make_pair (tok,false) );
 			}
 			else{
+				DEBOUT("MESSAGE::fillIn line", tok)
 				message_line.push_back( make_pair (tok,false) );
 			}
 		}
 		else{
+			DEBOUT("MESSAGE::fillIn sdp", tok)
 			sdp_line.push_back( make_pair(tok,false));
 		}
 		tok = strtok(NULL, "\n");
@@ -383,11 +391,63 @@ void MESSAGE::compileMessage(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::compileMessage invalid")
 
-	DEBASSERT("")
+	//build the original_message
 
+	fillIn();
+
+	stringstream origmess;
 	if(!compiled){
 
-		//do it
+		int sizeOfSdp = 0;
+
+		if (hasSdp){
+			//calculate size
+			for(int i = 0; i < sdp_line.size(); i ++){
+				sizeOfSdp += strlen(sdp_line[i].first);
+			}
+
+		}
+
+		for(int i = 0; i < message_line.size(); i ++){
+			if (strncmp(message_line[i].first,"Content-Length: ", 16) != 0
+					&& strncmp(message_line[i].first,"xxDxx",5) != 0
+					&& strlen(message_line[i].first)!=0 ){
+				origmess << message_line[i].first;
+				origmess << "\n";
+			}
+			if (message_line[i].second){
+				DELPTRARR(message_line[i].first,"message_line")
+			}
+		}
+		for(int i = 0; i < via_line.size(); i ++){
+			origmess << via_line[i].first;
+			origmess << "\n";
+			if (via_line[i].second){
+				DELPTRARR(via_line[i].first,"newvia")
+			}
+		}
+
+		origmess << "Content-Length: ";
+		origmess << sizeOfSdp;
+		origmess << "\n\n";
+
+		if (hasSdp){
+			for(int i = 1; i < sdp_line.size(); i ++){
+				origmess << sdp_line[i].first;
+				origmess << "\n";
+			}
+		}
+
+		compiled = true;
+
+		DEBOUT("MESSAGE::compileMessage", origmess.str())
+
+		DELPTRARR(original_message,"original_message")
+
+		NEWPTR2(original_message, char[origmess.str().length()+1],"original_message "<<origmess.str().length()+1)
+		strcpy(original_message, origmess.str().c_str());
+		filledIn = false;
+		DEBOUT("MESSAGE::compileMessage", original_message)
 
 	}
 }
@@ -549,6 +609,7 @@ void MESSAGE::purgeSDP(void){
 		// do it
 	}
 	hasSdp = false;
+	compiled = false;
 }
 vector< pair<char*, bool> > MESSAGE::getSDP(void){
 	if (invalid == 1)
@@ -566,6 +627,8 @@ void MESSAGE::setSDP(vector< pair<char*, bool> >){
 		DEBASSERT("MESSAGE::setSDP invalid")
 
 	fillIn();
+	compiled = false;
+
 	DEBASSERT("");
 }
 void MESSAGE::setGenericHeader(string _header, string _content){
@@ -576,16 +639,27 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 	DEBSIP("MESSAGE::setGenericHeader", _header + " " + _content)
 
 	fillIn();
+	compiled = false;
 
 	if (_header.compare("Via:") == 0){
 		DEBASSERT("MESSAGE::setGenericHeader invalid for via")
 	}
-	if (_header.compare("REQUESTREPLY") == 0){
+	if (_header.compare("REPLY") == 0){
 		char* newfirstline;
-		NEWPTR2(newfirstline, char[_content.length() + 1],"newfirstline")
+		NEWPTR2(newfirstline, char[_content.length() + 1],"message_line")
 		strcpy(newfirstline,_content.c_str());
 		message_line[0].first = newfirstline;
 		message_line[0].second = true;
+		reqRep = REPSUPP;
+		return;
+	}
+	if (_header.compare("REQUEST") == 0){
+		char* newfirstline;
+		NEWPTR2(newfirstline, char[_content.length() + 1],"message_line")
+		strcpy(newfirstline,_content.c_str());
+		message_line[0].first = newfirstline;
+		message_line[0].second = true;
+		reqRep = REQSUPP;
 		return;
 	}
 
@@ -600,7 +674,7 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 				DELPTRARR(message_line[i].first,"message_line[i].first"<<i)
 			}
 			char* newheader;
-			NEWPTR2(newheader, char[_header.length() + 1 + _content.length() + 1],"newheader")
+			NEWPTR2(newheader, char[_header.length() + 1 + _content.length() + 1],"message_line")
 			message_line[i].first = newheader;
 			sprintf(message_line[i].first,"%s %s",_header.c_str(), _content.c_str());
 			message_line[i].second = true;
@@ -651,6 +725,8 @@ void MESSAGE::addGenericHeader(string _header, string _content){
 		DEBASSERT("MESSAGE::addGenericHeader invalid")
 
 	fillIn();
+	compiled = false;
+
 	DEBSIP("MESSAGE::addGenericHeader",_header << " " << _content)
 
 	if (_header.compare("Via:") == 0){
@@ -663,7 +739,7 @@ void MESSAGE::addGenericHeader(string _header, string _content){
 	}
 	else{
 		char* newheader;
-		NEWPTR2(newheader, char[_header.length() + 1 + _content.length() + 1],"newheader")
+		NEWPTR2(newheader, char[_header.length() + 1 + _content.length() + 1],"message_line")
 		sprintf(newheader,"%s %s",_header.c_str(), _content.c_str());
 		message_line.push_back(make_pair(newheader,true));
 	}
@@ -672,23 +748,26 @@ void MESSAGE::dropHeader(string _header){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::dropHeader invalid")
 
+	fillIn();
+	compiled = false;
+
 	if (_header.compare("Via:") == 0){
 		DEBASSERT("MESSAGE::dropHeader invalid for via")
 		return;
 	}
-
 
 	size_t i;
 	bool found = false;
 	for(i = 1; i < message_line.size(); i ++){
 		if(strncmp(message_line[i].first,_header.c_str(), _header.length()) ==0 ){
 			if (message_line[i].second){
-				DELPTRARR(message_line[i].first,"newheader "<<i)
+				DELPTRARR(message_line[i].first,"message_line "<<i)
 			}
 			char* newheader;
-			NEWPTR2(newheader, char[6],"newheader")
+			NEWPTR2(newheader, char[6],"message_line")
 			sprintf(newheader,"xxDxx");
 			message_line[i].first = newheader;
+			message_line[i].second = true;
 			found = true;
 			break;
 		}
@@ -774,14 +853,16 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 		DEBASSERT("MESSAGE::setProperty invalid")
 
 	fillIn();
-	string _fullstring = "";
-	int type_of = 0;
-	int idx = 0;
+	compiled = false;
 
-	if (_header.compare("Via:") == 0){
+	string _fullstring = "";
+	int idx = -1;
+	bool isVia = false;
+
+	if (_head.compare("Via:") == 0){
 		if (hasvialines){
 			_fullstring = via_line[0].first;
-			type_of = 1;
+			isVia = true;
 		}else{
 			return;
 		}
@@ -789,15 +870,12 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 		for (int i = 0; i < message_line.size(); i++){
 			if(strncmp(message_line[i].first,_head.c_str(), _head.length()) == 0){
 				_fullstring = message_line[i].first;
-				type_of = 2;
 				idx = i;
 			}
 		}
 	}
-	if (type_of == 0){
+	if (idx == -1 &&!isVia)
 		return;
-	}
-
 
 	char xxx[_fullstring.length() +1];
 	strcpy(xxx,_fullstring.c_str());
@@ -812,50 +890,122 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			char* yyy = aaa+1;
 			sprintf(yyy,"");
 			DEBOUT("first part",xxx);
-			yyy = aaa+propname.length();
+			yyy = aaa+_property.length();
 			DEBOUT("first part",yyy);
 			string newinse = xxx;
-			newinse += _propname;
+			newinse += _property;
 			newinse += "=";
-			newinse += newvalue;
+			newinse += _value;
 			newinse += yyy;
-			DEBOUT("first part",newinse);
-			if(type_of == 1){
-				DEBASSERT("")
-			}
-			if(type_of == 2){
+			DEBOUT("new line",newinse);
+			if(isVia){
 				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"nx")
+				NEWPTR2(nx, char[newinse.length()+1],"newvia")
 				strcpy(nx,newinse.c_str());
-				message_line[i].first = nx;
-				message_line[i].second = true;
-
-
-
-				qui
+				via_line[0].first = nx;
+				via_line[0].second = true;
 			}
+			else{
+				char* nx;
+				NEWPTR2(nx, char[newinse.length()+1],"message_line")
+				strcpy(nx,newinse.c_str());
+				message_line[idx].first = nx;
+				message_line[idx].second = true;
+			}
+			return;
 		}
 		else if (strncmp(aaa + _property.length(),"\0",1) == 0){
 			//caso b senza valore alla fine
 			DEBY
-			return "";
+			char* yyy = aaa+1;
+			sprintf(yyy,"");
+			string newinse = xxx;
+			newinse += _property;
+			newinse += "=";
+			newinse += _value;
+			DEBOUT("new line",newinse);
+			if(isVia){
+				char* nx;
+				NEWPTR2(nx, char[newinse.length()+1],"newvia")
+				strcpy(nx,newinse.c_str());
+				via_line[0].first = nx;
+				via_line[0].second = true;
+			}
+			else{
+				char* nx;
+				NEWPTR2(nx, char[newinse.length()+1],"message_line")
+				strcpy(nx,newinse.c_str());
+				message_line[idx].first = nx;
+				message_line[idx].second = true;
+			}
+			return;
 		}
 		else if (strncmp(aaa + _property.length(),"=",1) == 0){
 			//caso con valore
+			DEBY
 			char* bbb;
 			if (aaa!=NULL){
 				bbb = strchr(aaa+_property.length(),';');
 			}
 			if (bbb != NULL){
 				sprintf(bbb,"");
+				DEBY
 			}
-			DEBY
-			return (aaa+_property.length());
+
+			char* yyy = aaa+1;
+			sprintf(yyy,"");
+			if (bbb!=NULL)
+				yyy = bbb+1;
+			string newinse = xxx;
+			newinse += _property;
+			newinse += "=";
+			newinse += _value;
+			if(bbb!=NULL){
+				newinse += ";";
+				newinse += yyy;
+			}
+			if(isVia){
+				char* nx;
+				NEWPTR2(nx, char[newinse.length()+1],"newvia")
+				strcpy(nx,newinse.c_str());
+				via_line[0].first = nx;
+				via_line[0].second = true;
+			}
+			else{
+				char* nx;
+				NEWPTR2(nx, char[newinse.length()+1],"message_line")
+				strcpy(nx,newinse.c_str());
+				message_line[idx].first = nx;
+				message_line[idx].second = true;
+			}
+			return;
+			DEBOUT("new line",newinse);
 		}
 	}
 	else {
-		//no data
-		return "xxdxxdxx";
+		DEBY
+		//remove last char
+		string _newinse = xxx;
+		string newinse = _newinse.substr(0,_newinse.length()-1);
+		newinse += _property;
+		newinse += "=";
+		newinse += _value;
+		if(isVia){
+			char* nx;
+			NEWPTR2(nx, char[newinse.length()+1],"newvia")
+			strcpy(nx,newinse.c_str());
+			via_line[0].first = nx;
+			via_line[0].second = true;
+		}
+		else{
+			char* nx;
+			NEWPTR2(nx, char[newinse.length()+1],"message_line")
+			strcpy(nx,newinse.c_str());
+			message_line[idx].first = nx;
+			message_line[idx].second = true;
+		}
+		DEBOUT("new line",newinse);
+		return;
 	}
 
 
@@ -898,14 +1048,30 @@ void MESSAGE::popVia(void){
 		DEBASSERT("MESSAGE::popVia invalid")
 
 	fillIn();
-	DEBASSERT("")
+	compiled = false;
+
+	if(hasvialines){
+		char* newheader;
+		NEWPTR2(newheader, char[6],"newvia")
+		sprintf(newheader,"xxDxx");
+		via_line[0].first = newheader;
+		via_line[0].second = true;
+	}
+
+	DEBWARNING("MESSAGE::popVia only removing [0]","")
 }
 void MESSAGE::pushNewVia(string _via){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::pushNewVia invalid")
 
 	fillIn();
-	DEBASSERT("")
+	compiled = false;
+
+	char* newheader;
+	NEWPTR2(newheader, char[_via.length()+1],"newvia")
+	strcpy(newheader, _via.c_str());
+	via_line.insert(make_pair (newheader,true));
+
 
 }
 string MESSAGE::getHeadCallId(void){
@@ -1045,16 +1211,17 @@ void MESSAGE::setHeadSipRequest(string _content){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setHeadSipRequest invalid")
 
-	fillIn();
-	setGenericHeader("REQUESTREPLY", _content);
+	setGenericHeader("REQUEST", _content);
+	DEBWARNING("MESSAGE::setHeadSipRequest change also other codes","")
 
 }
 void MESSAGE::setHeadSipReply(string _content){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setHeadSipReply invalid")
 
-	fillIn();
-	setGenericHeader("REQUESTREPLY", _content);
+	setGenericHeader("REPLY", _content);
+
+	DEBWARNING("MESSAGE::setHeadSipReply change also other codes","")
 
 }
 int  MESSAGE::getHeadSipRequestCode(void){
