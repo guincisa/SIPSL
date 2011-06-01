@@ -146,7 +146,7 @@ class ThreadWrapper {
 
 //#define LOGINF
 #define LOGMIN
-//#define LOGDEV
+#define LOGDEV
 #define LOGMEM
 #define LOGNTW
 #define SELFCHECK

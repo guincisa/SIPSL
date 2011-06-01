@@ -278,12 +278,17 @@ class MESSAGE {
 	public:
     	string getViaLine(void);
     	string getViaBranch(void);
+    	string getViaUriHost(void);
+    	int getViaUriPort(void);
     	bool hasVia(void);
     	void popVia(void);
     	void pushNewVia(string);
 	private:
     	string branch;
     	bool parsedBranch;
+    	string viaUriHost;
+    	int viaUriPort;
+    	bool viaUriParsed;
 
 		////////////////////////////////
 	public:
