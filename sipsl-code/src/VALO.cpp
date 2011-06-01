@@ -175,18 +175,19 @@ void VALO::onInvite(MESSAGE* _message){
 
 	//message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
-	string cs;
-	cs += call_oset->getNextSequence("INVITE_B");
-	cs += " INVITE";
-	message->setGenericHeader("CSeq:",cs);
+	stringstream cs;
+	cs << call_oset->getNextSequence("INVITE_B");
+	cs << " INVITE";
+	message->setGenericHeader("CSeq:",cs.str());
 
 	//Standard changes
 	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP(), call_oset->getCallId_Y());
 	message->setGenericHeader("Contact:", "<sip:sipsl@grog:5060>");
 
+	message->dumpMessageBuffer();
+
 	message->compileMessage();
 
-	message->dumpMessageBuffer();
 
 	DEBMESSAGE("New outgoing b2b message", message)
 

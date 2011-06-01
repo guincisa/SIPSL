@@ -101,6 +101,9 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 
 	branch					= "";
 	parsedBranch			= false;
+	viaUriHost				= "";
+	viaUriParsed   			= false;
+	viaUriPort				= 0;
 
 
 	callId					= "";
@@ -179,6 +182,9 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 
 	branch					= "";
 	parsedBranch			= false;
+	viaUriHost				= "";
+	viaUriParsed   			= false;
+	viaUriPort				= 0;
 
 
 	callId					= "";
@@ -220,11 +226,17 @@ MESSAGE::~MESSAGE(){
 	if(filledIn){
 		DELPTRARR(message_char,"message_char")
 	}
-	for(int i = 1; i < message_line.size(); i ++){
+	for(int i = 0; i < message_line.size(); i ++){
 		if(message_line[i].second){
 			DELPTRARR(message_line[i].first,"message_line")
 		}
 	}
+	for(int i = 0; i < sdp_line.size(); i ++){
+		if(sdp_line[i].second){
+			DELPTRARR(sdp_line[i].first,"sdp_line")
+		}
+	}
+
 	DELPTRARR(original_message,"original_message")
 	DEBWARNING("MESSAGE::~MESSAGE() incomplete code",this)
 
@@ -312,6 +324,10 @@ int MESSAGE::fillIn(void){
 		return message_line.size();
 	}
 
+	if(!compiled){
+		compileMessage();
+	}
+
 	NEWPTR2(message_char, char[strlen(original_message)+1],"message_char "<<strlen(original_message)+1)
 	strcpy(message_char, original_message);
 
@@ -385,6 +401,7 @@ char* MESSAGE::getMessageBuffer(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getMessageBuffer invalid")
 
+	fillIn();
 	return original_message;
 }
 void MESSAGE::compileMessage(void){
@@ -413,7 +430,7 @@ void MESSAGE::compileMessage(void){
 					&& strncmp(message_line[i].first,"xxDxx",5) != 0
 					&& strlen(message_line[i].first)!=0 ){
 				origmess << message_line[i].first;
-				origmess << "\n";
+				origmess << "\r\n";
 			}
 			if (message_line[i].second){
 				DELPTRARR(message_line[i].first,"message_line")
@@ -421,7 +438,7 @@ void MESSAGE::compileMessage(void){
 		}
 		for(int i = 0; i < via_line.size(); i ++){
 			origmess << via_line[i].first;
-			origmess << "\n";
+			origmess << "\r\n";
 			if (via_line[i].second){
 				DELPTRARR(via_line[i].first,"newvia")
 			}
@@ -429,12 +446,12 @@ void MESSAGE::compileMessage(void){
 
 		origmess << "Content-Length: ";
 		origmess << sizeOfSdp;
-		origmess << "\n\n";
+		origmess << "\r\n\r\n";
 
 		if (hasSdp){
-			for(int i = 1; i < sdp_line.size(); i ++){
+			for(int i = 0; i < sdp_line.size(); i ++){
 				origmess << sdp_line[i].first;
-				origmess << "\n";
+				origmess << "\r\n";
 			}
 		}
 
@@ -455,13 +472,16 @@ void MESSAGE::dumpMessageBuffer(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::dumpMessageBuffer invalid")
 
-	DEBASSERT("")
-
-	if(!compiled){
-		compileMessage();
+	for(int i = 0; i < message_line.size(); i ++){
+		DEBOUT("MESSAGE::dumpMessageBuffer m", message_line[i].second << "][" << message_line[i].first)
+	}
+	for(int i = 0; i < via_line.size(); i ++){
+		DEBOUT("MESSAGE::dumpMessageBuffer v", via_line[i].second << "][" << via_line[i].first)
+	}
+	for(int i = 0; i < sdp_line.size(); i ++){
+		DEBOUT("MESSAGE::dumpMessageBuffer s", sdp_line[i].second << "][" << sdp_line[i].first)
 	}
 
-	// do it
 }
 int MESSAGE::getSock(void){
 	if (invalid == 1)
@@ -615,28 +635,40 @@ vector< pair<char*, bool> > MESSAGE::getSDP(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::purgeSDP invalid")
 
-	DEBASSERT("")
-	if(hasSdp){
-		// do it
-	}else{
-
-	}
+	return sdp_line;
 }
-void MESSAGE::setSDP(vector< pair<char*, bool> >){
+void MESSAGE::setSDP(vector< pair<char*, bool> > _vector){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setSDP invalid")
 
 	fillIn();
 	compiled = false;
+	hasSdp = true;
 
-	DEBASSERT("");
+	for(int i = 0; i < sdp_line.size(); i ++){
+		if(sdp_line[i].second){
+			DELPTRARR(sdp_line[i].first,"sdp_line")
+		}
+	}
+
+	sdp_line = _vector;
+	//Need to duplicate each sdp line
+	for(int i = 0; i < sdp_line.size(); i ++){
+		char* sdp_l;
+		NEWPTR2(sdp_l, char[strlen(sdp_line[i].first) + 1],"sdp_line")
+		strcpy(sdp_l,sdp_line[i].first);
+		sdp_line[i].second = true;
+		sdp_line[i].first = sdp_l;
+	}
+
+
 }
 void MESSAGE::setGenericHeader(string _header, string _content){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setGenericHeader invalid")
 
 
-	DEBSIP("MESSAGE::setGenericHeader", _header + " " + _content)
+	DEBSIP("MESSAGE::setGenericHeader", _header + "][" + _content)
 
 	fillIn();
 	compiled = false;
@@ -650,7 +682,7 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		strcpy(newfirstline,_content.c_str());
 		message_line[0].first = newfirstline;
 		message_line[0].second = true;
-		reqRep = REPSUPP;
+		reqRep = 0;
 		return;
 	}
 	if (_header.compare("REQUEST") == 0){
@@ -659,7 +691,7 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		strcpy(newfirstline,_content.c_str());
 		message_line[0].first = newfirstline;
 		message_line[0].second = true;
-		reqRep = REQSUPP;
+		reqRep = 0;
 		return;
 	}
 
@@ -943,7 +975,7 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 		else if (strncmp(aaa + _property.length(),"=",1) == 0){
 			//caso con valore
 			DEBY
-			char* bbb;
+			char* bbb=NULL;
 			if (aaa!=NULL){
 				bbb = strchr(aaa+_property.length(),';');
 			}
@@ -1027,15 +1059,60 @@ string MESSAGE::getViaBranch(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getViaProperty invalid")
 
-	//char * via_line.back().first
-
 	if (!parsedBranch){
 		branch = getProperty("Via:", "branch");
 		parsedBranch = true;
 	}
-
 	return branch;
 }
+string MESSAGE::getViaUriHost(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getViaUriHost invalid")
+
+	DEBWARNING("MESSAGE::getViaUriHost works with fixed values","")
+	// Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK1c40b01306836794445384;rport
+	fillIn();
+	if (viaUriParsed){
+		return viaUriHost;
+	}
+	else {
+		if(hasvialines){
+			char workline[strlen(via_line[0].first) +1 - 17];
+			strcpy(workline, via_line[0].first+17);
+
+			char* bbb = strchr(workline,':');
+			sprintf(bbb,"");
+			char* ccc = bbb +1;
+			char* ddd = strchr(ccc,';');
+			sprintf(ddd,"");
+
+			viaUriHost = workline;
+			viaUriParsed = true;
+			viaUriPort = atoi(ccc);
+			DEBOUT("MESSAGE::getViaUriHost host", viaUriHost)
+			DEBOUT("MESSAGE::getViaUriHost port", viaUriPort)
+		}
+	}
+
+}
+int MESSAGE::getViaUriPort(void){
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getViaUriPort invalid")
+
+	DEBWARNING("MESSAGE::getViaUriHost works with fixed values","")
+
+
+	fillIn();
+	if (viaUriParsed){
+		return viaUriPort;
+	}
+	else{
+		getViaUriHost();
+		return viaUriPort;
+	}
+
+}
+
 bool MESSAGE::hasVia(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::hasVia invalid")
@@ -1051,11 +1128,12 @@ void MESSAGE::popVia(void){
 	compiled = false;
 
 	if(hasvialines){
-		char* newheader;
-		NEWPTR2(newheader, char[6],"newvia")
-		sprintf(newheader,"xxDxx");
-		via_line[0].first = newheader;
-		via_line[0].second = true;
+		if(via_line[0].second){
+			DELPTRARR(via_line[0].first,"via_line "<<0)
+		}
+		vector< pair<char*, bool> >::iterator _rem;
+		_rem = via_line.begin();
+		via_line.erase(_rem);
 	}
 
 	DEBWARNING("MESSAGE::popVia only removing [0]","")
@@ -1070,7 +1148,9 @@ void MESSAGE::pushNewVia(string _via){
 	char* newheader;
 	NEWPTR2(newheader, char[_via.length()+1],"newvia")
 	strcpy(newheader, _via.c_str());
-	via_line.insert(make_pair (newheader,true));
+	vector< pair<char*, bool> >::iterator it;
+	it = via_line.begin();
+	via_line.insert(it, make_pair (newheader,true));
 
 
 }
@@ -1271,7 +1351,8 @@ string MESSAGE::getUriHostPort(string header){
 
 }
 string MESSAGE::getUriHost(string header){
-
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getUriHost invalid")
 }
 int MESSAGE::getUriPort(string header){
 
@@ -1291,14 +1372,16 @@ int MESSAGE::getHeadCSeq(void){
 		DEBASSERT("MESSAGE::getHeadCSeq invalid")
 
 	if(!parsedCseq){
+		DEBY
 		string sh = getGenericHeader("CSeq:");
 		char tsmp[sh.length()+1];
 		strcpy(tsmp, sh.c_str());
 		char* token = strchr(tsmp, ' ');
-		*token = '\0';
+		sprintf(token,"");
 		cSeq = atoi(tsmp);
 		cSeqMethod = token+1;
 		parsedCseq = true;
+		DEBY
 	}
 	return cSeq;
 

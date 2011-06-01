@@ -294,21 +294,27 @@ void SUDP::sendReply(MESSAGE* _message){
     DEBMESSAGE("Reply message ", _message)
 
     si_part.sin_family = AF_INET;
-    host = gethostbyname(_message->getUriHost("Via:").c_str());
-    //host = gethostbyname(viatmp->getC_AttVia().getS_HostHostPort().getHostName().c_str());
+    char _hostchar[_message->getViaUriHost().length()+1];
+    strcpy(_hostchar,_message->getViaUriHost().c_str());
+    host = gethostbyname(_hostchar);
+    DEBY
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-    si_part.sin_port = htons(_message->getUriPort("Via:"));
-    //si_part.sin_port = htons(viatmp->getC_AttVia().getS_HostHostPort().getPort());
-    if( inet_pton(AF_INET, _message->getUriHost("Via:").c_str(), &si_part.sin_addr) == 0 ){
+    DEBY
+    si_part.sin_port = htons(_message->getViaUriPort());
+    DEBY
+    if( inet_pton(AF_INET, _message->getViaUriHost().c_str(), &si_part.sin_addr) == 0 ){
             DEBASSERT ("can set reply address")
     }
-
+    DEBY
     int i = _message->getModulus() % SUDPTH;
-
+    DEBY
     sendto(sock_se[i],  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
-
+    DEBY
     if (!_message->getLock()){
+    	DEBY
         PURGEMESSAGE(_message)
+    	DEBY
     }
+    DEBY
     return;
 }

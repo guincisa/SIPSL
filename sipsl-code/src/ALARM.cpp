@@ -330,7 +330,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
 
 
     PROFILE("ALMGR::insertAlarm begin")
-    DEBDEV("ALMGR::insertAlarm message", _message <<"] mod ["<<_mod << "] alarm map["<<__mod)
+    //DEBDEV("ALMGR::insertAlarm message", _message <<"] mod ["<<_mod << "] alarm map["<<__mod)
 
 
 #ifdef DEBCODE
@@ -363,7 +363,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
     NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
 
     string cidbranch_alarm = alm->getCidbranch();
-    DEBDEV("Inserting Alarm id (cid+branch)", cidbranch_alarm << "]["<<alm<<"] mod ["<<__mod);
+    //DEBDEV("Inserting Alarm id (cid+branch)", cidbranch_alarm << "]["<<alm<<"] mod ["<<__mod);
 
 
     triple trip;
