@@ -1,3 +1,9 @@
+2 giugno
+
+definire lo stato del messaggio fillIn e compile
+impatto sulle altre prioprieta? (uri cseq....)
+
+
 26 maggio
 
 implementare i metodi di MESSAGE

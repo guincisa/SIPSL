@@ -184,6 +184,13 @@ class MESSAGE {
     	void compileMessage(void);
 		void dumpMessageBuffer(void);
 	private:
+		//this one resets all the parse flags and variables
+		// like branch and parsedBranch
+		// it must be called during compile message
+		// I can't do a setXXX using the variable like setBranch
+		// must be done on the vialine and branch must be cleared
+		void _clearStatus(void);
+
 		char* message_char;
 		//this does not change:
 		char* original_message;

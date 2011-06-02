@@ -368,6 +368,8 @@ int MESSAGE::fillIn(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::fillIn invalid")
 
+	DEBWARNING("int MESSAGE::fillIn(void)","must reset all values")
+
 	if(messageStatus == 1){
 		DEBINF("int MESSAGE::fillIn(void)",this<<"][already filled")
 		return message_line.size();
@@ -423,8 +425,8 @@ bool MESSAGE::isFilled(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::isFilled invalid")
 
-	DEBINF("bool MESSAGE::isFilled(void)", messageStatus == 1)
-	return messageStatus == 1;
+	DEBINF("bool MESSAGE::isFilled(void)", messageStatus)
+	return (messageStatus == 1);
 }
 int MESSAGE::getDimString(void){
 	DEBINF("int MESSAGE::getDimString(void)", this)
@@ -479,199 +481,237 @@ void MESSAGE::compileMessage(void){
 	if(messageStatus == 0){
 		DEBINF("void MESSAGE::compileMessage(void) not filled, do nothing", this)
 		DEBWARNING("void MESSAGE::compileMessage(void) not filled, do nothing", this);
+		return;
 	}
 	if(messageStatus == 1 ){
 		//not changed
 		DEBINF("void MESSAGE::compileMessage(void) not changed, do nothing", this)
 		DEBWARNING("void MESSAGE::compileMessage(void) not changed, do nothing", this);
+		return;
 	}
-	//==2
-	qui
+	//messageStatus==2
+
 	stringstream origmess;
-	if(!compiled){
+	int sizeOfSdp = 0;
 
-		int sizeOfSdp = 0;
-
-		if (hasSdp){
-			//calculate size
-			for(int i = 0; i < sdp_line.size(); i ++){
-				sizeOfSdp += strlen(sdp_line[i].first);
-			}
-
+	if (hasSdp){
+		//calculate size
+		for(int i = 0; i < sdp_line.size(); i ++){
+			sizeOfSdp += strlen(sdp_line[i].first);
 		}
+	}
 
-		for(int i = 0; i < message_line.size(); i ++){
-			if (strncmp(message_line[i].first,"Content-Length: ", 16) != 0
-					&& strncmp(message_line[i].first,"xxDxx",5) != 0
-					&& strlen(message_line[i].first)!=0 ){
-				origmess << message_line[i].first;
-				origmess << "\r\n";
-			}
-			if (message_line[i].second){
-				DELPTRARR(message_line[i].first,"message_line")
-			}
-		}
-		for(int i = 0; i < via_line.size(); i ++){
-			origmess << via_line[i].first;
+	for(int i = 0; i < message_line.size(); i ++){
+		if (strncmp(message_line[i].first,"Content-Length: ", 16) != 0
+				&& strncmp(message_line[i].first,"xxDxx",5) != 0
+				&& strlen(message_line[i].first)!=0 ){
+			origmess << message_line[i].first;
 			origmess << "\r\n";
-			if (via_line[i].second){
-				DELPTRARR(via_line[i].first,"newvia")
-			}
 		}
+		if (message_line[i].second){
+			DELPTRARR(message_line[i].first,"message_line "<<i)
+		}
+	}
+	for(int i = 0; i < via_line.size(); i ++){
+		origmess << via_line[i].first;
+		origmess << "\r\n";
+		if (via_line[i].second){
+			DELPTRARR(via_line[i].first,"via_line")
+		}
+	}
 
+
+	if (hasSdp){
 		origmess << "Content-Length: ";
 		origmess << sizeOfSdp;
 		origmess << "\r\n\r\n";
-
-		if (hasSdp){
-			for(int i = 0; i < sdp_line.size(); i ++){
-				origmess << sdp_line[i].first;
-				origmess << "\r\n";
-			}
+		for(int i = 0; i < sdp_line.size(); i ++){
+			origmess << sdp_line[i].first;
+			origmess << "\r\n";
 		}
-
-		compiled = true;
-
-		DEBOUT("MESSAGE::compileMessage", origmess.str())
-
-		DELPTRARR(original_message,"original_message")
-
-		NEWPTR2(original_message, char[origmess.str().length()+1],"original_message "<<origmess.str().length()+1)
-		strcpy(original_message, origmess.str().c_str());
-		filledIn = false;
-		DEBOUT("MESSAGE::compileMessage", original_message)
-
 	}
+	else{
+		origmess << "\r\n\r\n";
+	}
+
+	messageStatus = 0;
+
+	DEBINF("void MESSAGE::compileMessage(void) origmess.str()", origmess.str())
+
+	DELPTRARR(original_message,"original_message")
+
+	NEWPTR2(original_message, char[origmess.str().length()+1],"original_message "<<origmess.str().length()+1)
+	strcpy(original_message, origmess.str().c_str());
+	DEBINF("void MESSAGE::compileMessage(void) original_message", original_message)
+
+
 }
 void MESSAGE::dumpMessageBuffer(void){
+	DEBINF("void MESSAGE::dumpMessageBuffer(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::dumpMessageBuffer invalid")
 
 	for(int i = 0; i < message_line.size(); i ++){
-		DEBOUT("MESSAGE::dumpMessageBuffer m", message_line[i].second << "][" << message_line[i].first)
+		DEBINF("MESSAGE::dumpMessageBuffer m", message_line[i].second << "][" << message_line[i].first)
 	}
 	for(int i = 0; i < via_line.size(); i ++){
-		DEBOUT("MESSAGE::dumpMessageBuffer v", via_line[i].second << "][" << via_line[i].first)
+		DEBINF("MESSAGE::dumpMessageBuffer v", via_line[i].second << "][" << via_line[i].first)
 	}
 	for(int i = 0; i < sdp_line.size(); i ++){
-		DEBOUT("MESSAGE::dumpMessageBuffer s", sdp_line[i].second << "][" << sdp_line[i].first)
+		DEBINF("MESSAGE::dumpMessageBuffer s", sdp_line[i].second << "][" << sdp_line[i].first)
 	}
-
 }
 int MESSAGE::getSock(void){
+	DEBINF("int MESSAGE::getSock(void)",this)
 	if (invalid == 1)
 		DEBASSERT("FMESSAGE::getSock invalid")
 
+	DEBINF("int MESSAGE::getSock(void)",this<<"]["<<sock)
 	return sock;
 }
 struct sockaddr_in MESSAGE::getEchoClntAddr(void){
+	DEBINF("struct sockaddr_in MESSAGE::getEchoClntAddr(void)",this)
 	if (invalid == 1)
 		DEBASSERT("FMESSAGE::getEchoClntAddr invalid")
 
 	return echoClntAddr;
 }
 int MESSAGE::getRequestDirection(void){
+	DEBINF("int MESSAGE::getRequestDirection(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getRequestDirection invalid")
 
+	DEBINF("int MESSAGE::getRequestDirection(void)",this<<"]["<<requestDirection)
 	return requestDirection;
 }
 void MESSAGE::setRequestDirection(int _dir){
+	DEBINF("void MESSAGE::setRequestDirection(int _dir)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setRequestDirection invalid")
 
+	DEBINF("void MESSAGE::setRequestDirection(int _dir)",this<<"]["<<_dir)
 	requestDirection = _dir;
 }
 int MESSAGE::getGenEntity(void){
+	DEBINF("int MESSAGE::getGenEntity(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getGenEntity invalid")
 
+	DEBINF("int MESSAGE::getGenEntity(void)",this<<"]["<<genEntity)
 	return genEntity;
 }
 void MESSAGE::setGenEntity(int _gen){
+	DEBINF("void MESSAGE::setGenEntity(int _gen)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setGenEntity invalid")
 
+	DEBINF("void MESSAGE::setGenEntity(int _gen)",this<<"]["<<_gen)
 	genEntity = _gen;
 }
 void MESSAGE::setDestEntity(int _destEntity){
+	DEBINF("void MESSAGE::setDestEntity(int _destEntity)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setDestEntity invalid")
 
+	DEBINF("void MESSAGE::setDestEntity(int _destEntity)",this<<"]["<<_destEntity)
 	destEntity = _destEntity;
 }
 int MESSAGE::getDestEntity(void){
+	DEBINF("int MESSAGE::getDestEntity(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getDestEntity invalid")
 
+	DEBINF("int MESSAGE::getDestEntity(void)", this<<"]["<<destEntity)
 	return destEntity;
 }
 lli MESSAGE::getFireTime(void){
+	DEBINF("lli MESSAGE::getFireTime(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getFireTime invalid")
 
+	DEBINF("lli MESSAGE::getFireTime(void)", this<<"]["<<fireTime)
 	return fireTime;
 }
 void MESSAGE::setFireTime(lli _firetime){
+	DEBINF("void MESSAGE::setFireTime(lli _firetime)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setFireTime invalid")
 
+	DEBINF("void MESSAGE::setFireTime(lli _firetime)",this<<"]["<<_firetime)
 	fireTime = _firetime;
 }
 string MESSAGE::getOrderOfOperation(void){
+	DEBINF("string MESSAGE::getOrderOfOperation(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getOrderOfOperation invalid")
 
+	DEBINF("string MESSAGE::getOrderOfOperation(void)", this<<"]["<<orderOfOperation)
 	return orderOfOperation;
 }
 void MESSAGE::setOrderOfOperation(string _s){
+	DEBINF("void MESSAGE::setOrderOfOperation(string _s)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setOrderOfOperation invalid")
 
+	DEBINF("void MESSAGE::setOrderOfOperation(string _s)", this<<"]["<<_s)
 	orderOfOperation = _s;
 }
 int MESSAGE::getType_trnsct(void){
+	DEBINF("int MESSAGE::getType_trnsct(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getType_trnsct invalid")
 
+	DEBINF("int MESSAGE::getType_trnsct(void)",this<<"]["<<type_trnsct)
 	return type_trnsct;
 }
 void MESSAGE::setType_trnsct(int _t){
+	DEBINF("void MESSAGE::setType_trnsct(int _t)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setType_trnsct invalid")
 
+	DEBINF("void MESSAGE::setType_trnsct(int _t)", this<<"]["<<_t)
 	type_trnsct = _t;
 }
 int MESSAGE::getTypeOfInternal(void){
+	DEBINF("int MESSAGE::getTypeOfInternal(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getTypeOfInternal invalid")
 
+	DEBINF("int MESSAGE::getTypeOfInternal(void)", this<<"]["<<typeOfInternal)
 	return typeOfInternal;
 
 }
 void MESSAGE::setTypeOfInternal(int _toi){
+	DEBINF("void MESSAGE::setTypeOfInternal(int _toi)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setTypeOfInternal invalid")
 
+	DEBINF("void MESSAGE::setTypeOfInternal(int _toi)", this<<"]["<<_toi)
 	typeOfInternal = _toi;
 }
 int MESSAGE::getTypeOfOperation(void){
+	DEBINF("int MESSAGE::getTypeOfOperation(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getTypeOfOperation invalid")
 
+	DEBINF("int MESSAGE::getTypeOfOperation(void)",this<<"]["<<typeOfOperation)
 	return typeOfOperation;
 }
 void MESSAGE::setTypeOfOperation(int _t){
+	DEBINF("void MESSAGE::setTypeOfOperation(int _t)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setTypeOfOperation invalid")
 
+	DEBINF("void MESSAGE::setTypeOfOperation(int _t)",this<<"]["<<_t)
 	typeOfOperation = _t;
 }
 int MESSAGE::getModulus(void){
+	DEBINF("int MESSAGE::getModulus(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getModulus invalid")
 
 	if (modulus != -1){
+		DEBINF("int MESSAGE::getModulus(void)",this<<"]["<<modulus)
 		return modulus;
 	}
 	//is calculated in two ways:
@@ -690,39 +730,48 @@ int MESSAGE::getModulus(void){
 		for (int i = 0; i < k ; i++){
 			tot =  (long long int) atol(s.substr(i,3).c_str()) + tot;
 		}
-		DEBOUT("MODULUS tot", tot)
+		DEBINF("int MESSAGE::getModulus(void) tot",this<<"]["<<tot)
 		modulus = tot%COMAPS;
 	}
-	DEBDEV("Modulus found", modulus<<"]["<< s)
+	DEBINF("int MESSAGE::getModulus(void) modulus",this<<"]["<<modulus)
 	return modulus;
 }
 void MESSAGE::purgeSDP(void){
+	DEBINF("void MESSAGE::purgeSDP(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::purgeSDP invalid")
 
-	if(hasSdp){
-		// do it
+	if(messageStatus ==0){
+		fillIn();
 	}
 	hasSdp = false;
-	compiled = false;
+	messageStatus = 2;
 }
 vector< pair<char*, bool> > MESSAGE::getSDP(void){
+	DEBINF("vector< pair<char*, bool> > MESSAGE::getSDP(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::purgeSDP invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	return sdp_line;
 }
 void MESSAGE::setSDP(vector< pair<char*, bool> > _vector){
+	DEBINF("void MESSAGE::setSDP(vector< pair<char*, bool> > _vector)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setSDP invalid")
 
-	fillIn();
-	compiled = false;
+	if(messageStatus == 0){
+		fillIn();
+	}
+
 	hasSdp = true;
 
 	for(int i = 0; i < sdp_line.size(); i ++){
 		if(sdp_line[i].second){
-			DELPTRARR(sdp_line[i].first,"sdp_line")
+			DELPTRARR(sdp_line[i].first,"sdp_line"<<i)
 		}
 	}
 
@@ -730,23 +779,25 @@ void MESSAGE::setSDP(vector< pair<char*, bool> > _vector){
 	//Need to duplicate each sdp line
 	for(int i = 0; i < sdp_line.size(); i ++){
 		char* sdp_l;
-		NEWPTR2(sdp_l, char[strlen(sdp_line[i].first) + 1],"sdp_line")
+		NEWPTR2(sdp_l, char[strlen(sdp_line[i].first) + 1],"sdp_line"<<i)
 		strcpy(sdp_l,sdp_line[i].first);
 		sdp_line[i].second = true;
 		sdp_line[i].first = sdp_l;
 	}
-
+	messageStatus = 2;
 
 }
 void MESSAGE::setGenericHeader(string _header, string _content){
+	DEBINF("void MESSAGE::setGenericHeader(string _header, string _content)",this<<"]["<<_header<<"]["<<_content)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setGenericHeader invalid")
 
 
-	DEBSIP("MESSAGE::setGenericHeader", _header + "][" + _content)
+	if(messageStatus == 0){
+		fillIn();
+	}
 
-	fillIn();
-	compiled = false;
+	messageStatus = 2;
 
 	if (_header.compare("Via:") == 0){
 		DEBASSERT("MESSAGE::setGenericHeader invalid for via")
@@ -778,7 +829,7 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 
 			if(message_line[i].second){
 				//already updated, must delete the existing string
-				DELPTRARR(message_line[i].first,"message_line[i].first"<<i)
+				DELPTRARR(message_line[i].first,"message_line "<<i)
 			}
 			char* newheader;
 			NEWPTR2(newheader, char[_header.length() + 1 + _content.length() + 1],"message_line")
@@ -790,20 +841,23 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		}
 	}
 	if (!found) {
-		DEBSIP("MESSAGE::setGenericHeader not found",_header)
+		DEBINF("MESSAGE::setGenericHeader not found",_header)
 	}
+	return;
 }
 string MESSAGE::getGenericHeader(string _header){
+	DEBINF("string MESSAGE::getGenericHeader(string _header)",this<<"]["<<_header)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getGenericHeader invalid")
 
-	fillIn();
-
-	DEBSIP("MESSAGE::getGenericHeader", _header)
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if (_header.compare("Via:") == 0){
 		int vl = via_line.size();
 		if( vl !=0 ){
+			DEBINF("string MESSAGE::getGenericHeader(string _header)",this<<"]["<<_header<<"]["<<via_line[vl-1].first + 5)
 			return via_line[vl-1].first + 5;
 		}
 	}
@@ -812,36 +866,39 @@ string MESSAGE::getGenericHeader(string _header){
 	bool found = false;
 	for(i = 1; i < message_line.size(); i ++){
 		if(strncmp(message_line[i].first,_header.c_str(), _header.size())==0){
+			DEBINF("string MESSAGE::getGenericHeader(string _header)",this<<"]["<<_header<<"]["<<message_line[i].first + _header.size() + 1)
 			return (message_line[i].first + _header.size() + 1);
 		}
 	}
 	if (!found) {
 		DEBSIP("MESSAGE::setGenericHeader not found",_header)
 	}
+	DEBINF("string MESSAGE::getGenericHeader(string _header)",this<<"]["<<_header<<"][notfound")
 	return "";
 }
 bool MESSAGE::queryGenericHeader(string _header){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::queryGenericHeader invalid")
 
-	fillIn();
 	DEBASSERT("")
 }
 void MESSAGE::addGenericHeader(string _header, string _content){
+	DEBINF("void MESSAGE::addGenericHeader(string _header, string _content)",this<<"]["<<_header<<"]["<<_content)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::addGenericHeader invalid")
 
-	fillIn();
-	compiled = false;
-
-	DEBSIP("MESSAGE::addGenericHeader",_header << " " << _content)
+	if(messageStatus == 0){
+		fillIn();
+	}
 
 	if (_header.compare("Via:") == 0){
 		DEBASSERT("MESSAGE::addGenericHeader invalid for via")
 		return;
 	}
+	//must compile each time to avoid duplicates
 	string s = getGenericHeader(_header);
 	if (s.length() != 0){
+		DEBINF("void MESSAGE::addGenericHeader(string _header, string _content) replacing",this<<"]["<<_header<<"]["<<_content)
 		setGenericHeader(_header, _content);
 	}
 	else{
@@ -849,14 +906,19 @@ void MESSAGE::addGenericHeader(string _header, string _content){
 		NEWPTR2(newheader, char[_header.length() + 1 + _content.length() + 1],"message_line")
 		sprintf(newheader,"%s %s",_header.c_str(), _content.c_str());
 		message_line.push_back(make_pair(newheader,true));
+		DEBINF("void MESSAGE::addGenericHeader(string _header, string _content) adding",this<<"]["<<_header<<"]["<<_content)
 	}
+	messageStatus = 2;
+	return;
 }
 void MESSAGE::dropHeader(string _header){
+	DEBINF("void MESSAGE::dropHeader(string _header)",this<<"]["<<_header)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::dropHeader invalid")
 
-	fillIn();
-	compiled = false;
+	if(messageStatus == 0){
+		fillIn();
+	}
 
 	if (_header.compare("Via:") == 0){
 		DEBASSERT("MESSAGE::dropHeader invalid for via")
@@ -865,29 +927,37 @@ void MESSAGE::dropHeader(string _header){
 
 	size_t i;
 	bool found = false;
+	vector< pair<char*, bool> >::iterator _find;
 	for(i = 1; i < message_line.size(); i ++){
+		_find = message_line.begin();
 		if(strncmp(message_line[i].first,_header.c_str(), _header.length()) ==0 ){
 			if (message_line[i].second){
 				DELPTRARR(message_line[i].first,"message_line "<<i)
 			}
-			char* newheader;
-			NEWPTR2(newheader, char[6],"message_line")
-			sprintf(newheader,"xxDxx");
-			message_line[i].first = newheader;
-			message_line[i].second = true;
+			vector< pair<char*, bool> >::iterator _find;
+			message_line.erase(_find);
 			found = true;
 			break;
 		}
+		_find ++;
 	}
 	if (!found) {
-		DEBSIP("MESSAGE::removeHeader not found",_header)
+		DEBINF("MESSAGE::removeHeader not found",_header)
+		return;
 	}
+	DEBINF("void MESSAGE::dropHeader(string _header) found",this<<"]["<<_header)
+	messageStatus = 2;
+	return;
+
 }
 string MESSAGE::getProperty(string _header,string _property){
+	DEBINF("string MESSAGE::getProperty(string _header,string _property)",this<<"]["<<_header<<"]["<<_property)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getProperty invalid")
 
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
 	string tmpr;
 
 	if (_header.compare("Via:") == 0){
@@ -913,11 +983,10 @@ string MESSAGE::getProperty(string _header,string _property){
 			return tmpr;
 		}
 		return "";
-
 	}
 }
 string MESSAGE::_getProperty(string _fullstring,string __property){
-
+	DEBINF("string MESSAGE::_getProperty(string _fullstring,string __property)",this<<"]["<<_fullstring<<"]["<<__property)
 
 	char xxx[_fullstring.length() +1];
 	strcpy(xxx,_fullstring.c_str());
@@ -928,12 +997,12 @@ string MESSAGE::_getProperty(string _fullstring,string __property){
 	if ( aaa != NULL ){
 		if (strncmp(aaa + _property.length(),";",1) == 0){
 			//caso a senza valore ma in mezzo
-			DEBY
+			DEBINF("string MESSAGE::_getProperty(string _fullstring,string __property) return",this<<"]["<<_fullstring<<"]["<<__property<<"][")
 			return "";
 		}
 		else if (strncmp(aaa + _property.length(),"\0",1) == 0){
 			//caso b senza valore alla fine
-			DEBY
+			DEBINF("string MESSAGE::_getProperty(string _fullstring,string __property) return",this<<"]["<<_fullstring<<"]["<<__property<<"][")
 			return "";
 		}
 		else if (strncmp(aaa + _property.length(),"=",1) == 0){
@@ -945,22 +1014,25 @@ string MESSAGE::_getProperty(string _fullstring,string __property){
 			if (bbb != NULL){
 				sprintf(bbb,"");
 			}
-			DEBY
+			DEBINF("string MESSAGE::_getProperty(string _fullstring,string __property) return",this<<"]["<<_fullstring<<"]["<<__property<<"]["<<aaa+_property.length())
 			return (aaa+_property.length());
 		}
 	}
 	else {
-		//no data
+		DEBINF("string MESSAGE::_getProperty(string _fullstring,string __property) return",this<<"]["<<_fullstring<<"]["<<__property<<"][xxdxxdxx")
 		return "xxdxxdxx";
 	}
 
 }
 void MESSAGE::setProperty(string _head,string __property,string _value){
+	DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"]["<<_head<<"]["<<__property<<"]["<<_value)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setProperty invalid")
 
-	fillIn();
-	compiled = false;
+	if(messageStatus == 0){
+		fillIn();
+	}
+	messageStatus = 2;
 
 	string _fullstring = "";
 	int idx = -1;
@@ -971,6 +1043,7 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			_fullstring = via_line[0].first;
 			isVia = true;
 		}else{
+			DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value) nothing done",this)
 			return;
 		}
 	}else{
@@ -981,8 +1054,10 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			}
 		}
 	}
-	if (idx == -1 &&!isVia)
+	if (idx == -1 &&!isVia){
+		DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value) nothing done",this)
 		return;
+	}
 
 	char xxx[_fullstring.length() +1];
 	strcpy(xxx,_fullstring.c_str());
@@ -996,18 +1071,18 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			DEBY
 			char* yyy = aaa+1;
 			sprintf(yyy,"");
-			DEBOUT("first part",xxx);
+			DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] first part xxx ["<<xxx);
 			yyy = aaa+_property.length();
-			DEBOUT("first part",yyy);
+			DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] first part yyy ["<<yyy);
 			string newinse = xxx;
 			newinse += _property;
 			newinse += "=";
 			newinse += _value;
 			newinse += yyy;
-			DEBOUT("new line",newinse);
+			DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
 			if(isVia){
 				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"newvia")
+				NEWPTR2(nx, char[newinse.length()+1],"via_line")
 				strcpy(nx,newinse.c_str());
 				via_line[0].first = nx;
 				via_line[0].second = true;
@@ -1030,10 +1105,10 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			newinse += _property;
 			newinse += "=";
 			newinse += _value;
-			DEBOUT("new line",newinse);
+			DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
 			if(isVia){
 				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"newvia")
+				NEWPTR2(nx, char[newinse.length()+1],"via_line")
 				strcpy(nx,newinse.c_str());
 				via_line[0].first = nx;
 				via_line[0].second = true;
@@ -1073,7 +1148,7 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			}
 			if(isVia){
 				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"newvia")
+				NEWPTR2(nx, char[newinse.length()+1],"via_line")
 				strcpy(nx,newinse.c_str());
 				via_line[0].first = nx;
 				via_line[0].second = true;
@@ -1085,8 +1160,8 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 				message_line[idx].first = nx;
 				message_line[idx].second = true;
 			}
+			DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
 			return;
-			DEBOUT("new line",newinse);
 		}
 	}
 	else {
@@ -1099,7 +1174,7 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 		newinse += _value;
 		if(isVia){
 			char* nx;
-			NEWPTR2(nx, char[newinse.length()+1],"newvia")
+			NEWPTR2(nx, char[newinse.length()+1],"via_line")
 			strcpy(nx,newinse.c_str());
 			via_line[0].first = nx;
 			via_line[0].second = true;
@@ -1111,44 +1186,59 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			message_line[idx].first = nx;
 			message_line[idx].second = true;
 		}
-		DEBOUT("new line",newinse);
+		DEBINF("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
 		return;
 	}
 
 
 }
 string MESSAGE::getViaLine(void){
+	DEBINF("string MESSAGE::getViaLine(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getViaLine invalid")
 
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if (hasvialines){
+		DEBINF("string MESSAGE::getViaLine(void)",this<<"]["<< via_line.front().first)
 		return via_line.front().first;
 	}
 	else{
+		DEBINF("string MESSAGE::getViaLine(void)",this<<"][")
 		return "";
 	}
 }
 string MESSAGE::getViaBranch(void){
+	DEBINF("string MESSAGE::getViaBranch(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getViaProperty invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if (!parsedBranch){
 		branch = getProperty("Via:", "branch");
 		parsedBranch = true;
 	}
+	DEBINF("string MESSAGE::getViaBranch(void)",this<<"]["<<branch)
+
 	return branch;
 }
 string MESSAGE::getViaUriHost(void){
+	DEBINF("string MESSAGE::getViaUriHost(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getViaUriHost invalid")
 
 	DEBWARNING("MESSAGE::getViaUriHost works with fixed values","")
 	// Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK1c40b01306836794445384;rport
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
 	if (viaUriParsed){
-		return viaUriHost;
+		DEBINF("string MESSAGE::getViaUriHost(void)",this<<"]["<<viaUriHost)
 	}
 	else {
 		if(hasvialines){
@@ -1164,43 +1254,54 @@ string MESSAGE::getViaUriHost(void){
 			viaUriHost = workline;
 			viaUriParsed = true;
 			viaUriPort = atoi(ccc);
-			DEBOUT("MESSAGE::getViaUriHost host", viaUriHost)
-			DEBOUT("MESSAGE::getViaUriHost port", viaUriPort)
+			DEBINF("string MESSAGE::getViaUriHost(void)",this<<"]["<<viaUriHost)
 		}
 	}
+	return viaUriHost;
 
 }
 int MESSAGE::getViaUriPort(void){
+	DEBINF("int MESSAGE::getViaUriPort(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getViaUriPort invalid")
 
 	DEBWARNING("MESSAGE::getViaUriHost works with fixed values","")
 
-
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
 	if (viaUriParsed){
-		return viaUriPort;
 	}
 	else{
 		getViaUriHost();
-		return viaUriPort;
 	}
+	DEBINF("int MESSAGE::getViaUriPort(void)",this<<"]["<<viaUriPort)
+	return viaUriPort;
 
 }
 
 bool MESSAGE::hasVia(void){
+	DEBINF("bool MESSAGE::hasVia(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::hasVia invalid")
 
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
+	DEBINF("bool MESSAGE::hasVia(void)",this<<"]["<<hasvialines)
+
 	return hasvialines;
 }
 void MESSAGE::popVia(void){
+	DEBINF("void MESSAGE::popVia(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::popVia invalid")
 
-	fillIn();
-	compiled = false;
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+	messageStatus = 2;
 
 	if(hasvialines){
 		if(via_line[0].second){
@@ -1214,14 +1315,18 @@ void MESSAGE::popVia(void){
 	DEBWARNING("MESSAGE::popVia only removing [0]","")
 }
 void MESSAGE::pushNewVia(string _via){
+	DEBINF("void MESSAGE::pushNewVia(string _via)", this<<"]["<<_via)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::pushNewVia invalid")
 
-	fillIn();
-	compiled = false;
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+	messageStatus = 2;
 
 	char* newheader;
-	NEWPTR2(newheader, char[_via.length()+1],"newvia")
+	NEWPTR2(newheader, char[_via.length()+1],"via_line")
 	strcpy(newheader, _via.c_str());
 	vector< pair<char*, bool> >::iterator it;
 	it = via_line.begin();
