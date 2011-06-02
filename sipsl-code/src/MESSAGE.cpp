@@ -78,10 +78,34 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	strcpy(original_message, _incMessBuff);
 
 
-	filledIn				= false;
 	hasvialines				= false;
 	hasSdp					= false;
-	compiled				= true;
+
+	//0 new
+	//1 filled
+	//2 changed
+	//
+	// -> 0
+	// message created
+	//
+	// 0 -> 1
+	// getXXX invoked
+	// fillIn is called
+	//
+	// 1 -> 2
+	// setX invoked
+	// the message is not synced
+	//
+	// 2 -> 2
+	// setX
+	//
+	// 2 -> 0
+	// compile message
+	//
+	// 0 -> 2 (0->1->2)
+	// setX
+
+	messageStatus			= 0;
 
     sock					= _sock;
     echoClntAddr			= _echoClntAddr;
@@ -159,10 +183,9 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	strcpy(original_message, _sourceMessage->getOriginalString());
 
 
-	filledIn 				= false;
 	hasvialines				= false;
 	hasSdp					= false;
-	compiled				= true;
+	messageStatus			= 0;
 
 	sock 					= _sourceMessage->getSock();
 	echoClntAddr 			= _sourceMessage->getEchoClntAddr();
@@ -220,20 +243,27 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 
 }
 MESSAGE::~MESSAGE(){
+	DEBINF("MESSAGE::~MESSAGE()",this)
 
 	DELPTRARR(original_message,"original_message")
 
-	if(filledIn){
+	if(messageStatus != 0){
 		DELPTRARR(message_char,"message_char")
-	}
-	for(int i = 0; i < message_line.size(); i ++){
-		if(message_line[i].second){
-			DELPTRARR(message_line[i].first,"message_line")
+
+		for(int i = 0; i < message_line.size(); i ++){
+			if(message_line[i].second){
+				DELPTRARR(message_line[i].first,"message_line")
+			}
 		}
-	}
-	for(int i = 0; i < sdp_line.size(); i ++){
-		if(sdp_line[i].second){
-			DELPTRARR(sdp_line[i].first,"sdp_line")
+		for(int i = 0; i < sdp_line.size(); i ++){
+			if(sdp_line[i].second){
+				DELPTRARR(sdp_line[i].first,"sdp_line")
+			}
+		}
+		for(int i = 0; i < via_line.size(); i ++){
+			if(via_line[i].second){
+				DELPTRARR(via_line[i].first,"via_line")
+			}
 		}
 	}
 
@@ -242,92 +272,114 @@ MESSAGE::~MESSAGE(){
 
 }
 MESSAGE* MESSAGE::getSourceMessage(void){
+	DEBINF("MESSAGE* MESSAGE::getSourceMessage(void)",this<<"][")
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setKey invalid")
 
+	DEBINF("MESSAGE* MESSAGE::getSourceMessage(void) sourceMessage",sourceMessage)
 	return sourceMessage;
 }
 void MESSAGE::setSourceMessage(MESSAGE* _source){
+	DEBINF("void MESSAGE::setSourceMessage(MESSAGE* _source)",this<<"]["<<_source)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setKey invalid")
 
     sourceHeadCallId = _source->getHeadCallId();
     sourceModulus = _source->getModulus();
     sourceMessage = _source;
+	DEBINF("void MESSAGE::setSourceMessage(MESSAGE* _source)",this<<"]["<<sourceHeadCallId<<"]["<<sourceModulus<<"]["<<sourceMessage)
+
 }
 string MESSAGE::getSourceMessageCallId(void){
+	DEBINF("string MESSAGE::getSourceMessageCallId(void)",this<<"][")
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setKey invalid")
 
+	DEBINF("string MESSAGE::getSourceMessageCallId(void)",this<<"]["<<sourceHeadCallId)
 	return sourceHeadCallId;
 }
 void MESSAGE::setSourceHeadCallId(string _scid){
+	DEBINF("void MESSAGE::setSourceHeadCallId(string _scid)",this<<"]["<<_scid)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setKey invalid")
 
 	sourceHeadCallId = _scid;
 }
 void MESSAGE::setSourceModulus(int _mod){
+	DEBINF("void MESSAGE::setSourceModulus(int _mod)",this<<"]["<<_mod)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setKey invalid")
 
 	sourceModulus = _mod;
 }
 int MESSAGE::getSourceModulus(void){
+	DEBINF("int MESSAGE::getSourceModulus(void)",this<<"][")
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setKey invalid")
 
+	DEBINF("int MESSAGE::getSourceModulus(void)",this<<"]["<<sourceModulus)
 	return sourceModulus;
 }
 void MESSAGE::setValid(int _valid){
+	DEBINF("void MESSAGE::setValid(int _valid)",this<<"]["<<_valid)
 	invalid = _valid;
 }
 bool MESSAGE::getLock(void){
+	DEBINF("bool MESSAGE::getLock(void)",this<<"][")
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getLock invalid")
 
+	DEBINF("bool MESSAGE::getLock(void)",this<<"]["<<lock)
 	return lock;
 }
 void MESSAGE::unSetLock(CALL_OSET* _call_oset){
+	DEBINF("void MESSAGE::unSetLock(CALL_OSET* _call_oset)",this<<"]["<<_call_oset)
 	if (invalid == 1){
 		DEBASSERT("MESSAGE::unSetLock invalid")}
 
-	DEBSIP("MESSAGE::unSetLock ", this)
 	_call_oset->removeLockedMessage(this);
 	lock=false;
 }
 void MESSAGE::setLock(CALL_OSET* _call_oset){
+	DEBINF("void MESSAGE::setLock(CALL_OSET* _call_oset)",this<<"]["<<_call_oset)
 	if (invalid == 1){
 		DEBASSERT("MESSAGE::setLock invalid")}
 
-	DEBSIP("MESSAGE::unSetLock ", this)
 	_call_oset->insertLockedMessage(this);
 	lock=true;
 }
 string MESSAGE::getKey(void){
+	DEBINF("string MESSAGE::getKey(void)",this<<"][")
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getKey invalid")
 
+	DEBINF("string MESSAGE::getKey(void)",this<<"]["<<key)
 	return key;
 }
 void MESSAGE::setKey(string _key){
+	DEBINF("void MESSAGE::setKey(string _key)",this<<"]["<<_key)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setKey invalid")
 
 	key = _key;
 }
 int MESSAGE::fillIn(void){
+	DEBINF("int MESSAGE::fillIn(void)",this<<"][")
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::fillIn invalid")
 
-	if(filledIn){
+	if(messageStatus == 1){
+		DEBINF("int MESSAGE::fillIn(void)",this<<"][already filled")
 		return message_line.size();
 	}
 
-	if(!compiled){
+	if(messageStatus == 2){
+		DEBINF("int MESSAGE::fillIn(void)",this<<"][message changed")
 		compileMessage();
 	}
 
+	//messageStatus == 0
+	//serve???
 	NEWPTR2(message_char, char[strlen(original_message)+1],"message_char "<<strlen(original_message)+1)
 	strcpy(message_char, original_message);
 
@@ -342,76 +394,99 @@ int MESSAGE::fillIn(void){
 		//cut ^M
 		int ll = strlen(tok);
 		char* trok = tok + ll - 1 ;
-		sprintf(trok,"");
+		strcpy(trok,"");
 		if (!fillSDP){
 			if (strncmp(tok,"Via:", 4) == 0){
-				DEBOUT("MESSAGE::fillIn via", tok)
+				DEBINF("MESSAGE::fillIn via", tok)
 				hasvialines = true;
 				via_line.push_back( make_pair (tok,false) );
 			}
 			else{
-				DEBOUT("MESSAGE::fillIn line", tok)
+				DEBINF("MESSAGE::fillIn line", tok)
 				message_line.push_back( make_pair (tok,false) );
 			}
 		}
 		else{
-			DEBOUT("MESSAGE::fillIn sdp", tok)
+			DEBINF("MESSAGE::fillIn sdp", tok)
 			sdp_line.push_back( make_pair(tok,false));
 		}
 		tok = strtok(NULL, "\n");
 	}
-	filledIn = true;
+	messageStatus = 1;
 
+	DEBINF("int MESSAGE::fillIn(void)", this<<"]["<<message_line.size())
 	return message_line.size();
 
 }
 bool MESSAGE::isFilled(void){
+	DEBINF("bool MESSAGE::isFilled(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::isFilled invalid")
 
-	return filledIn;
+	DEBINF("bool MESSAGE::isFilled(void)", messageStatus == 1)
+	return messageStatus == 1;
 }
 int MESSAGE::getDimString(void){
+	DEBINF("int MESSAGE::getDimString(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getDimString invalid")
 
+	DEBINF("int MESSAGE::getDimString(void)", this<<"]["<<strlen(original_message))
 	return strlen(original_message);
 }
 char* MESSAGE::getOriginalString(void){
+	DEBINF("char* MESSAGE::getOriginalString(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getOriginalString invalid")
 
+	DEBINF("char* MESSAGE::getOriginalString(void)", this<<"][\n"<<original_message)
 	return original_message;
 }
 bool MESSAGE::hasSDP(void){
+	DEBINF("bool MESSAGE::hasSDP(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::hasSDP invalid")
 
 	fillIn();
+	DEBINF("bool MESSAGE::hasSDP(void)", this<<"]["<<hasSdp)
 	return hasSdp;
 }
 string MESSAGE::getFirstLine(void){
+	DEBINF("string MESSAGE::getFirstLine(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getFirstLine invalid")
 
 	fillIn();
-	return message_line.front().first;
+	DEBINF("string MESSAGE::getFirstLine(void)", this<<"]["<<message_line[0].first)
+	return message_line[0].first;
 }
 char* MESSAGE::getMessageBuffer(void){
+	DEBINF("char* MESSAGE::getMessageBuffer(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getMessageBuffer invalid")
 
 	fillIn();
+	DEBINF("char* MESSAGE::getMessageBuffer(void)",this<<"]["<<original_message)
 	return original_message;
 }
 void MESSAGE::compileMessage(void){
+	DEBINF("void MESSAGE::compileMessage(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::compileMessage invalid")
 
 	//build the original_message
 
-	fillIn();
-
+	if(messageStatus == 0){
+		DEBINF("void MESSAGE::compileMessage(void) not filled, do nothing", this)
+		DEBWARNING("void MESSAGE::compileMessage(void) not filled, do nothing", this);
+	}
+	if(messageStatus == 1 ){
+		//not changed
+		DEBINF("void MESSAGE::compileMessage(void) not changed, do nothing", this)
+		DEBWARNING("void MESSAGE::compileMessage(void) not changed, do nothing", this);
+	}
+	//==2
+	qui
 	stringstream origmess;
 	if(!compiled){
 

@@ -191,10 +191,9 @@ class MESSAGE {
 		vector< pair<char*, bool> > message_line;
 		vector< pair<char*, bool> > via_line;
 		vector< pair<char*, bool> > sdp_line;
-		bool filledIn;
 		bool hasvialines;
 		bool hasSdp;
-		bool compiled;
+		int messageStatus;
 
 		////////////////////////////////
 		//Network

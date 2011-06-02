@@ -513,7 +513,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 DEBINF("A unrecognized reply directed to server has reached the call object","")
                 DEBASSERT("Unrecognized Reply message sent to SV machine")
             }
-            DEBINF("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+            //DEBINF("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
             //call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
             call_oset->addTrnsctSm(_message->getGenericHeader("CSeq:"), SODE_TRNSCT_SV, _message->getViaBranch(), trnsctSM);
             DEBINF("call_oset->addTrnsctSm","done")
@@ -685,7 +685,7 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
         else if (_tmpMessage->getTypeOfInternal() == TYPE_OP){
              if ( _tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_ON){
 
-                DEBINF("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#");
+                //DEBINF("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#");
                 // Rule : timer on must be unlocked
                 if (_tmpMessage->getLock()){
                 	DEBDEV("Message to alarm found locked", _tmpMessage)
@@ -697,7 +697,7 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
             }
             else if (_tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_OFF){
 
-                DEBINF("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#")
+                //DEBINF("SL_CO::call action is clear ALARM off", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#")
 #ifdef ALARMENGINE
 				call_oset->getENGINE()->getSUDP()->getAlmgr()->cancelAlarm(_tmpMessage);
 #else
@@ -766,7 +766,7 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 		if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_ALOPOINT){
 			// send message to ALO
 			// 200OK B side
-			DEBINF("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+			//DEBINF("SL_CO::call action is send to ALO", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 			call_oset->getALO()->call(_tmpMessage);
 			if(!_tmpMessage->getLock()){
 				DEBINF("Message coming back form ALO not locked, deleted", _tmpMessage)
@@ -775,13 +775,13 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_NTWPOINT){
 
-			DEBINF("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
+			//DEBINF("SL_CO::call action is send to B", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent())
 			//To network
 			call_oset->getTRNSPRT()->p_w(_tmpMessage);
 
 		}
 		else if (_tmpMessage->getTypeOfInternal() == TYPE_MESS && _tmpMessage->getDestEntity() == SODE_SMSVPOINT) {
-			DEBINF("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << "]["<<_tmpMessage->getHeadCallId().getContent())
+			//DEBINF("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << "]["<<_tmpMessage->getHeadCallId().getContent())
 #ifdef NONESTEDPW
 			call_oset->getSL_CO()->call(_tmpMessage,_r_modulus);
 #else
@@ -793,7 +793,7 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 			DEBINF("SL_CO:: TYPE_OP","")
 
 			if ( _tmpMessage->getTypeOfOperation() == TYPE_OP_TIMER_ON){
-				DEBINF("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#");
+				//DEBINF("SL_CO::call action is send to ALARM on", _tmpMessage->getLine(0) << " ** " << _tmpMessage->getHeadCallId().getContent() << ((C_HeadVia*) _tmpMessage->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch")+ "#" + _tmpMessage->getOrderOfOperation()+ "#");
 
 				//MLF2
 				if (_tmpMessage->getLock()){
@@ -850,7 +850,7 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 			}
 		}
 		else if (_tmpMessage->getDestEntity() == SODE_NOPOINT){
-			DEBINF("SL_CO::TEST, message is abandoned",_tmpMessage->getLine(0))
+			//DEBINF("SL_CO::TEST, message is abandoned",_tmpMessage->getLine(0))
 		}
 		else {
 			//TODO

@@ -144,7 +144,7 @@ class ThreadWrapper {
 #define LOGSIPHIGH
 #define LOGSIPLOW
 
-//#define LOGINF
+#define LOGINF
 #define LOGMIN
 #define LOGDEV
 #define LOGMEM
