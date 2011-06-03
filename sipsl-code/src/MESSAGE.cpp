@@ -250,17 +250,17 @@ MESSAGE::~MESSAGE(){
 	if(messageStatus != 0){
 		DELPTRARR(message_char,"message_char")
 
-		for(int i = 0; i < message_line.size(); i ++){
+		for(unsigned int i = 0; i < message_line.size(); i ++){
 			if(message_line[i].second){
 				DELPTRARR(message_line[i].first,"message_line")
 			}
 		}
-		for(int i = 0; i < sdp_line.size(); i ++){
+		for(unsigned int i = 0; i < sdp_line.size(); i ++){
 			if(sdp_line[i].second){
 				DELPTRARR(sdp_line[i].first,"sdp_line")
 			}
 		}
-		for(int i = 0; i < via_line.size(); i ++){
+		for(unsigned int i = 0; i < via_line.size(); i ++){
 			if(via_line[i].second){
 				DELPTRARR(via_line[i].first,"via_line")
 			}
@@ -452,7 +452,9 @@ bool MESSAGE::hasSDP(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::hasSDP invalid")
 
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
 	DEBINF("bool MESSAGE::hasSDP(void)", this<<"]["<<hasSdp)
 	return hasSdp;
 }
@@ -461,7 +463,9 @@ string MESSAGE::getFirstLine(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getFirstLine invalid")
 
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
 	DEBINF("string MESSAGE::getFirstLine(void)", this<<"]["<<message_line[0].first)
 	return message_line[0].first;
 }
@@ -470,7 +474,9 @@ char* MESSAGE::getMessageBuffer(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getMessageBuffer invalid")
 
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
 	DEBINF("char* MESSAGE::getMessageBuffer(void)",this<<"]["<<original_message)
 	return original_message;
 }
