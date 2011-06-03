@@ -196,6 +196,8 @@ class MESSAGE {
 		char* original_message;
 		//char* and bool true if the line is new false if it is pointing to the strtok
 		vector< pair<char*, bool> > message_line;
+		//<<"HEADERNAME:","HEADEVAL">,false>> to delete spaces between header and value
+		vector< pair<pair<string,char*>, bool> > ex_message_line;
 		vector< pair<char*, bool> > via_line;
 		vector< pair<char*, bool> > sdp_line;
 		bool hasvialines;
