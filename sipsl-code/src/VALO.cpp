@@ -528,7 +528,9 @@ void VALO::onBye(MESSAGE* _message){
 		//Request has to be made using INVITE_A via address
 		string viatmps = __message->getViaLine();
 		DEBY
-		message->setHeadSipRequest("BYE sip:ceppadim@"+__message->getUriHostPort("Via:") + " SIP/2.0");
+		stringstream _ss;
+		_ss << "BYE sip:ceppadim@" << __message->getViaUriHost() << ":" << __message->getViaUriPort() << " SIP/2.0";
+		message->setHeadSipRequest(_ss.str());
 
 		//
 		message->popVia();
