@@ -409,6 +409,22 @@ int MESSAGE::fillIn(void){
 			else{
 				DEBINF("MESSAGE::fillIn line", tok)
 				message_line.push_back( make_pair (tok,false) );
+				char xxx[strlen(tok) + 1];
+				strcpy(xxx,tok);
+				char* beg = strchr(tok,' ');
+				char* endh = strchr(xxx,' ');
+				int i = 0;
+				for (;;){
+					if (strncmp(beg," ",1)!=0)
+						break;
+					beg++;
+					i++;
+					if(i>100)
+						DEBASSERT("???")
+				}
+				strcpy(endh,"");
+				DEBINF("int MESSAGE::fillIn(void)",this<<"]["<<xxx<<"]["<<beg)
+				ex_message_line.push_back( make_pair (make_pair(xxx,beg),false) );
 			}
 		}
 		else{
