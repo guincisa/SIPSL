@@ -120,7 +120,7 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	typeOfInternal			= TYPE_MESS;
 	typeOfOperation			= TYPE_OP_NOOP;
 
-    modulus					=  getModulus();
+    modulus					=  -1;
 
 
 	branch					= "";
@@ -200,7 +200,7 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	typeOfInternal			= TYPE_MESS;
 	typeOfOperation			= TYPE_OP_NOOP;
 
-    modulus					=  getModulus();
+    modulus					=  -1;
 
 
 	branch					= "";
@@ -500,8 +500,9 @@ void MESSAGE::compileMessage(void){
 	if (hasSdp){
 		//calculate size
 		for(int i = 0; i < sdp_line.size(); i ++){
-			sizeOfSdp += strlen(sdp_line[i].first);
+			sizeOfSdp += strlen(sdp_line[i].first) + 1;
 		}
+		sizeOfSdp++;
 	}
 
 	for(int i = 0; i < message_line.size(); i ++){
@@ -1061,8 +1062,8 @@ string MESSAGE::_getProperty(string _fullstring,string __property){
 			if (bbb != NULL){
 				sprintf(bbb,"");
 			}
-			DEBINF("string MESSAGE::_getProperty(string _fullstring,string __property) return",this<<"]["<<_fullstring<<"]["<<__property<<"]["<<aaa+_property.length())
-			return (aaa+_property.length());
+			DEBINF("string MESSAGE::_getProperty(string _fullstring,string __property) return",this<<"]["<<_fullstring<<"]["<<__property<<"]["<<aaa+_property.length()+1)
+			return (aaa+_property.length() + 1);
 		}
 	}
 	else {
@@ -1371,10 +1372,9 @@ void MESSAGE::pushNewVia(string _via){
 	}
 
 	messageStatus = 2;
-
 	char* newheader;
-	NEWPTR2(newheader, char[_via.length()+1],"via_line")
-	strcpy(newheader, _via.c_str());
+	NEWPTR2(newheader, char[_via.length()+6],"via_line")
+	sprintf(newheader, "Via: %s", _via.c_str());
 	vector< pair<char*, bool> >::iterator it;
 	it = via_line.begin();
 	via_line.insert(it, make_pair (newheader,true));
@@ -1382,20 +1382,30 @@ void MESSAGE::pushNewVia(string _via){
 
 }
 string MESSAGE::getHeadCallId(void){
+	DEBINF("string MESSAGE::getHeadCallId(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadCallId invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if(!parsedCallId){
 		callId = getGenericHeader("Call-ID:");
 		parsedCallId = true;
 	}
+	DEBINF("string MESSAGE::getHeadCallId(void)",this<<"]["<<callId)
 	return callId;
 
 }
 string MESSAGE::getDialogExtendedCID(void){
+	DEBINF("string MESSAGE::getDialogExtendedCID(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getDialogExtendedCID invalid")
 
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if(!parsedCallId){
 		getHeadCallId();
@@ -1403,67 +1413,105 @@ string MESSAGE::getDialogExtendedCID(void){
 	if(!parsedFromTag){
 		getFromTag();
 	}
+	DEBINF("string MESSAGE::getDialogExtendedCID(void)",this<<"]["<<callId<<fromTag)
 	return callId + fromTag;
 }
 string MESSAGE::getFromTag(void){
+	DEBINF("string MESSAGE::getFromTag(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getFromTag invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if(!parsedFromTag){
 		fromTag = getProperty("From:", "tag");
 		parsedFromTag = true;
 	}
+	DEBINF("string MESSAGE::getFromTag(void)", this<<"]["<<fromTag)
 	return fromTag;
 }
 string MESSAGE::getToTag(void){
+	DEBINF("string MESSAGE::getToTag(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getToTag invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if(!parsedToTag){
 		toTag = getProperty("To:", "tag");
 		parsedToTag = true;
 	}
+	DEBINF("string MESSAGE::getToTag(void)",this<<"]["<<toTag)
 	return toTag;
 }
 string MESSAGE::getHeadTo(void){
+	DEBINF("string MESSAGE::getHeadTo(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadTo invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if(!parsedTo){
 		headTo = getGenericHeader("To:");
 		parsedTo = true;
 	}
+	DEBINF("string MESSAGE::getHeadTo(void)", this<<"]["<<headTo)
 	return headTo;
 }
 string MESSAGE::getHeadToName(void){
+	DEBINF("string MESSAGE::getHeadToName(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadToName invalid")
 
-		if(!parsedToName){
-			DEBASSERT("")
-		}
-		return headToName;
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+	if(!parsedToName){
+		DEBASSERT("")
+	}
+	DEBINF("string MESSAGE::getHeadToName(void)",this<<"]["<<headToName)
+	return headToName;
 }
 string MESSAGE::getHeadToUri(void){
+	DEBINF("string MESSAGE::getHeadToUri(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadToUri invalid")
 
-		if(!parsedToUri){
-			DEBASSERT("")
-		}
-		return headToUri;
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+	if(!parsedToUri){
+		DEBASSERT("")
+	}
+	DEBINF("string MESSAGE::getHeadToUri(void)",this<<"]["<<headToUri)
+	return headToUri;
 }
 string MESSAGE::getHeadToParams(void){
+	DEBINF("string MESSAGE::getHeadToParams(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadToParms invalid")
 
-		if(!parsedToParms){
-			DEBASSERT("")
-		}
-		return headToParms;
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+	if(!parsedToParms){
+		DEBASSERT("")
+	}
+	DEBINF("string MESSAGE::getHeadToParams(void)",this<<"]["<<headToParms)
+
+	return headToParms;
 }
 int MESSAGE::getReqRepType(void){
-
+	DEBINF("int MESSAGE::getReqRepType(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getReqRepType invalid")
 
@@ -1472,6 +1520,7 @@ int MESSAGE::getReqRepType(void){
 	}
 
 	if (reqRep != 0) {
+		DEBINF("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
 		return reqRep;
 	}
 	if(strncmp(message_line[0].first,"SIP",3) == 0){
@@ -1512,6 +1561,7 @@ int MESSAGE::getReqRepType(void){
 		reqRep = REQUNSUPP;
 		headSipRequest = "";
 	}
+	DEBINF("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
 	return reqRep;
 
 }
@@ -1520,13 +1570,27 @@ void MESSAGE::setHeadSipRequest(string _content){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setHeadSipRequest invalid")
 
+	if(messageStatus == 0){
+		fillIn();
+	}
+
+	messageStatus = 2;
+
 	setGenericHeader("REQUEST", _content);
 	DEBWARNING("MESSAGE::setHeadSipRequest change also other codes","")
 
 }
 void MESSAGE::setHeadSipReply(string _content){
+	DEBINF("void MESSAGE::setHeadSipReply(string _content)", this <<"]["<<_content)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setHeadSipReply invalid")
+
+	if(messageStatus == 0){
+		fillIn();
+	}
+
+	messageStatus = 2;
+
 
 	setGenericHeader("REPLY", _content);
 
@@ -1534,47 +1598,75 @@ void MESSAGE::setHeadSipReply(string _content){
 
 }
 int  MESSAGE::getHeadSipRequestCode(void){
+	DEBINF("int  MESSAGE::getHeadSipRequestCode(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadSipRequestCode invalid")
 
+	if(messageStatus !=1){
+		fillIn();
+	}
+
 	if (reqRep == 0){
 		getReqRepType();
 	}
+	DEBINF("int  MESSAGE::getHeadSipRequestCode(void)",this<<"]["<<requestCode)
 	return requestCode;
 }
 string  MESSAGE::getHeadSipRequest(void){
+	DEBINF("string  MESSAGE::getHeadSipRequest(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadSipRequest invalid")
 
-	if (reqRep == 0){
-		getReqRepType();
+	if(messageStatus !=1){
+		fillIn();
 	}
-	return headSipRequest;
-}
-int  MESSAGE::getHeadSipReplyCode(void){
-	if (invalid == 1)
-		DEBASSERT("MESSAGE::getHeadSipReplyCode invalid")
 
 	if (reqRep == 0){
 		getReqRepType();
 	}
+	DEBINF("string  MESSAGE::getHeadSipRequest(void)",this<<"]["<<headSipRequest)
+	return headSipRequest;
+}
+int  MESSAGE::getHeadSipReplyCode(void){
+	DEBINF("int  MESSAGE::getHeadSipReplyCode(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipReplyCode invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+	if (reqRep == 0){
+		getReqRepType();
+	}
+	DEBINF("int  MESSAGE::getHeadSipReplyCode(void)",this<<"]["<<replyCode)
 	return replyCode;
 
 }
 string  MESSAGE::getHeadSipReply(void){
+	DEBINF("string  MESSAGE::getHeadSipReply(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadSipReply invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if (reqRep == 0){
 		getReqRepType();
 	}
+	DEBINF("string  MESSAGE::getHeadSipReply(void)",this<<"]["<<headSipReply)
 	return headSipReply;
 
 }
 bool MESSAGE::isUriSecure(string header){
+	DEBINF("bool MESSAGE::isUriSecure(string header)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::isUriSecure invalid")
-
+	if(messageStatus !=1){
+		fillIn();
+	}
+	DEBASSERT("")
 }
 pair<string,int> MESSAGE::getUri(string header){
 	DEBINF("string MESSAGE::getUriHost(string header)",this<<"]["<<header)
@@ -1608,18 +1700,29 @@ pair<string,int> MESSAGE::getUri(string header){
 
 }
 string MESSAGE::getHeadCSeqMethod(void){
+	DEBINF("string MESSAGE::getHeadCSeqMethod(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadCSeqMethod invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if(!parsedCseq){
 		getHeadCSeq();
 	}
+	DEBINF("string MESSAGE::getHeadCSeqMethod(void)",this<<"]["<<cSeqMethod)
 	return cSeqMethod;
 
 }
 int MESSAGE::getHeadCSeq(void){
+	DEBINF("int MESSAGE::getHeadCSeq(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadCSeq invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if(!parsedCseq){
 		DEBY
@@ -1633,6 +1736,8 @@ int MESSAGE::getHeadCSeq(void){
 		parsedCseq = true;
 		DEBY
 	}
+	DEBINF("int MESSAGE::getHeadCSeq(void)", this<<"]["<<cSeq)
+
 	return cSeq;
 
 }
