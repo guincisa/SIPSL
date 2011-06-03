@@ -182,14 +182,9 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 	//set new Via, is used by the b part to send replies
 	_gted->popVia();
-	string viatmp("SIP/2.0/UDP ");
-	viatmp += sudp->getDomain();
-	viatmp +=":";
-	viatmp += sudp->getPort();
-	viatmp += ";branch=z9hG4bK";
-	viatmp += _gtor->getKey();
-	viatmp += ";rport";
-	_gted->pushNewVia(viatmp);
+	stringstream viatmp;
+	viatmp << ("SIP/2.0/UDP ") << sudp->getDomain() << ":" << sudp->getPort() << ";branch=z9hG4bK" <<_gtor->getKey() << ";rport";
+	_gted->pushNewVia(viatmp.str());
 
 #ifdef LOGSIP
         _gted->dumpVector();

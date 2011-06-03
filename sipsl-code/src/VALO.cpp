@@ -149,11 +149,7 @@ void VALO::onInvite(MESSAGE* _message){
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
 
     //MLF2
-    //Needed for Matrix_A
-    //message->setSourceMessage(_message);
 	message->setSourceMessage(_message->getSourceMessage());
-//    message->setSourceHeadCallId(_message->getSourceHeadCallId().getContent());
-//    message->setSourceModulus(_message->getSourceModulus());
 
     //Deleted in action_SV
     //PURGEMESSAGE(_message)
