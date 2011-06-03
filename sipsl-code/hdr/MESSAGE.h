@@ -362,9 +362,7 @@ class MESSAGE {
     	//argument is the header, or "REQUEST"
 	public:
     	bool isUriSecure(string header);
-    	string getUriHostPort(string header);
-    	string getUriHost(string header);
-    	int getUriPort(string header);
+    	pair<string,int> getUri(string header);
 	public:
     	string getHeadCSeqMethod(void);
     	int getHeadCSeq(void);

@@ -385,6 +385,9 @@ int MESSAGE::fillIn(void){
 	NEWPTR2(message_char, char[strlen(original_message)+1],"message_char "<<strlen(original_message)+1)
 	strcpy(message_char, original_message);
 
+	_clearStatus();
+
+
 	bool fillSDP = false;
 	char* tok = strtok(message_char, "\n");
 	while (tok != NULL){
@@ -535,6 +538,7 @@ void MESSAGE::compileMessage(void){
 	}
 
 	messageStatus = 0;
+	_clearStatus();
 
 	DEBINF("void MESSAGE::compileMessage(void) origmess.str()", origmess.str())
 
@@ -561,6 +565,52 @@ void MESSAGE::dumpMessageBuffer(void){
 		DEBINF("MESSAGE::dumpMessageBuffer s", sdp_line[i].second << "][" << sdp_line[i].first)
 	}
 }
+void MESSAGE::_clearStatus(void){
+
+	branch					= "";
+	parsedBranch			= false;
+	viaUriHost				= "";
+	viaUriParsed   			= false;
+	viaUriPort				= 0;
+
+
+	callId					= "";
+	parsedCallId			= false;
+
+
+	fromTag					= "";
+	parsedFromTag			= false;
+	toTag					= "";
+	parsedToTag				= false;
+
+
+	headTo					= "";
+	headToName				= "";
+	headToUri				= "";
+	headToParms				= "";
+	parsedTo				= false;
+	parsedToName			= false;
+	parsedToUri				= false;
+	parsedToParms			= false;
+
+
+	reqRep					= 0;
+	headSipRequest			= "";
+	headSipReply			= "";
+	replyCode				= 0;
+	requestCode				= 0;
+
+
+	cSeqMethod				= "";
+	cSeq					= 0;
+	parsedCseq			= false;
+
+	sdp_line.clear();
+	via_line.clear();
+	message_line.clear();
+
+}
+
 int MESSAGE::getSock(void){
 	DEBINF("int MESSAGE::getSock(void)",this)
 	if (invalid == 1)
@@ -808,7 +858,6 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		strcpy(newfirstline,_content.c_str());
 		message_line[0].first = newfirstline;
 		message_line[0].second = true;
-		reqRep = 0;
 		return;
 	}
 	if (_header.compare("REQUEST") == 0){
@@ -817,7 +866,6 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		strcpy(newfirstline,_content.c_str());
 		message_line[0].first = newfirstline;
 		message_line[0].second = true;
-		reqRep = 0;
 		return;
 	}
 
@@ -928,13 +976,12 @@ void MESSAGE::dropHeader(string _header){
 	size_t i;
 	bool found = false;
 	vector< pair<char*, bool> >::iterator _find;
-	for(i = 1; i < message_line.size(); i ++){
-		_find = message_line.begin();
-		if(strncmp(message_line[i].first,_header.c_str(), _header.length()) ==0 ){
+	_find = message_line.begin();
+	for(i = 0; i < message_line.size(); i ++){
+		if(strncmp(message_line[i].first,_header.c_str(), _header.length()) == 0 ){
 			if (message_line[i].second){
 				DELPTRARR(message_line[i].first,"message_line "<<i)
 			}
-			vector< pair<char*, bool> >::iterator _find;
 			message_line.erase(_find);
 			found = true;
 			break;
@@ -1420,7 +1467,9 @@ int MESSAGE::getReqRepType(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getReqRepType invalid")
 
-	fillIn();
+	if(messageStatus !=1){
+		fillIn();
+	}
 
 	if (reqRep != 0) {
 		return reqRep;
@@ -1467,7 +1516,7 @@ int MESSAGE::getReqRepType(void){
 
 }
 void MESSAGE::setHeadSipRequest(string _content){
-
+	DEBINF("void MESSAGE::setHeadSipRequest(string _content)", this <<"]["<<_content)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::setHeadSipRequest invalid")
 
@@ -1527,14 +1576,35 @@ bool MESSAGE::isUriSecure(string header){
 		DEBASSERT("MESSAGE::isUriSecure invalid")
 
 }
-string MESSAGE::getUriHostPort(string header){
-
-}
-string MESSAGE::getUriHost(string header){
+pair<string,int> MESSAGE::getUri(string header){
+	DEBINF("string MESSAGE::getUriHost(string header)",this<<"]["<<header)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getUriHost invalid")
-}
-int MESSAGE::getUriPort(string header){
+
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+
+	if(header.compare("REQUEST") == 0){
+		//INVITE sip:service@10.21.99.79:5062 SIP/2.0
+		string Via="INVITE sip:service@10.21.99.79:5062 SIP/2.0";
+		char* xxx = new char[strlen(message_line[0].first) + 1];
+		strcpy(xxx,message_line[0].first);
+		char* aaa = strstr(xxx," ");
+		char* bbb = strstr(aaa+1," ");
+		strcpy(bbb,"");
+		char* ccc = aaa+1;
+		char* ddd = strstr(ccc,"@");
+		char* eee = ddd+1;
+		char* fff = strstr(eee,":");
+		strcpy(fff,"");
+		string return1 = eee;
+		int return2 = atoi(fff+1);
+		DEBINF("pair<string,int> MESSAGE::getUri(string header)",this<<"]["<<header<<"]["<<return1<<"]["<<return2)
+		return(make_pair(return1,return2));
+	}
+	return (make_pair("",0));
 
 }
 string MESSAGE::getHeadCSeqMethod(void){

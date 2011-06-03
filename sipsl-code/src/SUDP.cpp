@@ -266,9 +266,12 @@ void SUDP::sendRequest(MESSAGE* _message){
     DEBMESSAGE("Request address ", _message)
 
     si_part.sin_family = AF_INET;
-    host = gethostbyname(_message->getUriHost("REQUEST").c_str());
+    pair<string,int> _pair = _message->getUri("REQUEST");
+    char _hostchar[_pair.first.length()+1];
+    strcpy(_hostchar,_pair.first.c_str());
+    host = gethostbyname(_hostchar);
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-    si_part.sin_port = htons(_message->getUriPort("REQUEST"));
+    si_part.sin_port = htons(_message->getUri("REQUEST").second);
 //	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 //		DEBASSERT ("Can't set request address")
 //	}
