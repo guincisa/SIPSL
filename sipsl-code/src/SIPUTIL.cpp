@@ -79,6 +79,7 @@
 
 
 void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted){
+	DEBINF("void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted)",_gtor<<"]["<<__gtor<<"]["<<_gted)
 
 	//__gtor is the B reply
 	// _gtor is the A Invite
@@ -127,7 +128,6 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	a=rtpmap:0 PCMU/8000
 	 */
 
-	_gted->setGenericHeader("Contact:","<sip:sipsl@grog:5060>");
 
 //	if ( _gted->getHeadTo()->getC_AttUriParms().getContent().length() == 0){
 //		char totmp[512];
@@ -150,6 +150,8 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 //		totmp += (unsigned int)__gtor;
 //	}
 
+	_gted->setGenericHeader("Contact:","<sip:sipsl@grog:5060>");
+
 	string ttt(""); ttt += (unsigned int) __gtor;
 	_gted->setProperty("To:", "tag", ttt);
 	_gted->setHeadSipReply(_gtor->getHeadSipReply());
@@ -163,6 +165,7 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 }
 
 void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
+	DEBINF("void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted)",_gtor<<"]["<<_gted)
 
 	_gted->purgeSDP();
 	_gted->dropHeader("User-Agent:");
@@ -178,6 +181,7 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 }
 
 void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, string _callidy){
+	DEBINF("void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, string _callidy)",_gtor<<"]["<<_gted<<"]["<<sudp<<"]["<<_callidy)
 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 	//set new Via, is used by the b part to send replies
@@ -186,9 +190,6 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 	viatmp << ("SIP/2.0/UDP ") << sudp->getDomain() << ":" << sudp->getPort() << ";branch=z9hG4bK" <<_gtor->getKey() << ";rport";
 	_gted->pushNewVia(viatmp.str());
 
-#ifdef LOGSIP
-        _gted->dumpVector();
-#endif
 	_gted->setGenericHeader("Call-ID:", _callidy);
 
 	_gted->setProperty("From:", "tag", _gted->getKey());
@@ -202,6 +203,7 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 }
 
 void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
+	DEBINF("void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry)",_invite<<"]["<<_etry)
 
 	//DEBOUT("ETRY","SIP/2.0 100 Trying")
 	_etry->setHeadSipReply("SIP/2.0 100 Trying");
@@ -210,15 +212,12 @@ void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 
 	genASideReplyFromRequest(_invite, _etry);
 	_etry->compileMessage();
-#ifdef LOGSIP
-	_etry->dumpVector();
-#endif
 
 }
 void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header){
-
+	DEBINF("void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header)",_invite<<"]["<<_qrep<<"]["<<_header)
 	//DEBOUT("Reply",_header)
-		_qrep->setHeadSipReply(_header);
+	_qrep->setHeadSipReply(_header);
 
 	_qrep->dropHeader("Contact:");
 

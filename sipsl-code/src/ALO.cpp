@@ -70,7 +70,7 @@ ALO::ALO(ENGINE* _sl_cc, CALL_OSET* _oset){
 }
 //V6
 void ALO::call(MESSAGE* _message) {
-
+	DEBINF("void ALO::call(MESSAGE* _message)",this<<"]["<<_message)
 	DEBALO("ALO","call")
 	//V6
 	//pthread_mutex_unlock(&(sb.condvarmutex));

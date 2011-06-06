@@ -64,7 +64,7 @@ typedef struct tuple2 {
 extern "C" void* ALARMSTACK (void*);
 
 void * ALARMSTACK(void *_tgtObject) {
-
+	DEBINF("void * ALARMSTACK(void *_tgtObject)",_tgtObject)
     DEBDEV("ALARMSTACK start","")
 
     ALMGRtuple *tgtObject = (ALMGRtuple *)_tgtObject;
@@ -79,6 +79,8 @@ ALMGR::ALMGR(int _th, int _map, string _obname, SL_CC* _sl_cc, __time_t _sec, lo
 #else
 ALMGR::ALMGR(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
 #endif
+	DEBINF("ALMGR::ALMGR(int _th, int _map, string _obname, SL_CC* _sl_cc, __time_t _sec, long int _nsec):ENGINE(_th,_map,_obname)",this<<"]["<<
+			_th<<"]["<<_map<<"]["<<_obname<<"]["<<_sl_cc<<"]["<<_sec<<"]["<<_nsec)
 
 	sleep_time.tv_sec = _sec;
 	sleep_time.tv_nsec = _nsec;
@@ -100,7 +102,7 @@ ALMGR::ALMGR(SL_CC* _sl_cc, timespec _sleep_time){
 	DEBDEV("ALMGR::ALMGR", "alarm created")
 }
 void ALMGR::initAlarm(void){
-
+	DEBINF("void ALMGR::initAlarm(void)",this)
 	DEBDEV("ALMGR::initAlarm", "init")
 
 	ALMGRtuple *t1[ALARMMAPS];
@@ -122,7 +124,7 @@ void ALMGR::initAlarm(void){
     return;
 }
 void ALMGR::alarmer(int _mod){
-
+	DEBINF("void ALMGR::alarmer(int _mod)",this<<"]["<<_mod)
 #ifdef DEBCODE
 	int jumper = 0;
 #endif
@@ -271,13 +273,14 @@ void ALMGR::alarmer(int _mod){
     }
 }
 void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
+	DEBINF("void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime)",this<<"]["<<_fireTime)
 
 	_message->setFireTime(_fireTime);
 	p_w((void*)_message);
 	return;
 }
 void ALMGR::parse(void *__mess,int _mod){
-
+	DEBINF("void ALMGR::parse(void *__mess,int _mod)",this<<"]["<<__mess<<"]["<<_mod)
     RELLOCK(&(sb[_mod]->condvarmutex),"sb[" <<_mod<<"]->condvarmutex");
 
     PROFILE("ALMGR::parse start")
@@ -396,13 +399,13 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
 
 #ifdef ALARMENGINE
 void ALMGR::cancelAlarm(MESSAGE* _message){
-
+	DEBINF("void ALMGR::cancelAlarm(MESSAGE* _message)",this<<"]["<<_message)
 	insertAlarm(_message, (lli)0);
 }
 
 #else
 void ALMGR::cancelAlarm(string _cidbranch, int _mod){
-
+	DEBINF("void ALMGR::cancelAlarm(string _cidbranch, int _mod)",this<<"]["<<_cidbranch<<"]["<<_message)
     PROFILE("ALMGR::cancelAlarm begin mod "<< _mod)
 
 	TIMEDEF
@@ -435,7 +438,7 @@ void ALMGR::cancelAlarm(string _cidbranch, int _mod){
 }
 #endif
 void ALMGR::internalCancelAlarm(string _cidbranch, int _mod){
-    
+    DEBINF("void ALMGR::internalCancelAlarm(string _cidbranch, int _mod)",this<<"]["<<_cidbranch<<"]["<<_mod)
     map<string, ALARM*>::iterator p;
     p = cidmap[_mod].find(_cidbranch);
 
@@ -449,7 +452,7 @@ void ALMGR::internalCancelAlarm(string _cidbranch, int _mod){
 }
 //**********************************************************************************
 ALARM::ALARM(MESSAGE *_message, lli _fireTime){
-
+	DEBINF("ALARM::ALARM(MESSAGE *_message, lli _fireTime)",this<<"]["<<_message<<"]["<<_fireTime)
 	message = _message;
 	fireTime = _fireTime;
 	active = true;
@@ -462,17 +465,21 @@ ALARM::ALARM(void){
     DEBASSERT("ALARM empty constructor called")
 }
 lli ALARM::getTriggerTime(void){
+	DEBINF("lli ALARM::getTriggerTime(void)",this)
 	return fireTime;
 }
 string ALARM::getCidbranch(void){
+	DEBINF("string ALARM::getCidbranch(void)",this)
 	return cidbranch;
 }
 
 void ALARM::cancel(void){
+	DEBINF("void ALARM::cancel(void)",this)
 	DEBDEV("ALARM::cancel",this)
     active = false;
 }
 MESSAGE* ALARM::getMessage(void){
+	DEBINF("MESSAGE* ALARM::getMessage(void)", this)
 //	if (!active){
 //		DEBASSERT("Break rule: accessing the message of an inactive ALARM")
 //		return 0x0;
@@ -482,6 +489,8 @@ MESSAGE* ALARM::getMessage(void){
 //	}
 }
 bool ALARM::isActive(void){
+	DEBINF("bool ALARM::isActive(void)", this)
+
 	return active;
 }
 

@@ -114,6 +114,7 @@ void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
 //**********************************************************************************
 //**********************************************************************************
 void SIPENGINE::parse(void* __mess, int _mmod) {
+	DEBINF("void SIPENGINE::parse(void* __mess, int _mmod)",__mess<<"]["<<_mmod)
 
     RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
 

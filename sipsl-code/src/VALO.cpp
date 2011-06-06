@@ -83,8 +83,11 @@
 #endif
 SIPUTIL SipUtil;
 
-VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){}
+VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co){
+	DEBINF("VALO::VALO(ENGINE* _e, CALL_OSET* _co):ALO(_e, _co)", this<<"]["<<_e<<"]["<<_co)
+}
 VALO::~VALO(void){
+	DEBINF("VALO::~VALO(void)",this)
 
 	//purge pointers on map except messages
 	map<string, void*> ::iterator p;
@@ -139,6 +142,7 @@ VALO::~VALO(void){
 }
 
 void VALO::onInvite(MESSAGE* _message){
+	DEBINF("void VALO::onInvite(MESSAGE* _message)",this<<"]["<<_message)
 
     TIMEDEF
     SETNOW
@@ -212,7 +216,7 @@ void VALO::onInvite(MESSAGE* _message){
 
 }
 void VALO::onAck(MESSAGE* _message){
-
+	DEBINF("void VALO::onAck(MESSAGE* _message)",this<<"]["<<_message)
     TIMEDEF
     SETNOW
     PROFILE("VALO::onAck")
@@ -344,7 +348,7 @@ void VALO::onAck(MESSAGE* _message){
 
 }
 void VALO::onAckNoTrnsct(MESSAGE* _message){
-
+	DEBINF("void VALO::onAckNoTrnsct(MESSAGE* _message)",this<<"]["<<_message)
 	DEBASSERT("VALO::onAckNoTrnsct")
 
 //	DEBALO("VALO::onAckNoTrnsct",_message->getHeadSipRequest().getContent())
@@ -451,7 +455,7 @@ void VALO::onAckNoTrnsct(MESSAGE* _message){
 //
 }
 void VALO::onBye(MESSAGE* _message){
-
+	DEBINF("void VALO::onBye(MESSAGE* _message)",this<<"]["<<_message)
     TIMEDEF
     SETNOW
     PROFILE("VALO::onBye")
@@ -563,7 +567,7 @@ void VALO::onBye(MESSAGE* _message){
 
 }
 void VALO::on200Ok(MESSAGE* _message){
-
+	DEBINF("void VALO::on200Ok(MESSAGE* _message)", this<<"]["<<_message)
     TIMEDEF
     SETNOW
     PROFILE("VALO::on200Ok")
