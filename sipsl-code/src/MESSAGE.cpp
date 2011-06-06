@@ -80,6 +80,11 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 
 	hasvialines				= false;
 	hasSdp					= false;
+	messageStatus			= 0;
+
+	fillCounter				= 0;
+	compileCounter			= 0;
+
 
 	//0 new
 	//1 filled
@@ -105,7 +110,6 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	// 0 -> 2 (0->1->2)
 	// setX
 
-	messageStatus			= 0;
 
     sock					= _sock;
     echoClntAddr			= _echoClntAddr;
@@ -187,6 +191,9 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	hasSdp					= false;
 	messageStatus			= 0;
 
+	fillCounter				= 0;
+	compileCounter			= 0;
+
 	sock 					= _sourceMessage->getSock();
 	echoClntAddr 			= _sourceMessage->getEchoClntAddr();
     inc_ts					= _creaTime;
@@ -267,7 +274,6 @@ MESSAGE::~MESSAGE(){
 		}
 	}
 
-	DELPTRARR(original_message,"original_message")
 	DEBWARNING("MESSAGE::~MESSAGE() incomplete code",this)
 
 }
@@ -368,7 +374,6 @@ int MESSAGE::fillIn(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::fillIn invalid")
 
-	DEBWARNING("int MESSAGE::fillIn(void)","must reset all values")
 
 	if(messageStatus == 1){
 		DEBINF("int MESSAGE::fillIn(void)",this<<"][already filled")
@@ -379,6 +384,10 @@ int MESSAGE::fillIn(void){
 		DEBINF("int MESSAGE::fillIn(void)",this<<"][message changed")
 		compileMessage();
 	}
+
+	fillCounter++;
+	DEBINF("int MESSAGE::fillIn(void) fillCounter",this<<"] fillCounter["<<fillCounter<<"] [compileCounter ["<<compileCounter)
+	DEBWARNING("int MESSAGE::fillIn(void)","PARSING ["<<this<<"]")
 
 	//messageStatus == 0
 	//serve???
@@ -409,22 +418,22 @@ int MESSAGE::fillIn(void){
 			else{
 				DEBINF("MESSAGE::fillIn line", tok)
 				message_line.push_back( make_pair (tok,false) );
-				char xxx[strlen(tok) + 1];
-				strcpy(xxx,tok);
-				char* beg = strchr(tok,' ');
-				char* endh = strchr(xxx,' ');
-				int i = 0;
-				for (;;){
-					if (strncmp(beg," ",1)!=0)
-						break;
-					beg++;
-					i++;
-					if(i>100)
-						DEBASSERT("???")
-				}
-				strcpy(endh,"");
-				DEBINF("int MESSAGE::fillIn(void)",this<<"]["<<xxx<<"]["<<beg)
-				ex_message_line.push_back( make_pair (make_pair(xxx,beg),false) );
+//				char xxx[strlen(tok) + 1];
+//				strcpy(xxx,tok);
+//				char* beg = strchr(tok,' ');
+//				char* endh = strchr(xxx,' ');
+//				int i = 0;
+//				for (;;){
+//					if (strncmp(beg," ",1)!=0)
+//						break;
+//					beg++;
+//					i++;
+//					if(i>100)
+//						DEBASSERT("???")
+//				}
+//				strcpy(endh,"");
+//				DEBINF("int MESSAGE::fillIn(void)",this<<"]["<<xxx<<"]["<<beg)
+//				ex_message_line.push_back( make_pair (make_pair(xxx,beg),false) );
 			}
 		}
 		else{
@@ -490,9 +499,9 @@ char* MESSAGE::getMessageBuffer(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getMessageBuffer invalid")
 
-	if(messageStatus !=1){
-		fillIn();
-	}
+//	if(messageStatus !=1){
+//		fillIn();
+//	}
 	DEBINF("char* MESSAGE::getMessageBuffer(void)",this<<"]["<<original_message)
 	return original_message;
 }
@@ -515,6 +524,8 @@ void MESSAGE::compileMessage(void){
 		return;
 	}
 	//messageStatus==2
+	compileCounter++;
+	DEBINF("int MESSAGE::compileMessage(void) compileCounter",this<<"] fillCounter["<<fillCounter<<"] [compileCounter ["<<compileCounter)
 
 	stringstream origmess;
 	int sizeOfSdp = 0;
@@ -876,9 +887,10 @@ void MESSAGE::setGenericHeader(string _header, string _content){
 		DEBASSERT("MESSAGE::setGenericHeader invalid for via")
 	}
 	if (_header.compare("REPLY") == 0){
+		//SIP/2.0 xxx
 		char* newfirstline;
-		NEWPTR2(newfirstline, char[_content.length() + 1],"message_line")
-		strcpy(newfirstline,_content.c_str());
+		NEWPTR2(newfirstline, char[_content.length() + 9],"message_line")
+		sprintf(newfirstline,"SIP/2.0 %s",_content.c_str());
 		message_line[0].first = newfirstline;
 		message_line[0].second = true;
 		return;
@@ -1367,7 +1379,7 @@ void MESSAGE::popVia(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::popVia invalid")
 
-	if(messageStatus !=1){
+	if(messageStatus ==0){
 		fillIn();
 	}
 
@@ -1389,7 +1401,7 @@ void MESSAGE::pushNewVia(string _via){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::pushNewVia invalid")
 
-	if(messageStatus !=1){
+	if(messageStatus ==0){
 		fillIn();
 	}
 
@@ -1749,12 +1761,19 @@ int MESSAGE::getHeadCSeq(void){
 	if(!parsedCseq){
 		DEBY
 		string sh = getGenericHeader("CSeq:");
+		DEBY
 		char tsmp[sh.length()+1];
+		DEBY
 		strcpy(tsmp, sh.c_str());
+		DEBY
 		char* token = strchr(tsmp, ' ');
+		DEBY
 		sprintf(token,"");
+		DEBINF("int MESSAGE::getHeadCSeq(void)",tsmp)
 		cSeq = atoi(tsmp);
+		DEBY
 		cSeqMethod = token+1;
+		DEBY
 		parsedCseq = true;
 		DEBY
 	}

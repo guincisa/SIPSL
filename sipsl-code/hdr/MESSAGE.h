@@ -203,6 +203,9 @@ class MESSAGE {
 		bool hasvialines;
 		bool hasSdp;
 		int messageStatus;
+		int fillCounter;
+		int compileCounter;
+
 
 		////////////////////////////////
 		//Network

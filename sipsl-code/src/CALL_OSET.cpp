@@ -100,7 +100,7 @@
 // CALL_OSET
 //**********************************************************************************
 CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _modulus){
-
+	DEBINF("CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _modulus)", this<<"]["<<_engine<<"]["<<_transport<<"]["<<_call<<"]["<<_modulus)
     pthread_mutex_init(&mutex, NULL);
 	GETLOCK(&(mutex),"CALL_OSET::mutex");
 
@@ -130,7 +130,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _mo
 
 }
 CALL_OSET::~CALL_OSET(void){
-
+	DEBINF("CALL_OSET::~CALL_OSET(void)",this)
 	//Need to lock here!
 	GETLOCK(&(mutex),"CALL_OSET::mutex");
 
@@ -226,6 +226,7 @@ CALL_OSET::~CALL_OSET(void){
 
 }
 int CALL_OSET::getNextSequence(string _method){
+	DEBINF("int CALL_OSET::getNextSequence(string _method)", this<<"]["<<_method)
 
 	map<string, int> ::iterator p;
 	p = sequenceMap.find(_method);
@@ -240,6 +241,9 @@ int CALL_OSET::getNextSequence(string _method){
 	}
 }
 void CALL_OSET::insertSequence(string _method, int _i){
+	DEBINF("void CALL_OSET::insertSequence(string _method, int _i)", this<<"]["<<_method<<"]["<<_i)
+
+	DEBINF("int CALL_OSET::getNextSequence(string _method)", _method)
 	map<string, int> ::iterator p;
 	p = sequenceMap.find(_method);
 	if (p != sequenceMap.end()){
@@ -250,6 +254,7 @@ void CALL_OSET::insertSequence(string _method, int _i){
 	sequenceMap.insert(pair<string, int>(_method,_i));
 }
 int CALL_OSET::getCurrentSequence(string _method){
+	DEBINF("int CALL_OSET::getCurrentSequence(string _method)", this<<"]["<<_method)
 
 	map<string, int> ::iterator p;
 	p = sequenceMap.find(_method);
@@ -287,7 +292,7 @@ TRNSPRT* CALL_OSET::getTRNSPRT(void){
 //**********************************************************************************
 //v4
 void CALL_OSET::setCallId_Y(string _cally){
-	DEBOUT("CALL_OSET::setCall_IdY store ", _cally)
+	DEBINF("void CALL_OSET::setCallId_Y(string _cally)", this<<"]["<<_cally)
 	callId_Y = _cally;
 }
 //**********************************************************************************
@@ -301,13 +306,13 @@ string CALL_OSET::getCallId_X(void){
 //**********************************************************************************
 //v4
 void CALL_OSET::setCallId_X(string _callId_X){
-
 	callId_X = _callId_X;
 }
 //**********************************************************************************
 //v4
 
 void CALL_OSET::insertLockedMessage(MESSAGE* _message){
+	DEBINF("void CALL_OSET::insertLockedMessage(MESSAGE* _message)",this<<"]["<<_message)
 	DEBMESSAGESHORT("Insert locked message", _message)
 	map<MESSAGE*,int>::iterator i;
 	i = lockedMessages.find(_message);
@@ -319,8 +324,7 @@ void CALL_OSET::insertLockedMessage(MESSAGE* _message){
 	return;
 }
 MESSAGE* CALL_OSET::getNextLockedMessage(void){
-
-	DEBY
+	DEBINF("MESSAGE* CALL_OSET::getNextLockedMessage(void)",this)
 	map<MESSAGE*,int>::iterator p;
 	p=lockedMessages.begin();
 	if (p!=lockedMessages.end()){
@@ -334,6 +338,7 @@ MESSAGE* CALL_OSET::getNextLockedMessage(void){
 
 }
 void CALL_OSET::removeLockedMessage(MESSAGE* _message){
+	DEBINF("void CALL_OSET::removeLockedMessage(MESSAGE* _message)",this<<"]["<<_message)
 
 	map<MESSAGE*,int>::iterator p;
 	p=lockedMessages.find(_message);
@@ -364,8 +369,7 @@ void CALL_OSET::dumpTrnsctSm(void){
 }
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
-
-	DEBINF("CALL_OSET::getTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] call_oset ["<<this)
+	DEBINF("TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch)",this<<"]["<<_method <<"]["<<_sode <<"]["<<_branch)
 	char t_key[512];
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode,_branch.c_str());
 
@@ -384,6 +388,7 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 }
 //**********************************************************************************
 void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm){
+	DEBINF("void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm)",this<<"]["<<_method<<"]["<<_sode<<"]["<<_branch<<"]["<<_trnsctSm)
 
 	DEBDEV("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] ["<<_trnsctSm<<"] call_oset ["<<this)
 	char t_key[512];
@@ -409,7 +414,7 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 }
 
 void CALL_OSET::call(MESSAGE* _message){
-
+	DEBINF("void CALL_OSET::call(MESSAGE* _message)",this<<"]["<<_message)
     PROFILE("CALL_OSET::call() begin")
     TIMEDEF
     SETNOW
@@ -449,7 +454,7 @@ SL_CO::SL_CO(CALL_OSET* _call_oset){
 //**********************************************************************************
 //**********************************************************************************
 int SL_CO::call(MESSAGE* _message, int& _r_modulus){
-
+	DEBINF("int SL_CO::call(MESSAGE* _message, int& _r_modulus)",this<<"]["<<_message<<"]["<<_r_modulus)
 
     TIMEDEF
     SETNOW
@@ -645,7 +650,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
 }
 
 int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
-
+	DEBINF("int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus)",this<<"]["<<action<<"]["<<_r_modulus)
     TIMEDEF
     SETNOW
     PROFILE("SL_CO::actionCall_SV begin")
@@ -746,6 +751,7 @@ int SL_CO::actionCall_SV(ACTION* action, int& _r_modulus){
     return oper;
 }
 int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
+	DEBINF("int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus)",this<<"]["<<action<<"]["<<_r_modulus)
 
 	// now read actions
     TIMEDEF

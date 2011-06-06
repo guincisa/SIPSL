@@ -93,6 +93,7 @@
 //**********************************************************************************
 //**********************************************************************************
 COMAP::COMAP(void){
+	DEBINF("COMAP::COMAP(void)",this)
     for(int i = 0; i< COMAPS; i++){
         pthread_mutex_init(&unique_exx[i], NULL);
         DEBDEV("comap unique_exx", &unique_exx[i])
@@ -110,7 +111,7 @@ COMAP::COMAP(const COMAP& x){
 //**********************************************************************************
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
-
+	DEBINF("CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod)",this<<"]["<<_callId_X<<"]["<<_mod)
     PROFILE("COMAP::getCALL_OSET_XMain")
     TIMEDEF
     SETNOW
@@ -142,7 +143,7 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
 //**********************************************************************************
 //**********************************************************************************
 CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
-
+	DEBINF("CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod)",this<<"]["<<_callId_Y<<"]["<<_mod)
     PROFILE("COMAP::getCALL_OSET_YDerived")
     TIMEDEF
     SETNOW
@@ -200,7 +201,8 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
 //**********************************************************************************
 //**********************************************************************************
 CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSPRT* _transport, MESSAGE* _message, string _domain){
-
+	DEBINF("CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSPRT* _transport, MESSAGE* _message, string _domain)",
+			this<<"]["<<_callId_X<<"]["<<_mod<<"]["<<_sl_cc<<"]["<<_transport<<"]["<<_message<<"]["<<_domain)
     PROFILE("COMAP::setCALL_OSET")
     TIMEDEF
     SETNOW
@@ -320,7 +322,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
-
+	DEBINF("void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod)",this<<"]["<<_call_oset<<"]["<<_doa<<"]["<<_mod)
     PROFILE("COMAP::setDoa")
     TIMEDEF
     SETNOW
@@ -345,6 +347,7 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
     PRINTDIFF("COMAP::setDoa end")
 }
 int COMAP::getDoa(CALL_OSET* _call_oset, int _mod){
+	DEBINF("int COMAP::getDoa(CALL_OSET* _call_oset, int _mod)",this<<"]["<<_call_oset<<"]["<<_mod)
 
     PROFILE("COMAP::getDoa")
     TIMEDEF
@@ -371,7 +374,7 @@ int COMAP::getDoa(CALL_OSET* _call_oset, int _mod){
 //**********************************************************************************
 //**********************************************************************************
 int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, int _mod){
-
+	DEBINF("int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, int _mod)",this<<"]["<<_call_oset<<"]["<<_message<<"]["<<_mod)
     PROFILE("COMAP::use_CALL_OSET_SL_CO_call() begin")
     TIMEDEF
     SETNOW
@@ -436,7 +439,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
-
+	DEBINF("void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod)",this<<"]["<<_call_oset<<"]["<<_mod)
     PROFILE("COMAP::setDoaRequested")
     TIMEDEF
     SETNOW
@@ -470,7 +473,7 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
 
 }
 void COMAP::purgeDOA(void){
-
+	DEBINF("void COMAP::purgeDOA(void)",this)
 
     PROFILE("COMAP::purgeDOA")
     TIMEDEF
