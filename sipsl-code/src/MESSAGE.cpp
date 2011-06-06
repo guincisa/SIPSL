@@ -1249,8 +1249,8 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 	else {
 		DEBY
 		//remove last char
-		string _newinse = xxx;
-		string newinse = _newinse.substr(0,_newinse.length()-1);
+		string newinse = xxx;
+		//string newinse = _newinse.substr(0,_newinse.length());
 		newinse += _property;
 		newinse += "=";
 		newinse += _value;
