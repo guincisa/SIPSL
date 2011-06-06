@@ -206,7 +206,7 @@ void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 	DEBINF("void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry)",_invite<<"]["<<_etry)
 
 	//DEBOUT("ETRY","SIP/2.0 100 Trying")
-	_etry->setHeadSipReply("SIP/2.0 100 Trying");
+	_etry->setHeadSipReply("100 Trying");
 
 	_etry->dropHeader("Contact:");
 
