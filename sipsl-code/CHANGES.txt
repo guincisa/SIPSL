@@ -1,3 +1,9 @@
+7 giugno
+
+ottimizzare fill/compile
+memory leaks???
+
+
 3 giugno
 
 ex_message_line finire implementazione

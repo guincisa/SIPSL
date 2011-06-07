@@ -258,12 +258,13 @@ ALMGR* SUDP::getAlmgr(void){
 	return alarm;
 }
 void SUDP::sendRequest(MESSAGE* _message){
+	DEBINF("void SUDP::sendRequest(MESSAGE* _message)",_message)
 
     struct sockaddr_in si_part;
     struct hostent *host;
     memset((char *) &si_part, 0, sizeof(si_part));
 
-    DEBMESSAGE("Request address ", _message)
+    DEBMESSAGE("SUDP::sendRequest sending Message ", _message)
 
     si_part.sin_family = AF_INET;
     pair<string,int> _pair = _message->getUri("REQUEST");
@@ -271,7 +272,7 @@ void SUDP::sendRequest(MESSAGE* _message){
     strcpy(_hostchar,_pair.first.c_str());
     host = gethostbyname(_hostchar);
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-    si_part.sin_port = htons(_message->getUri("REQUEST").second);
+    si_part.sin_port = htons(_pair.second);
 //	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 //		DEBASSERT ("Can't set request address")
 //	}
@@ -287,6 +288,7 @@ void SUDP::sendRequest(MESSAGE* _message){
     return;
 }
 void SUDP::sendReply(MESSAGE* _message){
+	DEBINF("void SUDP::sendReply(MESSAGE* _message)",_message)
 
     //Reply uses topmost Via header
 
@@ -294,7 +296,7 @@ void SUDP::sendReply(MESSAGE* _message){
     struct hostent *host;
     memset((char *) &si_part, 0, sizeof(si_part));
 
-    DEBMESSAGE("Reply message ", _message)
+    DEBMESSAGE("SUDP::sendReply sending Message ", _message)
 
     si_part.sin_family = AF_INET;
     char _hostchar[_message->getViaUriHost().length()+1];

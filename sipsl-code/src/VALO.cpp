@@ -572,8 +572,6 @@ void VALO::on200Ok(MESSAGE* _message){
     SETNOW
     PROFILE("VALO::on200Ok")
 
-
-
 	TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_CL, _message->getViaBranch());
 	if (trnsct_cl == 0x0){
 		DEBASSERT("TRNSCT_SM* trnsct_cl == 0x0")
@@ -625,6 +623,7 @@ void VALO::on200Ok(MESSAGE* _message){
 		vector< pair<char*, bool> > sdps  = _message->getSDP();
 		ok_x->purgeSDP();
 		ok_x->dropHeader("Content-Length:");
+		ok_x->dropHeader("Content-Type:");
 
 		ok_x->setSDP(sdps);
 	}

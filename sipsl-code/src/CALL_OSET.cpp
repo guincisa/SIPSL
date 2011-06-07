@@ -383,6 +383,7 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 		DEBOUT_UTIL("CALL_OSET::getTrnsctSm found",_method <<"#"<< _sode <<"#"<<_branch << "["<<(TRNSCT_SM*)p->second<<"]")
 		return ((TRNSCT_SM*)p->second);
 	}else {
+		DEBOUT_UTIL("CALL_OSET::getTrnsctSm not found",_method <<"#"<< _sode <<"#"<<_branch)
 		return 0x0;
 	}
 }
@@ -478,12 +479,10 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
     if (dest == SODE_TRNSCT_SV) {
 
         TRNSCT_SM* trnsctSM = 0x0;
-
         //First look for an existing SM using METHOD+SM_SV+branch
         //DEBDEV("((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue(\"branch\")",((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
         trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_SV, _message->getViaBranch());
         //There are no sm, create it
-
         //OVERALLSTATE lock usage start here
 
         if (trnsctSM == 0x0 ){
@@ -520,7 +519,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
             }
             //DEBINF("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
             //call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
-            call_oset->addTrnsctSm(_message->getGenericHeader("CSeq:"), SODE_TRNSCT_SV, _message->getViaBranch(), trnsctSM);
+            call_oset->addTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_SV, _message->getViaBranch(), trnsctSM);
             DEBINF("call_oset->addTrnsctSm","done")
 
         }

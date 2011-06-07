@@ -533,13 +533,13 @@ void MESSAGE::compileMessage(void){
 	if (hasSdp){
 		//calculate size
 		for(int i = 0; i < sdp_line.size(); i ++){
-			sizeOfSdp += strlen(sdp_line[i].first) + 1;
+			sizeOfSdp += strlen(sdp_line[i].first) + 2;
 		}
-		sizeOfSdp++;
 	}
 
 	for(int i = 0; i < message_line.size(); i ++){
-		if (strncmp(message_line[i].first,"Content-Length: ", 16) != 0
+		if (strncmp(message_line[i].first,"Content-Length: ", 16) != 0 &&
+				strncmp(message_line[i].first,"Content-Type: ", 14) != 0
 				&& strncmp(message_line[i].first,"xxDxx",5) != 0
 				&& strlen(message_line[i].first)!=0 ){
 			origmess << message_line[i].first;
@@ -559,6 +559,7 @@ void MESSAGE::compileMessage(void){
 
 
 	if (hasSdp){
+		origmess << "Content-Type: application/sdp\r\n";
 		origmess << "Content-Length: ";
 		origmess << sizeOfSdp;
 		origmess << "\r\n\r\n";

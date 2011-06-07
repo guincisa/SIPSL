@@ -101,6 +101,8 @@ static SIPUTIL SipUtil;
 //**********************************************************************************
 TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 	SM(_sl_cc, _sl_co){
+	DEBINF("TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):SM(_sl_cc, _sl_co)",
+			this<<"]["<<_requestType<<"]["<<_matrixMess<<"]["<<_a_Matrix<<"]["<<_sl_cc<<"]["<<_sl_co)
 
 	requestType = _requestType;
 
@@ -123,7 +125,7 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	}
 }
 TRNSCT_SM::~TRNSCT_SM(void){
-
+	DEBINF("TRNSCT_SM::~TRNSCT_SM(void)",this)
     //A_Matrix belongs to another SM
     Matrix->unSetLock(sl_co->call_oset);
     PURGEMESSAGE(Matrix)
@@ -150,8 +152,7 @@ string TRNSCT_SM::getId(void){
     return id;
 }
 SingleAction TRNSCT_SM::generateTimerS(int genPoint){
-
-    DEBDEV("TRNSCT_SM::generateTimerS genpoint",genPoint )
+	DEBINF("SingleAction TRNSCT_SM::generateTimerS(int genPoint)",this<<"]["<<genPoint)
 
     CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
     SysTime afterT;
@@ -169,8 +170,7 @@ SingleAction TRNSCT_SM::generateTimerS(int genPoint){
 
 }
 SingleAction TRNSCT_SM::clearTimerS(int genPoint){
-
-    DEBDEV("TRNSCT_SM::clearTimerS genpoint",genPoint )
+	DEBINF("SingleAction TRNSCT_SM::clearTimerS(int genPoint)",this<<"]["<<genPoint)
 
     CREATEMESSAGE(timer_s, getMatrixMessage(), genPoint,genPoint)
     timer_s->setTypeOfInternal(TYPE_OP);
@@ -181,9 +181,8 @@ SingleAction TRNSCT_SM::clearTimerS(int genPoint){
 }
 
 //**********************************************************************************
-
 ACTION* SM::event(MESSAGE* _event){
-
+	DEBINF("ACTION* SM::event(MESSAGE* _event)",this<<"]["<<_event)
     PREDICATE_ACTION* tmp;
 
     ACTION* act=0x0;
@@ -1687,7 +1686,7 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	//Action 2: 100 TRY is created and sent to NTW
 	//This message is stored so it is meant for more thing so I have to lock it
 	CREATEMESSAGE(a200ok, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
-	SipUtil.genQuickReplyFromInvite(_message, a200ok,"SIP/2.0 200 OK");
+	SipUtil.genQuickReplyFromInvite(_message, a200ok,"200 OK");
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = a200ok;
 	DEBDEV("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);

@@ -150,17 +150,22 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 //		totmp += (unsigned int)__gtor;
 //	}
 
+	string totag = __gtor->getToTag();
+	DEBINF("SIPUTIL::genASideReplyFromBReply __gtor->getToTag()", totag)
+//	if( totag.length()!= 0 ){
+//		stringstream ttt;
+//		ttt << __gtor;
+//		_gted->setProperty("To:", "tag", ttt.str());
+//
+//	}
 	_gted->setGenericHeader("Contact:","<sip:sipsl@grog:5060>");
-
-	string ttt(""); ttt += (unsigned int) __gtor;
-	_gted->setProperty("To:", "tag", ttt);
 	_gted->setHeadSipReply(_gtor->getHeadSipReply());
 	_gted->dropHeader("User-Agent:");
 	_gted->dropHeader("Max-Forwards:");
 	_gted->dropHeader("Allow:");
 	_gted->dropHeader("Route:");
 	_gted->dropHeader("Date:");
-	_gted->setProperty("Via:","rport","1234");
+	//_gted->setProperty("Via:","rport","1234");
 
 }
 
