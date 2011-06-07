@@ -145,6 +145,9 @@ class ThreadWrapper {
 #define LOGSIPLOW
 
 #define LOGINF
+#define LOGINFMESSAGE
+#define LOGINFSUDP
+#define LOGINFCALLOSET
 #define LOGMIN
 #define LOGDEV
 #define LOGMEM
@@ -376,6 +379,33 @@ class ThreadWrapper {
 #define PRTIME
 #define PRTIME_F(m)
 #endif
+//**********************************************************
+//**********************************************************
+#ifdef LOGINFSUDP
+	//**********************************************************
+#undef DEBINFSUDP
+#define DEBINFSUDP(m1,m2) BDEBUG("DEBINFSUDP", m1 << "[" << m2)
+//#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#endif
+
+//**********************************************************
+//**********************************************************
+#ifdef LOGINFMESSAGE
+	//**********************************************************
+#undef DEBINFMESSAGE
+#define DEBINFMESSAGE(m1,m2) BDEBUG("DEBINFMESSAGE", m1 << "[" << m2)
+//#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#endif
+
+//**********************************************************
+//**********************************************************
+#ifdef LOGINFCALLOSET
+	//**********************************************************
+#undef DEBINFCALLOSET
+#define DEBINFCALLOSET(m1,m2) BDEBUG("DEBINFCALLOSET", m1 << "[" << m2)
+//#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#endif
+
 //**********************************************************
 //**********************************************************
 #ifdef LOGINF

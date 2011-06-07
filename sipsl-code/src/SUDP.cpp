@@ -101,13 +101,13 @@ extern "C" void* SUPDSTACK (void*);
 
 void * SUDPSTACK(void *_tgtObject) {
 
-    DEBDEV("SUDPSTACK start","")
+	DEBINFSUDP("SUDPSTACK start","")
 
     SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
 
     tgtObject->st->listen(tgtObject->thid);
 
-    DEBDEV("SUDPSTACK started","")
+    DEBINFSUDP("SUDPSTACK started","")
 
     return (NULL);
 }
@@ -119,7 +119,7 @@ void * SUDPSTACK(void *_tgtObject) {
 // *****************************************************************************************
 void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm){
 
-    DEBDEV("SUDP init",_domain)
+	DEBINFSUDP("SUDP init",_domain)
 
     domain = _domain;
 
@@ -164,7 +164,7 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 
     _engine->linkSUDP(this);
 
-    DEBDEV("SUDP init done","")
+    DEBINFSUDP("SUDP init done","")
 
     return;
 }
@@ -177,7 +177,7 @@ void SUDP::start(void) {
 
     // allocate thread and starts
 
-    DEBDEV("SUDP::start","")
+	DEBINFSUDP("SUDP::start","")
 	SUDPtuple *t1[SUDPTH*2];
 
 	for (int i = 0 ; i <(2*SUDPTH) ; i++){
@@ -205,7 +205,7 @@ void SUDP::listen(int i) {
 
     TIMEDEF
 
-    DEBDEV("SUDP::listen","listen " << i)
+    DEBINFSUDP("SUDP::listen","listen " << i)
     for (;;){
         /* Set the size of the in-out parameter */
 
@@ -258,7 +258,7 @@ ALMGR* SUDP::getAlmgr(void){
 	return alarm;
 }
 void SUDP::sendRequest(MESSAGE* _message){
-	DEBINF("void SUDP::sendRequest(MESSAGE* _message)",_message)
+	DEBINFSUDP("void SUDP::sendRequest(MESSAGE* _message)",_message)
 
     struct sockaddr_in si_part;
     struct hostent *host;
@@ -288,7 +288,7 @@ void SUDP::sendRequest(MESSAGE* _message){
     return;
 }
 void SUDP::sendReply(MESSAGE* _message){
-	DEBINF("void SUDP::sendReply(MESSAGE* _message)",_message)
+	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
 
     //Reply uses topmost Via header
 
