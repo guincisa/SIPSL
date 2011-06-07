@@ -3,6 +3,8 @@
 ottimizzare fill/compile
 memory leaks???
 
+ACK sbagliato
+
 
 3 giugno
 
