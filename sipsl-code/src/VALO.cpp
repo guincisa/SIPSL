@@ -176,12 +176,14 @@ void VALO::onInvite(MESSAGE* _message){
 	//message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
 	stringstream cs;
-	cs << call_oset->getNextSequence("INVITE_B");
+	int csnext = call_oset->getNextSequence("INVITE_B");
+	cs << csnext;
 	cs << " INVITE";
 	message->setGenericHeader("CSeq:",cs.str());
 
 	//Standard changes
-	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP(), call_oset->getCallId_Y());
+	string newCallid = call_oset->getCallId_Y();
+	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP(), newCallid);
 	message->setGenericHeader("Contact:", "<sip:sipsl@grog:5060>");
 
 	message->dumpMessageBuffer();
@@ -192,13 +194,11 @@ void VALO::onInvite(MESSAGE* _message){
 	DEBMESSAGE("New outgoing b2b message", message)
 
 	//TODO ???
-	DEBALO("STORE CSeq sequence number for ack", message->getHeadCSeq().getSequence())
-	NEWPTR(int*, CSeqB2BINVITE, int(message->getHeadCSeq()),"CSeqB2BINVITE")
+	NEWPTR(int*, CSeqB2BINVITE, int(csnext),"CSeqB2BINVITE")
 	ctxt_store.insert(pair<string, void*>("CSeqB2BINVITE", (void*) CSeqB2BINVITE ));
 
 
-	DEBALO("STORING now call id", message->getHeadCallId())
-	call_oset->setCallId_Y(message->getHeadCallId());
+	call_oset->setCallId_Y(newCallid);
 
 	//store this invites
 	//only possible because both invites are locked during the creation of their SM
@@ -520,7 +520,7 @@ void VALO::onBye(MESSAGE* _message){
 		//message->setDestEntity(SODE_TRNSCT_CL);
 
 		//Request has to be made using INVITE_A via address
-		string viatmps = __message->getViaLine();
+		//string viatmps = __message->getViaLine();
 		DEBY
 		stringstream _ss;
 		_ss << "BYE sip:ceppadim@" << __message->getViaUriHost() << ":" << __message->getViaUriPort() << " SIP/2.0";
@@ -532,7 +532,10 @@ void VALO::onBye(MESSAGE* _message){
 		viatmp << "SIP/2.0/UDP "<<getSUDP()->getDomain()<<":"<<getSUDP()->getPort()<<";branch=z9hG4bK"<<message->getKey()<<";rport";
 		message->pushNewVia(viatmp.str());
 
-		message->setGenericHeader("CSeq:",call_oset->getCurrentSequence("INVITE_A") + " BYE");
+		stringstream css;
+		css << call_oset->getCurrentSequence("INVITE_A");
+		css << " BYE";
+		message->setGenericHeader("CSeq:",css.str());
 
 		p = ctxt_store.find("tohead_200ok_a");
 		string tohead_200ok_a = *((string*)p->second);
@@ -545,10 +548,7 @@ void VALO::onBye(MESSAGE* _message){
 
 
 		message->compileMessage();
-		//message->dumpVector();
-		//done in client sm
-		//message->setLock();
-		//call_oset->insertLockedMessage(message);
+
 #ifdef NONESTEDPW
 		int r;
 		call_oset->getSL_CO()->call(message,r);
@@ -616,8 +616,6 @@ void VALO::on200Ok(MESSAGE* _message){
 		//SDP must copy the SDP from incoming OK and put here
 		vector< pair<char*, bool> > sdps  = _message->getSDP();
 		ok_x->purgeSDP();
-		ok_x->dropHeader("Content-Length:");
-		ok_x->dropHeader("Content-Type:");
 
 		ok_x->setSDP(sdps);
 	}

@@ -389,7 +389,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
     //Check the call_oset doa
     if ( tmpDoa == DOA_DELETED) {
         DEBINF("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa deleted", _call_oset )
-        RELLOCK(&unique_exx[_mod],"unique_exxx"<<_mod);
+        RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
         PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call() end")
         return -1;
     }

@@ -92,7 +92,7 @@ class ThreadWrapper {
 #define NONESTEDPW
 
 //Invert the get call_oset lock and release comap lok
-//should core if imverted
+//should core if inverted
 #define WRONGLOCKMGMT
 
 //Use the gobalmessagetable
@@ -104,7 +104,7 @@ class ThreadWrapper {
 //#define USETRYLOCK
 
 //Sudp threads
-#define SUDPTH 6
+#define SUDPTH 12
 
 //Max engine threads
 #define MAXTHREADS 128
@@ -120,12 +120,12 @@ class ThreadWrapper {
 #define SL_CCMAPS 32
 
 //#define ENGINEMAPS 5
-#define ALARMTH 16
-#define ALARMMAPS 8
+#define ALARMTH 32
+#define ALARMMAPS 16
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
 
-#define COMAPS 32
+#define COMAPS 96
 #define COMAPS_DIG 2
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100
@@ -145,9 +145,9 @@ class ThreadWrapper {
 #define LOGSIPLOW
 
 #define LOGINF
-#define LOGINFMESSAGE
+//#define LOGINFMESSAGE
 #define LOGINFSUDP
-#define LOGINFCALLOSET
+//#define LOGINFCALLOSET
 #define LOGMIN
 #define LOGDEV
 #define LOGMEM
@@ -390,6 +390,7 @@ class ThreadWrapper {
 
 //**********************************************************
 //**********************************************************
+#define DEBINFMESSAGE(m1,m2)
 #ifdef LOGINFMESSAGE
 	//**********************************************************
 #undef DEBINFMESSAGE
@@ -399,6 +400,7 @@ class ThreadWrapper {
 
 //**********************************************************
 //**********************************************************
+#define DEBINFCALLOSET(m1,m2)
 #ifdef LOGINFCALLOSET
 	//**********************************************************
 #undef DEBINFCALLOSET
