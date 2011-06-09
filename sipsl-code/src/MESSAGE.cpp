@@ -799,6 +799,7 @@ void MESSAGE::setTypeOfOperation(int _t){
 	typeOfOperation = _t;
 }
 int MESSAGE::getModulus(void){
+#ifndef USEMAPMODUL
 	DEBINFMESSAGE("int MESSAGE::getModulus(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getModulus invalid")
@@ -828,6 +829,36 @@ int MESSAGE::getModulus(void){
 	}
 	DEBINFMESSAGE("int MESSAGE::getModulus(void) modulus",this<<"]["<<modulus)
 	return modulus;
+#else
+	DEBINFMESSAGE("int MESSAGE::getModulus(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getModulus invalid")
+
+	if (modulus != -1){
+		DEBINFMESSAGE("int MESSAGE::getModulus(void)",this<<"]["<<modulus)
+		return modulus;
+	}
+
+	string s = getHeadCallId();
+	if (s.substr(0,5).compare("CoMap") == 0){
+		modulus = atoi(s.substr(5,COMAPS_DIG).c_str());
+		return modulus;
+	}
+
+	map<const string, int>::iterator itm;
+    GETLOCK(&modulusMapMtx,"modulusMapMtx");
+	itm = modulusMap.find(s);
+	if(itm != modulusMap.end()){
+		RELLOCK(&modulusMapMtx,"modulusMapMtx")
+		return itm->second;
+	}
+	modulus = modulusIter;
+	modulusMap.insert(make_pair(s,modulus));
+	modulusIter++;
+	modulusIter = modulusIter % COMAPS;
+	RELLOCK(&modulusMapMtx,"modulusMapMtx")
+	return modulus;
+#endif
 }
 void MESSAGE::purgeSDP(void){
 	DEBINFMESSAGE("void MESSAGE::purgeSDP(void)",this)

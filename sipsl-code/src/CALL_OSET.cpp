@@ -224,6 +224,18 @@ CALL_OSET::~CALL_OSET(void){
 	DELPTR(sl_co, "SL_CO")
 	DEBY
 
+	//remove from mosulusMap
+#ifdef USEMAPMODUL
+	map<const string, int>::iterator itm;
+    GETLOCK(&modulusMapMtx,"modulusMapMtx");
+	itm = modulusMap.find(callId_X);
+	if(itm != modulusMap.end()){
+		modulusMap.erase(itm);
+	}
+	RELLOCK(&modulusMapMtx,"modulusMapMtx")
+#endif
+
+
 }
 int CALL_OSET::getNextSequence(string _method){
 	DEBINFCALLOSET("int CALL_OSET::getNextSequence(string _method)", this<<"]["<<_method)
