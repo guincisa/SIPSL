@@ -671,6 +671,12 @@ class MESSAGE {
 extern map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
 extern pthread_mutex_t messTableMtx[MESSAGEMAPS];
 #endif
+#ifdef USEMAPMODUL
+extern map<const string, int> modulusMap;
+extern int modulusIter;
+extern pthread_mutex_t modulusMapMtx;
+#endif
+
 extern MESSAGE* MainMessage;
 
 

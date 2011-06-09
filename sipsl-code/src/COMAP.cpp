@@ -263,11 +263,28 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     pair<map<string,string>::iterator,bool> ret5;
 
     char callIdtmp[512];
-	if (_mod < 10  && COMAPS_DIG > 1){
-		sprintf(callIdtmp, "CoMap0%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
-	}else {
+    if(COMAPS_DIG == 1){
 		sprintf(callIdtmp, "CoMap%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
-	}
+    }
+    if(COMAPS_DIG == 2){
+    	if (_mod < 10){
+    		sprintf(callIdtmp, "CoMap0%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}else{
+    		sprintf(callIdtmp, "CoMap%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}
+    }
+    if(COMAPS_DIG == 3){
+    	if (_mod < 10){
+    		sprintf(callIdtmp, "CoMap00%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}
+    	else if (_mod < 100){
+    		sprintf(callIdtmp, "CoMap0%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}
+    	else{
+    		sprintf(callIdtmp, "CoMap%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}
+    }
+
     string callIdtmpS(callIdtmp);
     ret4 = call_id_y2x[_mod].insert(pair<string, string>(callIdtmpS, _callId_X));
     if(!ret4.second){

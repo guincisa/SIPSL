@@ -157,6 +157,11 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
     	pthread_mutex_init(&messTableMtx[i],NULL);
     }
 #endif
+#ifdef USEMAPMODUL
+	pthread_mutex_init(&modulusMapMtx,NULL);
+	modulusIter = 0;
+#endif
+
     /* Bind to the local address */
 	if (bind(sock_re, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
 		DEBERROR("bind() failed)");

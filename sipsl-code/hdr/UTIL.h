@@ -101,6 +101,9 @@ class ThreadWrapper {
 //The state machine will send the message directly to transport
 #define USEFASTSEND
 
+//use map instead of calculating the modulus
+#define USEMAPMODUL
+
 //#define USETRYLOCK
 
 //Sudp threads
@@ -125,8 +128,8 @@ class ThreadWrapper {
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
 
-#define COMAPS 96
-#define COMAPS_DIG 2
+#define COMAPS 500
+#define COMAPS_DIG 3
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100
 

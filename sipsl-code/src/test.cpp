@@ -73,6 +73,12 @@
 map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
 pthread_mutex_t messTableMtx[MESSAGEMAPS];
 #endif
+#ifdef USEMAPMODUL
+map<const string, int> modulusMap;
+int modulusIter;
+pthread_mutex_t modulusMapMtx;
+#endif
+
 MESSAGE* MainMessage;
 //CALL_OSET* MainOset;
 
