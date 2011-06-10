@@ -101,6 +101,9 @@ class ThreadWrapper {
 //The state machine will send the message directly to transport
 #define USEFASTSEND
 
+//The try is sent by SL_CC
+#define QUICKTRY
+
 //use map instead of calculating the modulus
 #define USEMAPMODUL
 
@@ -127,7 +130,7 @@ class ThreadWrapper {
 #define ALARMMAPS 32
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
-//#define INHIBITALARM
+#define INHIBITALARM
 
 #define COMAPS 500
 #define COMAPS_DIG 3

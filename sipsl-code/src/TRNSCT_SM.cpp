@@ -182,6 +182,9 @@ SingleAction TRNSCT_SM::clearTimerS(int genPoint){
 
 //**********************************************************************************
 ACTION* SM::event(MESSAGE* _event){
+    TIMEDEF
+    SETNOW
+
 	DEBINF("ACTION* SM::event(MESSAGE* _event)",this<<"]["<<_event)
     PREDICATE_ACTION* tmp;
 
@@ -196,6 +199,7 @@ ACTION* SM::event(MESSAGE* _event){
         tmp  = iter->second;
         if (tmp->predicate(this, _event)){
             act = tmp->action(this, _event);
+            PRINTDIFF("ACTION* SM::event(MESSAGE* _event) end")
             return act;
         }
     }
@@ -212,6 +216,7 @@ ACTION* SM::event(MESSAGE* _event){
 		}
     }
 #endif
+    PRINTDIFF("ACTION* SM::event(MESSAGE* _event) end")
     return(act);
 }
 //**********************************************************************************
@@ -296,11 +301,15 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1 = etry;
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock(_sm->getSL_CO()->call_oset);
 #ifdef USEFASTSEND
+#ifndef QUICKTRY //if defined, already sent
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(etry);
+#endif
+
 #else
 	SingleAction sa_2 = SingleAction(etry);
 	action->addSingleAction(sa_2);
 #endif
+
 
 	//**************************************
 	//Local state 1

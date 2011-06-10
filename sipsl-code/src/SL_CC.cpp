@@ -98,7 +98,11 @@
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
+#ifndef TRNSPRT_H
+#include "TRNSPRT.h"
+#endif
 
+static SIPUTIL SipUtil;
 
 //**********************************************************************************
 //**********************************************************************************
@@ -233,6 +237,14 @@ void SL_CC::parse(void* __mess, int _mmod){
             //////////////////////////////
             //Start - Initialization block
             CALL_OSET* call_oset = 0x0;
+
+            //Quicktry here!!!
+#ifdef QUICKTRY
+        	CREATEMESSAGE(etry, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)
+        	SipUtil.genTryFromInvite(_mess, etry);
+        	transport->p_w(etry);
+#endif
+
             call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain());
             //End
             //////////////////////////////
