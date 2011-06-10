@@ -497,6 +497,9 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
         //There are no sm, create it
         //OVERALLSTATE lock usage start here
 
+        //Quicktry :
+        //create the INVITE_SV during creation of call_oset
+        //and here set only the callID
         if (trnsctSM == 0x0 ){
             if (OverallState_SV == OS_INIT && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == INVITE_REQUEST ){
                 call_oset->insertSequence("INVITE_A", _message->getHeadCSeq());
