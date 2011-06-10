@@ -113,20 +113,21 @@ class ThreadWrapper {
 #define MAXTHREADS 128
 
 //
-#define SIPENGINETH 64
-#define SIPENGINMAPS 16
+#define SIPENGINETH 128
+#define SIPENGINMAPS 64
 
 #define TRNSPRTTH 64
-#define TRNSPRTMAPS 16
+#define TRNSPRTMAPS 32
 
 #define SL_CCTH 128
 #define SL_CCMAPS 32
 
 //#define ENGINEMAPS 5
-#define ALARMTH 32
-#define ALARMMAPS 16
+#define ALARMTH 64
+#define ALARMMAPS 32
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
+//#define INHIBITALARM
 
 #define COMAPS 500
 #define COMAPS_DIG 3
