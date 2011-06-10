@@ -133,6 +133,10 @@ void ALMGR::alarmer(int _mod){
 
 //	timespec tsleep_time;
 
+#ifdef INHIBITALARM
+	return;
+#endif
+
 	int trymaxlock = 0;
     for(;;){
 
@@ -155,9 +159,7 @@ void ALMGR::alarmer(int _mod){
 //        }
 //#endif
 
-        //GETLOCK(&mutex,"mutex");
-
-        //for maps
+#ifdef USETRYLOCK
 
         int trylok;
         TRYLOCK(&mutex[_mod]," ALARM loog mutex"<<_mod, trylok)
@@ -176,6 +178,9 @@ void ALMGR::alarmer(int _mod){
         else{
         	trymaxlock = 0;
         }
+#else
+        GETLOCK(&mutex[_mod],"mutex "<<_mod);
+#endif
 
         if (!pq[_mod].empty()) {
             trip = pq[_mod].top();
@@ -275,6 +280,10 @@ void ALMGR::alarmer(int _mod){
 void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime){
 	DEBINF("void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime)",this<<"]["<<_fireTime)
 
+#ifdef INHIBITALARM
+	return;
+#endif
+
 	_message->setFireTime(_fireTime);
 	p_w((void*)_message);
 	return;
@@ -290,11 +299,12 @@ void ALMGR::parse(void *__mess,int _mod){
 	MESSAGE* _mess = (MESSAGE*)__mess;
 
 	if (_mess->getFireTime() ==  (lli)0){
-	    GETLOCK(&mutex[_mod],"mutex mod ["<<_mod);
 		string callid_alarm = _mess->getGenericHeader("Call-ID:") +
 				_mess->getViaBranch() +
 				"#" + _mess->getOrderOfOperation()+ "#";
+	    GETLOCK(&mutex[_mod],"mutex mod ["<<_mod);
 	    internalCancelAlarm(callid_alarm, _mod);
+	    RELLOCK(&mutex[_mod],"mutex"<<"] mod ["<<_mod);
 		if(!_mess->getLock()){
 			PURGEMESSAGE(_mess)
 		}else {
@@ -302,7 +312,6 @@ void ALMGR::parse(void *__mess,int _mod){
 			DEBASSERT("Rule break timer off message found locked")
 		}
 
-	    RELLOCK(&mutex[_mod],"mutex"<<"] mod ["<<_mod);
 
 	    return;
 	}
@@ -329,11 +338,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
     TIMEDEF
     SETNOW
 
-    //int __mod = _mod % ALARMMAPS;
-
-
     PROFILE("ALMGR::insertAlarm begin")
-    //DEBDEV("ALMGR::insertAlarm message", _message <<"] mod ["<<_mod << "] alarm map["<<__mod)
 
 
 #ifdef DEBCODE
@@ -344,6 +349,14 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
     DEBDEV("ALMGR::insertAlarm delta", (lli) (_fireTime  - firetime) )
 #endif
 
+    NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
+
+    string cidbranch_alarm = alm->getCidbranch();
+
+    triple trip;
+    trip.time = _fireTime;
+    trip.cid = cidbranch_alarm;
+    trip.alarm = alm;
 
 #ifdef USETRYLOCK
     int trylok;
@@ -362,22 +375,10 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
     }
 #endif
 
-
-    NEWPTR(ALARM*, alm, ALARM(_message, _fireTime),"ALARM")
-
-    string cidbranch_alarm = alm->getCidbranch();
-    //DEBDEV("Inserting Alarm id (cid+branch)", cidbranch_alarm << "]["<<alm<<"] mod ["<<__mod);
-
-
-    triple trip;
-    trip.time = _fireTime;
-    trip.cid = cidbranch_alarm;
-    trip.alarm = alm;
-
+    pair<map<string, ALARM*>::iterator,bool> ret;
 
     pq[_mod].push(trip);
 
-    pair<map<string, ALARM*>::iterator,bool> ret;
     ret = cidmap[_mod].insert(pair<string,ALARM*>(cidbranch_alarm,alm));
     if(!ret.second){
     	DEBDEV("Inserting an alarm, cid already exists", (ALARM*)ret.first->second <<"] mod ["<<_mod)
