@@ -145,7 +145,7 @@ void SL_CC::parse(void* __mess, int _mmod){
 
         CALL_OSET* call_oset = 0x0;
 
-        string callids = _mess->getSourceMessageCallId();
+        string callids = _mess->getHeadCallId();
         int modulus = _mess->getModulus();
 
         DEBSIP("SL_CC::parse CALLOSET normal ID",callids)
@@ -286,7 +286,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         //Ok if coming from server: its the retransmission of 200ok for A
 
         string callids = _mess->getSourceMessageCallId();
-        int modulus = _mess->getModulus();
+        int modulus = _mess->getSourceModulus();
 
         if (callids.length() == 0){
             DEBMESSAGE("No source call id in the incoming message",_mess)

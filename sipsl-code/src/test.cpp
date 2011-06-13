@@ -75,7 +75,7 @@ pthread_mutex_t messTableMtx[MESSAGEMAPS];
 #endif
 #ifdef USEMAPMODUL
 map<const string, int> modulusMap;
-int modulusIter;
+int modulusIter = 0;
 pthread_mutex_t modulusMapMtx;
 #endif
 

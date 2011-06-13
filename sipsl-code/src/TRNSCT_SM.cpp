@@ -100,7 +100,7 @@ static SIPUTIL SipUtil;
 //**********************************************************************************
 //**********************************************************************************
 TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
-	SM(_sl_cc, _sl_co){
+	SM_V6(_sl_cc, _sl_co){
 	DEBINF("TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):SM(_sl_cc, _sl_co)",
 			this<<"]["<<_requestType<<"]["<<_matrixMess<<"]["<<_a_Matrix<<"]["<<_sl_cc<<"]["<<_sl_co)
 
@@ -181,52 +181,52 @@ SingleAction TRNSCT_SM::clearTimerS(int genPoint){
 }
 
 //**********************************************************************************
-ACTION* SM::event(MESSAGE* _event){
-    TIMEDEF
-    SETNOW
-
-	DEBINF("ACTION* SM::event(MESSAGE* _event)",this<<"]["<<_event)
-    PREDICATE_ACTION* tmp;
-
-    ACTION* act=0x0;
-
-    DEBDEV("SM::event Look for state", State)
-    pair<multimap<const int,PREDICATE_ACTION*>::iterator,multimap<const int,PREDICATE_ACTION*>::iterator> ret;
-    multimap<const int,PREDICATE_ACTION*>::iterator iter;
-    ret = move_sm.equal_range(State);
-
-    for (iter=ret.first; iter!=ret.second; ++iter){
-        tmp  = iter->second;
-        if (tmp->predicate(this, _event)){
-            act = tmp->action(this, _event);
-            PRINTDIFF("ACTION* SM::event(MESSAGE* _event) end")
-            return act;
-        }
-    }
-
-#ifdef DEBCODE
-    if(act != 0x0){
-		stack<SingleAction> actionList = act->getActionList();
-		while (!actionList.empty()){
-			MESSAGE* _tmpMessage = actionList.top().getMessage();
-			if (_tmpMessage == _event){
-				DEBASSERT("DID not duplicate event message")
-			}
-			actionList.pop();
-		}
-    }
-#endif
-    PRINTDIFF("ACTION* SM::event(MESSAGE* _event) end")
-    return(act);
-}
+//ACTION* SM::event(MESSAGE* _event){
+//    TIMEDEF
+//    SETNOW
+//
+//	DEBINF("ACTION* SM::event(MESSAGE* _event)",this<<"]["<<_event)
+//    PREDICATE_ACTION* tmp;
+//
+//    ACTION* act=0x0;
+//
+//    DEBDEV("SM::event Look for state", State)
+//    pair<multimap<const int,PREDICATE_ACTION*>::iterator,multimap<const int,PREDICATE_ACTION*>::iterator> ret;
+//    multimap<const int,PREDICATE_ACTION*>::iterator iter;
+//    ret = move_sm.equal_range(State);
+//
+//    for (iter=ret.first; iter!=ret.second; ++iter){
+//        tmp  = iter->second;
+//        if (tmp->predicate(this, _event)){
+//            act = tmp->action(this, _event);
+//            PRINTDIFF("ACTION* SM::event(MESSAGE* _event) end")
+//            return act;
+//        }
+//    }
+//
+//#ifdef DEBCODE
+//    if(act != 0x0){
+//		stack<SingleAction> actionList = act->getActionList();
+//		while (!actionList.empty()){
+//			MESSAGE* _tmpMessage = actionList.top().getMessage();
+//			if (_tmpMessage == _event){
+//				DEBASSERT("DID not duplicate event message")
+//			}
+//			actionList.pop();
+//		}
+//    }
+//#endif
+//    PRINTDIFF("ACTION* SM::event(MESSAGE* _event) end")
+//    return(act);
+//}
 //**********************************************************************************
 //**********************************************************************************
-void SM::insert_move(int _i, PREDICATE_ACTION* _pa){
-
-    move_sm.insert(pair<const int, PREDICATE_ACTION*>(_i, _pa));
-
-}
-SM::SM(ENGINE* _eng, SL_CO* _sl_co){
+//void SM::insert_move(int _i, PREDICATE_ACTION* _pa){
+//
+//    move_sm.insert(pair<const int, PREDICATE_ACTION*>(_i, _pa));
+//
+//}
+SM_V6::SM_V6(ENGINE* _eng, SL_CO* _sl_co){
 
     sl_cc = _eng;
     sl_co = _sl_co;
@@ -234,19 +234,19 @@ SM::SM(ENGINE* _eng, SL_CO* _sl_co){
 
 //	controlSequence = 1;
 }
-ENGINE* SM::getSL_CC(void){
+ENGINE* SM_V6::getSL_CC(void){
     return sl_cc;
 }
-SL_CO* SM::getSL_CO(void){
+SL_CO* SM_V6::getSL_CO(void){
     return sl_co;
 }
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
-    machine = _sm;
-}
+//PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
+//    machine = _sm;
+//}
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
@@ -256,7 +256,7 @@ PREDICATE_ACTION::PREDICATE_ACTION(SM* _sm){
 //*****************************************************************
 // INVITE_A from network
 //*****************************************************************
-bool pre_invite_from_a(SM* _sm, MESSAGE* _message){
+bool pre_invite_from_a(SM_V6* _sm, MESSAGE* _message){
 
     DEBDEV("TRNSCT_INV_SV pre_invite_from_a called",_message)
     if (_message->getReqRepType() == REQSUPP
@@ -272,7 +272,7 @@ bool pre_invite_from_a(SM* _sm, MESSAGE* _message){
     }
 }
 //*****************************************************************
-ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
+ACTION* act_invite_to_alo(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRSNCT_INV_SV::act_invite_to_alo", _message)
 	//DEBDEV("TRSNCT_INV_SV::act_invite_to_alo", _message->getHeadSipRequest().getContent())
@@ -332,7 +332,7 @@ ACTION* act_invite_to_alo(SM* _sm, MESSAGE* _message) {
 
 }
 //*****************************************************************
-ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
+ACTION* act_resend_try_to_a(SM_V6* _sm, MESSAGE* _message) {
 
 
 	//***********************************************************
@@ -362,7 +362,7 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 // 101 DE or 180 RING from SM_CL
 //*****************************************************************
- bool pre_provrep_from_cl(SM* _sm, MESSAGE* _message){
+ bool pre_provrep_from_cl(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRSNCT_INV_SV pre_provreply_from_b called",_message)
 
@@ -380,7 +380,7 @@ ACTION* act_resend_try_to_a(SM* _sm, MESSAGE* _message) {
 		}
 }
 //*****************************************************************
-ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
+ACTION* act_provreply_to_a(SM_V6* _sm, MESSAGE* _message) {
 
 	//_message riciclato
 
@@ -425,7 +425,7 @@ ACTION* act_provreply_to_a(SM* _sm, MESSAGE* _message) {
 	return action;
 }
 //*****************************************************************
-ACTION* act_resend_provreply_to_a(SM* _sm, MESSAGE* _message) {
+ACTION* act_resend_provreply_to_a(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRSNCT_INV_SV::act_resend_provreply_to_a",  _message )
 
@@ -448,7 +448,7 @@ ACTION* act_resend_provreply_to_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 // 200 OK from SM_CL
 //*****************************************************************
-bool pre_200ok_from_alo(SM* _sm, MESSAGE* _message){
+bool pre_200ok_from_alo(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alo",_message)
 
@@ -465,7 +465,7 @@ bool pre_200ok_from_alo(SM* _sm, MESSAGE* _message){
 	}
 }
 //*****************************************************************
-ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
+ACTION* act_200ok_fwdto_a(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRSNCT_INV_SV act_200ok_fwdto_a called",_message)
 
@@ -531,7 +531,7 @@ ACTION* act_200ok_fwdto_a(SM* _sm, MESSAGE* _message) {
 
 
 }
-ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
+ACTION* act_200ok_refwdto_a(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRSNCT_INV_SV act_200ok_refwdto_a called",_message)
 
@@ -591,7 +591,7 @@ ACTION* act_200ok_refwdto_a(SM* _sm, MESSAGE* _message) {
 
 
 }
-ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
+ACTION* act_200ok_resendto_a(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRSNCT_INV_SV act_200ok_resendto_a called",_message)
 
@@ -657,7 +657,7 @@ ACTION* act_200ok_resendto_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 // 200 OK from Alarm and resend < max and overall state not confirmed
 //*****************************************************************
-bool pre_200ok_from_alarm(SM* _sm, MESSAGE* _message){
+bool pre_200ok_from_alarm(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm",_message)
 
@@ -678,7 +678,7 @@ bool pre_200ok_from_alarm(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 // 200 OK from Alarm and resend >= max and overall state not confirmed
 //*****************************************************************
-bool pre_200ok_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
+bool pre_200ok_from_alarm_maxreach(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm_maxreach",_message)
 
@@ -697,7 +697,7 @@ bool pre_200ok_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 	}
 }
 //*****************************************************************
-ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
+ACTION* act_terminate_sv(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRSNCT_INV_SV act_terminate_sv ",_message)
 
@@ -726,7 +726,7 @@ ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 // 200 OK from Alarm overall state confirmed
 //*****************************************************************
-bool pre_200ok_from_alarm_confirm(SM* _sm, MESSAGE* _message){
+bool pre_200ok_from_alarm_confirm(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRSNCT_INV_SV pre_200ok_from_alarm_confirm",_message)
 
@@ -744,7 +744,7 @@ bool pre_200ok_from_alarm_confirm(SM* _sm, MESSAGE* _message){
 	}
 }
 //*****************************************************************
-ACTION* act_null_sv(SM* _sm, MESSAGE* _message) {
+ACTION* act_null_sv(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRSNCT_INV_SV act_null_sv",_message)
 
@@ -760,7 +760,7 @@ ACTION* act_null_sv(SM* _sm, MESSAGE* _message) {
 	return (action);
 
 }
-bool pre_N_99_inv_sv(SM* _sm, MESSAGE* _message){
+bool pre_N_99_inv_sv(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRSNCT_INV_SV pre_N_99_inv_sv",_message)
 
@@ -777,7 +777,7 @@ bool pre_N_99_inv_sv(SM* _sm, MESSAGE* _message){
 		return false;
 	}
 }
-ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
+ACTION* act_N_99_inv_sv(SM_V6* _sm, MESSAGE* _message) {
 
 	//Send temination signal to client machine
 	DEBDEV("TRSNCT_INV_SV act_N_99_inv_sv",_message)
@@ -807,7 +807,7 @@ ACTION* act_N_99_inv_sv(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 // TIMER_S
 //*****************************************************************
-bool pre_timer_s_sv(SM* _sm, MESSAGE* _message){
+bool pre_timer_s_sv(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_SV pre_timer_s",_message)
 	if (_message->getTypeOfInternal() == TYPE_OP
@@ -823,7 +823,7 @@ bool pre_timer_s_sv(SM* _sm, MESSAGE* _message){
 		return false;
 	}
 }
-ACTION* act_timer_s_sv(SM* _sm, MESSAGE* _message) {
+ACTION* act_timer_s_sv(SM_V6* _sm, MESSAGE* _message) {
 
 	//Send temination signal to client machine
 	DEBDEV("TRSNCT_INV_SV act_timer_s",_message)
@@ -846,86 +846,125 @@ ACTION* act_timer_s_sv(SM* _sm, MESSAGE* _message) {
 }
 //**********************************************************************************
 TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
-		PA_INV_0_1SV((SM*)this),
-		PA_INV_1_2SV((SM*)this),
-		PA_INV_2_2SV((SM*)this),
-		PA_INV_1_3SV((SM*)this),
-		PA_INV_3_4SV((SM*)this),
-		PA_INV_1_1SV((SM*)this),
-		PA_INV_3_3aSV((SM*)this),
-		PA_INV_3_3bSV((SM*)this),
-		PA_INV_3_5SV((SM*)this),
-		PA_INV_3_3dSV((SM*)this),
-		PA_INV_3_3eSV((SM*)this),
-		PA_INV_S_SV((SM*)this){
+		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co){
 
 	resend_200ok = 0;
 
 	STOREMESS_1_1 = MainMessage;
 	STOREMESS_1_2 = MainMessage;
 	STOREMESS_1_3 = MainMessage;
+}
+ACTION* TRNSCT_SM_INVITE_SV::event(MESSAGE* _message){
 
 
-	//First Invite_A
-	//Try_A is sent
-	//Invite_A is sent to ALO
-	PA_INV_0_1SV.predicate = &pre_invite_from_a;
-	PA_INV_0_1SV.action = &act_invite_to_alo;
+	if (State == 0){
+		//insert_move(0,&PA_INV_0_1SV);
+		if (pre_invite_from_a((SM_V6*)this, _message)){
+			return act_invite_to_alo((SM_V6*)this, _message);
+		}
+	}
+	else if (State == 1){
+		//insert_move(1,&PA_INV_1_1SV);
+		if (pre_invite_from_a((SM_V6*)this, _message)){
+			return act_resend_try_to_a((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_INV_1_2SV);
+		else if (pre_provrep_from_cl((SM_V6*)this, _message)){
+			return act_provreply_to_a((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_INV_1_3SV);
+		else if (pre_200ok_from_alo((SM_V6*)this, _message)){
+			return act_200ok_fwdto_a((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_INV_S_SV);
+		else if (pre_timer_s_sv((SM_V6*)this, _message)){
+			return act_timer_s_sv((SM_V6*)this, _message);
+		}
 
-	//Second Invite_A
-	//Try_a lost
-	PA_INV_1_1SV.predicate = &pre_invite_from_a;
-	PA_INV_1_1SV.action = &act_resend_try_to_a;
-
-	PA_INV_1_2SV.predicate = &pre_provrep_from_cl;
-	PA_INV_1_2SV.action = &act_provreply_to_a;
-
-	PA_INV_2_2SV.predicate = &pre_invite_from_a;
-	PA_INV_2_2SV.action = &act_resend_provreply_to_a;
-
-	PA_INV_1_3SV.predicate = &pre_200ok_from_alo;
-	PA_INV_1_3SV.action = &act_200ok_fwdto_a;
-
-	PA_INV_3_3aSV.predicate = &pre_invite_from_a;
-	PA_INV_3_3aSV.action = &act_200ok_resendto_a;
-
-	PA_INV_3_3bSV.predicate = &pre_200ok_from_alarm;
-	PA_INV_3_3bSV.action = &act_200ok_refwdto_a;
-
-	PA_INV_3_5SV.predicate = &pre_200ok_from_alarm_maxreach;
-	PA_INV_3_5SV.action = &act_terminate_sv;
-
-	PA_INV_3_3dSV.predicate = &pre_200ok_from_alarm_confirm;
-	PA_INV_3_3dSV.action = &act_null_sv;
-
-	//Why some 180 are not sent?
-	//Probably beause tehy arrive when the sm is already in state 2
-	PA_INV_3_3eSV.predicate = &pre_provrep_from_cl;
-	PA_INV_3_3eSV.action = &act_null_sv;
-
-	PA_INV_S_SV.predicate = &pre_timer_s_sv;
-	PA_INV_S_SV.action = &act_timer_s_sv;
-
-	insert_move(0,&PA_INV_0_1SV);
-
-	insert_move(1,&PA_INV_1_1SV);
-	insert_move(1,&PA_INV_1_2SV);
-	insert_move(1,&PA_INV_1_3SV);
-	insert_move(1,&PA_INV_S_SV);
-
-	insert_move(2,&PA_INV_2_2SV);
-	insert_move(2,&PA_INV_3_3eSV);
-	insert_move(2,&PA_INV_1_3SV);
-	insert_move(2,&PA_INV_S_SV);
-
-	insert_move(3,&PA_INV_3_3aSV);
-	insert_move(3,&PA_INV_3_3bSV);
-	insert_move(3,&PA_INV_3_5SV);
-	insert_move(3,&PA_INV_3_3dSV);
-	insert_move(3,&PA_INV_3_3eSV);
-	insert_move(3,&PA_INV_S_SV);
-
+	}
+	else if (State == 2){
+		//insert_move(2,&PA_INV_2_2SV);
+		if (pre_invite_from_a((SM_V6*)this, _message)){
+			return act_resend_provreply_to_a((SM_V6*)this, _message);
+		}
+		//insert_move(2,&PA_INV_3_3eSV);
+		else if (pre_provrep_from_cl((SM_V6*)this, _message)){
+			return act_null_sv((SM_V6*)this, _message);
+		}
+		//insert_move(2,&PA_INV_1_3SV);
+		else if (pre_200ok_from_alo((SM_V6*)this, _message)){
+			return act_200ok_fwdto_a((SM_V6*)this, _message);
+		}
+		//insert_move(2,&PA_INV_S_SV);
+		else if (pre_timer_s_sv((SM_V6*)this, _message)){
+			return act_timer_s_sv((SM_V6*)this, _message);
+		}
+	}else if (State == 3){
+		//insert_move(3,&PA_INV_3_3aSV);
+		if (pre_invite_from_a((SM_V6*)this, _message)){
+			return act_200ok_resendto_a((SM_V6*)this, _message);
+		}
+		//insert_move(3,&PA_INV_3_3bSV);
+		else if (pre_200ok_from_alarm((SM_V6*)this, _message)){
+			return act_200ok_refwdto_a((SM_V6*)this, _message);
+		}
+		//insert_move(3,&PA_INV_3_5SV);
+		else if (pre_200ok_from_alarm_maxreach((SM_V6*)this, _message)){
+			return act_terminate_sv((SM_V6*)this, _message);
+		}
+		//insert_move(3,&PA_INV_3_3dSV);
+		else if (pre_200ok_from_alarm_confirm((SM_V6*)this, _message)){
+			return act_null_sv((SM_V6*)this, _message);
+		}
+		//insert_move(3,&PA_INV_3_3eSV);
+		else if (pre_provrep_from_cl((SM_V6*)this, _message)){
+			return act_null_sv((SM_V6*)this, _message);
+		}
+		//insert_move(3,&PA_INV_S_SV);
+		else if (pre_timer_s_sv((SM_V6*)this, _message)){
+			return act_timer_s_sv((SM_V6*)this, _message);
+		}
+	}
+	return 0x0;
+//	//First Invite_A
+//	//Try_A is sent
+//	//Invite_A is sent to ALO
+//	PA_INV_0_1SV.predicate = &pre_invite_from_a;
+//	PA_INV_0_1SV.action = &act_invite_to_alo;
+//
+//	//Second Invite_A
+//	//Try_a lost
+//	PA_INV_1_1SV.predicate = &pre_invite_from_a;
+//	PA_INV_1_1SV.action = &act_resend_try_to_a;
+//
+//	PA_INV_1_2SV.predicate = &pre_provrep_from_cl;
+//	PA_INV_1_2SV.action = &act_provreply_to_a;
+//
+//	PA_INV_2_2SV.predicate = &pre_invite_from_a;
+//	PA_INV_2_2SV.action = &act_resend_provreply_to_a;
+//
+//	PA_INV_1_3SV.predicate = &pre_200ok_from_alo;
+//	PA_INV_1_3SV.action = &act_200ok_fwdto_a;
+//
+//	PA_INV_3_3aSV.predicate = &pre_invite_from_a;
+//	PA_INV_3_3aSV.action = &act_200ok_resendto_a;
+//
+//	PA_INV_3_3bSV.predicate = &pre_200ok_from_alarm;
+//	PA_INV_3_3bSV.action = &act_200ok_refwdto_a;
+//
+//	PA_INV_3_5SV.predicate = &pre_200ok_from_alarm_maxreach;
+//	PA_INV_3_5SV.action = &act_terminate_sv;
+//
+//	PA_INV_3_3dSV.predicate = &pre_200ok_from_alarm_confirm;
+//	PA_INV_3_3dSV.action = &act_null_sv;
+//
+//	//Why some 180 are not sent?
+//	//Probably beause tehy arrive when the sm is already in state 2
+//	PA_INV_3_3eSV.predicate = &pre_provrep_from_cl;
+//	PA_INV_3_3eSV.action = &act_null_sv;
+//
+//	PA_INV_S_SV.predicate = &pre_timer_s_sv;
+//	PA_INV_S_SV.action = &act_timer_s_sv;
 
 }
 //*****************************************************************
@@ -933,7 +972,7 @@ TRNSCT_SM_INVITE_SV::TRNSCT_SM_INVITE_SV(int _requestType, MESSAGE* _matrixMess,
 //*****************************************************************
 // INVITE B from ALO
 //*****************************************************************
-bool pre_invite_from_sv(SM* _sm, MESSAGE* _message){
+bool pre_invite_from_sv(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_CL pre_invite_from_sv",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -954,7 +993,7 @@ bool pre_invite_from_sv(SM* _sm, MESSAGE* _message){
 //*****************************************************************
 // careful pre_1_1_inv_cl and pre_1_99_inv_cl are different
 // This invite could be deleted, currently is inserted into insertLockedMessage table
-bool pre_invite_from_alarm(SM* _sm, MESSAGE* _message){
+bool pre_invite_from_alarm(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -972,7 +1011,7 @@ bool pre_invite_from_alarm(SM* _sm, MESSAGE* _message){
 }
 //*****************************************************************
 //act_1_1_inv_cl
-ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
+ACTION* act_invite_to_b(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRNSCT_INV_CL act_invite_to_b",_message)
 
@@ -1024,7 +1063,7 @@ ACTION* act_invite_to_b(SM* _sm, MESSAGE* _message) {
 // INVITE B from ALARM max resend reached
 //*****************************************************************
 // pre_1_99_inv_cl
-bool pre_invite_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
+bool pre_invite_from_alarm_maxreach(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_CL pre_invite_from_alarm_maxreach",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -1041,7 +1080,7 @@ bool pre_invite_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 	}
 }
 //act_1_99_inv_cl
-ACTION* act_terminate_cl(SM* _sm, MESSAGE* _message) {
+ACTION* act_terminate_cl(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRNSCT_INV_CL act_terminate_cl *** incomplete *** ",_message)
 
@@ -1069,7 +1108,7 @@ ACTION* act_terminate_cl(SM* _sm, MESSAGE* _message) {
 // 100 Try B
 //*****************************************************************
 //pre_1_2_inv_cl
-bool pre_try_from_b(SM* _sm, MESSAGE* _message){
+bool pre_try_from_b(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_CL pre_try_from_b",_message)
 
@@ -1087,7 +1126,7 @@ bool pre_try_from_b(SM* _sm, MESSAGE* _message){
 }
 //*****************************************************************
 //act_1_2_inv_cl
-ACTION* act_clear_invite_alarm(SM* _sm, MESSAGE* _message) {
+ACTION* act_clear_invite_alarm(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRNSCT_INV_CL act_clear_invite_alarm",_message)
 
@@ -1121,7 +1160,7 @@ ACTION* act_clear_invite_alarm(SM* _sm, MESSAGE* _message) {
 // 101 DE B - 180 RING B
 //*****************************************************************
 //pre_1_3_inv_cl
-bool pre_provrep_from_b(SM* _sm, MESSAGE* _message){
+bool pre_provrep_from_b(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("SM_CL pre_provrep_from",_message)
 
@@ -1140,7 +1179,7 @@ bool pre_provrep_from_b(SM* _sm, MESSAGE* _message){
 }
 //*****************************************************************
 //act_1_3_inv_cl
-ACTION* act_provrep_to_sv(SM* _sm, MESSAGE* _message) {
+ACTION* act_provrep_to_sv(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("SM_CL act_provrep_to_sv",_message)
 
@@ -1192,7 +1231,7 @@ ACTION* act_provrep_to_sv(SM* _sm, MESSAGE* _message) {
 // 200 OK B
 //*****************************************************************
 //pre_1_4_inv_cl
-bool pre_200ok_from_b(SM* _sm, MESSAGE* _message){
+bool pre_200ok_from_b(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("SM pre_200ok_from_b",_message)
 
@@ -1210,7 +1249,7 @@ bool pre_200ok_from_b(SM* _sm, MESSAGE* _message){
 }
 //*****************************************************************
 //act_1_4_inv_cl
-ACTION* act_200ok_inv_to_alo(SM* _sm, MESSAGE* _message) {
+ACTION* act_200ok_inv_to_alo(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("SM act_200ok_inv_to_alo",_message)
 
@@ -1259,7 +1298,7 @@ ACTION* act_200ok_inv_to_alo(SM* _sm, MESSAGE* _message) {
 // No Need to resend the ACK (not ready)
 //*****************************************************************
 //pre_4_4a_inv_cl
-bool pre_200ok_from_b_proceeding(SM* _sm, MESSAGE* _message){
+bool pre_200ok_from_b_proceeding(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("SM_CL pre_200ok_from_b_proceeding",_message)
 
@@ -1291,7 +1330,7 @@ bool pre_200ok_from_b_proceeding(SM* _sm, MESSAGE* _message){
 // Need to resend the ACK
 //*****************************************************************
 //pre_4_4b_inv_cl
-bool pre_200ok_from_b_completed(SM* _sm, MESSAGE* _message){
+bool pre_200ok_from_b_completed(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("SM_CL pre_200ok_from_b_completed",_message)
 
@@ -1309,7 +1348,7 @@ bool pre_200ok_from_b_completed(SM* _sm, MESSAGE* _message){
 		}
 }
 //act_4_4b_inv_cl
-ACTION* act_resend_ack(SM* _sm, MESSAGE* _message) {
+ACTION* act_resend_ack(SM_V6* _sm, MESSAGE* _message) {
 
 
 	DEBDEV("SM act_resend_ack",_message)
@@ -1339,7 +1378,7 @@ ACTION* act_resend_ack(SM* _sm, MESSAGE* _message) {
 
 }
 //*****************************************************************
-ACTION* act_null_cl(SM* _sm, MESSAGE* _message) {
+ACTION* act_null_cl(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRSNCT_INV_CL act_null_cl",_message)
 
@@ -1360,7 +1399,7 @@ ACTION* act_null_cl(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 // TIMER_S
 //*****************************************************************
-bool pre_timer_s_cl(SM* _sm, MESSAGE* _message){
+bool pre_timer_s_cl(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_CL pre_timer_s_cl",_message)
 	if (_message->getTypeOfInternal() == TYPE_OP
@@ -1376,7 +1415,7 @@ bool pre_timer_s_cl(SM* _sm, MESSAGE* _message){
 		return false;
 	}
 }
-ACTION* act_timer_s_cl(SM* _sm, MESSAGE* _message) {
+ACTION* act_timer_s_cl(SM_V6* _sm, MESSAGE* _message) {
 
 	//Send temination signal to client machine
 	DEBDEV("TRSNCT_INV_CL act_timer_s_cl",_message)
@@ -1401,83 +1440,119 @@ ACTION* act_timer_s_cl(SM* _sm, MESSAGE* _message) {
 
 //**********************************************************************************
 TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
-		PA_INV_0_1CL((SM*)this),
-		PA_INV_1_1CL((SM*)this),
-		PA_INV_1_2CL((SM*)this),
-		PA_INV_1_3CL((SM*)this),
-		PA_INV_1_4CL((SM*)this),
-		PA_INV_4_4aCL((SM*)this),
-		PA_INV_4_4bCL((SM*)this),
-		PA_INV_4_4cCL((SM*)this),
-		PA_INV_1_99CL((SM*)this),
-		PA_INV_S_CL((SM*)this){
-
-	PA_INV_0_1CL.predicate = &pre_invite_from_sv;
-	PA_INV_0_1CL.action = &act_invite_to_b;
-
-	PA_INV_1_1CL.predicate = &pre_invite_from_alarm;
-	PA_INV_1_1CL.action = &act_invite_to_b;
-
-	PA_INV_1_99CL.predicate = &pre_invite_from_alarm_maxreach;
-	PA_INV_1_99CL.action = &act_terminate_cl;
-
-	PA_INV_1_2CL.predicate = &pre_try_from_b;
-	PA_INV_1_2CL.action = &act_clear_invite_alarm;
-
-	//from 1 or from 2
-	PA_INV_1_3CL.predicate = &pre_provrep_from_b;
-	PA_INV_1_3CL.action = &act_provrep_to_sv;
-
-	//from 1 for 2 or 3
-	PA_INV_1_4CL.predicate = &pre_200ok_from_b;
-	PA_INV_1_4CL.action = &act_200ok_inv_to_alo;
-
-	PA_INV_4_4aCL.predicate = &pre_200ok_from_b_proceeding;
-	PA_INV_4_4aCL.action = &act_null_cl;
-
-	PA_INV_4_4bCL.predicate = &pre_200ok_from_b_completed;
-	PA_INV_4_4bCL.action = &act_resend_ack;
-
-	//Not all 180 are sent back
-	PA_INV_4_4cCL.predicate = &pre_provrep_from_b;
-	PA_INV_4_4cCL.action = &act_null_cl;
-
-	PA_INV_S_CL.predicate = &pre_timer_s_cl;
-	PA_INV_S_CL.action = &act_timer_s_cl;
+		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co){
 
 	resend_invite = 1;
+}
+ACTION* TRNSCT_SM_INVITE_CL::event(MESSAGE* _message){
 
-	//INVITE in
-	insert_move(0,&PA_INV_0_1CL);
+	if(State == 0){
+		//insert_move(0,&PA_INV_0_1CL);
+		if (pre_invite_from_sv((SM_V6*)this, _message)){
+			return act_invite_to_b((SM_V6*)this, _message);
+		}
+	}else if (State == 1){
+		//insert_move(1,&PA_INV_1_1CL);
+		if (pre_invite_from_sv((SM_V6*)this, _message)){
+			return act_invite_to_b((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_INV_1_2CL);
+		else if (pre_try_from_b((SM_V6*)this, _message)){
+			return act_clear_invite_alarm((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_INV_1_3CL);
+		else if (pre_provrep_from_b((SM_V6*)this, _message)){
+			return act_provrep_to_sv((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_INV_S_CL);
+		else if (pre_timer_s_cl((SM_V6*)this, _message)){
+			return act_timer_s_cl((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_INV_1_99CL);
+		else if (pre_invite_from_alarm_maxreach((SM_V6*)this, _message)){
+			return act_terminate_cl((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_INV_1_4CL);
+		else if (pre_200ok_from_b((SM_V6*)this, _message)){
+			return act_200ok_inv_to_alo((SM_V6*)this, _message);
+		}
 
-	//INVITE in from alarm
-	insert_move(1,&PA_INV_1_1CL);
-	//100 TRY
-	insert_move(1,&PA_INV_1_2CL);
-	//180 RING or 101 DIALOG EST
-	insert_move(1,&PA_INV_1_3CL);
+	} else if (State == 2){
+		//insert_move(2,&PA_INV_1_3CL);
+		if (pre_provrep_from_b((SM_V6*)this, _message)){
+			return act_provrep_to_sv((SM_V6*)this, _message);
+		}
+		//insert_move(2,&PA_INV_S_CL);
+		else if (pre_timer_s_cl((SM_V6*)this, _message)){
+			return act_timer_s_cl((SM_V6*)this, _message);
+		}
+		//insert_move(2,&PA_INV_1_4CL);
+		else if (pre_200ok_from_b((SM_V6*)this, _message)){
+			return act_200ok_inv_to_alo((SM_V6*)this, _message);
+		}
+	} else if (State == 3){
+		//insert_move(3,&PA_INV_1_4CL);
+		if (pre_200ok_from_b((SM_V6*)this, _message)){
+			return act_200ok_inv_to_alo((SM_V6*)this, _message);
+		}
+		//insert_move(3,&PA_INV_S_CL);
+		else if (pre_timer_s_cl((SM_V6*)this, _message)){
+			return act_timer_s_cl((SM_V6*)this, _message);
+		}
 
-	insert_move(1,&PA_INV_S_CL);
+	} else if (State == 4){
+		//insert_move(4,&PA_INV_4_4bCL);
+		if (pre_200ok_from_b_completed((SM_V6*)this, _message)){
+			return act_resend_ack((SM_V6*)this, _message);
+		}
+		//insert_move(4,&PA_INV_4_4aCL);
+		else if (pre_200ok_from_b_proceeding((SM_V6*)this, _message)){
+			return act_null_cl((SM_V6*)this, _message);
+		}
+		//insert_move(4,&PA_INV_4_4cCL);
+		else if (pre_provrep_from_b((SM_V6*)this, _message)){
+			return act_null_cl((SM_V6*)this, _message);
+		}
 
-	insert_move(2,&PA_INV_1_3CL);
-	insert_move(2,&PA_INV_S_CL);
+	}
+	return 0x0;
 
-	//Resend max reached
-	insert_move(1,&PA_INV_1_99CL);
+	//from 1 for 2 or 3
+//	PA_INV_1_4CL.predicate = &pre_200ok_from_b;
+//	PA_INV_1_4CL.action = &act_200ok_inv_to_alo;
+//
+//	PA_INV_0_1CL.predicate = &pre_invite_from_sv;
+//	PA_INV_0_1CL.action = &act_invite_to_b;
+//
+//	PA_INV_1_1CL.predicate = &pre_invite_from_alarm;
+//	PA_INV_1_1CL.action = &act_invite_to_b;
+//
+//	PA_INV_1_99CL.predicate = &pre_invite_from_alarm_maxreach;
+//	PA_INV_1_99CL.action = &act_terminate_cl;
+//
+//	PA_INV_1_2CL.predicate = &pre_try_from_b;
+//	PA_INV_1_2CL.action = &act_clear_invite_alarm;
+//
+//	//from 1 or from 2
+//	PA_INV_1_3CL.predicate = &pre_provrep_from_b;
+//	PA_INV_1_3CL.action = &act_provrep_to_sv;
+//
+//
+//	PA_INV_4_4aCL.predicate = &pre_200ok_from_b_proceeding;
+//	PA_INV_4_4aCL.action = &act_null_cl;
+//
+//	PA_INV_4_4bCL.predicate = &pre_200ok_from_b_completed;
+//	PA_INV_4_4bCL.action = &act_resend_ack;
+//
+//	//Not all 180 are sent back
+//	PA_INV_4_4cCL.predicate = &pre_provrep_from_b;
+//	PA_INV_4_4cCL.action = &act_null_cl;
+//
+//	PA_INV_S_CL.predicate = &pre_timer_s_cl;
+//	PA_INV_S_CL.action = &act_timer_s_cl;
 
-	//200 OK
-	insert_move(1,&PA_INV_1_4CL);
-	insert_move(2,&PA_INV_1_4CL);
-	insert_move(3,&PA_INV_1_4CL);
-	insert_move(3,&PA_INV_S_CL);
 
 
-	//ACK will be sent in the other SM.
-
-	insert_move(4,&PA_INV_4_4bCL);
-	insert_move(4,&PA_INV_4_4aCL);
-	insert_move(4,&PA_INV_4_4cCL);
 
 }
 //**********************************************************************************
@@ -1486,7 +1561,7 @@ TRNSCT_SM_INVITE_CL::TRNSCT_SM_INVITE_CL(int _requestType, MESSAGE* _matrixMess,
 //**********************************************************************************
 //**********************************************************************************
 //pre_0_1_ack_sv
-bool pre_ack_from_a(SM* _sm, MESSAGE* _message){
+bool pre_ack_from_a(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("SM pre_ack_from_a called",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -1502,7 +1577,7 @@ bool pre_ack_from_a(SM* _sm, MESSAGE* _message){
 	}
 }
 //act_0_1_ack_sv
-ACTION* act_ack_to_alo(SM* _sm, MESSAGE* _message) {
+ACTION* act_ack_to_alo(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("SM act_ack_to_alo called",_message)
 
@@ -1540,20 +1615,27 @@ ACTION* act_ack_to_alo(SM* _sm, MESSAGE* _message) {
 
 //**********************************************************************************
 TRNSCT_SM_ACK_SV::TRNSCT_SM_ACK_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
-		PA_ACK_0_1SV((SM*)this),
-		PA_ACK_1_1SV((SM*)this){
+		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co){
+}
+ACTION* TRNSCT_SM_ACK_SV::event(MESSAGE* _message){
 
-	PA_ACK_0_1SV.predicate = &pre_ack_from_a;
-	PA_ACK_0_1SV.action = &act_ack_to_alo;
-
-	PA_ACK_1_1SV.predicate = &pre_ack_from_a;
-	PA_ACK_1_1SV.action = &act_null_sv;
-
-
-	insert_move(0,&PA_ACK_0_1SV);
-	insert_move(1,&PA_ACK_1_1SV);
-
+	if (State == 0){
+		//insert_move(0,&PA_ACK_0_1SV);
+		if (pre_ack_from_a((SM_V6*)this, _message)){
+			return act_ack_to_alo((SM_V6*)this, _message);
+		}
+	}else if (State == 1){
+		//insert_move(1,&PA_ACK_1_1SV);
+		if (pre_ack_from_a((SM_V6*)this, _message)){
+			return act_null_sv((SM_V6*)this, _message);
+		}
+	}
+	return 0x0;
+//	PA_ACK_0_1SV.predicate = &pre_ack_from_a;
+//	PA_ACK_0_1SV.action = &act_ack_to_alo;
+//
+//	PA_ACK_1_1SV.predicate = &pre_ack_from_a;
+//	PA_ACK_1_1SV.action = &act_null_sv;
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -1561,7 +1643,7 @@ TRNSCT_SM_ACK_SV::TRNSCT_SM_ACK_SV(int _requestType, MESSAGE* _matrixMess, ENGIN
 //**********************************************************************************
 //**********************************************************************************
 //pre_0_1_ack_cl
-bool pre_ack_from_alo(SM* _sm, MESSAGE* _message){
+bool pre_ack_from_alo(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("SM pre_ack_from_alo",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -1577,7 +1659,7 @@ bool pre_ack_from_alo(SM* _sm, MESSAGE* _message){
 	}
 }
 //act_0_1_ack_cl
-ACTION* act_ack_to_b(SM* _sm, MESSAGE* _message) {
+ACTION* act_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("SM act_ack_to_b",_message)
 
@@ -1612,7 +1694,7 @@ ACTION* act_ack_to_b(SM* _sm, MESSAGE* _message) {
 
 }
 //pre_1_1_ack_cl
-bool pre_200ok_from_inv_cl(SM* _sm, MESSAGE* _message){
+bool pre_200ok_from_inv_cl(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("SM pre_200ok_from_inv_cl",_message)
 
@@ -1629,7 +1711,7 @@ bool pre_200ok_from_inv_cl(SM* _sm, MESSAGE* _message){
 	}
 }
 //act_1_1_ack_cl
-ACTION* act_resend_ack_to_b(SM* _sm, MESSAGE* _message) {
+ACTION* act_resend_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("SM act_resend_ack_to_b","resend ACK [" << _message)
 
@@ -1649,18 +1731,27 @@ ACTION* act_resend_ack_to_b(SM* _sm, MESSAGE* _message) {
 
 //**********************************************************************************
 TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
-		PA_ACK_0_1CL((SM*)this),
-		PA_ACK_1_1CL((SM*)this){
+		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co){
+}
+ACTION* TRNSCT_SM_ACK_CL::event(MESSAGE* _message){
 
-	PA_ACK_0_1CL.predicate = &pre_ack_from_alo;
-	PA_ACK_0_1CL.action = &act_ack_to_b;
-
-	PA_ACK_1_1CL.predicate = &pre_200ok_from_inv_cl;
-	PA_ACK_1_1CL.action = &act_resend_ack_to_b;
-
-	insert_move(0,&PA_ACK_0_1CL);
-	insert_move(1,&PA_ACK_1_1CL);
+	if(State == 0){
+		//insert_move(0,&PA_ACK_0_1CL);
+		if(pre_ack_from_alo((SM_V6*)this,_message)){
+			return act_ack_to_b((SM_V6*)this,_message);
+		}
+	}else if(State == 0){
+		//insert_move(1,&PA_ACK_1_1CL);
+		if(pre_200ok_from_inv_cl((SM_V6*)this,_message)){
+			return act_resend_ack_to_b((SM_V6*)this,_message);
+		}
+	}
+	return 0x0;
+//	PA_ACK_0_1CL.predicate = &pre_ack_from_alo;
+//	PA_ACK_0_1CL.action = &act_ack_to_b;
+//
+//	PA_ACK_1_1CL.predicate = &pre_200ok_from_inv_cl;
+//	PA_ACK_1_1CL.action = &act_resend_ack_to_b;
 
 }
 
@@ -1669,7 +1760,7 @@ TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSA
 //**********************************************************************************
 //**********************************************************************************
 //pre_0_1_bye_sv
-bool pre_bye_from_a(SM* _sm, MESSAGE* _message){
+bool pre_bye_from_a(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_INV_SV pre_bye_from_a called",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -1685,7 +1776,7 @@ bool pre_bye_from_a(SM* _sm, MESSAGE* _message){
 	}
 }
 //act_0_1_bye_sv
-ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
+ACTION* act_bye_to_alo(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("SM act_bye_to_alo called",_message)
 
@@ -1742,7 +1833,7 @@ ACTION* act_bye_to_alo(SM* _sm, MESSAGE* _message) {
 	return action;
 
 }
-ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
+ACTION* act_200ok_bye_to_a(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("SM act_200ok_bye_to_a called",_message)
 
@@ -1783,7 +1874,7 @@ ACTION* act_200ok_bye_to_a(SM* _sm, MESSAGE* _message) {
 	return action;
 
 }
-ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
+ACTION* act_resend_200ok_to_a(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("SM act_resend_200ok_to_a called",_message)
 
@@ -1817,7 +1908,7 @@ ACTION* act_resend_200ok_to_a(SM* _sm, MESSAGE* _message) {
 //*****************************************************************
 // TIMER_S
 //*****************************************************************
-bool pre_timer_s_sv_bye(SM* _sm, MESSAGE* _message){
+bool pre_timer_s_sv_bye(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_BYE_SV pre_timer_s_sv_bye",_message)
 	if (_message->getTypeOfInternal() == TYPE_OP
@@ -1836,56 +1927,75 @@ bool pre_timer_s_sv_bye(SM* _sm, MESSAGE* _message){
 
 //**********************************************************************************
 TRNSCT_SM_BYE_SV::TRNSCT_SM_BYE_SV(int _requestType, MESSAGE* _matrixMess, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co),
-		PA_BYE_0_1SV((SM*)this),
-		PA_BYE_1_2SV((SM*)this),
-		PA_BYE_1_1SV((SM*)this),
-		PA_BYE_2_2SV((SM*)this),
-		PA_BYE_S_SV((SM*)this){
+		TRNSCT_SM(_requestType, _matrixMess, _matrixMess, _sl_cc, _sl_co){
 
 	STORED_MESSAGE = MainMessage;
+}
+ACTION* TRNSCT_SM_BYE_SV::event(MESSAGE* _message){
 
-	//BYE V2 PA have wrong names
-	PA_BYE_0_1SV.predicate = &pre_bye_from_a;
-	PA_BYE_0_1SV.action = &act_bye_to_alo;
+	if (State == 0){
+		//insert_move(0,&PA_BYE_0_1SV);
+		if ( pre_bye_from_a((SM_V6*)this, _message)){
+			return act_bye_to_alo((SM_V6*)this, _message);
+		}
+		//insert_move(0,&PA_BYE_S_SV);
+		else if ( pre_timer_s_sv_bye((SM_V6*)this, _message)){
+			return act_timer_s_sv((SM_V6*)this, _message);
+		}
+	}else if(State == 1){
+		//insert_move(1,&PA_BYE_1_2SV);
+		if ( pre_200ok_from_alo((SM_V6*)this, _message)){
+			return act_200ok_bye_to_a((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_BYE_1_1SV);
+		else if ( pre_bye_from_a((SM_V6*)this, _message)){
+			return act_null_sv((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_BYE_S_SV);
+		else if ( pre_timer_s_sv_bye((SM_V6*)this, _message)){
+			return act_timer_s_sv((SM_V6*)this, _message);
+		}
+	}else if(State == 2){
+		//insert_move(2,&PA_BYE_2_2SV);
+		if ( pre_bye_from_a((SM_V6*)this, _message)){
+			return act_resend_200ok_to_a((SM_V6*)this, _message);
+		}
+	}
+	return 0x0;
 
-	PA_BYE_1_2SV.predicate = &pre_200ok_from_alo;
-	PA_BYE_1_2SV.action = &act_200ok_bye_to_a;
+//	//BYE V2 PA have wrong names
+//	PA_BYE_0_1SV.predicate = &pre_bye_from_a;
+//	PA_BYE_0_1SV.action = &act_bye_to_alo;
+//
+//	PA_BYE_1_2SV.predicate = &pre_200ok_from_alo;
+//	PA_BYE_1_2SV.action = &act_200ok_bye_to_a;
+//
+//	//Bye when in state 1:
+//	//A send a bye because OK did not arrive in time
+//	//but 200 ok did not arrive from CLSV so ignore
+//
+//	PA_BYE_1_1SV.predicate = &pre_bye_from_a;
+//	PA_BYE_1_1SV.action = &act_null_sv;
+//
+//
+//	//Bye when in state 2
+//	//resend the 200OK
+//
+//	PA_BYE_2_2SV.predicate = &pre_bye_from_a;
+//	PA_BYE_2_2SV.action = &act_resend_200ok_to_a;
+//
+//	PA_BYE_S_SV.predicate = &pre_timer_s_sv_bye;
+//	PA_BYE_S_SV.action = &act_timer_s_sv;
 
-	//Bye when in state 1:
-	//A send a bye because OK did not arrive in time
-	//but 200 ok did not arrive from CLSV so ignore
-
-	PA_BYE_1_1SV.predicate = &pre_bye_from_a;
-	PA_BYE_1_1SV.action = &act_null_sv;
 
 
-	//Bye when in state 2
-	//resend the 200OK
-
-	PA_BYE_2_2SV.predicate = &pre_bye_from_a;
-	PA_BYE_2_2SV.action = &act_resend_200ok_to_a;
-
-	PA_BYE_S_SV.predicate = &pre_timer_s_sv_bye;
-	PA_BYE_S_SV.action = &act_timer_s_sv;
-
-
-
-	insert_move(0,&PA_BYE_0_1SV);
-	insert_move(0,&PA_BYE_S_SV);
-
-	insert_move(1,&PA_BYE_1_2SV);
-	insert_move(1,&PA_BYE_1_1SV);
-	insert_move(1,&PA_BYE_S_SV);
-
-	insert_move(2,&PA_BYE_2_2SV);
 
 
 }
 //**********************************************************************************
 //**********************************************************************************
 //pre_0_1_bye_cl
-bool pre_bye_from_alo(SM* _sm, MESSAGE* _message){
+bool pre_bye_from_alo(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alo",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -1901,7 +2011,7 @@ bool pre_bye_from_alo(SM* _sm, MESSAGE* _message){
 	}
 
 }
-bool pre_bye_from_alarm(SM* _sm, MESSAGE* _message){
+bool pre_bye_from_alarm(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_SM_BYE_CL pre_bye_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -1918,7 +2028,7 @@ bool pre_bye_from_alarm(SM* _sm, MESSAGE* _message){
 	}
 }
 //act_1_1_bye_cl
-ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
+ACTION* act_bye_to_b(SM_V6* _sm, MESSAGE* _message) {
 
     DEBDEV("TRNSCT_SM_BYE_CL act_bye_to_b",_message)
 
@@ -1965,7 +2075,7 @@ ACTION* act_bye_to_b(SM* _sm, MESSAGE* _message) {
 
     return action;
 }
-ACTION* act_200ok_bye_to_alo(SM* _sm, MESSAGE* _message) {
+ACTION* act_200ok_bye_to_alo(SM_V6* _sm, MESSAGE* _message) {
 
 	DEBDEV("TRNSCT_SM_BYE_CL act_200ok_bye_to_alo",_message)
 
@@ -1997,7 +2107,7 @@ ACTION* act_200ok_bye_to_alo(SM* _sm, MESSAGE* _message) {
 }
 //*****************************************************************
 //pre_1_99_bye_cl
-bool pre_bye_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
+bool pre_bye_from_alarm_maxreach(SM_V6* _sm, MESSAGE* _message){
 
 	DEBDEV("TRNSCT_BYE_CL pre_bye_from_alarm",_message)
 	if (_message->getReqRepType() == REQSUPP
@@ -2015,50 +2125,64 @@ bool pre_bye_from_alarm_maxreach(SM* _sm, MESSAGE* _message){
 }
 //**********************************************************************************
 TRNSCT_SM_BYE_CL::TRNSCT_SM_BYE_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
-		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co),
-		PA_BYE_0_1CL((SM*)this),
-		PA_BYE_1_1CL((SM*)this),
-		PA_BYE_1_99CL((SM*)this),
-		PA_BYE_1_2CL((SM*)this),
-		PA_BYE_S_CL((SM*)this),
-		PA_BYE_2_2CL((SM*)this){
-
-	PA_BYE_0_1CL.predicate = &pre_bye_from_alo;
-	PA_BYE_0_1CL.action = &act_bye_to_b;
-
-	PA_BYE_1_1CL.predicate = &pre_bye_from_alarm;
-	PA_BYE_1_1CL.action = &act_bye_to_b;
-
-	PA_BYE_1_99CL.predicate = &pre_bye_from_alarm_maxreach;
-	PA_BYE_1_99CL.action = &act_terminate_cl;
-
-	PA_BYE_1_2CL.predicate = &pre_200ok_from_b;
-	PA_BYE_1_2CL.action = &act_200ok_bye_to_alo;
-
-	PA_BYE_S_CL.predicate = &pre_timer_s_cl;
-	PA_BYE_S_CL.action = &act_timer_s_cl;
-
-	//New sm rework
-	PA_BYE_2_2CL.predicate = &pre_200ok_from_b;
-	PA_BYE_2_2CL.action = &act_200ok_bye_to_alo;
-
-
-
-	insert_move(0,&PA_BYE_0_1CL);
-	insert_move(0,&PA_BYE_S_CL);
-
-	insert_move(1,&PA_BYE_1_1CL);
-	insert_move(1,&PA_BYE_S_CL);
-
-	insert_move(1,&PA_BYE_1_99CL);
-
-	insert_move(1,&PA_BYE_1_2CL);
-
-	insert_move(2,&PA_BYE_2_2CL);
-
-
+		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co){
 	resend_bye = 1;
+}
+ACTION* TRNSCT_SM_BYE_CL::event(MESSAGE* _message){
 
+	if (State == 0){
+		//insert_move(0,&PA_BYE_0_1CL);
+		if ( pre_bye_from_alo((SM_V6*)this, _message)){
+			return act_bye_to_b((SM_V6*)this, _message);
+		}
+		//insert_move(0,&PA_BYE_S_CL);
+		else if ( pre_timer_s_cl((SM_V6*)this, _message)){
+			return act_timer_s_cl((SM_V6*)this, _message);
+		}
+	}else if (State == 1){
+		//insert_move(1,&PA_BYE_1_1CL);
+		if ( pre_bye_from_alarm((SM_V6*)this, _message)){
+			return act_bye_to_b((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_BYE_S_CL);
+		else if ( pre_timer_s_cl((SM_V6*)this, _message)){
+			return act_timer_s_cl((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_BYE_1_99CL);
+		else if ( pre_bye_from_alarm_maxreach((SM_V6*)this, _message)){
+			return act_terminate_cl((SM_V6*)this, _message);
+		}
+		//insert_move(1,&PA_BYE_1_2CL);
+		else if ( pre_200ok_from_b((SM_V6*)this, _message)){
+			return act_200ok_bye_to_alo((SM_V6*)this, _message);
+		}
+	}else if (State == 2){
+		//insert_move(2,&PA_BYE_2_2CL);
+		if ( pre_200ok_from_b((SM_V6*)this, _message)){
+			return act_200ok_bye_to_alo((SM_V6*)this, _message);
+		}
+
+	}
+	return 0x0;
+
+//	PA_BYE_0_1CL.predicate = &pre_bye_from_alo;
+//	PA_BYE_0_1CL.action = &act_bye_to_b;
+//
+//	PA_BYE_1_1CL.predicate = &pre_bye_from_alarm;
+//	PA_BYE_1_1CL.action = &act_bye_to_b;
+//
+//	PA_BYE_1_99CL.predicate = &pre_bye_from_alarm_maxreach;
+//	PA_BYE_1_99CL.action = &act_terminate_cl;
+//
+//	PA_BYE_1_2CL.predicate = &pre_200ok_from_b;
+//	PA_BYE_1_2CL.action = &act_200ok_bye_to_alo;
+//
+//	PA_BYE_S_CL.predicate = &pre_timer_s_cl;
+//	PA_BYE_S_CL.action = &act_timer_s_cl;
+//
+//	//New sm rework
+//	PA_BYE_2_2CL.predicate = &pre_200ok_from_b;
+//	PA_BYE_2_2CL.action = &act_200ok_bye_to_alo;
 
 }
 //**********************************************************************************
