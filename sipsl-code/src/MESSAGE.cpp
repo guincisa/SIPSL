@@ -840,8 +840,10 @@ int MESSAGE::getModulus(void){
 	}
 
 	string s = getHeadCallId();
+	DEBOUT("int MESSAGE::getModulus(void) getHeadCallId", s)
 	if (s.substr(0,5).compare("CoMap") == 0){
 		modulus = atoi(s.substr(5,COMAPS_DIG).c_str());
+		DEBOUT("int MESSAGE::getModulus(void) comap", modulus)
 		return modulus;
 	}
 
@@ -850,13 +852,16 @@ int MESSAGE::getModulus(void){
 	itm = modulusMap.find(s);
 	if(itm != modulusMap.end()){
 		RELLOCK(&modulusMapMtx,"modulusMapMtx")
+		DEBOUT("int MESSAGE::getModulus(void) itm->second", itm->second)
 		return itm->second;
 	}
 	modulus = modulusIter;
 	modulusMap.insert(make_pair(s,modulus));
 	modulusIter++;
 	modulusIter = modulusIter % COMAPS;
+	DEBOUT("int MESSAGE::getModulus(void) modulusIter", modulusIter)
 	RELLOCK(&modulusMapMtx,"modulusMapMtx")
+	DEBOUT("int MESSAGE::getModulus(void) modulus", modulus)
 	return modulus;
 #endif
 }

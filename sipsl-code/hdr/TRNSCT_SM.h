@@ -31,31 +31,55 @@ class TRNSPRT;
 
 //**********************************************************************************
 //**********************************************************************************
-// V5 Transaction State machines
+// V6 Transaction State machines
 //**********************************************************************************
 //**********************************************************************************
-class PREDICATE_ACTION;
-class SM {
-
+class SM_V6{
 	private:
-		multimap< const int, PREDICATE_ACTION*> move_sm;
 
 		ENGINE* sl_cc;
+
 	protected:
 	    SL_CO* sl_co;
 
 	public:
-	    int State; // initial 0, final -1
-		void insert_move(int, PREDICATE_ACTION*);
-		ACTION* event(MESSAGE*);
+
+	    virtual ACTION* event(MESSAGE*) = 0;
+
+		int State;
 
 		ENGINE* getSL_CC(void);
 		SL_CO* getSL_CO(void);
-		SM(ENGINE* sl_cc, SL_CO* sl_co);
+		SM_V6(ENGINE* sl_cc, SL_CO* sl_co);
 
 };
 //**********************************************************************************
-class TRNSCT_SM  :  public SM{
+//**********************************************************************************
+// V5 Transaction State machines
+//**********************************************************************************
+//**********************************************************************************
+//class PREDICATE_ACTION;
+//class SM {
+//
+//	private:
+//		multimap< const int, PREDICATE_ACTION*> move_sm;
+//
+//		ENGINE* sl_cc;
+//	protected:
+//	    SL_CO* sl_co;
+//
+//	public:
+//	    int State; // initial 0, final -1
+//		void insert_move(int, PREDICATE_ACTION*);
+//		ACTION* event(MESSAGE*);
+//
+//		ENGINE* getSL_CC(void);
+//		SL_CO* getSL_CO(void);
+//		SM(ENGINE* sl_cc, SL_CO* sl_co);
+//
+//};
+//**********************************************************************************
+class TRNSCT_SM  :  public SM_V6{
 
 	private:
 
@@ -87,19 +111,19 @@ class TRNSCT_SM  :  public SM{
 
 };
 //**********************************************************************************
-class PREDICATE_ACTION {
-
-	private:
-	SM* machine;
-
-	public:
-
-	bool (*predicate)(SM*, MESSAGE*);
-	ACTION* (*action)(SM*, MESSAGE*);
-
-	PREDICATE_ACTION(SM*);
-
-};
+//class PREDICATE_ACTION {
+//
+//	private:
+//	SM* machine;
+//
+//	public:
+//
+//	bool (*predicate)(SM*, MESSAGE*);
+//	ACTION* (*action)(SM*, MESSAGE*);
+//
+//	PREDICATE_ACTION(SM*);
+//
+//};
 //**********************************************************************************
 // TRANSACTION STATE MACHINE INVITE SERVER
 //**********************************************************************************
@@ -107,19 +131,20 @@ class TRNSCT_SM_INVITE_SV : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION PA_INV_0_1SV;
-		PREDICATE_ACTION PA_INV_1_2SV;
-		PREDICATE_ACTION PA_INV_2_2SV;
-		PREDICATE_ACTION PA_INV_1_3SV;
-		PREDICATE_ACTION PA_INV_3_4SV;
-		PREDICATE_ACTION PA_INV_1_1SV;
-		PREDICATE_ACTION PA_INV_3_3aSV;
-		PREDICATE_ACTION PA_INV_3_3bSV;
-		PREDICATE_ACTION PA_INV_3_5SV;
-		PREDICATE_ACTION PA_INV_3_3dSV;
-		PREDICATE_ACTION PA_INV_3_3eSV;
-		PREDICATE_ACTION PA_INV_S_SV;
+//		PREDICATE_ACTION PA_INV_0_1SV;
+//		PREDICATE_ACTION PA_INV_1_2SV;
+//		PREDICATE_ACTION PA_INV_2_2SV;
+//		PREDICATE_ACTION PA_INV_1_3SV;
+//		PREDICATE_ACTION PA_INV_3_4SV;
+//		PREDICATE_ACTION PA_INV_1_1SV;
+//		PREDICATE_ACTION PA_INV_3_3aSV;
+//		PREDICATE_ACTION PA_INV_3_3bSV;
+//		PREDICATE_ACTION PA_INV_3_5SV;
+//		PREDICATE_ACTION PA_INV_3_3dSV;
+//		PREDICATE_ACTION PA_INV_3_3eSV;
+//		PREDICATE_ACTION PA_INV_S_SV;
 
+		ACTION* event(MESSAGE*);
 
 
 		//This is the try  a to be resent if invite a arrives again
@@ -145,17 +170,18 @@ class TRNSCT_SM_INVITE_CL : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION PA_INV_0_1CL;
-		PREDICATE_ACTION PA_INV_1_1CL; //resend invite
-		PREDICATE_ACTION PA_INV_1_2CL; //100 try incoming
-		PREDICATE_ACTION PA_INV_1_3CL; //100 try not arriving, 180 ring or Diag Estab instead
-		PREDICATE_ACTION PA_INV_1_4CL; //200OK
-		PREDICATE_ACTION PA_INV_4_4aCL;
-		PREDICATE_ACTION PA_INV_4_4bCL; //200OK B incoming again, need to resend ACK
-		PREDICATE_ACTION PA_INV_4_4cCL;
-		PREDICATE_ACTION PA_INV_1_99CL; //resend invite max reached
-		PREDICATE_ACTION PA_INV_S_CL; //timer s
+//		PREDICATE_ACTION PA_INV_0_1CL;
+//		PREDICATE_ACTION PA_INV_1_1CL; //resend invite
+//		PREDICATE_ACTION PA_INV_1_2CL; //100 try incoming
+//		PREDICATE_ACTION PA_INV_1_3CL; //100 try not arriving, 180 ring or Diag Estab instead
+//		PREDICATE_ACTION PA_INV_1_4CL; //200OK
+//		PREDICATE_ACTION PA_INV_4_4aCL;
+//		PREDICATE_ACTION PA_INV_4_4bCL; //200OK B incoming again, need to resend ACK
+//		PREDICATE_ACTION PA_INV_4_4cCL;
+//		PREDICATE_ACTION PA_INV_1_99CL; //resend invite max reached
+//		PREDICATE_ACTION PA_INV_S_CL; //timer s
 
+		ACTION* event(MESSAGE*);
 
 		int resend_invite;
 
@@ -170,9 +196,10 @@ class TRNSCT_SM_ACK_SV : public TRNSCT_SM {
 	public:
 
 
-		PREDICATE_ACTION PA_ACK_0_1SV;
-		PREDICATE_ACTION PA_ACK_1_1SV;
+//		PREDICATE_ACTION PA_ACK_0_1SV;
+//		PREDICATE_ACTION PA_ACK_1_1SV;
 
+		ACTION* event(MESSAGE*);
 
 		TRNSCT_SM_ACK_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
 
@@ -186,8 +213,11 @@ class TRNSCT_SM_ACK_CL : public TRNSCT_SM {
 
 	public:
 
-		PREDICATE_ACTION PA_ACK_0_1CL;
-		PREDICATE_ACTION PA_ACK_1_1CL;
+//		PREDICATE_ACTION PA_ACK_0_1CL;
+//		PREDICATE_ACTION PA_ACK_1_1CL;
+
+		ACTION* event(MESSAGE*);
+
 
 		TRNSCT_SM_ACK_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 
@@ -201,11 +231,13 @@ class TRNSCT_SM_BYE_SV : public TRNSCT_SM {
 
 		MESSAGE* STORED_MESSAGE;
 
-		PREDICATE_ACTION PA_BYE_0_1SV;
-		PREDICATE_ACTION PA_BYE_1_2SV;
-		PREDICATE_ACTION PA_BYE_1_1SV;
-		PREDICATE_ACTION PA_BYE_2_2SV;
-		PREDICATE_ACTION PA_BYE_S_SV;
+//		PREDICATE_ACTION PA_BYE_0_1SV;
+//		PREDICATE_ACTION PA_BYE_1_2SV;
+//		PREDICATE_ACTION PA_BYE_1_1SV;
+//		PREDICATE_ACTION PA_BYE_2_2SV;
+//		PREDICATE_ACTION PA_BYE_S_SV;
+
+		ACTION* event(MESSAGE*);
 
 
 		TRNSCT_SM_BYE_SV(int requestType, MESSAGE* matrixMess, ENGINE* sl_cc, SL_CO* sl_co);
@@ -221,12 +253,14 @@ class TRNSCT_SM_BYE_CL : public TRNSCT_SM {
 
 		int resend_bye;
 
-		PREDICATE_ACTION PA_BYE_0_1CL;
-		PREDICATE_ACTION PA_BYE_1_1CL; //resend bye
-		PREDICATE_ACTION PA_BYE_1_99CL;
-		PREDICATE_ACTION PA_BYE_1_2CL; //200OK
-		PREDICATE_ACTION PA_BYE_S_CL;
-		PREDICATE_ACTION PA_BYE_2_2CL;
+//		PREDICATE_ACTION PA_BYE_0_1CL;
+//		PREDICATE_ACTION PA_BYE_1_1CL; //resend bye
+//		PREDICATE_ACTION PA_BYE_1_99CL;
+//		PREDICATE_ACTION PA_BYE_1_2CL; //200OK
+//		PREDICATE_ACTION PA_BYE_S_CL;
+//		PREDICATE_ACTION PA_BYE_2_2CL;
+
+		ACTION* event(MESSAGE*);
 
 		TRNSCT_SM_BYE_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 
@@ -237,15 +271,15 @@ class TRNSCT_SM_BYE_CL : public TRNSCT_SM {
 // Call/Dialog state machine
 //**********************************************************************************
 //**********************************************************************************
-class CALL_SM  : SM{
-
-	private:
-
-	vector<TRNSCT_SM*> trnsct_sm_array;
-
-	public:
-
-	CALL_SM(void);
-
-};
+//class CALL_SM  : SM{
+//
+//	private:
+//
+//	vector<TRNSCT_SM*> trnsct_sm_array;
+//
+//	public:
+//
+//	CALL_SM(void);
+//
+//};
 
