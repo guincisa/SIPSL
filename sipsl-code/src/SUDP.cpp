@@ -182,7 +182,7 @@ void SUDP::start(void) {
 
     // allocate thread and starts
 
-	DEBINFSUDP("SUDP::start","")
+	DEBINFSUDP("SUDP::start threads",SUDPTH)
 	SUDPtuple *t1[SUDPTH*2];
 
 	for (int i = 0 ; i <(2*SUDPTH) ; i++){
@@ -192,13 +192,9 @@ void SUDP::start(void) {
 	    t1[i]->st = this;
 	    t1[i]->thid = i;
 
-	    //TODO result not used
-
 	    pthread_create(&(listenerThread[i]->thread), NULL, SUDPSTACK, (void *) t1[i] );
 
 	}
-
-
 
     return;
 }
@@ -206,21 +202,19 @@ void SUDP::start(void) {
 // *****************************************************************************************
 // Listen to network
 // *****************************************************************************************
-void SUDP::listen(int i) {
+void SUDP::listen(int _socknum) {
 
     TIMEDEF
 
-    DEBINFSUDP("SUDP::listen","listen " << i)
+    DEBINFSUDP("SUDP::listen","listen " << _socknum)
     for (;;){
-        /* Set the size of the in-out parameter */
-
         /* Block until receive message from a client */
         char echoBuffer[ECHOMAX];
-        memset(&echoBuffer, 0x0, ECHOMAX);   /* Zero out structure */
+        memset(&echoBuffer, 0x0, ECHOMAX);
         int recvMsgSize;
         int _sok;
-        if ( i < SUDPTH ){
-        	_sok = sock_se[i];
+        if ( _socknum < SUDPTH ){
+        	_sok = sock_se[_socknum];
         }
         else {
         	_sok = sock_re;
@@ -233,7 +227,7 @@ void SUDP::listen(int i) {
             PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
-            CREATENEWMESSAGE_EXT(message, echoBuffer, sock_se[i], echoClntAddr, SODE_NTWPOINT)
+            CREATENEWMESSAGE_EXT(message, echoBuffer, sock_se[_socknum], echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
 
@@ -278,6 +272,7 @@ void SUDP::sendRequest(MESSAGE* _message){
     host = gethostbyname(_hostchar);
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
     si_part.sin_port = htons(_pair.second);
+
 //	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 //		DEBASSERT ("Can't set request address")
 //	}
@@ -307,24 +302,17 @@ void SUDP::sendReply(MESSAGE* _message){
     char _hostchar[_message->getViaUriHost().length()+1];
     strcpy(_hostchar,_message->getViaUriHost().c_str());
     host = gethostbyname(_hostchar);
-    DEBY
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
-    DEBY
     si_part.sin_port = htons(_message->getViaUriPort());
-    DEBY
+
     if( inet_pton(AF_INET, _message->getViaUriHost().c_str(), &si_part.sin_addr) == 0 ){
             DEBASSERT ("can set reply address")
     }
-    DEBY
+
     int i = _message->getModulus() % SUDPTH;
-    DEBY
     sendto(sock_se[i],  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
-    DEBY
     if (!_message->getLock()){
-    	DEBY
         PURGEMESSAGE(_message)
-    	DEBY
     }
-    DEBY
     return;
 }

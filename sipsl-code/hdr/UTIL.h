@@ -110,7 +110,7 @@ class ThreadWrapper {
 //#define USETRYLOCK
 
 //Sudp threads
-#define SUDPTH 12
+#define SUDPTH 24
 
 //Max engine threads
 #define MAXTHREADS 128
@@ -140,7 +140,8 @@ class ThreadWrapper {
 #define ARR 4000
 #define ARR_SHORT 30
 #define SPINC_MOD 50
-#define DOA_CLEANUP 1
+
+#define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
 
 
@@ -157,7 +158,7 @@ class ThreadWrapper {
 //#define LOGINFCALLOSET
 #define LOGMIN
 #define LOGDEV
-#define LOGMEM
+//#define LOGMEM
 #define LOGNTW
 #define SELFCHECK
 //#define DEBCODE
@@ -244,7 +245,7 @@ class ThreadWrapper {
 		delete m1;
 #undef DELPTRARR
 #define DELPTRARR(m1, mess) \
-		delete m1[];
+		delete[] m1;
 
 
 #undef TRYCATCH

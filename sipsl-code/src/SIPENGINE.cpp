@@ -19,6 +19,10 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
+//**********************************************************************************
+// SIPENGINE Syntax Layer
+//**********************************************************************************
+
 #include <vector>
 #include <string>
 #include <pthread.h>
@@ -124,10 +128,6 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
 	MESSAGE* _mess = (MESSAGE*)__mess;
 
-
-    //Check if Request or Reply
-    //_mess->fillIn();
-
     int type = _mess->getReqRepType();
     DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getFirstLine() << "] type[" <<type)
 
@@ -142,8 +142,8 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
             method != BYE_REQUEST &&
             method != ACK_REQUEST) {
 
-                DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getOriginalString())
-                PURGEMESSAGE(_mess)
+			DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getOriginalString())
+			PURGEMESSAGE(_mess)
 
         } else {
             transport->upCall(_mess, (SL_CC*)sl_cc);
