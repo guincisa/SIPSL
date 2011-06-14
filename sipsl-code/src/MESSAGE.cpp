@@ -389,6 +389,7 @@ int MESSAGE::fillIn(void){
 	if (fillCounter >= 2){
 		DEBINFMESSAGE("int MESSAGE::fillIn(void) fillCounter",this<<"] fillCounter["<<fillCounter<<"] [compileCounter ["<<compileCounter)
 		DEBWARNING("int MESSAGE::fillIn(void) >= 2",this)
+		//DEBASSERT("")
 	}
 
 	//messageStatus == 0

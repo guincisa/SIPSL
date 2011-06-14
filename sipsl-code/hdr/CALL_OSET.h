@@ -98,7 +98,6 @@ class CALL_OSET {
 		string getCallId_Y(void);
         string getCallId_X(void);
 
-
 		int getOverallState_CL(void);
 		int getOverallState_SV(void);
 

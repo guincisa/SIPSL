@@ -19,6 +19,10 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
+//**********************************************************************************
+//COMAP CALL->CALLOBJECT map
+//before passing the call to the call_oset it checks the state
+//**********************************************************************************
 
 #include <vector>
 #include <string>
@@ -104,6 +108,7 @@ COMAP::COMAP(void){
     }
 }
 COMAP::~COMAP(void){
+	//Never happens
 }
 COMAP::COMAP(const COMAP& x){
 	DEBASSERT("COMAP::COMAP(const COMAP& x){")
@@ -116,8 +121,6 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
     TIMEDEF
     SETNOW
 
-    DEBINF("COMAP::getCALL_OSET_XMain retrieving using call id", _callId_X <<" comap [" << _mod)
-
     if (_mod >= COMAPS){
             DEBASSERT("invalid comap index")
     }
@@ -129,7 +132,7 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
     if (p != comap_mm[_mod].end()){
         tmp = (CALL_OSET*)p->second;
 
-        DEBINF("COMAP::getCALL_OSET found ", tmp)
+        DEBINF("COMAP::getCALL_OSET found ", this<<"]["<<_callId_X<<"]["<<_mod<<"] found =["<<tmp)
 
         if (getDoa(tmp,_mod)== DOA_REQUESTED){
             resetDoaRequestTimer(tmp,_mod);
@@ -147,8 +150,6 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
     PROFILE("COMAP::getCALL_OSET_YDerived")
     TIMEDEF
     SETNOW
-
-    DEBINF("COMAP::getCALL_OSET_YSecond retrieving using derived", _callId_Y << " comap ["<<_mod)
 
     if (_mod >= COMAPS){
         DEBASSERT("invalid comap index")
@@ -168,7 +169,7 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
         if (p != comap_mm[_mod].end()){
             tmp = (CALL_OSET*)p->second;
 
-            DEBINF("COMAP::getCALL_OSET found ", tmp)
+            DEBINF("COMAP::getCALL_OSET found ", this<<"]["<<_callId_Y<<"]["<<_mod<<"] found ["<<tmp)
 
             int tmpDoa = getDoa(tmp,_mod);
             
@@ -192,7 +193,6 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
     }
 #endif
 
-    //RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     DEBINF("COMAP::getCALL_OSET_YSecond retrieved using derived", _callId_Y << " comap ["<<_mod <<"][" << tmp)
     PRINTDIFF("COMAP::getCALL_OSET_YDerived end")
     return tmp; //0x0
@@ -207,8 +207,6 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     TIMEDEF
     SETNOW
 
-
-
     map<string, CALL_OSET*>::iterator p_comap_mm;
     map<CALL_OSET*,int>::iterator p_doamap;
     map<string,string>::iterator p_cally2x;
@@ -219,13 +217,10 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
         DEBASSERT("invalid comap index")
     }
 
-    //GETLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-
     CALL_OSET* call_oset = 0x0;
     NEWPTR2(call_oset, CALL_OSET(_sl_cc, _transport, _callId_X, _mod),"CALL_OSET")
 
     DEBINF("COMAP::setCALL_OSET inserting ", _callId_X << "] [" << call_oset << " comap [" << _mod)
-
 
     //comap
     pair<map<string, CALL_OSET*>::iterator, bool> ret1;
@@ -294,48 +289,9 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     ret5 = call_id_x2y[_mod].insert(pair<string, string>(_callId_X, callIdtmpS));
     call_oset->setCallId_Y(callIdtmpS);
 
-
-    //RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
     PRINTDIFF("COMAP::setCALL_OSET end")
     return call_oset;
 }
-//**********************************************************************************
-//**********************************************************************************
-//void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
-//
-//    PROFILE("COMAP::setY2XCallId")
-//    TIMEDEF
-//    SETNOW
-//
-//    DEBINF("COMAP::setY2XCallId inserting ", _callId_Y << " " << _callId_X << " " <<_mod)
-//    if (_mod >= COMAPS){
-//            DEBASSERT("invalid comap index")
-//    }
-//
-//    map<string,string>::iterator p_cally2x;
-//    map<string,string>::iterator p_callx2y;
-//
-//    GETLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-//    p_cally2x = call_id_y2x[_mod].find(_callId_Y);
-//    if (p_cally2x != call_id_y2x[_mod].end()){
-//        call_id_y2x[_mod].erase(p_cally2x);
-//        DEBDEV("COMAP::setY2XCallId",_callId_Y << " " << _callId_X)
-//    }
-//    call_id_y2x[_mod].insert(pair<string, string>(_callId_Y, _callId_X));
-//
-//    p_callx2y = call_id_x2y[_mod].find(_callId_X);
-//    if (p_callx2y != call_id_x2y[_mod].end()){
-//        call_id_x2y[_mod].erase(p_callx2y);
-//        DEBASSERT("COMAP::setY2XCallId")
-//    }
-//    call_id_x2y[_mod].insert(pair<string, string>(_callId_X, _callId_Y));
-//
-//
-//    RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-//
-//    PRINTDIFF("COMAP::setY2XCallId end")
-//
-//}
 //**********************************************************************************
 //**********************************************************************************
 void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
@@ -343,8 +299,6 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
     PROFILE("COMAP::setDoa")
     TIMEDEF
     SETNOW
-
-    DEBINF("COMAP::setDoa",_call_oset << "] ["<<_doa )
 
     if (_mod >= COMAPS){
             DEBASSERT("invalid comap index "<<_mod)
@@ -362,6 +316,7 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
     }
 
     PRINTDIFF("COMAP::setDoa end")
+    return;
 }
 int COMAP::getDoa(CALL_OSET* _call_oset, int _mod){
 	DEBINF("int COMAP::getDoa(CALL_OSET* _call_oset, int _mod)",this<<"]["<<_call_oset<<"]["<<_mod)
@@ -369,8 +324,6 @@ int COMAP::getDoa(CALL_OSET* _call_oset, int _mod){
     PROFILE("COMAP::getDoa")
     TIMEDEF
     SETNOW
-
-    DEBINF("COMAP::getDoa",_call_oset << "] ["<<_mod )
 
     if (_mod >= COMAPS){
         DEBASSERT("invalid comap index "<<_mod)
@@ -396,8 +349,6 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
     TIMEDEF
     SETNOW
 
-    DEBINF("COMAP::use_CALL_OSET_SL_CO_call", _call_oset << "] [" << _message->getKey() << "] comap [" << _mod)
-
     if (_mod >= COMAPS){
         DEBASSERT("invalid comap index "<<_mod)
     }
@@ -408,7 +359,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
         DEBINF("COMAP::use_CALL_OSET_SL_CO_call rejected call_oset doa deleted", _call_oset )
         RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
         PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call() end")
-        return -1;
+        return DOA_DELETED;
     }
     if ( tmpDoa == DOA_REQUESTED) {
         resetDoaRequestTimer(_call_oset,_mod);
@@ -441,17 +392,14 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
 #endif
 
-
-
-
     _call_oset->call(_message);
 	if (!_message->getLock()){
 		PURGEMESSAGE(_message)
 	}
 #endif
-
+    DEBINF("COMAP::use_CALL_OSET_SL_CO_call call_oset not doa", _call_oset )
     PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
-    return 0;
+    return NOT_DOA;
 }
 //**********************************************************************************
 //**********************************************************************************
@@ -460,8 +408,6 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
     PROFILE("COMAP::setDoaRequested")
     TIMEDEF
     SETNOW
-
-    DEBINF("COMAP::setDoaRequested", _call_oset << " comap ["<< _mod)
 
     if (_mod >= COMAPS){
         DEBASSERT("invalid comap index "<<_mod)
@@ -495,8 +441,6 @@ void COMAP::purgeDOA(void){
     PROFILE("COMAP::purgeDOA")
     TIMEDEF
     SETNOW
-
-    DEBINF("COMAP::purgeDOA started",0)
 
     int mod;
 
@@ -600,8 +544,6 @@ void COMAP::purgeDOA(void){
                     call_id_y2x[mod].erase(call_oset->getCallId_Y());
                     call_id_x2y[mod].erase(call_oset->getCallId_X());
 
-                    //not useful
-					//RELLOCK(&(call_oset->mutex),"purgeDOA CALL_OSET::SL_CO::mutex")
                     DEBDEV("purgeDOA CALL_OSET::SL_CO::mutex releasing", call_oset)
 
                     DELPTR(call_oset,"CALL_OSET");

@@ -18,6 +18,8 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //**********************************************************************************
 //**********************************************************************************
+// CALL_OSET call objects set
+// object needed to run the call: state machines, application object (valo)
 #include <vector>
 #include <string>
 #include <pthread.h>
@@ -123,15 +125,14 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _mo
 
 	transport = _transport;
 
-	DEBINFCALLOSET("CALL_OSET sequenceMap", &sequenceMap)
-	DEBINFCALLOSET("CALL_OSET trnsctSmMap", &trnsctSmMap)
+	DEBINFCALLOSET("CALL_OSET sequenceMap trnsctSmMap", &sequenceMap<<"]["<<&trnsctSmMap)
 
 	RELLOCK(&(mutex),"SL_CO::mutex");
 
 }
 CALL_OSET::~CALL_OSET(void){
 	DEBINFCALLOSET("CALL_OSET::~CALL_OSET(void)",this)
-	//Need to lock here!
+
 	GETLOCK(&(mutex),"CALL_OSET::mutex");
 
 	DEBINFCALLOSET("CALL_OSET ACCESS CALL_OSET::~CALL_OSET begin", this)
@@ -575,7 +576,10 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
             DEBINFCALLOSET("lastTRNSCT_SM_ACK_CL", call_oset->lastTRNSCT_SM_ACK_CL)
             trnsct_cl = call_oset->lastTRNSCT_SM_ACK_CL;
             if ( trnsct_cl == 0x0){
-                DEBASSERT("call_oset->lastTRNSCT_SM_ACK_CL NULL")
+            	//Still not created
+            	//do nothing
+            	//the message is deleted in comap
+            	return oper;
             }
         }
         else if (_message->getReqRepType() == REPSUPP ){
