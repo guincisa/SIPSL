@@ -1197,6 +1197,8 @@ ACTION* act_provrep_to_sv(SM_V6* _sm, MESSAGE* _message) {
 	reply_x->compileMessage();
 	//DEBDEV("CONTACT", reply_x->getHeadContact()->getContent())
 	SingleAction sa_1 = SingleAction(reply_x);
+	if (reply_x->getLock())
+		DEBASSERT("is locked")
 	action->addSingleAction(sa_1);
 
 

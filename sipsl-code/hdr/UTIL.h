@@ -130,7 +130,7 @@ class ThreadWrapper {
 #define ALARMMAPS 32
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
-#define INHIBITALARM
+//#define INHIBITALARM
 
 #define COMAPS 500
 #define COMAPS_DIG 3
@@ -158,7 +158,7 @@ class ThreadWrapper {
 //#define LOGINFCALLOSET
 #define LOGMIN
 #define LOGDEV
-//#define LOGMEM
+#define LOGMEM
 #define LOGNTW
 #define SELFCHECK
 //#define DEBCODE
