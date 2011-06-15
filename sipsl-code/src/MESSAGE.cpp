@@ -386,10 +386,10 @@ int MESSAGE::fillIn(void){
 	}
 
 	fillCounter++;
-	if (fillCounter >= 2){
+	if (fillCounter > 2){
 		DEBINFMESSAGE("int MESSAGE::fillIn(void) fillCounter",this<<"] fillCounter["<<fillCounter<<"] [compileCounter ["<<compileCounter)
-		DEBWARNING("int MESSAGE::fillIn(void) >= 2",this)
-		//DEBASSERT("")
+		DEBWARNING("int MESSAGE::fillIn(void) > 2",this)
+		DEBASSERT("")
 	}
 
 	//messageStatus == 0
@@ -528,9 +528,10 @@ void MESSAGE::compileMessage(void){
 	}
 	//messageStatus==2
 	compileCounter++;
-	if(compileCounter >= 2){
+	if(compileCounter > 2){
 		DEBINFMESSAGE("int MESSAGE::compileMessage(void) compileCounter",this<<"] fillCounter["<<fillCounter<<"] [compileCounter ["<<compileCounter)
-		DEBWARNING("int MESSAGE::compileMessage(void) >= 2",this)
+		DEBWARNING("int MESSAGE::compileMessage(void) > 2",this)
+		DEBASSERT("compileCounter")
 	}
 
 	stringstream origmess;
@@ -572,9 +573,13 @@ void MESSAGE::compileMessage(void){
 		origmess << "Content-Length: ";
 		origmess << sizeOfSdp;
 		origmess << "\r\n\r\n";
-		for(int i = 0; i < sdp_line.size(); i ++){
+		for(unsigned int i = 0; i < sdp_line.size(); i ++){
 			origmess << sdp_line[i].first;
 			origmess << "\r\n";
+			if (sdp_line[i].second){
+				DELPTRARR(sdp_line[i].first,"sdp_line")
+			}
+
 		}
 	}
 	else{
@@ -910,17 +915,14 @@ void MESSAGE::setSDP(vector< pair<char*, bool> > _vector){
 		}
 	}
 
-	sdp_line = _vector;
+	sdp_line.clear();
 	//Need to duplicate each sdp line
-	for(unsigned int i = 0; i < sdp_line.size(); i ++){
+	for(unsigned int i = 0; i < _vector.size(); i ++){
+		DEBY
 		char* sdp_l;
-		NEWPTR2(sdp_l, char[strlen(sdp_line[i].first) + 1],"sdp_line")
-		strcpy(sdp_l,sdp_line[i].first);
-		if(sdp_line[i].second){
-			DELPTRARR(sdp_line[i].first,"sdp_line"<<i)
-		}
-		sdp_line[i].second = true;
-		sdp_line[i].first = sdp_l;
+		NEWPTR2(sdp_l, char[strlen(_vector[i].first) + 1],"sdp_line")
+		strcpy(sdp_l,_vector[i].first);
+		sdp_line.push_back(make_pair(sdp_l,true));
 	}
 	messageStatus = 2;
 
