@@ -1,5 +1,31 @@
 TODO
 
+1. ritrasmissioni inibite
+2. perche quando un solo messaggio va in ritrasmissione scoppia il casino???
+3. base dati stl
+4. SIP messaggi di errore/overload
+4. come definire overload in SIPSL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Finire ritrasmissioni e deletion logic
 fatta la INV_SV
 test

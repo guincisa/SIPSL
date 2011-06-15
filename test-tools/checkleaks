@@ -13,3 +13,9 @@ grep "DELPTR\[C_H" log | wc
 echo "TRNSCT"
 grep "NEW \[TRNSCT" log | wc
 grep "DELPTR\[(TRNSCT" log | wc
+echo "ARR"
+grep "DELPTRARR\[original_message" log | wc
+grep "NEW \[original_message" log | wc
+message_line
+via_line
+sdp_line

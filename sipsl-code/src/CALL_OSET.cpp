@@ -808,6 +808,9 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 			//DEBINFCALLOSET("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << "]["<<_tmpMessage->getHeadCallId().getContent())
 #ifdef NONESTEDPW
 			call_oset->getSL_CO()->call(_tmpMessage,_r_modulus);
+			if(!_tmpMessage->getLock()){
+				PURGEMESSAGE(_tmpMessage)
+			}
 #else
 			((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 #endif
