@@ -592,7 +592,7 @@ void MESSAGE::compileMessage(void){
 	strcpy(original_message, origmess.str().c_str());
 	DEBINFMESSAGE("void MESSAGE::compileMessage(void) original_message", original_message)
 
-
+	DELPTRARR(message_char,"message_char")
 }
 void MESSAGE::dumpMessageBuffer(void){
 	DEBINFMESSAGE("void MESSAGE::dumpMessageBuffer(void)",this)
@@ -875,6 +875,11 @@ void MESSAGE::purgeSDP(void){
 		fillIn();
 	}
 	hasSdp = false;
+	for(unsigned int i = 0; i < sdp_line.size(); i ++){
+		if(sdp_line[i].second){
+			DELPTRARR(sdp_line[i].first,"sdp_line"<<i)
+		}
+	}
 	messageStatus = 2;
 }
 vector< pair<char*, bool> > MESSAGE::getSDP(void){
@@ -911,6 +916,9 @@ void MESSAGE::setSDP(vector< pair<char*, bool> > _vector){
 		char* sdp_l;
 		NEWPTR2(sdp_l, char[strlen(sdp_line[i].first) + 1],"sdp_line")
 		strcpy(sdp_l,sdp_line[i].first);
+		if(sdp_line[i].second){
+			DELPTRARR(sdp_line[i].first,"sdp_line"<<i)
+		}
 		sdp_line[i].second = true;
 		sdp_line[i].first = sdp_l;
 	}
