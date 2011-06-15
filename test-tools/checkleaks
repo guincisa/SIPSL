@@ -13,9 +13,19 @@ grep "DELPTR\[C_H" log | wc
 echo "TRNSCT"
 grep "NEW \[TRNSCT" log | wc
 grep "DELPTR\[(TRNSCT" log | wc
-echo "ARR"
+echo "ARR message_char"
+grep "DELPTRARR\[message_char" log | wc
+grep "NEW \[message_char" log | wc
+echo "ARR original_message"
 grep "DELPTRARR\[original_message" log | wc
 grep "NEW \[original_message" log | wc
-message_line
-via_line
-sdp_line
+echo "ARR message_line"
+grep "DELPTRARR\[message_line" log | wc
+grep "NEW \[message_line" log | wc
+echo "ARR via_line"
+grep "DELPTRARR\[via_line" log | wc
+grep "NEW \[via_line" log | wc
+echo "ARR sdp_line"
+grep "DELPTRARR\[sdp_line" log | wc
+grep "NEW \[sdp_line" log | wc
+

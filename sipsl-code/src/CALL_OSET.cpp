@@ -527,6 +527,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 _r_modulus = _message->getModulus();
                 PRINTDIFF("SL_CO::call() end")
 
+                //DELETE _message here!
                 return oper;
             }
             else {
@@ -579,6 +580,8 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
             	//Still not created
             	//do nothing
             	//the message is deleted in comap
+
+            	//DELETE _message here!
             	return oper;
             }
         }
@@ -664,6 +667,8 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
     }
     //RELLOCK(&mutex,"mutex");
     PRINTDIFF("SL_CO::call() ")
+
+    //DELETE _message here!
     return oper;
 }
 
@@ -808,6 +813,7 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 			//DEBINFCALLOSET("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << "]["<<_tmpMessage->getHeadCallId().getContent())
 #ifdef NONESTEDPW
 			call_oset->getSL_CO()->call(_tmpMessage,_r_modulus);
+			//do not delete here delete in "call"
 			if(!_tmpMessage->getLock()){
 				PURGEMESSAGE(_tmpMessage)
 			}
