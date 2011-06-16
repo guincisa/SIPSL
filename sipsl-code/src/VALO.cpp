@@ -209,10 +209,10 @@ void VALO::onInvite(MESSAGE* _message){
 #ifdef NONESTEDPW
 	int r;
 	call_oset->getSL_CO()->call(message,r);
-	//do not delete here delete in "call"
-	if (!message->getLock()){
-		PURGEMESSAGE(message)
-	}
+//	//do not delete here delete in "call"
+//	if (!message->getLock()){
+//		PURGEMESSAGE(message)
+//	}
 
 #else
 	sl_cc->p_w(message);
@@ -338,10 +338,10 @@ void VALO::onAck(MESSAGE* _message){
 #ifdef NONESTEDPW
 	int r;
 	call_oset->getSL_CO()->call(newack,r);
-	//do not delete here delete in "call"
-	if (!newack->getLock()){
-		PURGEMESSAGE(newack)
-	}
+//	//do not delete here delete in "call"
+//	if (!newack->getLock()){
+//		PURGEMESSAGE(newack)
+//	}
 
 #else
 	sl_cc->p_w(newack);
@@ -516,10 +516,10 @@ void VALO::onBye(MESSAGE* _message){
 #ifdef NONESTEDPW
 		int r;
 		call_oset->getSL_CO()->call(message,r);
-		//do not delete here delete in "call"
-		if (!message->getLock()){
-			PURGEMESSAGE(message)
-		}
+//		//do not delete here delete in "call"
+//		if (!message->getLock()){
+//			PURGEMESSAGE(message)
+//		}
 
 #else
 		sl_cc->p_w(message);
@@ -568,9 +568,9 @@ void VALO::onBye(MESSAGE* _message){
 #ifdef NONESTEDPW
 		int r;
 		call_oset->getSL_CO()->call(message,r);
-		if (!message->getLock()){
-			PURGEMESSAGE(message)
-		}
+//		if (!message->getLock()){
+//			PURGEMESSAGE(message)
+//		}
 
 #else
 		sl_cc->p_w(message);
@@ -663,10 +663,10 @@ void VALO::on200Ok(MESSAGE* _message){
 #ifdef NONESTEDPW
 		int r;
 		call_oset->getSL_CO()->call(ok_x,r);
-		//do not delete here delete in "call"
-		if (!ok_x->getLock()){
-			PURGEMESSAGE(ok_x)
-		}
+//		//do not delete here delete in "call"
+//		if (!ok_x->getLock()){
+//			PURGEMESSAGE(ok_x)
+//		}
 #else
 		sl_cc->p_w(ok_x);
 #endif

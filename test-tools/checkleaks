@@ -17,7 +17,7 @@ echo "ARR message_char"
 grep "DELPTRARR\[message_char" log | wc
 grep "NEW \[message_char" log | wc
 echo "ARR original_message"
-grep "DELPTRARR\[original_message" log | wc
+grep "DELPTRARR\[original_message -1 for MainMessage" log | wc
 grep "NEW \[original_message" log | wc
 echo "ARR message_line"
 grep "DELPTRARR\[message_line" log | wc
