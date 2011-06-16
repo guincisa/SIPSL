@@ -110,8 +110,12 @@ class CALL_OSET {
 
 		ENGINE* getENGINE(void);
 
+#ifdef SV_CL_MUTEX
+		pthread_mutex_t mutex_cl;
+		pthread_mutex_t mutex_sv;
+#else
 		pthread_mutex_t mutex;
-
+#endif
 		TRNSPRT* getTRNSPRT(void);
 
 

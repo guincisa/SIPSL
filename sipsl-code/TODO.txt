@@ -6,6 +6,8 @@ TODO
 
 - spezzare SL_CO lato client e server son due lock separati
 
+
+
 2. perche quando un solo messaggio va in ritrasmissione scoppia il casino???
 3. base dati stl
 4. SIP messaggi di errore/overload

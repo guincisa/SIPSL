@@ -103,8 +103,16 @@
 //**********************************************************************************
 CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _modulus){
 	DEBINFCALLOSET("CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _modulus)", this<<"]["<<_engine<<"]["<<_transport<<"]["<<_call<<"]["<<_modulus)
-    pthread_mutex_init(&mutex, NULL);
-	GETLOCK(&(mutex),"CALL_OSET::mutex");
+
+#ifdef SV_CL_MUTEX
+	pthread_mutex_init(&mutex_sv, NULL);
+    pthread_mutex_init(&mutex_cl, NULL);
+	GETLOCK(&(mutex_cl),"CALL_OSET::mutex_cl");
+	GETLOCK(&(mutex_sv),"CALL_OSET::mutex_sv");
+#else
+	pthread_mutex_init(&mutex, NULL);
+    GETLOCK(&(mutex),"CALL_OSET::mutex");
+#endif
 
 	modulus = _modulus;
 
@@ -127,13 +135,22 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _mo
 
 	DEBINFCALLOSET("CALL_OSET sequenceMap trnsctSmMap", &sequenceMap<<"]["<<&trnsctSmMap)
 
+#ifdef SV_CL_MUTEX
+	RELLOCK(&(mutex_cl),"SL_CO::mutex_cl");
+	RELLOCK(&(mutex_sv),"SL_CO::mutex_sv");
+#else
 	RELLOCK(&(mutex),"SL_CO::mutex");
-
+#endif
 }
 CALL_OSET::~CALL_OSET(void){
 	DEBINFCALLOSET("CALL_OSET::~CALL_OSET(void)",this)
 
-	GETLOCK(&(mutex),"CALL_OSET::mutex");
+#ifdef SV_CL_MUTEX
+	GETLOCK(&(mutex_cl),"CALL_OSET::mutex_cl");
+	GETLOCK(&(mutex_sv),"CALL_OSET::mutex_sv");
+#else
+    GETLOCK(&(mutex),"CALL_OSET::mutex");
+#endif
 
 	DEBINFCALLOSET("CALL_OSET ACCESS CALL_OSET::~CALL_OSET begin", this)
 	if (sl_co != 0x0){
@@ -216,12 +233,26 @@ CALL_OSET::~CALL_OSET(void){
 		DEBINFCALLOSET("Message to be deleted", m)
 		m = getNextLockedMessage();
 	}
+#ifdef SV_CL_MUTEX
+	RELLOCK(&(mutex_cl),"SL_CO::mutex_cl");
+	RELLOCK(&(mutex_sv),"SL_CO::mutex_sv");
+	int rr = pthread_mutex_destroy(&mutex_cl);
+	if (rr == EBUSY){
+		DEBASSERT("CALL_OSET::~CALL_OSET mutex_cl locked["<< sl_co <<"]")
+	}
+	rr = pthread_mutex_destroy(&mutex_sv);
+	if (rr == EBUSY){
+		DEBASSERT("CALL_OSET::~CALL_OSET mutex_sv locked["<< sl_co <<"]")
+	}
+#else
 	RELLOCK(&(mutex),"SL_CO::mutex");
 	int rr = pthread_mutex_destroy(&mutex);
 	if (rr == EBUSY){
 		DEBASSERT("CALL_OSET::~CALL_OSET mutex locked["<< sl_co <<"]")
 
 	}
+#endif
+
 	DELPTR(sl_co, "SL_CO")
 	DEBY
 
@@ -435,8 +466,24 @@ void CALL_OSET::call(MESSAGE* _message){
 
 	int modulus = 0;
 
+#ifdef SV_CL_MUTEX
+	int dest = _message->getDestEntity();
+#endif
+
 	int op = sl_co->call(_message, modulus);
+
+#ifdef SV_CL_MUTEX
+	if (dest == SODE_TRNSCT_SV){
+		RELLOCK(&(mutex_sv),"CALL_OSET::mutex_sv "<<mutex_sv);
+	}
+	else if(dest == SODE_TRNSCT_CL){
+		RELLOCK(&(mutex_cl),"CALL_OSET::mutex_cl "<<mutex_cl);
+	}
+#else
 	RELLOCK(&(mutex),"CALL_OSET::mutex "<<mutex);
+#endif
+
+
 
 	//The call oset may have been deleted here
 	if (op == 1){
