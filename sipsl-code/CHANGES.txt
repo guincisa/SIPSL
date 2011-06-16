@@ -1,3 +1,12 @@
+16 giugno 
+
+ACK???
+
+il doppio lock nella call_oset sembra ok
+mancano gli scenari di errore
+
+
+
 15 giugno 
 
 sembra che l'ack non venga rimandato

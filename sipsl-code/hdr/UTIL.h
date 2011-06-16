@@ -95,6 +95,9 @@ class ThreadWrapper {
 //should core if inverted
 #define WRONGLOCKMGMT
 
+//uses two loks for call_oset server side and client side
+#define SV_CL_MUTEX
+
 //Use the gobalmessagetable
 //#define USEMESSAGEMAP
 
@@ -149,16 +152,16 @@ class ThreadWrapper {
 #define LOGMIN
 #define PROFILELOCK
 
-#define LOGSIPHIGH
-#define LOGSIPLOW
+//#define LOGSIPHIGH
+//#define LOGSIPLOW
 
-#define LOGINF
-#define LOGINFMESSAGE
+//#define LOGINF
+//#define LOGINFMESSAGE
 #define LOGINFSUDP
 #define LOGINFCALLOSET
 #define LOGMIN
-#define LOGDEV
-#define LOGMEM
+//#define LOGDEV
+//#define LOGMEM
 #define LOGNTW
 #define SELFCHECK
 //#define DEBCODE

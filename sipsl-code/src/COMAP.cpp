@@ -386,16 +386,27 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 
 #ifdef WRONGLOCKMGMT
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
-    GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
+
+#ifdef SV_CL_MUTEX
+	if (_message->getDestEntity() == SODE_TRNSCT_SV){
+		GETLOCK(&(_call_oset->mutex_sv),"&(_call_oset->mutex_sv)"<<&(_call_oset->mutex_sv));
+	}
+	else if(_message->getDestEntity() == SODE_TRNSCT_CL){
+		GETLOCK(&(_call_oset->mutex_cl),"&(_call_oset->mutex_cl)"<<&(_call_oset->mutex_cl));
+	}
 #else
+	GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
+#endif
+
+
+#else
+	DEBASSERT("missing code mutext cl and sv")
     GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
 #endif
 
     _call_oset->call(_message);
-//	if (!_message->getLock()){
-//		PURGEMESSAGE(_message)
-//	}
+
 #endif
     DEBINF("COMAP::use_CALL_OSET_SL_CO_call call_oset not doa", _call_oset )
     PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
@@ -459,18 +470,19 @@ void COMAP::purgeDOA(void){
             loktry[mod]++;
             if (loktry[mod] > 10){
                 DEBWARNING("COMAP::purgeDOA trylock failed more than 10 times", mod)
-				int trylock2;
-				for( p_comap_mm = comap_mm[mod].begin(); p_comap_mm != comap_mm[mod].end() ; ++p_comap_mm){
-					 call_oset = (CALL_OSET*)p_comap_mm->second;
-					 TRYLOCK(&(call_oset->mutex)," call_oset test"<<mod, trylock2)
-					 if( trylock2 !=0 ){
-						 DEBDEV("purgeDOA trylock failed and call_oset locked ", mod << "][" << call_oset <<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
-					 }
-					 else{
-						 DEBDEV("purgeDOA trylock failed and call_oset not locked ", mod << "][" << call_oset<<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
-						 RELLOCK(&(call_oset->mutex),"call_oset released")
-					 }
-				}
+// a che serve???
+//				int trylock2;
+//				for( p_comap_mm = comap_mm[mod].begin(); p_comap_mm != comap_mm[mod].end() ; ++p_comap_mm){
+//					 call_oset = (CALL_OSET*)p_comap_mm->second;
+//					 TRYLOCK(&(call_oset->mutex)," call_oset test"<<mod, trylock2)
+//					 if( trylock2 !=0 ){
+//						 DEBDEV("purgeDOA trylock failed and call_oset locked ", mod << "][" << call_oset <<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
+//					 }
+//					 else{
+//						 DEBDEV("purgeDOA trylock success and call_oset not locked ", mod << "][" << call_oset<<"] CL["<<call_oset->getOverallState_CL()<<"] SV["<<call_oset->getOverallState_SV())
+//						 //RELLOCK(&(call_oset->mutex),"call_oset released")
+//					 }
+//				}
             }
             //Check the locks
             continue;
