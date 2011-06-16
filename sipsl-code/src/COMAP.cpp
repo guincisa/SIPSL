@@ -393,9 +393,9 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 #endif
 
     _call_oset->call(_message);
-	if (!_message->getLock()){
-		PURGEMESSAGE(_message)
-	}
+//	if (!_message->getLock()){
+//		PURGEMESSAGE(_message)
+//	}
 #endif
     DEBINF("COMAP::use_CALL_OSET_SL_CO_call call_oset not doa", _call_oset )
     PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")

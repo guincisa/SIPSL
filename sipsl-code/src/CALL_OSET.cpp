@@ -528,6 +528,9 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 PRINTDIFF("SL_CO::call() end")
 
                 //DELETE _message here!
+    			if(!_message->getLock()){
+    				PURGEMESSAGE(_message)
+    			}
                 return oper;
             }
             else {
@@ -582,6 +585,9 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
             	//the message is deleted in comap
 
             	//DELETE _message here!
+    			if(!_message->getLock()){
+    				PURGEMESSAGE(_message)
+    			}
             	return oper;
             }
         }
@@ -669,6 +675,9 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
     PRINTDIFF("SL_CO::call() ")
 
     //DELETE _message here!
+	if(!_message->getLock()){
+		PURGEMESSAGE(_message)
+	}
     return oper;
 }
 
@@ -813,10 +822,10 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
 			//DEBINFCALLOSET("CLIENT SM send to Server SM", _tmpMessage->getLine(0) << "]["<<_tmpMessage->getHeadCallId().getContent())
 #ifdef NONESTEDPW
 			call_oset->getSL_CO()->call(_tmpMessage,_r_modulus);
-			//do not delete here delete in "call"
-			if(!_tmpMessage->getLock()){
-				PURGEMESSAGE(_tmpMessage)
-			}
+//			//do not delete here delete in "call"
+//			if(!_tmpMessage->getLock()){
+//				PURGEMESSAGE(_tmpMessage)
+//			}
 #else
 			((SL_CC*)call_oset->getENGINE())->p_w(_tmpMessage);
 #endif
