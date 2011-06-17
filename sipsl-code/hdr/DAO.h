@@ -21,43 +21,30 @@
 //**********************************************************************************
 
 /***********************************************************
-  SIPENGINE.h
-  parses the SIP protocol
-  messages must inherit from MESSAGE
-  SIPENGINE class must inherit from ENGINE
+  DAO.h
+  provisioning object
 ************************************************************/
-#define SIPENGINE_H
-class TRNSPRT;
-class DAO;
+#define DAO_H
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
 //TODO singleton
-class SIPENGINE : public ENGINE {
+class DAO : public ENGINE {
 
     public:
 
         void parse(void *, int);
 
-        SIPENGINE(int,int,string);
+        DAO(int,int,string);
 
-        // link on this the SL_CC engine
-        void setSL_CC(ENGINE *);
-        void setDAO(DAO *);
-        DAO* getDAO(void);
-
-        ENGINE * getSL_CC(void);
-
-        void linkTransport(TRNSPRT*);
-
+        string getData(string);
 
     private:
-        //Second stage link to call control
-        ENGINE *sl_cc;
+        pthread_mutex_t mutex;
 
-        DAO *dao;
+        int putData(string,string);
 
-        TRNSPRT* transport;
+        map <string,string> routingTable;
 };
 //**********************************************************************************
 //**********************************************************************************

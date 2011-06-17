@@ -91,6 +91,9 @@
 #ifndef TRNSPRT_H
 #include "TRNSPRT.h"
 #endif
+#ifndef DAO_H
+#include "DAO.h"
+#endif
 
 //**********************************************************************************
 //**********************************************************************************
@@ -111,6 +114,13 @@ void SIPENGINE::linkTransport(TRNSPRT* _transport){
 void SIPENGINE::setSL_CC(ENGINE* _sl_cc) {
     sl_cc = _sl_cc;
 }
+void SIPENGINE::setDAO(DAO* _dao) {
+    dao = _dao;
+}
+DAO* SIPENGINE::getDAO(void) {
+    return dao;
+}
+
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
@@ -156,6 +166,10 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
         //All replies must be considered
         transport->upCall(_mess, (SL_CC*)sl_cc);
 
+    }
+    else if (type == RECOMMPD){
+    	DEBOUT("Provisioning and diagnostic",_mess)
+    	dao->p_w(_mess);
     }
     else {
         // purge it

@@ -1646,10 +1646,15 @@ int MESSAGE::getReqRepType(void){
 	}
 	else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
 		reqRep = REQUNSUPP;
-		headSipRequest = "";
-	}else{
+		headSipRequest = "REGISTER";
+	}
+	else if(strncmp(message_line[0].first,"SIPSL-PD",8) == 0){
+		reqRep = RECOMMPD;
+		headSipRequest = "SIPSL-PD";
+	}
+	else{
 		reqRep = REQUNSUPP;
-		headSipRequest = "";
+		headSipRequest = "???";
 	}
 	DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
 	return reqRep;
@@ -1836,6 +1841,30 @@ int MESSAGE::getHeadCSeq(void){
 	DEBINFMESSAGE("int MESSAGE::getHeadCSeq(void)", this<<"]["<<cSeq)
 
 	return cSeq;
+
+}
+int MESSAGE::fillCommand(void){
+	DEBINFMESSAGE("int MESSAGE::fillCommand(void)",this<<"][")
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::fillCommand invalid")
+
+
+	NEWPTR2(message_char, char[strlen(original_message)+1],"message_char "<<strlen(original_message)+1)
+	strcpy(message_char, original_message);
+
+	bool fillSDP = false;
+	char* tok = strtok(message_char, "\n");
+	while (tok != NULL){
+		int ll = strlen(tok);
+		char* trok = tok + ll - 1 ;
+		strcpy(trok,"");
+		DEBINFMESSAGE("MESSAGE::fillCommand line", tok)
+			message_line.push_back( make_pair (tok,false) );
+		tok = strtok(NULL, "\n");
+	}
+
+	DEBINFMESSAGE("int MESSAGE::fillCommand(void)", this<<"]["<<message_line.size())
+	return message_line.size();
 
 }
 

@@ -146,4 +146,3 @@ void ALO::linkSUDP(SUDP *_sudp){
 SUDP* ALO::getSUDP(void){
 	return sudp;
 }
-

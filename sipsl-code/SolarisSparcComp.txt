@@ -4,6 +4,7 @@
 /usr/sfw/bin/g++ -I"/home/msgmedia/vf/eng/s/h/" -O3 -Wall -MMD -MP -MT"c/CALL_OSET.d" -MF"c/CALL_OSET.d" -S -fmessage-length=0 -o"c/CALL_OSET.s" "c/CALL_OSET.cpp"
 /usr/sfw/bin/g++ -I"/home/msgmedia/vf/eng/s/h/" -O3 -Wall -MMD -MP -MT"c/COMAP.d" -MF"c/COMAP.d" -S -fmessage-length=0 -o"c/COMAP.s" "c/COMAP.cpp"
 /usr/sfw/bin/g++ -I"/home/msgmedia/vf/eng/s/h/" -O3 -Wall -MMD -MP -MT"c/CS_HEADERS.d" -MF"c/CS_HEADERS.d" -S -fmessage-length=0 -o"c/CS_HEADERS.s" "c/CS_HEADERS.cpp"
+/usr/sfw/bin/g++ -I"/home/msgmedia/vf/eng/s/h/" -O3 -Wall -MMD -MP -MT"c/DAO.d" -MF"c/DAO.d" -S -fmessage-length=0 -o"c/DAO.s" "c/DAO.cpp"
 /usr/sfw/bin/g++ -I"/home/msgmedia/vf/eng/s/h/" -O3 -Wall -MMD -MP -MT"c/DOA.d" -MF"c/DOA.d" -S -fmessage-length=0 -o"c/DOA.s" "c/DOA.cpp"
 /usr/sfw/bin/g++ -I"/home/msgmedia/vf/eng/s/h/" -O3 -Wall -MMD -MP -MT"c/ENGINE.d" -MF"c/ENGINE.d" -S -fmessage-length=0 -o"c/ENGINE.s" "c/ENGINE.cpp"
 /usr/sfw/bin/g++ -I"/home/msgmedia/vf/eng/s/h/" -O3 -Wall -MMD -MP -MT"c/MESSAGE.d" -MF"c/MESSAGE.d" -S -fmessage-length=0 -o"c/MESSAGE.s" "c/MESSAGE.cpp"
@@ -23,6 +24,7 @@
 /usr/sfw/bin/gas ./c/CALL_OSET.s -o ./c/CALL_OSET.o
 /usr/sfw/bin/gas ./c/COMAP.s -o ./c/COMAP.o
 /usr/sfw/bin/gas ./c/CS_HEADERS.s -o ./c/CS_HEADERS.o
+/usr/sfw/bin/gas ./c/DAO.s -o ./c/DAO.o
 /usr/sfw/bin/gas ./c/DOA.s -o ./c/DOA.o
 /usr/sfw/bin/gas ./c/ENGINE.s -o ./c/ENGINE.o
 /usr/sfw/bin/gas ./c/MESSAGE.s -o ./c/MESSAGE.o
@@ -36,4 +38,4 @@
 /usr/sfw/bin/gas ./c/VALO.s -o ./c/VALO.o
 /usr/sfw/bin/gas ./c/test.s -o ./c/test.o
 
-/usr/sfw/bin/g++  -lposix4 -o"SI"  ./c/ACTION.o ./c/ALARM.o ./c/ALO.o ./c/CALL_OSET.o ./c/COMAP.o ./c/CS_HEADERS.o ./c/DOA.o ./c/ENGINE.o ./c/MESSAGE.o ./c/SIPENGINE.o ./c/SIPUTIL.o ./c/SL_CC.o ./c/SPIN.o ./c/SUDP.o ./c/TRNSCT_SM.o ./c/TRNSPRT.o ./c/VALO.o ./c/test.o   -lpthread -lsocket -lxnet -lnsl
+/usr/sfw/bin/g++  -lposix4 -o"SI"  ./c/ACTION.o ./c/ALARM.o ./c/ALO.o ./c/CALL_OSET.o ./c/COMAP.o ./c/CS_HEADERS.o ./c/DAO.o ./c/DOA.o ./c/ENGINE.o ./c/MESSAGE.o ./c/SIPENGINE.o ./c/SIPUTIL.o ./c/SL_CC.o ./c/SPIN.o ./c/SUDP.o ./c/TRNSCT_SM.o ./c/TRNSPRT.o ./c/VALO.o ./c/test.o   -lpthread -lsocket -lxnet -lnsl
