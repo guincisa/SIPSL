@@ -360,6 +360,41 @@ ACTION* act_resend_try_to_a(SM_V6* _sm, MESSAGE* _message) {
 
 }
 //*****************************************************************
+ACTION* act_send_servunav_to_a(SM_V6* _sm, MESSAGE* _message) {
+
+	//send back
+	//"503"  ;  Service Unavailable
+
+	//***********************************************************
+	//Trnsmit 503
+	//***********************************************************
+	DEBDEV("TRSNCT_INV_SV::act_send_servunav_to_a", _message)
+
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
+
+	//non so funziona mandare un mess e un kill
+	//deve pero chiudere anche lato b
+	CREATEMESSAGE(killd,_message, SODE_TRNSCT_SV,SODE_KILLDOA)
+	SingleAction sa_1 = SingleAction(killd);
+	action->addSingleAction(sa_1);
+
+	CREATEMESSAGE(servunav, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1, SODE_TRNSCT_SV,SODE_NTWPOINT)
+	servunav->setHeadSipReply("503 Server Unavailable");
+	servunav->compileMessage();
+	SingleAction sa_2 = SingleAction(servunav);
+	action->addSingleAction(sa_2);
+
+	DEBDEV("SM act_send_servunav_to_a move to state 5","")
+	_sm->State = 5;
+
+	DEBDEV("SM act_send_servunav_to_a move OverallState_SV","OS_TERMINATED")
+	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
+
+	return action;
+
+}
+
+//*****************************************************************
 // 101 DE or 180 RING from SM_CL
 //*****************************************************************
  bool pre_provrep_from_cl(SM_V6* _sm, MESSAGE* _message){
@@ -866,7 +901,8 @@ ACTION* TRNSCT_SM_INVITE_SV::event(MESSAGE* _message){
 	else if (State == 1){
 		//insert_move(1,&PA_INV_1_1SV);
 		if (pre_invite_from_a((SM_V6*)this, _message)){
-			return act_resend_try_to_a((SM_V6*)this, _message);
+			//return act_resend_try_to_a((SM_V6*)this, _message);
+			return act_send_servunav_to_a((SM_V6*)this, _message);
 		}
 		//insert_move(1,&PA_INV_1_2SV);
 		else if (pre_provrep_from_cl((SM_V6*)this, _message)){
@@ -885,7 +921,8 @@ ACTION* TRNSCT_SM_INVITE_SV::event(MESSAGE* _message){
 	else if (State == 2){
 		//insert_move(2,&PA_INV_2_2SV);
 		if (pre_invite_from_a((SM_V6*)this, _message)){
-			return act_resend_provreply_to_a((SM_V6*)this, _message);
+			//return act_resend_provreply_to_a((SM_V6*)this, _message);
+			return act_send_servunav_to_a((SM_V6*)this, _message);
 		}
 		//insert_move(2,&PA_INV_3_3eSV);
 		else if (pre_provrep_from_cl((SM_V6*)this, _message)){

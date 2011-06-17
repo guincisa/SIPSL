@@ -113,27 +113,34 @@ class ThreadWrapper {
 //#define USETRYLOCK
 
 //Sudp threads
-#define SUDPTH 24
+//24
+#define SUDPTH 4
 
 //Max engine threads
-#define MAXTHREADS 128
+//128
+#define MAXTHREADS 32
 
-//
-#define SIPENGINETH 128
-#define SIPENGINMAPS 64
+//128
+#define SIPENGINETH 32
+//64
+#define SIPENGINMAPS 4
 
-#define TRNSPRTTH 64
-#define TRNSPRTMAPS 32
+//64
+#define TRNSPRTTH 4
+//32
+#define TRNSPRTMAPS 1
 
-#define SL_CCTH 128
-#define SL_CCMAPS 32
+//128
+#define SL_CCTH 32
+//32
+#define SL_CCMAPS 4
 
 //#define ENGINEMAPS 5
 #define ALARMTH 64
 #define ALARMMAPS 32
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
-//#define INHIBITALARM
+#define INHIBITALARM
 
 #define COMAPS 500
 #define COMAPS_DIG 3
@@ -152,16 +159,17 @@ class ThreadWrapper {
 #define LOGMIN
 #define PROFILELOCK
 
-//#define LOGSIPHIGH
-//#define LOGSIPLOW
-
-//#define LOGINF
+//mostly used
+#define LOGSIPHIGH
+#define LOGSIPLOW
+#define LOGINF
+#define LOGDEV
+#define LOGMEM
 //#define LOGINFMESSAGE
+
 #define LOGINFSUDP
 #define LOGINFCALLOSET
 #define LOGMIN
-//#define LOGDEV
-//#define LOGMEM
 #define LOGNTW
 #define SELFCHECK
 //#define DEBCODE

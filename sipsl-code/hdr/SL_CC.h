@@ -23,6 +23,7 @@
 
 class ENGINE;
 class COMAP;
+class DAO;
 //**********************************************************************************
 // * SL_CC
 // * Call Control second stage Engine
@@ -36,6 +37,9 @@ class SL_CC : public ENGINE {
         void linkTransport(TRNSPRT*);
         void linkSipEngine(ENGINE*);
 
+        void setDAO(DAO *);
+        DAO* getDAO(void);
+
 
     private:
 
@@ -46,8 +50,9 @@ class SL_CC : public ENGINE {
 
         ENGINE *sipengine;
 
-
     	COMAP* comap;
+
+        DAO *dao;
 
 };
 

@@ -81,6 +81,9 @@
 #ifndef TRNSCT_SM_H
 #include "TRNSCT_SM.h"
 #endif
+#ifndef DAO_H
+#include "DAO.h"
+#endif
 
 SIPUTIL SipUtil;
 
@@ -141,7 +144,6 @@ VALO::~VALO(void){
 		ctxt_store.erase(p);
 	}
 }
-
 void VALO::onInvite(MESSAGE* _message){
 	DEBINF("void VALO::onInvite(MESSAGE* _message)",this<<"]["<<_message)
 
@@ -169,9 +171,11 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBALO("Exception ", e.getMessage())
 	}
 
-	//TODO use Registrar
+
+	string ss = ((SL_CC*)sl_cc)->getDAO()->getData("service@10.21.99.79:5062");
+
 	stringstream tmps ;
-	tmps << "INVITE sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
+	tmps << "INVITE sip:"<< ss <<" SIP/2.0";
 	message->setHeadSipRequest(tmps.str());
 
 	//message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");

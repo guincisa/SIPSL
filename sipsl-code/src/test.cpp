@@ -68,6 +68,10 @@
 #ifndef TRNSPRT_H
 #include "TRNSPRT.h"
 #endif
+#ifndef DAO_H
+#include "DAO.h"
+#endif
+
 
 #ifdef USEMESSAGEMAP
 map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
@@ -173,12 +177,18 @@ int main(int argc, const char* argv[]) {
 		sl_cc->linkSUDP(mystack);
 
 		//First stage engine: Lazy parser
-		NEWPTR(SIPENGINE*, gg, SIPENGINE(SIPENGINETH,SIPENGINMAPS,"SIPENGINE"), "SIPENGINE")
+		NEWPTR(SIPENGINE*, sipeng, SIPENGINE(SIPENGINETH,SIPENGINMAPS,"SIPENGINE"), "SIPENGINE")
 //		SIPENGINE gg(SIPENGINETH);
-		gg->setSL_CC(sl_cc);
-		gg->linkSUDP(mystack);
+		sipeng->setSL_CC(sl_cc);
+		sipeng->linkSUDP(mystack);
 
-		sl_cc->linkSipEngine(gg);
+		sl_cc->linkSipEngine(sipeng);
+
+		//data layer
+		NEWPTR(DAO*, daog, DAO(2,1,"DAO"), "DAO")
+		sipeng->setDAO(daog);
+		sl_cc->setDAO(daog);
+
 
 		NEWPTR(DOA*, doa, DOA(sl_cc, DOA_CLEANUP, 0),"DOA")
 //		DOA doa(&sl_cc, DOA_CLEANUP, 0);
@@ -192,7 +202,7 @@ int main(int argc, const char* argv[]) {
 
 
 
-		mystack->init(5060, gg, doa, "sipsl.gugli.com", alarm);
+		mystack->init(5060, sipeng, doa, "sipsl.gugli.com", alarm);
 		mystack->start();
 
 		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;

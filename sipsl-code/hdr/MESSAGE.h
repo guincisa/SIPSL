@@ -100,6 +100,8 @@ using namespace std;
 #define REQUNSUPP 3
 #define REPSUPP 2
 #define REPUNSUPP 4
+//command provisioning and diagnostic
+#define RECOMMPD 1000
 
 class CALL_OSET;
 ///////////////////////////////////////////////////////////////////////////////
@@ -374,6 +376,17 @@ class MESSAGE {
     	int cSeq;
     	bool parsedCseq;
 
+	public:
+    	//reading commands:
+    	//get command
+    	//get L
+    	//get R
+    	//popCommandLine
+    	int fillCommand(void);
+    	string popCommandLine(void);
+    	string getCommand(void);
+    	string getLvalue(void);
+    	string getRvalue(void);
 
 };
 

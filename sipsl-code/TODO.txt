@@ -5,6 +5,9 @@ TODO
 - perche su UMF una chiamata usa meno messaggi???
 
 - spezzare SL_CO lato client e server son due lock separati
+ancora in test, fare gli scenari di errore
+
+- implementare il controllo  di carico e i messaggi di reject
 
 
 

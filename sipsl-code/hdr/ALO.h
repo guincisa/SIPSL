@@ -45,11 +45,11 @@ class ALO {
 
         void linkSUDP(SUDP*);
         SUDP* getSUDP(void);
-
 	protected:
         //TODO must be private
         ENGINE* sl_cc;
         CALL_OSET* call_oset;
         SUDP* sudp;
+
 
 };

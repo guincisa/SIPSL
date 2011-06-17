@@ -110,6 +110,12 @@ void SL_CC::linkTransport(TRNSPRT* _transport){
 void SL_CC::linkSipEngine(ENGINE* _sipengine){
     sipengine = _sipengine;
 }
+void SL_CC::setDAO(DAO* _dao) {
+    dao = _dao;
+}
+DAO* SL_CC::getDAO(void) {
+    return dao;
+}
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
