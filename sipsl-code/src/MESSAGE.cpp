@@ -1648,9 +1648,13 @@ int MESSAGE::getReqRepType(void){
 		reqRep = REQUNSUPP;
 		headSipRequest = "REGISTER";
 	}
-	else if(strncmp(message_line[0].first,"SIPSL-PD",8) == 0){
+	else if(strncmp(message_line[0].first,"PD-SIPSL",8) == 0){
 		reqRep = RECOMMPD;
-		headSipRequest = "SIPSL-PD";
+		headSipRequest = "PD-SIPSL";
+	}
+	else if(strncmp(message_line[0].first,"OM-SIPSL",8) == 0){
+		reqRep = RECOMMOM;
+		headSipRequest = "OM-SIPSL";
 	}
 	else{
 		reqRep = REQUNSUPP;

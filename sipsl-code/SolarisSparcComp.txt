@@ -38,4 +38,4 @@
 /usr/sfw/bin/gas ./c/VALO.s -o ./c/VALO.o
 /usr/sfw/bin/gas ./c/test.s -o ./c/test.o
 
-/usr/sfw/bin/g++  -lposix4 -o"SI"  ./c/ACTION.o ./c/ALARM.o ./c/ALO.o ./c/CALL_OSET.o ./c/COMAP.o ./c/CS_HEADERS.o ./c/DAO.o ./c/DOA.o ./c/ENGINE.o ./c/MESSAGE.o ./c/SIPENGINE.o ./c/SIPUTIL.o ./c/SL_CC.o ./c/SPIN.o ./c/SUDP.o ./c/TRNSCT_SM.o ./c/TRNSPRT.o ./c/VALO.o ./c/test.o   -lpthread -lsocket -lxnet -lnsl
+/usr/sfw/bin/g++  -lposix4 -o"SI"  ./c/ACTION.o ./c/ALARM.o ./c/ALO.o ./c/CALL_OSET.o ./c/COMAP.o ./c/CS_HEADERS.o ./c/DAO.o ./c/DOA.o ./c/ENGINE.o ./c/MESSAGE.o ./c/SIPENGINE.o ./c/SIPUTIL.o ./c/SL_CC.o ./c/SPIN.o ./c/SUDP.o ./c/TRNSCT_SM.o ./c/TRNSPRT.o ./c/VALO.o ./c/test.o   -lpthread -lsocket -lxnet -lnsl&
