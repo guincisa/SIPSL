@@ -8,6 +8,7 @@ TODO
 ancora in test, fare gli scenari di errore
 
 - implementare il controllo  di carico e i messaggi di reject
+lato client 
 
 
 

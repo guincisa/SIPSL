@@ -93,9 +93,11 @@ class ThreadWrapper {
 
 //Invert the get call_oset lock and release comap lok
 //should core if inverted
+//CORRECTNESS NOT PROOVED
 #define WRONGLOCKMGMT
 
 //uses two loks for call_oset server side and client side
+//CORRECTNESS NOT PROOVED
 #define SV_CL_MUTEX
 
 //Use the gobalmessagetable
@@ -114,26 +116,26 @@ class ThreadWrapper {
 
 //Sudp threads
 //24
-#define SUDPTH 4
+#define SUDPTH 8
 
 //Max engine threads
 //128
-#define MAXTHREADS 32
+#define MAXTHREADS 64
 
 //128
-#define SIPENGINETH 32
+#define SIPENGINETH 64
 //64
-#define SIPENGINMAPS 4
+#define SIPENGINMAPS 16
 
 //64
-#define TRNSPRTTH 4
+#define TRNSPRTTH 8
 //32
-#define TRNSPRTMAPS 1
+#define TRNSPRTMAPS 2
 
 //128
-#define SL_CCTH 32
+#define SL_CCTH 64
 //32
-#define SL_CCMAPS 4
+#define SL_CCMAPS 16
 
 //#define ENGINEMAPS 5
 #define ALARMTH 64
@@ -159,16 +161,15 @@ class ThreadWrapper {
 #define LOGMIN
 #define PROFILELOCK
 
-//mostly used
-#define LOGSIPHIGH
-#define LOGSIPLOW
-#define LOGINF
-#define LOGDEV
-#define LOGMEM
+//#define LOGSIPHIGH
+//#define LOGSIPLOW
+//#define LOGINF
+//#define LOGDEV
+//#define LOGMEM
 //#define LOGINFMESSAGE
 
-#define LOGINFSUDP
-#define LOGINFCALLOSET
+//#define LOGINFSUDP
+//#define LOGINFCALLOSET
 #define LOGMIN
 #define LOGNTW
 #define SELFCHECK
@@ -400,8 +401,8 @@ class ThreadWrapper {
 #endif
 //**********************************************************
 //**********************************************************
+#define DEBINFSUDP(m1,m2)
 #ifdef LOGINFSUDP
-	//**********************************************************
 #undef DEBINFSUDP
 #define DEBINFSUDP(m1,m2) BDEBUG("DEBINFSUDP", m1 << "[" << m2)
 //#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
