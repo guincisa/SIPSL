@@ -81,9 +81,18 @@ public class sendU3 {
                       BufferedReader userInput=new BufferedReader(new InputStreamReader(System.in));
                       while(true){
                         if(stopped) return;
-                        String theLine=userInput.readLine();
-                        if(theLine.equals("exit")) break;
-                        byte[] data=theLine.getBytes();
+                        String longLine="";
+                        while(true){
+                                String theLine=userInput.readLine();
+                                if(theLine.equals("send")) break;
+                                longLine = longLine + theLine;
+                                longLine = longLine + "+\n";
+                        }
+                        longLine = longLine + "\n";
+                        System.out.println("-------------------");
+                        System.out.println(longLine);
+                        System.out.println("-------------------");
+                        byte[] data=longLine.getBytes();
                         DatagramPacket output=new DatagramPacket(data,data.length,server,port);
                         socket.send(output);
                         Thread.yield();
@@ -96,3 +105,4 @@ public class sendU3 {
                 }
 
 }
+

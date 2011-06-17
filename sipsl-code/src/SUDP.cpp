@@ -222,6 +222,8 @@ void SUDP::listen(int _socknum) {
         if ((recvMsgSize = recvfrom(_sok, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
             DEBERROR("SUDP::listen() recvfrom() failed")
+        }else if ( recvMsgSize < 1){
+        	DEBERROR("SUDP::listen() abnormal message")
         }else {
             SETNOW
             PROFILE("SUDP:Message arrived from socket")
