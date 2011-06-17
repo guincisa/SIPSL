@@ -171,9 +171,9 @@ void VALO::onInvite(MESSAGE* _message){
 		DEBALO("Exception ", e.getMessage())
 	}
 
-
+	DEBY
 	string ss = ((SL_CC*)sl_cc)->getDAO()->getData("service@10.21.99.79:5062");
-
+	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",ss)
 	stringstream tmps ;
 	tmps << "INVITE sip:"<< ss <<" SIP/2.0";
 	message->setHeadSipRequest(tmps.str());

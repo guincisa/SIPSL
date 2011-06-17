@@ -100,8 +100,10 @@ using namespace std;
 #define REQUNSUPP 3
 #define REPSUPP 2
 #define REPUNSUPP 4
-//command provisioning and diagnostic
+//request command provisioning and diagnostic
 #define RECOMMPD 1000
+//request command operation and maintenance
+#define RECOMMOM 1001
 
 class CALL_OSET;
 ///////////////////////////////////////////////////////////////////////////////
