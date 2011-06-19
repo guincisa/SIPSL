@@ -25,6 +25,8 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <string.h>
+
 
 using namespace std;
 #define REGISTER_REQUEST 1

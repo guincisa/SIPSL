@@ -309,7 +309,7 @@ class ThreadWrapper {
 				RELLOCK(&messTableMtx[i],"&messTableMtx"<<i);}}
 #else
 #define PURGEMESSAGE(m1)  DELPTR(m1,"MESSAGE")
-#define CREATEMESSAGE(m1, m2, gen, dest) MESSAGE* m1=0x0; {char bu[512];\
+#define CREATEMESSAGE(m1, m2, gen, dest) MESSAGE* m1=NULL; {char bu[512];\
 				SysTime inTime;\
 				GETTIME(inTime);\
 				NEWPTR2(m1, MESSAGE(m2, gen, inTime),"MESSAGE");\
@@ -317,7 +317,7 @@ class ThreadWrapper {
 				int i= m1->fillIn();\
 				DEBDEV("New MESSAGE"," " << i);\
 				long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
-				sprintf(bu, "%x%llu",(unsigned int)m1,num);\
+				sprintf(bu, "%x%llu",m1,num);\
 				string key(bu);\
 				m1->setKey(key);}
 
@@ -327,7 +327,7 @@ class ThreadWrapper {
 				NEWPTR2(__mess, MESSAGE(__echob, __sode, inTime, __sock, __echoAddr),"MESSAGE");\
 				DEBY \
 				if (__mess != 0x0 ) {long long int num = ((long long int) inTime.tv.tv_sec)*1000000+(long long int)inTime.tv.tv_usec;\
-				sprintf(bu, "%x%llu",(unsigned int)__mess,num);\
+				sprintf(bu, "%x%llu",__mess,num);\
 				string key(bu);\
 				__mess->setKey(key);}}
 
