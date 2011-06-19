@@ -121,7 +121,7 @@ ENGINE::ENGINE(int _i, int _em, string _type) {
     		_i = EngineMaps;
     	}
     }
-    DEBOUT("ENGINE::ENGINE _i", _i)
+    DEBOUT("ENGINE::ENGINE _i", _i<<"]["<<_type)
     ENGtuple *t[MAXTHREADS];
 
 

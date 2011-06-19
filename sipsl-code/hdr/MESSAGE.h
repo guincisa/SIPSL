@@ -237,8 +237,8 @@ class MESSAGE {
 		////////////////////////////////
         //Timer
 	public:
-        lli MESSAGE::getFireTime(void);
-		void MESSAGE::setFireTime(lli);
+        lli getFireTime(void);
+		void setFireTime(lli);
 		//Timer support
 	private:
 		lli fireTime;
