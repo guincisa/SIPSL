@@ -385,10 +385,9 @@ class MESSAGE {
     	//get R
     	//popCommandLine
     	int fillCommand(void);
-    	string popCommandLine(void);
-    	string getCommand(void);
-    	string getLvalue(void);
-    	string getRvalue(void);
+
+    //Command
+    	bool buildCommand(vector< pair<int, pair<string,string> > >&);
 
 };
 

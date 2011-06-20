@@ -44,7 +44,14 @@ class DAO : public ENGINE {
 
         int putData(string,string);
 
-        map <string,string> routingTable;
+        map<string,string> routingTable;
+};
+
+class COMMAND {
+	public:
+		pair<int, pair<string,string> > topTuple(void);
+		bool popTuple(void);
+		vector< pair<int, pair<string,string> > > commandTable;
 };
 //**********************************************************************************
 //**********************************************************************************

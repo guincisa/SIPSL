@@ -1871,6 +1871,41 @@ int MESSAGE::fillCommand(void){
 	return message_line.size();
 
 }
+bool MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >& _command){
+	DEBINFMESSAGE("int MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >&)",this<<"]["<<_command)
+
+	vector< pair<char*, bool> >::iterator m_l;
+
+	m_l = message_line.begin();
+	m_l++;
+	while ( m_l != message_line.end()){
+		DEBOUT("MESSAGE::buildCommand",m_l->first)
+		char temp[strlen(m_l->first) +1];
+		strcpy(temp, m_l->first);
+		char* tok = strtok(temp, "%");
+		int i = 0;
+		string s[3];
+		while (tok != NULL || i < 3){
+			int ll = strlen(tok);
+			char* trok = tok + ll;
+			strcpy(trok,"");
+			s[i] = tok;
+			i++;
+			tok = strtok(NULL, "%");
+		}
+		int k = 0;
+		if(s[0].compare("i") == 0){
+			k = 1;
+		}
+		else if (s[0].compare("d")  == 0){
+			k = 2;
+		}
+		_command.push_back(make_pair(k, make_pair(s[1],s[2])));
+		DEBOUT("MESSAGE::buildCommand",k<<"]["<<s[1]<<"]["<<s[2])
+		m_l++;
+	}
+
+}
 
 
 
