@@ -167,6 +167,7 @@ class ThreadWrapper {
 //#define LOGDEV
 //#define LOGMEM
 //#define LOGINFMESSAGE
+#define LOGINCOMAP_H
 
 //#define LOGINFSUDP
 //#define LOGINFCALLOSET
@@ -401,6 +402,17 @@ class ThreadWrapper {
 #endif
 //**********************************************************
 //**********************************************************
+#define DEBCOMAP_H(m1,m2)
+#ifdef LOGINCOMAP_H
+#undef DEBCOMAP_H
+#define DEBCOMAP_H(m1,m2) BDEBUG("DEBCOMAP_H", m1 << "[" << m2)
+#endif
+#define DEBCOMAP_L(m1,m2)
+#ifdef LOGINCOMAP_L
+#undef DEBCOMAP_L
+#define DEBCOMAP_L BDEBUG("DEBCOMAP_H", m1 << "[" << m2)
+#endif
+
 #define DEBINFSUDP(m1,m2)
 #ifdef LOGINFSUDP
 #undef DEBINFSUDP

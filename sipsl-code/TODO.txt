@@ -10,6 +10,9 @@ ancora in test, fare gli scenari di errore
 - implementare il controllo  di carico e i messaggi di reject
 lato client 
 
+- timer sul temporary state nella comap se gli allarmi sono inibiti
+oppure riabilitare gli allarmi ma solo per le timer_s
+con un counter dipendente dal timer doa
 
 
 2. perche quando un solo messaggio va in ritrasmissione scoppia il casino???
