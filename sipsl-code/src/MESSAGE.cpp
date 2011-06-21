@@ -62,6 +62,8 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 				int _sock,
 				struct sockaddr_in _echoClntAddr){
 
+	DEBINFMESSAGE_MIN("MESSAGE::MESSAGE(MESSAGE* _sourceMessage,int _genEntity,SysTime _creaTime)",this)
+
 	sourceMessage 			= MainMessage;
 	sourceHeadCallId 		= "";
 	sourceModulus			= -1;
@@ -171,6 +173,8 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 				int _genEntity,
 				SysTime _creaTime){
 
+	DEBINFMESSAGE_MIN("MESSAGE::MESSAGE(MESSAGE* _sourceMessage,int _genEntity,SysTime _creaTime)",this)
+
 	sourceMessage 			= _sourceMessage;
 	sourceHeadCallId 		= _sourceMessage->getHeadCallId();
 	sourceModulus			= _sourceMessage->getModulus();
@@ -250,7 +254,7 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 
 }
 MESSAGE::~MESSAGE(){
-	DEBINFMESSAGE("MESSAGE::~MESSAGE()",this)
+	DEBINFMESSAGE_MIN("MESSAGE::~MESSAGE()",this)
 
 	DELPTRARR(original_message,"original_message")
 
@@ -865,7 +869,6 @@ int MESSAGE::getModulus(void){
 	modulusMap.insert(make_pair(s,modulus));
 	modulusIter++;
 	modulusIter = modulusIter % COMAPS;
-	DEBOUT("int MESSAGE::getModulus(void) modulusIter", modulusIter)
 	RELLOCK(&modulusMapMtx,"modulusMapMtx")
 	DEBOUT("int MESSAGE::getModulus(void) modulus", modulus)
 	return modulus;
@@ -1277,7 +1280,9 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			if (bbb!=NULL)
 				yyy = bbb+1;
 			string newinse = xxx;
-			newinse += _property;
+			//doppio ;
+			//newinse += _property;
+			newinse += __property;
 			newinse += "=";
 			newinse += _value;
 			if(bbb!=NULL){

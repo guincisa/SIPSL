@@ -1,3 +1,18 @@
+21 giugno
+con overload
+no allarmi
+            }else{
+                // but the call object has been recognized!!!
+                // the sm may have been deleted
+                DEBWARNING("An unexpected reply directed to client has reached the call object", _message)
+                DEBMESSAGE("An unexpected reply directed to client has reached the call object", _message)
+                DEBINFCALLOSET("An unexpected reply directed to client has reached the call object", _message <<"]["<<_message->getTypeOfInternal())
+                call_oset->dumpTrnsctSm();
+                action = 0x0;
+                DEBASSERT("An unexpected reply directed to client has reached the call object")
+            }
+
+
 16 giugno 
 
 ACK???

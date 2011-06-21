@@ -269,12 +269,17 @@ void SUDP::sendRequest(MESSAGE* _message){
 
     si_part.sin_family = AF_INET;
     pair<string,int> _pair = _message->getUri("REQUEST");
+    DEBY
     char _hostchar[_pair.first.length()+1];
+    DEBY
     strcpy(_hostchar,_pair.first.c_str());
+    DEBY
     host = gethostbyname(_hostchar);
+    DEBY
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
+    DEBY
     si_part.sin_port = htons(_pair.second);
-
+    DEBY
 //	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
 //		DEBASSERT ("Can't set request address")
 //	}
@@ -282,7 +287,7 @@ void SUDP::sendRequest(MESSAGE* _message){
     int i = _message->getModulus() % SUDPTH;
 
     sendto(sock_se[i], _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
-
+    DEBY
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
     }
@@ -302,17 +307,24 @@ void SUDP::sendReply(MESSAGE* _message){
 
     si_part.sin_family = AF_INET;
     char _hostchar[_message->getViaUriHost().length()+1];
+    DEBY
     strcpy(_hostchar,_message->getViaUriHost().c_str());
+    DEBY
     host = gethostbyname(_hostchar);
+    DEBY
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
+    DEBY
     si_part.sin_port = htons(_message->getViaUriPort());
+    DEBY
 
     if( inet_pton(AF_INET, _message->getViaUriHost().c_str(), &si_part.sin_addr) == 0 ){
             DEBASSERT ("can set reply address")
     }
-
+    DEBY
     int i = _message->getModulus() % SUDPTH;
+    DEBY
     sendto(sock_se[i],  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    DEBY
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
     }

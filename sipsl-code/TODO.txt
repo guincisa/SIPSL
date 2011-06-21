@@ -14,6 +14,10 @@ lato client
 oppure riabilitare gli allarmi ma solo per le timer_s
 con un counter dipendente dal timer doa
 
+SUPERCARICO
+- in caso di super carico il bye non va quasi piu
+- il core avviene durante la downcall forse le funzioni unix
+
 
 2. perche quando un solo messaggio va in ritrasmissione scoppia il casino???
 3. base dati stl
