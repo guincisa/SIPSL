@@ -105,10 +105,9 @@ DAO::DAO(int _i, int _m, string _s):ENGINE(_i,_m,_s){
 }
 string DAO::getData(string _data){
 
-	GETLOCK(&mutex,"DAO mutex")
 
     map <string,string>::iterator it;
-
+	GETLOCK(&mutex,"DAO mutex")
 	it = routingTable.find(_data);
 	RELLOCK(&mutex,"DAO mutex")
 

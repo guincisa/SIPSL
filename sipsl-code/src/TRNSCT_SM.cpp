@@ -1544,9 +1544,9 @@ ACTION* TRNSCT_SM_INVITE_CL::event(MESSAGE* _message){
 			return act_resend_ack((SM_V6*)this, _message);
 		}
 		//new resend ack also in proceeding
-		if (pre_200ok_from_b((SM_V6*)this, _message)){
-			return act_resend_ack((SM_V6*)this, _message);
-		}
+//		if (pre_200ok_from_b((SM_V6*)this, _message)){
+//			return act_resend_ack((SM_V6*)this, _message);
+//		}
 		//insert_move(4,&PA_INV_4_4aCL);
 		else if (pre_200ok_from_b_proceeding((SM_V6*)this, _message)){
 			return act_null_cl((SM_V6*)this, _message);

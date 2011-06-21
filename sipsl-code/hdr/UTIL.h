@@ -162,11 +162,12 @@ class ThreadWrapper {
 #define PROFILELOCK
 
 //#define LOGSIPHIGH
-//#define LOGSIPLOW
+#define LOGSIPLOW
 //#define LOGINF
 //#define LOGDEV
 //#define LOGMEM
 //#define LOGINFMESSAGE
+#define LOGINFMESSAGE_MIN
 #define LOGINCOMAP_H
 
 //#define LOGINFSUDP
@@ -423,11 +424,18 @@ class ThreadWrapper {
 //**********************************************************
 //**********************************************************
 #define DEBINFMESSAGE(m1,m2)
+#define DEBINFMESSAGE_MIN(m1,m2)
 #ifdef LOGINFMESSAGE
+#define LOGINFMESSAGE_MIN
 	//**********************************************************
 #undef DEBINFMESSAGE
+#undef DEBINFMESSAGE_MIN
 #define DEBINFMESSAGE(m1,m2) BDEBUG("DEBINFMESSAGE", m1 << "[" << m2)
-//#define DEBINF(m1,m2)  {stringstream xx ; xx << "DEBINF [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#define DEBINFMESSAGE_MIN(m1,m2) BDEBUG("DEBINFMESSAGE_MIN", m1 << "[" << m2)
+#endif
+#ifdef LOGINFMESSAGE_MIN
+#undef DEBINFMESSAGE_MIN
+#define DEBINFMESSAGE_MIN(m1,m2) BDEBUG("DEBINFMESSAGE_MIN", m1 << "[" << m2)
 #endif
 
 //**********************************************************
