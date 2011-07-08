@@ -400,8 +400,16 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 
 
 #else
-	DEBASSERT("missing code mutext cl and sv")
-    GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
+#ifdef SV_CL_MUTEX
+	if (_message->getDestEntity() == SODE_TRNSCT_SV){
+		GETLOCK(&(_call_oset->mutex_sv),"&(_call_oset->mutex_sv)"<<&(_call_oset->mutex_sv));
+	}
+	else if(_message->getDestEntity() == SODE_TRNSCT_CL){
+		GETLOCK(&(_call_oset->mutex_cl),"&(_call_oset->mutex_cl)"<<&(_call_oset->mutex_cl));
+	}
+#else
+	GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
+#endif
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
 #endif
 

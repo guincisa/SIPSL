@@ -162,12 +162,12 @@ class ThreadWrapper {
 #define PROFILELOCK
 
 //#define LOGSIPHIGH
-#define LOGSIPLOW
+//#define LOGSIPLOW
 //#define LOGINF
 //#define LOGDEV
 //#define LOGMEM
 //#define LOGINFMESSAGE
-#define LOGINFMESSAGE_MIN
+//#define LOGINFMESSAGE_MIN
 #define LOGINCOMAP_H
 
 //#define LOGINFSUDP
