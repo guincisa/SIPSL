@@ -1013,7 +1013,7 @@ string MESSAGE::getGenericHeader(string _header){
 		}
 	}
 	if (!found) {
-		DEBSIP("MESSAGE::setGenericHeader not found",_header)
+		DEBSIP("MESSAGE::getGenericHeader not found",_header)
 	}
 	DEBINFMESSAGE("string MESSAGE::getGenericHeader(string _header)",this<<"]["<<_header<<"][notfound")
 	return "";
@@ -1877,7 +1877,7 @@ int MESSAGE::fillCommand(void){
 
 }
 bool MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >& _command){
-	DEBINFMESSAGE("int MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >&)",this<<"]["<<_command)
+	//DEBINFMESSAGE("int MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >&)",this<<"]["<<_command)
 
 	vector< pair<char*, bool> >::iterator m_l;
 
