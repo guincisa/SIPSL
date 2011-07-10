@@ -172,7 +172,7 @@ void VALO::onInvite(MESSAGE* _message){
 	}
 
 	DEBY
-	string ss = ((SL_CC*)sl_cc)->getDAO()->getData("service@10.21.99.79:5062");
+	string ss = ((SL_CC*)sl_cc)->getDAO()->getData(GETDATA);
 	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",ss)
 	stringstream tmps ;
 	tmps << "INVITE sip:"<< ss <<" SIP/2.0";

@@ -38,8 +38,7 @@
 
 #include <stdio.h>
 
-
-#define SPARC
+//#define SPARC
 
 using namespace std;
 
@@ -85,7 +84,10 @@ class ThreadWrapper {
 
 #define SPINSTL
 
+
 #ifdef SPARC
+
+#define GETDATA "service@10.21.99.79:5062"
 
 //The call_oset and valo do not reinject the message
 //but recall the sl_co->call
@@ -161,13 +163,14 @@ class ThreadWrapper {
 #define LOGMIN
 #define PROFILELOCK
 
-//#define LOGSIPHIGH
-//#define LOGSIPLOW
-//#define LOGINF
-//#define LOGDEV
-//#define LOGMEM
-//#define LOGINFMESSAGE
-//#define LOGINFMESSAGE_MIN
+#define LOGSIPHIGH
+#define LOGSIPLOW
+#define LOGINF
+#define LOGDEV
+#define LOGMEM
+#define LOGINFMESSAGE
+#define LOGINFMESSAGE_MIN
+
 #define LOGINCOMAP_H
 
 //#define LOGINFSUDP
@@ -184,27 +187,106 @@ class ThreadWrapper {
 
 
 #else
-#define LOGALO
-#define COMAPS 6
-#define MAXTHREADS 8
-#define SIPENGINETH 6
-#define SL_CCTH 8
-#define ARR 100
+
+#define GETDATA "service@127.0.0.1:5062"
+
+
+//The call_oset and valo do not reinject the message
+//but recall the sl_co->call
+#define NONESTEDPW
+
+//Invert the get call_oset lock and release comap lok
+//should core if inverted
+//CORRECTNESS NOT PROOVED
+#define WRONGLOCKMGMT
+
+//uses two loks for call_oset server side and client side
+//CORRECTNESS NOT PROOVED
+#define SV_CL_MUTEX
+
+//Use the gobalmessagetable
+//#define USEMESSAGEMAP
+
+//The state machine will send the message directly to transport
+#define USEFASTSEND
+
+//The try is sent by SL_CC
+#define QUICKTRY
+
+//use map instead of calculating the modulus
+#define USEMAPMODUL
+
+//#define USETRYLOCK
+
+//Sudp threads
+//24
+#define SUDPTH 4
+
+//Max engine threads
+//128
+#define MAXTHREADS 32
+
+//128
+#define SIPENGINETH 32
+//64
+#define SIPENGINMAPS 16
+
+//64
+#define TRNSPRTTH 4
+//32
+#define TRNSPRTMAPS 2
+
+//128
+#define SL_CCTH 32
+//32
+#define SL_CCMAPS 16
+
+//#define ENGINEMAPS 5
+#define ALARMTH 32
+#define ALARMMAPS 16
+#define ALARMENGINE
+#define TRYMAXLOCKALARM 9
+#define INHIBITALARM
+
+#define COMAPS 50
+#define COMAPS_DIG 2
+#define ADDRESSPACE 5
+#define MESSAGEMAPS 50
+
+#define ARR 4000
 #define ARR_SHORT 30
-#define SPINC_MOD 10
-#define DOA_CLEANUP 1
-#define TIMER_DOA 4000000
-#define LOGINF
+#define SPINC_MOD 50
+
+#define DOA_CLEANUP 3
+#define TIMER_DOA 5000000
+
+
+#ifndef NOLOGATALL
 #define LOGMIN
+#define PROFILELOCK
+
+#define LOGSIPHIGH
+#define LOGSIPLOW
+#define LOGINF
 #define LOGDEV
 #define LOGMEM
+#define LOGINFMESSAGE
+#define LOGINFMESSAGE_MIN
+
+#define LOGINCOMAP_H
+
+//#define LOGINFSUDP
+//#define LOGINFCALLOSET
+#define LOGMIN
 #define LOGNTW
-#define ADDRESSPACE 8
-#define MESSAGEMAPS 20
-#define DEBCODE
-
-
+#define SELFCHECK
+//#define DEBCODE
+#define PROFILING
+//#define MESSAGEUSAGE
+#define DEBCODEALARM1
 //#define LOGLOK
+
+#endif
 #endif
 
 //Mandatory

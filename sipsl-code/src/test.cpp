@@ -161,6 +161,11 @@ int main(int argc, const char* argv[]) {
 		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
 		MainMessage->setValid(1);
 
+		char pippo[5];
+		strcpy(pippo,"abcd");
+		DEBOUT("pippo",pippo<<"]["<<&pippo<<"]["<<(&pippo)+1<<"]["<<(&pippo)+2)
+
+
 //		NEWPTR2(MainOset, CALL_OSET((ENGINE*)0x0, (TRNSPRT*)0x0, "", 0),"Main CallOset")
 
 
