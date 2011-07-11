@@ -38,7 +38,7 @@
 
 #include <stdio.h>
 
-//#define SPARC
+#define SPARC
 
 using namespace std;
 
@@ -158,7 +158,7 @@ class ThreadWrapper {
 #define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
 
-
+//#define NOLOGATALL
 #ifndef NOLOGATALL
 #define LOGMIN
 #define PROFILELOCK
@@ -171,13 +171,13 @@ class ThreadWrapper {
 #define LOGINFMESSAGE
 #define LOGINFMESSAGE_MIN
 
-#define LOGINCOMAP_H
+//#define LOGINCOMAP_H
 
 //#define LOGINFSUDP
 //#define LOGINFCALLOSET
-#define LOGMIN
-#define LOGNTW
-#define SELFCHECK
+//#define LOGMIN
+//#define LOGNTW
+//#define SELFCHECK
 //#define DEBCODE
 #define PROFILING
 //#define MESSAGEUSAGE
@@ -260,6 +260,7 @@ class ThreadWrapper {
 #define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
 
+#define NOLOGATALL
 
 #ifndef NOLOGATALL
 #define LOGMIN
@@ -432,6 +433,9 @@ class ThreadWrapper {
 		if (num >= min )DEBOUT("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")}
 #else
 #define PROFILE(m)
+#define TIMEDEF
+#define SETNOW
+#define PRINTDIFF(m)
 #endif
 //**********************************************************
 #ifdef LOGALO
