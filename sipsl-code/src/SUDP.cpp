@@ -238,11 +238,11 @@ void SUDP::listen(int _socknum) {
                 message->fillIn();
 
                 engine->p_w((void*)message);
-                PRINTDIFF("SUDP::listen() Message sent to SIPENGINE")
             }else {
                 DEBERROR("SUDP::listen() could not allocate memory for incoming message")
             }
         }
+        PRINTDIFF("SUDP::listen() Message sent to SIPENGINE")
     }
 }
 // *****************************************************************************************

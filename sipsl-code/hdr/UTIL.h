@@ -122,12 +122,12 @@ class ThreadWrapper {
 
 //Max engine threads
 //128
-#define MAXTHREADS 64
+#define MAXTHREADS 128
 
 //128
-#define SIPENGINETH 64
+#define SIPENGINETH 16
 //64
-#define SIPENGINMAPS 16
+#define SIPENGINMAPS 4
 
 //64
 #define TRNSPRTTH 8
@@ -135,9 +135,9 @@ class ThreadWrapper {
 #define TRNSPRTMAPS 2
 
 //128
-#define SL_CCTH 64
+#define SL_CCTH 128
 //32
-#define SL_CCMAPS 16
+#define SL_CCMAPS 32
 
 //#define ENGINEMAPS 5
 #define ALARMTH 64
@@ -157,6 +157,8 @@ class ThreadWrapper {
 
 #define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
+
+#define PROFILING
 
 #define NOLOGATALL
 #ifndef NOLOGATALL
@@ -179,7 +181,6 @@ class ThreadWrapper {
 //#define LOGNTW
 //#define SELFCHECK
 //#define DEBCODE
-#define PROFILING
 //#define MESSAGEUSAGE
 #define DEBCODEALARM1
 //#define LOGLOK
@@ -426,11 +427,11 @@ class ThreadWrapper {
 #define PRINTDIFF(m) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\
-		DEBOUT("PROFILE DIFFERENCE ", m << "]["<<num)}
+                BDEBUG("PROFILE DIFFERENCE ", m << "]["<<num)}
 #define PRINTDIFFMIN(m,min) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\
-		if (num >= min )DEBOUT("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")}
+		if (num >= min )BDEBUG("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")}
 #else
 #define PROFILE(m)
 #define TIMEDEF
