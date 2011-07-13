@@ -122,6 +122,7 @@ DAO* SL_CC::getDAO(void) {
 void SL_CC::parse(void* __mess, int _mmod){
 	DEBINF("void SL_CC::parse(void* __mess, int _mmod)", this<<"]["<<__mess<<"]["<<_mmod)
     RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
+
     PROFILE("SL_CC::parse() start")
     TIMEDEF
     SETNOW
