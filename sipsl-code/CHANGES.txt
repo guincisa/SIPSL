@@ -1,3 +1,11 @@
+13 luglio
+
+
+act_resend_ack troppo lenta
+mandare l'ack subito
+l'ack viene memorizzato e se arriva il 200ok di nuovo si accede alla sm di ack e lo
+si manda subito senza il doppio accesso alla calloset
+
 21 giugno
 con overload
 no allarmi

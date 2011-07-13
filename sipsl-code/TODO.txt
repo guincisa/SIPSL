@@ -1,3 +1,13 @@
+ISSUES
+
+13 luglio
+
+issue:
+se arriva il BYE A no sempre parte il 200ok
+perche OVERALLstate e' diverso
+
+
+
 TODO
 
 1. ottimizzare le getXXX dopo la compile message

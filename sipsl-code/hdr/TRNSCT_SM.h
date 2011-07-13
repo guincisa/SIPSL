@@ -221,6 +221,8 @@ class TRNSCT_SM_ACK_CL : public TRNSCT_SM {
 
 		TRNSCT_SM_ACK_CL(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
 
+		MESSAGE* ACKTOB;
+
 };
 //**********************************************************************************
 // TRANSACTION STATE MACHINE BYE SERVER
