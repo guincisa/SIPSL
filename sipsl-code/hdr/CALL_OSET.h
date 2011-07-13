@@ -69,7 +69,10 @@ class CALL_OSET {
 		// add transaction state machine
 		void addTrnsctSm(string method, int sode, string branch, TRNSCT_SM* trnsctSm);
 		// get transaction state machine
+	public:
 		TRNSCT_SM* getTrnsctSm(string method, int sode, string branch);
+
+	private:
 
 		void dumpTrnsctSm(void);
 

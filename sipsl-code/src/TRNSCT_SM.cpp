@@ -1396,15 +1396,27 @@ ACTION* act_resend_ack(SM_V6* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: take the 200OK change to send it to ack_cl
-	CREATEMESSAGE(reack, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
-	reack->setTypeOfInternal(TYPE_OP);
-	reack->setTypeOfOperation(TYPE_OP_SMCOMMAND);
-	//TODO need the branch!!!
-	reack->setGenericHeader("CSeq:","1 ACK");
-	reack->compileMessage();
-	reack->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId());
-	reack->setSourceModulus(((TRNSCT_SM*)_sm)->getMatrixMessage()->getModulus());
-	SingleAction sa_1 = SingleAction(reack);
+//	CREATEMESSAGE(reack, _message, SODE_TRNSCT_CL, SODE_TRNSCT_CL)
+//	reack->setTypeOfInternal(TYPE_OP);
+//	reack->setTypeOfOperation(TYPE_OP_SMCOMMAND);
+//	//TODO need the branch!!!
+//	reack->setGenericHeader("CSeq:","1 ACK");
+//	reack->compileMessage();
+//	reack->setSourceHeadCallId(((TRNSCT_SM*)_sm)->getMatrixMessage()->getHeadCallId());
+//	reack->setSourceModulus(((TRNSCT_SM*)_sm)->getMatrixMessage()->getModulus());
+//	SingleAction sa_1 = SingleAction(reack);
+//	action->addSingleAction(sa_1);
+
+	//Faster ACk resend
+	//Will not resend an event to access ACK_CL but it will dip it from it directly
+	//Look for ACKTOB and send it
+    string smid1 = "ACK";
+    string smid2 = _message->getViaBranch();
+    MESSAGE* temp = ((TRNSCT_SM_ACK_CL*)(_sm->getSL_CO()->call_oset->getTrnsctSm(smid1,SODE_TRNSCT_CL,smid2)))->ACKTOB;
+    if(temp ==MainMessage){
+    	DEBASSERT("totally wrong")
+    }
+	SingleAction sa_1 = SingleAction(temp);
 	action->addSingleAction(sa_1);
 
 	//**************************************
@@ -1715,6 +1727,9 @@ ACTION* act_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: ack is from ALO
 	CREATEMESSAGE(ack,_message, SODE_TRNSCT_CL,SODE_NTWPOINT)
+	((TRNSCT_SM_ACK_CL*)_sm)->ACKTOB = ack;
+	((TRNSCT_SM_ACK_CL*)_sm)->ACKTOB->setLock(_sm->getSL_CO()->call_oset);
+
 #ifdef USEFASTSEND
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(ack);
 #else
@@ -1774,6 +1789,7 @@ ACTION* act_resend_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 //**********************************************************************************
 TRNSCT_SM_ACK_CL::TRNSCT_SM_ACK_CL(int _requestType, MESSAGE* _matrixMess, MESSAGE* _A_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
 		TRNSCT_SM(_requestType, _matrixMess, _A_Matrix, _sl_cc, _sl_co){
+	ACKTOB = MainMessage;
 }
 ACTION* TRNSCT_SM_ACK_CL::event(MESSAGE* _message){
 
@@ -1991,7 +2007,8 @@ ACTION* TRNSCT_SM_BYE_SV::event(MESSAGE* _message){
 		}
 		//insert_move(1,&PA_BYE_1_1SV);
 		else if ( pre_bye_from_a((SM_V6*)this, _message)){
-			return act_null_sv((SM_V6*)this, _message);
+			//return act_null_sv((SM_V6*)this, _message);
+			return act_resend_200ok_to_a((SM_V6*)this, _message);
 		}
 		//insert_move(1,&PA_BYE_S_SV);
 		else if ( pre_timer_s_sv_bye((SM_V6*)this, _message)){

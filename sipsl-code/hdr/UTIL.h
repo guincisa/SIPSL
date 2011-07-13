@@ -158,7 +158,7 @@ class ThreadWrapper {
 #define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
 
-//#define NOLOGATALL
+#define NOLOGATALL
 #ifndef NOLOGATALL
 #define LOGMIN
 #define PROFILELOCK
