@@ -121,6 +121,11 @@ TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix,
 	else{
 		Matrix = _matrixMess;
 		A_Matrix = _a_Matrix;
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(sl_co->call_oset,_matrixMess->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset [" <<this<<"]["<<sl_co->call_oset<<" matrix["<<Matrix<<"]")
+		}
+#endif
 		Matrix->setLock(sl_co->call_oset);
 	}
 }
@@ -299,8 +304,15 @@ ACTION* act_invite_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	CREATEMESSAGE(etry, _message, SODE_TRNSCT_SV,SODE_NTWPOINT)
 	SipUtil.genTryFromInvite(_message, etry);
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1 = etry;
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock(_sm->getSL_CO()->call_oset);
-#ifdef USEFASTSEND
+
+	#ifdef USEFASTSEND
 #ifndef QUICKTRY //if defined, already sent
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(etry);
 #endif
@@ -432,6 +444,11 @@ ACTION* act_provreply_to_a(SM_V6* _sm, MESSAGE* _message) {
 	//Store the message to use it for retransmission
 	//cannot store the _message since I can't change destination
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 = m2netw;
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock(_sm->getSL_CO()->call_oset);
 #ifdef USEFASTSEND
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(m2netw);
@@ -510,6 +527,11 @@ ACTION* act_200ok_fwdto_a(SM_V6* _sm, MESSAGE* _message) {
 
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
 	//**************************************
 	//Action 1: Forward 200 OK to A
 	if( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 == MainMessage && _message->getReqRepType() == REPSUPP){
@@ -582,6 +604,13 @@ ACTION* act_200ok_refwdto_a(SM_V6* _sm, MESSAGE* _message) {
 		DEBASSERT("OK from alarm but STOREMESS_1_3 empty")
 	}
 	CREATEMESSAGE(mnetw, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_NTWPOINT)
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
+
 #ifdef USEFASTSEND
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(mnetw);
 #else
@@ -643,6 +672,13 @@ ACTION* act_200ok_resendto_a(SM_V6* _sm, MESSAGE* _message) {
 		DEBASSERT("OK from alarm but STOREMESS_1_3 empty")
 	}
 	CREATEMESSAGE(mnetw, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_NTWPOINT)
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
+
 #ifdef USEFASTSEND
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(mnetw);
 #else
@@ -1057,6 +1093,13 @@ ACTION* act_invite_to_b(SM_V6* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: send message to NTW
 	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_CL, SODE_NTWPOINT)
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
+
 #ifdef USEFASTSEND
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(m2netw);
 #else
@@ -1410,14 +1453,28 @@ ACTION* act_resend_ack(SM_V6* _sm, MESSAGE* _message) {
 	//Faster ACk resend
 	//Will not resend an event to access ACK_CL but it will dip it from it directly
 	//Look for ACKTOB and send it
-    string smid1 = "ACK";
-    string smid2 = _message->getViaBranch();
-    MESSAGE* temp = ((TRNSCT_SM_ACK_CL*)(_sm->getSL_CO()->call_oset->getTrnsctSm(smid1,SODE_TRNSCT_CL,smid2)))->ACKTOB;
-    if(temp ==MainMessage){
-    	DEBASSERT("totally wrong")
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
+	TRNSCT_SM_ACK_CL* ackcli = (TRNSCT_SM_ACK_CL*)_sm->getSL_CO()->call_oset->lastTRNSCT_SM_ACK_CL;
+
+    if (ackcli == 0x0){
+    	DEBY
+    	return action;
     }
-	SingleAction sa_1 = SingleAction(temp);
-	action->addSingleAction(sa_1);
+    else {
+    	MESSAGE* temp = ackcli->ACKTOB;
+    	DEBOUT("IT WORKS HERE",temp)
+        if(temp ==MainMessage){
+        	DEBASSERT("totally wrong")
+        }
+    	SingleAction sa_1 = SingleAction(temp);
+    	action->addSingleAction(sa_1);
+
+    }
 
 	//**************************************
 	//Action TIMER_S
@@ -1728,6 +1785,13 @@ ACTION* act_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 	//Action 1: ack is from ALO
 	CREATEMESSAGE(ack,_message, SODE_TRNSCT_CL,SODE_NTWPOINT)
 	((TRNSCT_SM_ACK_CL*)_sm)->ACKTOB = ack;
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
+
 	((TRNSCT_SM_ACK_CL*)_sm)->ACKTOB->setLock(_sm->getSL_CO()->call_oset);
 
 #ifdef USEFASTSEND
@@ -1777,6 +1841,13 @@ ACTION* act_resend_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 	//**************************************
 	//Action 1: send ack to B
 	CREATEMESSAGE(__message, ((TRNSCT_SM*)_sm)->getMatrixMessage(), SODE_TRNSCT_CL,SODE_NTWPOINT)
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
+
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(__message);
 //	SingleAction sa_1 = SingleAction(__message);
 //	action->addSingleAction(sa_1);
@@ -1847,10 +1918,18 @@ ACTION* act_bye_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	SipUtil.genQuickReplyFromInvite(_message, a200ok,"200 OK");
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE = a200ok;
 	DEBDEV("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
+
 	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
 #ifdef USEFASTSEND
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(a200ok);
 #else
+	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	SingleAction sa_2 = SingleAction(a200ok);
 	action->addSingleAction(sa_2);
 #endif
@@ -1867,10 +1946,11 @@ ACTION* act_bye_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	SingleAction sa_1 = SingleAction(by);
 	action->addSingleAction(sa_1);
 
-
-	CREATEMESSAGE(___message, ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE, SODE_TRNSCT_SV, SODE_KILLDOA)
-	SingleAction sa_3 = SingleAction(___message);
-	action->addSingleAction(sa_3);
+	//16 luglio
+	//???
+//	CREATEMESSAGE(___message, ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE, SODE_TRNSCT_SV, SODE_KILLDOA)
+//	SingleAction sa_3 = SingleAction(___message);
+//	action->addSingleAction(sa_3);
 
 
 	//**************************************
@@ -2096,6 +2176,13 @@ ACTION* act_bye_to_b(SM_V6* _sm, MESSAGE* _message) {
     //Action 1: send to NTW
     CREATEMESSAGE(_m,_message,SODE_TRNSCT_CL,SODE_NTWPOINT)
     _m->setSourceMessage(_message);
+
+#ifdef CHECKDOA
+		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		}
+#endif
+
 #ifdef USEFASTSEND
 	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(_m);
 #else
@@ -2142,9 +2229,16 @@ ACTION* act_200ok_bye_to_alo(SM_V6* _sm, MESSAGE* _message) {
 
 	//**************************************
 	//Action 1: send to ALO
-	CREATEMESSAGE(_m, _message, SODE_TRNSCT_CL, SODE_ALOPOINT)
-	SingleAction sa_1 = SingleAction(_m);
-	action->addSingleAction(sa_1);
+	//16 luglio
+//	CREATEMESSAGE(_m, _message, SODE_TRNSCT_CL, SODE_ALOPOINT)
+//	SingleAction sa_1 = SingleAction(_m);
+//	action->addSingleAction(sa_1);
+	//16 luglio
+	//???
+	CREATEMESSAGE(___message, _message, SODE_TRNSCT_CL, SODE_KILLDOA)
+	SingleAction sa_3 = SingleAction(___message);
+	action->addSingleAction(sa_3);
+
 
 	//**************************************
 	//Action 2: clear alarm

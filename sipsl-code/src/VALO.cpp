@@ -624,7 +624,7 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	//this shoudl go into call_oset call_idy
 	if (ctxt_store.find("callid_200ok_b") == ctxt_store.end()){
-		NEWPTR(string*, callid_200ok_b, string(_message->getGenericHeader("CallID:")),"callid_200ok_b")
+		NEWPTR(string*, callid_200ok_b, string(_message->getGenericHeader("Call-ID:")),"callid_200ok_b")
 		DEBALO("STORE CALL ID of 200 ok", callid_200ok_b)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
 	}

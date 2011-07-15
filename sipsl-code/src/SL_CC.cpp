@@ -95,11 +95,13 @@
 #endif
 
 static SIPUTIL SipUtil;
+extern COMAP* Comap;
 
 //**********************************************************************************
 //**********************************************************************************
 SL_CC::SL_CC(int _i, int _m, string _s):ENGINE(_i, _m, _s) {
     NEWPTR2(comap, COMAP(),"COMAP()")
+	Comap = comap;
 }
 COMAP* SL_CC::getCOMAP(void){
     return comap;
@@ -149,6 +151,7 @@ void SL_CC::parse(void* __mess, int _mmod){
 
         GETLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
 
+        //if deleted?!?!?!?!?
         call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
         //First try to get the Call object using x side parameters

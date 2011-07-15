@@ -84,6 +84,7 @@ pthread_mutex_t modulusMapMtx;
 #endif
 
 MESSAGE* MainMessage;
+COMAP* Comap;
 //CALL_OSET* MainOset;
 
 void ex_program(int sig) {
