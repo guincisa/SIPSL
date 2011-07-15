@@ -121,6 +121,9 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
     TIMEDEF
     SETNOW
 
+    //if deleted?!?!?!?!?
+
+
     if (_mod >= COMAPS){
             DEBASSERT("invalid comap index")
     }
@@ -136,6 +139,9 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
 
         if (getDoa(tmp,_mod)== DOA_REQUESTED){
             resetDoaRequestTimer(tmp,_mod);
+        }
+        if (getDoa(tmp,_mod) == DOA_DELETED){
+        	DEBASSERT("CALL_OSET* COMAP::getCALL_OSET_XMain fix this ["<<_callId_X << "] ["<<_mod<<"]")
         }
     }else {
         DEBCOMAP_L("COMAP::getCALL_OSET not found", _callId_X << "]["<<_mod)
@@ -176,6 +182,10 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
             if ( tmpDoa == DOA_REQUESTED){
                 resetDoaRequestTimer(tmp,_mod);
             }
+            if (getDoa(tmp,_mod) == DOA_DELETED){
+            	DEBASSERT("CALL_OSET* COMAP::getCALL_OSET_YDerived fix this ["<<_callId_Y << "] ["<<_mod<<"]")
+            }
+
         }else {
             DEBCOMAP_L("COMAP::getCALL_OSET Y-X not found", _callId_Y)
         }
@@ -279,6 +289,20 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     		sprintf(callIdtmp, "CoMap%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
     	}
     }
+    if(COMAPS_DIG == 4){
+    	if (_mod < 10){
+    		sprintf(callIdtmp, "CoMap000%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}
+    	else if (_mod < 100){
+    		sprintf(callIdtmp, "CoMap00%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}
+    	else if (_mod < 1000){
+    		sprintf(callIdtmp, "CoMap0%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}
+    	else{
+    		sprintf(callIdtmp, "CoMap%i%s@%s", _mod,_message->getKey().c_str(), _domain.c_str());
+    	}
+    }
 
     string callIdtmpS(callIdtmp);
     ret4 = call_id_y2x[_mod].insert(pair<string, string>(callIdtmpS, _callId_X));
@@ -318,6 +342,32 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
     PRINTDIFF("COMAP::setDoa end")
     return;
 }
+//**********************************************************************************
+//**********************************************************************************
+int COMAP::getDoaState(CALL_OSET* _call_oset, int _mod){
+	DEBCOMAP_L("int COMAP::getDoaState(CALL_OSET* _call_oset, int _mod)",this<<"]["<<_call_oset<<"]["<<_mod)
+
+    PROFILE("COMAP::getDoaState")
+    TIMEDEF
+    SETNOW
+
+    if (_mod >= COMAPS){
+        DEBASSERT("invalid comap index "<<_mod)
+    }
+
+    map<CALL_OSET*, int>::iterator p;
+    int tmp;
+    p = call_oset_doa_state[_mod].find(_call_oset);
+    if (p!=	call_oset_doa_state[_mod].end()){
+        tmp = (int)p->second;
+    }else {
+        tmp = DOA_DELETED;
+    }
+    DEBCOMAP_L("COMAP::getDoaState returns",_call_oset << "] ["<<_mod <<"][" << tmp )
+    PRINTDIFF("COMAP::getDoaState end")
+    return tmp;
+}
+
 int COMAP::getDoa(CALL_OSET* _call_oset, int _mod){
 	DEBCOMAP_L("int COMAP::getDoa(CALL_OSET* _call_oset, int _mod)",this<<"]["<<_call_oset<<"]["<<_mod)
 

@@ -80,6 +80,9 @@ class COMAP {
 
 		void purgeDOA(void);
 
+		int getDoaState(CALL_OSET*,int);
+
+
 		COMAP(void);
 		COMAP(const COMAP& x);
         ~COMAP(void);

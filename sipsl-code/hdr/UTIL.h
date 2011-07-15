@@ -95,12 +95,13 @@ class ThreadWrapper {
 
 //Invert the get call_oset lock and release comap lok
 //should core if inverted
-//CORRECTNESS NOT PROOVED
-#define WRONGLOCKMGMT
+//test shows that it is incorrect... don't uncomment
+//#define WRONGLOCKMGMT
 
 //uses two loks for call_oset server side and client side
-//CORRECTNESS NOT PROOVED
-#define SV_CL_MUTEX
+//if WRONGLOCKMGMT is commented then this one blocks the SIPSL
+//leave commented
+//#define SV_CL_MUTEX
 
 //Use the gobalmessagetable
 //#define USEMESSAGEMAP
@@ -118,35 +119,35 @@ class ThreadWrapper {
 
 //Sudp threads
 //24
-#define SUDPTH 8
+#define SUDPTH 4
 
 //Max engine threads
 //128
-#define MAXTHREADS 128
+#define MAXTHREADS 16
 
 //128
-#define SIPENGINETH 16
+#define SIPENGINETH 4
 //64
-#define SIPENGINMAPS 4
+#define SIPENGINMAPS 1
 
 //64
-#define TRNSPRTTH 8
+#define TRNSPRTTH 4
 //32
-#define TRNSPRTMAPS 2
+#define TRNSPRTMAPS 1
 
 //128
-#define SL_CCTH 128
+#define SL_CCTH 16
 //32
-#define SL_CCMAPS 32
+#define SL_CCMAPS 2
 
 //#define ENGINEMAPS 5
-#define ALARMTH 64
-#define ALARMMAPS 32
+#define ALARMTH 4
+#define ALARMMAPS 1
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
 #define INHIBITALARM
 
-#define COMAPS 500
+#define COMAPS 400
 #define COMAPS_DIG 3
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100
@@ -159,9 +160,12 @@ class ThreadWrapper {
 #define TIMER_DOA 5000000
 
 #define PROFILING
+#define PROFILELOCK
 
-#define NOLOGATALL
-#ifndef NOLOGATALL
+#define CHECKDOA
+
+//#define LOGLEVL1
+#ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
 
@@ -170,21 +174,28 @@ class ThreadWrapper {
 #define LOGINF
 #define LOGDEV
 #define LOGMEM
-#define LOGINFMESSAGE
+#define DEBCODEALARM1
 #define LOGINFMESSAGE_MIN
+#define LOGINFCALLOSET
+#endif
+
+//#define LOGLEVL2
+#ifdef LOGLEVL2
+#define LOGINFMESSAGE
+//#define LOGLOK
 
 //#define LOGINCOMAP_H
 
 //#define LOGINFSUDP
-//#define LOGINFCALLOSET
 //#define LOGMIN
 //#define LOGNTW
 //#define SELFCHECK
 //#define DEBCODE
 //#define MESSAGEUSAGE
-#define DEBCODEALARM1
-//#define LOGLOK
 #endif
+
+//willgo getDoa everytime a call to call_oset is done
+//needed to check is call_oset is deleted
 
 
 #else
@@ -431,7 +442,8 @@ class ThreadWrapper {
 #define PRINTDIFFMIN(m,min) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\
-		if (num >= min )BDEBUG("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")}
+		if (num >= min ){ BDEBUG("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")\
+			if (num > 10000) DEBASSERT("Waited too long")}}
 #else
 #define PROFILE(m)
 #define TIMEDEF
