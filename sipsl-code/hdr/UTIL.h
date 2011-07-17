@@ -38,7 +38,7 @@
 
 #include <stdio.h>
 
-#define SPARC
+//#define SPARC
 
 using namespace std;
 
@@ -202,19 +202,19 @@ class ThreadWrapper {
 
 #define GETDATA "service@127.0.0.1:5062"
 
-
 //The call_oset and valo do not reinject the message
 //but recall the sl_co->call
 #define NONESTEDPW
 
 //Invert the get call_oset lock and release comap lok
 //should core if inverted
-//CORRECTNESS NOT PROOVED
-#define WRONGLOCKMGMT
+//test shows that it is incorrect... don't uncomment
+//#define WRONGLOCKMGMT
 
 //uses two loks for call_oset server side and client side
-//CORRECTNESS NOT PROOVED
-#define SV_CL_MUTEX
+//if WRONGLOCKMGMT is commented then this one blocks the SIPSL
+//leave commented
+//#define SV_CL_MUTEX
 
 //Use the gobalmessagetable
 //#define USEMESSAGEMAP
@@ -236,12 +236,12 @@ class ThreadWrapper {
 
 //Max engine threads
 //128
-#define MAXTHREADS 32
+#define MAXTHREADS 16
 
 //128
-#define SIPENGINETH 32
+#define SIPENGINETH 4
 //64
-#define SIPENGINMAPS 16
+#define SIPENGINMAPS 2
 
 //64
 #define TRNSPRTTH 4
@@ -249,21 +249,21 @@ class ThreadWrapper {
 #define TRNSPRTMAPS 2
 
 //128
-#define SL_CCTH 32
+#define SL_CCTH 16
 //32
-#define SL_CCMAPS 16
+#define SL_CCMAPS 4
 
 //#define ENGINEMAPS 5
-#define ALARMTH 32
-#define ALARMMAPS 16
+#define ALARMTH 4
+#define ALARMMAPS 1
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
 #define INHIBITALARM
 
-#define COMAPS 50
-#define COMAPS_DIG 2
+#define COMAPS 400
+#define COMAPS_DIG 3
 #define ADDRESSPACE 5
-#define MESSAGEMAPS 50
+#define MESSAGEMAPS 100
 
 #define ARR 4000
 #define ARR_SHORT 30
@@ -272,9 +272,13 @@ class ThreadWrapper {
 #define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
 
-#define NOLOGATALL
+#define PROFILING
+#define PROFILELOCK
 
-#ifndef NOLOGATALL
+#define CHECKDOA
+
+//#define LOGLEVL1
+#ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
 
@@ -283,23 +287,30 @@ class ThreadWrapper {
 #define LOGINF
 #define LOGDEV
 #define LOGMEM
-#define LOGINFMESSAGE
-#define LOGINFMESSAGE_MIN
-
-#define LOGINCOMAP_H
-
-//#define LOGINFSUDP
-//#define LOGINFCALLOSET
-#define LOGMIN
-#define LOGNTW
-#define SELFCHECK
-//#define DEBCODE
-#define PROFILING
-//#define MESSAGEUSAGE
 #define DEBCODEALARM1
+#define LOGINFMESSAGE_MIN
+#define LOGINFCALLOSET
+#endif
+
+//#define LOGLEVL2
+#ifdef LOGLEVL2
+#define LOGINFMESSAGE
 //#define LOGLOK
 
+//#define LOGINCOMAP_H
+
+//#define LOGINFSUDP
+//#define LOGMIN
+//#define LOGNTW
+//#define SELFCHECK
+//#define DEBCODE
+//#define MESSAGEUSAGE
 #endif
+
+//willgo getDoa everytime a call to call_oset is done
+//needed to check is call_oset is deleted
+
+
 #endif
 
 //Mandatory
@@ -443,7 +454,7 @@ class ThreadWrapper {
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\
 		if (num >= min ){ BDEBUG("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")\
-			if (num > 10000) DEBASSERT("Waited too long")}}
+			if (num > 10000) BDEBUG("Waited too long","")}}
 #else
 #define PROFILE(m)
 #define TIMEDEF
