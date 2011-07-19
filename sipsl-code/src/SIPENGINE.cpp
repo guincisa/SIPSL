@@ -176,6 +176,6 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
         PURGEMESSAGE(_mess)
     }
 
-    PRINTDIFF("SIPENGINE::parse() end")
+    CALCPERF("SIPENGINE::parse() end",2)
 
 }

@@ -166,7 +166,8 @@ void TRNSPRT::parse(void* __message, int _mmod){
 	else {
 		DEBASSERT("Unexpected sending to network")
 	}
-        PRINTDIFF("TRNSPRT::downCall end ")
+	CALCPERF("TRNSPRT::downCall end",4)
+    //PRINTDIFF("TRNSPRT::downCall end ")
 }
 
 

@@ -38,7 +38,7 @@
 
 #include <stdio.h>
 
-//#define SPARC
+#define SPARC
 
 using namespace std;
 
@@ -118,27 +118,26 @@ class ThreadWrapper {
 //#define USETRYLOCK
 
 //Sudp threads
-//24
-#define SUDPTH 4
+#define SUDPTH 2
 
 //Max engine threads
 //128
-#define MAXTHREADS 16
+#define MAXTHREADS 4
 
 //128
 #define SIPENGINETH 4
 //64
-#define SIPENGINMAPS 1
+#define SIPENGINMAPS 4
 
 //64
 #define TRNSPRTTH 4
 //32
-#define TRNSPRTMAPS 1
+#define TRNSPRTMAPS 4
 
 //128
-#define SL_CCTH 16
+#define SL_CCTH 4
 //32
-#define SL_CCMAPS 2
+#define SL_CCMAPS 4
 
 //#define ENGINEMAPS 5
 #define ALARMTH 4
@@ -147,7 +146,7 @@ class ThreadWrapper {
 #define TRYMAXLOCKALARM 9
 #define INHIBITALARM
 
-#define COMAPS 400
+#define COMAPS 750
 #define COMAPS_DIG 3
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100
@@ -313,6 +312,8 @@ class ThreadWrapper {
 
 #endif
 
+
+
 //Mandatory
 
 #define TIME_S {SysTime mytime; gettimeofday(&mytime.tv, &mytime.tz);\
@@ -444,8 +445,8 @@ class ThreadWrapper {
 #ifdef PROFILING
 //#define PROFILE(m) DEBOUT("PROFILING",m)
 #define PROFILE(m)
-#define TIMEDEF SysTime mytime1111;
-#define SETNOW gettimeofday(&mytime1111.tv, &mytime1111.tz);
+#define TIMEDEF SysTime mytime1111,mytime3333;
+#define SETNOW gettimeofday(&mytime1111.tv, &mytime1111.tz);;
 #define PRINTDIFF(m) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\
@@ -455,6 +456,18 @@ class ThreadWrapper {
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\
 		if (num >= min ){ BDEBUG("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")\
 			if (num > 10000) BDEBUG("Waited too long","")}}
+
+#define CALCPERF(mess,n) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
+		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
+                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
+                if (PERFARRAY[0][n] <  num){ \
+                	PERFARRAY[0][n]  = num;}\
+                if (PERFARRAY[1][n] > num) {\
+                	PERFARRAY[1][n]  = num;}\
+                PERFARRAY[3][n] = (PERFARRAY[2][n] * PERFARRAY[3][n] + num ) / (PERFARRAY[2][n] + 1);\
+                PERFARRAY[2][n] ++; BDEBUG("CALCPERF ",mess <<" Avg["<<PERFARRAY[3][n]<<"] Min["<<PERFARRAY[1][n]<<"] Max["<<PERFARRAY[0][n])}
+
+
 #else
 #define PROFILE(m)
 #define TIMEDEF
