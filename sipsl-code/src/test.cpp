@@ -87,6 +87,14 @@ MESSAGE* MainMessage;
 COMAP* Comap;
 //CALL_OSET* MainOset;
 
+//Perf array
+//[0] max
+//[1] min
+//[2] measures
+//[3] average
+double PERFARRAY[4][50];
+
+
 void ex_program(int sig) {
 	DEBOUT("SIG", sig);
 	DEBASSERT("...")
@@ -151,6 +159,14 @@ int main(int argc, const char* argv[]) {
 
 
 	if (argc == 1){
+
+		//clear perfaray
+		for (int i = 0 ; i < 50 ; i ++){
+			PERFARRAY[0][i] = 0;
+			PERFARRAY[1][i] = 999999999;
+			PERFARRAY[2][i] = 0;
+			PERFARRAY[3][i] = 0;
+		}
 
 		//This message is used for consitency checks
 		//When a message is deleted, his pointer to set to MainMessage
