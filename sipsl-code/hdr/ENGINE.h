@@ -80,7 +80,7 @@ class ENGINE {
 #ifdef USE_SPINB
     	SPINB sb;
 #else
-    	SPINC* sb[MAXTHREADS];
+    	SPINC* sb[MAXMAPS];
 
 #endif
 

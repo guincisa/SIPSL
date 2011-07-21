@@ -1,5 +1,32 @@
 ISSUES
 
+20 luglio
+bool ENGINE::p_w_v2(void* _m) {
+
+	//put message in queue (already th safe)
+	//return
+}
+// p_w_v2
+// if there is a message
+// take message execute parse
+
+togliere il mutex nello spin, non serve
+comunque non dovrebbe influre molto
+
+per ogni thread calcolare il tempo di sleep
+= tot - attesa nei lock - tempo mimino di computazione
+il tempo di sleep indica che il th non ha cpu disponibile
+potrebbe spiegare perche se aumento i threads i tempi salgono
+
+provare pthread_getcpuclockid
+
+i controlli nella comap non funzionano...
+Assertion failed: 0, file c/TRNSCT_SM.cpp, line 310
+zsh: 16361 IOT instruction (core dumped)  ./SI |
+zsh: 16362 done                           tee log > /dev/null
+
+----------------
+
 13 luglio
 
 issue:

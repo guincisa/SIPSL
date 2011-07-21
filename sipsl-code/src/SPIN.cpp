@@ -325,22 +325,22 @@ bool SPINS::isEmpty(void){
 #else
 SPINC::SPINC(void) {
 
-	pthread_mutex_init(&spinm, NULL);
+	//pthread_mutex_init(&spinm, NULL);
     pthread_mutex_init(&condvarmutex, NULL);
     pthread_cond_init(&condvar, NULL);
 }
 bool SPINC::put(void* _message){
-    GETLOCK(&(spinm),"SPINC::spinm");
+    //GETLOCK(&(spinm),"SPINC::spinm",26);
 	Q.push(_message);
-    RELLOCK(&(spinm),"SPINC::spinm");
+    //RELLOCK(&(spinm),"SPINC::spinm");
     return true;
 }
 void* SPINC::get(void){
 	void* t;
-    GETLOCK(&(spinm),"SPINC::spinm");
+    //GETLOCK(&(spinm),"SPINC::spinm",27);
 	t = Q.front();
 	Q.pop();
-    RELLOCK(&(spinm),"SPINC::spinm");
+    //RELLOCK(&(spinm),"SPINC::spinm");
 	return t;
 }
 bool SPINC::isEmpty(void){
@@ -357,14 +357,14 @@ SPINS::SPINS(void) {
     pthread_cond_init(&condvar, NULL);
 }
 bool SPINS::put(void* _message){
-    GETLOCK(&(spinm),"SPINC::spinm");
+    GETLOCK(&(spinm),"SPINC::spinm",28);
 	Q.push(_message);
     RELLOCK(&(spinm),"SPINC::spinm");
     return true;
 }
 void* SPINS::get(void){
 	void* t;
-    GETLOCK(&(spinm),"SPINC::spinm");
+    GETLOCK(&(spinm),"SPINC::spinm",29);
 	t = Q.front();
 	Q.pop();
     RELLOCK(&(spinm),"SPINC::spinm");

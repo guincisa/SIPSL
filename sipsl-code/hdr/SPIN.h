@@ -98,7 +98,7 @@ class SPINC {
     private:
 
 		std::queue<void*> Q;
-		pthread_mutex_t spinm;
+		//pthread_mutex_t spinm;
 
     public:
         bool put(void*);

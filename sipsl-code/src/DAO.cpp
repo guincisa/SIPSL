@@ -107,7 +107,7 @@ string DAO::getData(string _data){
 
 
     map <string,string>::iterator it;
-	GETLOCK(&mutex,"DAO mutex")
+	GETLOCK(&mutex,"DAO mutex",19)
 	it = routingTable.find(_data);
 	RELLOCK(&mutex,"DAO mutex")
 
@@ -136,7 +136,7 @@ void DAO::parse(void* __mess, int _mmod) {
     m_l = com.commandTable.begin();
     while (m_l  != com.commandTable.end()){
         if (m_l->first == 1){
-            GETLOCK(&mutex,"DAO mutex")
+            GETLOCK(&mutex,"DAO mutex",20)
             DEBOUT("void DAO::parse",m_l->first << "]["<<((pair <string,string>)m_l->second).first<<"]["<<((pair <string,string>)m_l->second).second)
             routingTable.insert(make_pair( ((pair <string,string>)m_l->second).first,((pair <string,string>)m_l->second).second));
         	RELLOCK(&mutex,"DAO mutex")

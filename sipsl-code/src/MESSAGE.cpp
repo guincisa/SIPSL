@@ -858,7 +858,7 @@ int MESSAGE::getModulus(void){
 	}
 
 	map<const string, int>::iterator itm;
-    GETLOCK(&modulusMapMtx,"modulusMapMtx");
+    GETLOCK(&modulusMapMtx,"modulusMapMtx",23);
 	itm = modulusMap.find(s);
 	if(itm != modulusMap.end()){
 		RELLOCK(&modulusMapMtx,"modulusMapMtx")

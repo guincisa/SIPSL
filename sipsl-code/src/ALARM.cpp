@@ -179,7 +179,7 @@ void ALMGR::alarmer(int _mod){
         	trymaxlock = 0;
         }
 #else
-        GETLOCK(&mutex[_mod],"mutex "<<_mod);
+        GETLOCK(&mutex[_mod],"mutex "<<_mod,11);
 #endif
 
         if (!pq[_mod].empty()) {
@@ -303,7 +303,7 @@ void ALMGR::parse(void *__mess,int _mod){
 		string callid_alarm = _mess->getGenericHeader("Call-ID:") +
 				_mess->getViaBranch() +
 				"#" + _mess->getOrderOfOperation()+ "#";
-	    GETLOCK(&mutex[_mod],"mutex mod ["<<_mod);
+	    GETLOCK(&mutex[_mod],"mutex mod ["<<_mod,12);
 	    internalCancelAlarm(callid_alarm, _mod);
 	    RELLOCK(&mutex[_mod],"mutex"<<"] mod ["<<_mod);
 		if(!_mess->getLock()){
@@ -366,7 +366,7 @@ void ALMGR::insertAlarm(MESSAGE* _message, lli _fireTime, int _mod){
     	return -1;
     }
 #else
-    GETLOCK(&mutex[_mod]," ALARM log mutex mod "<<_mod)
+    GETLOCK(&mutex[_mod]," ALARM log mutex mod "<<_mod,13)
 #endif
 
 #ifdef CONSICHECK

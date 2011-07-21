@@ -149,7 +149,7 @@ void SL_CC::parse(void* __mess, int _mmod){
 
         DEBSIP("SL_CC::parse CALLOSET normal ID",callids<<"]["<<modulus)
 
-        GETLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
+        GETLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus,24);
 
         //if deleted?!?!?!?!?
         call_oset = comap->getCALL_OSET_XMain(callids, modulus);
@@ -293,7 +293,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         CALL_OSET* call_oset = 0x0;
 
         //COMAP locked here
-        GETLOCK(&(comap->unique_exx[modulus]) , "unique_exx" << modulus )
+        GETLOCK(&(comap->unique_exx[modulus]) , "unique_exx" << modulus ,25)
         call_oset = comap->getCALL_OSET_XMain(callids,modulus);
 
         if (call_oset == 0x0) {
