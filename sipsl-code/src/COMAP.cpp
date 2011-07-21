@@ -458,7 +458,7 @@ int COMAP::use_CALL_OSET_SL_CO_call(CALL_OSET* _call_oset, MESSAGE* _message, in
 		GETLOCK(&(_call_oset->mutex_cl),"&(_call_oset->mutex_cl)"<<&(_call_oset->mutex_cl));
 	}
 #else
-	GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex));
+	GETLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)"<<&(_call_oset->mutex),17);
 #endif
 	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
 #endif
@@ -482,7 +482,7 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
         DEBASSERT("invalid comap index "<<_mod)
     }
 
-    GETLOCK(&unique_exx[_mod],"unique_ex"<<_mod);
+    GETLOCK(&unique_exx[_mod],"unique_ex"<<_mod,18);
 
     resetDoaRequestTimer(_call_oset,_mod);
 

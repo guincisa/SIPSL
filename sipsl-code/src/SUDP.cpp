@@ -233,7 +233,6 @@ void SUDP::listen(int _socknum) {
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
 
-				//ENGINEMAPS
 				//problem if not sip...?
                 message->fillIn();
 
@@ -241,8 +240,8 @@ void SUDP::listen(int _socknum) {
             }else {
                 DEBERROR("SUDP::listen() could not allocate memory for incoming message")
             }
+            CALCPERF("SUDP::listen() Message sent to SIPENGINE",1)
         }
-        CALCPERF("SUDP::listen() Message sent to SIPENGINE",1)
     }
 }
 // *****************************************************************************************

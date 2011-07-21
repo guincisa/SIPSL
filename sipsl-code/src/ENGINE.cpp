@@ -103,6 +103,8 @@ ENGINE::ENGINE(int _i, int _em, string _type) {
 
 
     EngineMaps = _em;
+    if ( EngineMaps > MAXMAPS)
+    	EngineMaps = MAXMAPS;
 
     objectType = _type;
 
@@ -188,7 +190,7 @@ bool ENGINE::p_w(void* _m) {
 	int mmod = modEngineMap((MESSAGE*)_m);
     DEBDEV("bool ENGINE::p_w(void* _m) ", _m << "] modulus SP["<<mmod)
 
-    GETLOCK(&(sb[mmod]->condvarmutex),"[" << objectType << "] sb["<< mmod << "].condvarmutex");
+    GETLOCK(&(sb[mmod]->condvarmutex),"[" << objectType << "] sb["<< mmod << "].condvarmutex",21);
 
     SETNOW
 
@@ -201,45 +203,14 @@ bool ENGINE::p_w(void* _m) {
 
     sb[mmod]->put(_m);
     pthread_cond_signal(&(sb[mmod]->condvar));
-//    bool r = sb.put(_m);
-//    DEBDEV("ENGINE::p_w put returned",_m << " "<<r)
-//    if (!r){
-//    	DEBDEV("ENGINE::p_w put returned false","")
-//    }else {
-//        //Otherwise the message is parsed
-//        pthread_cond_signal(&(sb.condvar));
-//    }
-    PRINTDIFF("ENGINE"<<objectType<<"::p_w")
+
     RELLOCK(&(sb[mmod]->condvarmutex),objectType<<" sb["<< mod<<"].condvarmutex");
+    PRINTDIFF("ENGINE"<<objectType<<"::p_w")
+
     return true;
 
-
 }
-//**********************************************************************************
-//**********************************************************************************
-//bool ENGINE::p_w_s(void* _m) {
-//
-//    GETLOCK(&(rej.condvarmutex),"rej.condvarmutex");
-//    bool r = rej.put(_m);
-//    DEBDEV("ENGINE::p_w_s put returned",_m << " "<<r)
-//    if (!r){
-//    	DEBDEV("ENGINE::p_w_s put returned false", _m)
-//    }else {
-//        //Otherwise the message is parsed
-//        pthread_cond_signal(&(rej.condvar));
-//    }
-//    RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
-//    return r;
-//
-//}
-//void ENGINE::lockBuffer(void){
-//    DEBDEV("ENGINE::lockBuffer",this)
-//    sb.lockBuffer();
-//}
-//void ENGINE::unLockBuffer(void){
-//    DEBDEV("ENGINE::unLockBuffer",this)
-//    sb.unLockBuffer();
-//}
+
 
 //**********************************************************************************
 //**********************************************************************************
@@ -250,11 +221,21 @@ void * threadparser (void * _pt){
     ENGINE * ps = pt->ps;
     while(true) {
         DEBDEV("ENGINE thread",_pt)
-            GETLOCK(&(ps->sb[mmod]->condvarmutex),"ps->sb["<<mmod<<"].condvarmutex");
+            GETLOCK(&(ps->sb[mmod]->condvarmutex),"ps->sb["<<mmod<<"].condvarmutex",22);
+
+        //if empty will entere here and wait signal
         while(ps->sb[mmod]->isEmpty() ) {
             DEBDEV("ENGINE thread is empty",_pt)
+            //this be definition will unlock above lock while it waits
             pthread_cond_wait(&(ps->sb[mmod]->condvar), &(ps->sb[mmod]->condvarmutex));
+            //now here there is a message in queue
+            //get it and parse
         }
+        //if not empty will be here
+        //so get it and parse
+
+        //e' gia cosi...
+
         DEBDEV("ENGINE thread freed", _pt)
         void* m = ps->sb[mmod]->get();
 #ifdef USE_SPINB
@@ -317,4 +298,29 @@ void * threadparser (void * _pt){
 //#endif
 //    }
 //    return (NULL);
+//}
+//**********************************************************************************
+//**********************************************************************************
+//bool ENGINE::p_w_s(void* _m) {
+//
+//    GETLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+//    bool r = rej.put(_m);
+//    DEBDEV("ENGINE::p_w_s put returned",_m << " "<<r)
+//    if (!r){
+//    	DEBDEV("ENGINE::p_w_s put returned false", _m)
+//    }else {
+//        //Otherwise the message is parsed
+//        pthread_cond_signal(&(rej.condvar));
+//    }
+//    RELLOCK(&(rej.condvarmutex),"rej.condvarmutex");
+//    return r;
+//
+//}
+//void ENGINE::lockBuffer(void){
+//    DEBDEV("ENGINE::lockBuffer",this)
+//    sb.lockBuffer();
+//}
+//void ENGINE::unLockBuffer(void){
+//    DEBDEV("ENGINE::unLockBuffer",this)
+//    sb.unLockBuffer();
 //}

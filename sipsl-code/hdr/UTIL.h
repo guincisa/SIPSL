@@ -38,6 +38,8 @@
 
 #include <stdio.h>
 
+extern double PERFARRAY[4][50];
+
 #define SPARC
 
 using namespace std;
@@ -122,7 +124,8 @@ class ThreadWrapper {
 
 //Max engine threads
 //128
-#define MAXTHREADS 4
+#define MAXTHREADS 12
+#define MAXMAPS 12
 
 //128
 #define SIPENGINETH 4
@@ -146,7 +149,7 @@ class ThreadWrapper {
 #define TRYMAXLOCKALARM 9
 #define INHIBITALARM
 
-#define COMAPS 750
+#define COMAPS 999
 #define COMAPS_DIG 3
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100
@@ -160,6 +163,7 @@ class ThreadWrapper {
 
 #define PROFILING
 #define PROFILELOCK
+//#define PROFILELOCKCALC
 
 #define CHECKDOA
 
@@ -445,7 +449,7 @@ class ThreadWrapper {
 #ifdef PROFILING
 //#define PROFILE(m) DEBOUT("PROFILING",m)
 #define PROFILE(m)
-#define TIMEDEF SysTime mytime1111,mytime3333;
+#define TIMEDEF SysTime mytime1111;
 #define SETNOW gettimeofday(&mytime1111.tv, &mytime1111.tz);;
 #define PRINTDIFF(m) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
@@ -718,9 +722,20 @@ class ThreadWrapper {
 		r = pthread_mutex_trylock(m);\
 		DEBOUT("Trying lock result "<< r , m)
 #endif
+#ifdef PROFILELOCKCALC
+#undef GETLOCK
+#define GETLOCK(m,message,i) \
+    {TIMEDEF SETNOW pthread_mutex_lock(m); CALCPERF("Wait on lock " << message,i)}
+#undef RELLOCK
+#define RELLOCK(m,message) \
+		pthread_mutex_unlock(m);
+#undef TRYLOCK
+#define TRYLOCK(m,message,r)\
+		r = pthread_mutex_trylock(m);
+#endif
 #ifdef PROFILELOCK
 #undef GETLOCK
-#define GETLOCK(m,message) \
+#define GETLOCK(m,message,i) \
     {TIMEDEF SETNOW pthread_mutex_lock(m); PRINTDIFFMIN("Wait on lock " << message,10)}
 #undef RELLOCK
 #define RELLOCK(m,message) \

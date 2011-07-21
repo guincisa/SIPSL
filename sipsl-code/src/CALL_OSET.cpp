@@ -111,7 +111,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _mo
 	GETLOCK(&(mutex_sv),"CALL_OSET::mutex_sv");
 #else
 	pthread_mutex_init(&mutex, NULL);
-    GETLOCK(&(mutex),"CALL_OSET::mutex");
+    GETLOCK(&(mutex),"CALL_OSET::mutex",16);
 #endif
 
 	modulus = _modulus;
@@ -149,7 +149,7 @@ CALL_OSET::~CALL_OSET(void){
 	GETLOCK(&(mutex_cl),"CALL_OSET::mutex_cl");
 	GETLOCK(&(mutex_sv),"CALL_OSET::mutex_sv");
 #else
-    GETLOCK(&(mutex),"CALL_OSET::mutex");
+    GETLOCK(&(mutex),"CALL_OSET::mutex",15);
 #endif
 
 	DEBINFCALLOSET("CALL_OSET ACCESS CALL_OSET::~CALL_OSET begin", this)
@@ -259,7 +259,7 @@ CALL_OSET::~CALL_OSET(void){
 	//remove from mosulusMap
 #ifdef USEMAPMODUL
 	map<const string, int>::iterator itm;
-    GETLOCK(&modulusMapMtx,"modulusMapMtx");
+    GETLOCK(&modulusMapMtx,"modulusMapMtx",14);
 	itm = modulusMap.find(callId_X);
 	if(itm != modulusMap.end()){
 		modulusMap.erase(itm);
