@@ -78,9 +78,15 @@ map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
 pthread_mutex_t messTableMtx[MESSAGEMAPS];
 #endif
 #ifdef USEMAPMODUL
+#ifndef MAPMODULHYBRID
 map<const string, int> modulusMap;
 int modulusIter = 0;
 pthread_mutex_t modulusMapMtx;
+#else
+map<const string, int> modulusMap[PREMODMAP];
+int modulusIter[PREMODMAP];
+pthread_mutex_t modulusMapMtx[PREMODMAP];
+#endif
 #endif
 
 MESSAGE* MainMessage;

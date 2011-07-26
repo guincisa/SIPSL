@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<scenario name="branch_client">
+  <send retrans="1">
+
+    <![CDATA[
+      REGISTER sip:CA.cym.com SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: ua1 <sip:ua1@nnl.cym:[local_port]>;tag=[call_number]
+      To: ua1 <sip:ua1@nnl.cym:[local_port]>
+      Call-ID: [call_id]
+      CSeq: 1 REGISTER
+      Contact: sip:ua1@[local_ip]:[local_port]
+      Content-Length: 0
+      Expires: 300
+    ]]>
+  </send>
+  <!-- simple case - just jump over a line   -->
+
+  <recv response="100" rtd="true">
+  </recv>
+
+
+
+</scenario>

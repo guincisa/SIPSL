@@ -1,0 +1,1 @@
+sipp -nr -sf register.xml $mas:5060 -m $1 -rp 1000 -r $2

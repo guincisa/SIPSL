@@ -142,6 +142,7 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _mo
 	RELLOCK(&(mutex),"SL_CO::mutex");
 #endif
 }
+//**********************************************************************************
 CALL_OSET::~CALL_OSET(void){
 	DEBINFCALLOSET("CALL_OSET::~CALL_OSET(void)",this)
 
@@ -256,8 +257,9 @@ CALL_OSET::~CALL_OSET(void){
 	DELPTR(sl_co, "SL_CO")
 	DEBY
 
-	//remove from mosulusMap
+	//remove from modulusMap
 #ifdef USEMAPMODUL
+#ifndef MAPMODULHYBRID
 	map<const string, int>::iterator itm;
     GETLOCK(&modulusMapMtx,"modulusMapMtx",14);
 	itm = modulusMap.find(callId_X);
@@ -265,6 +267,37 @@ CALL_OSET::~CALL_OSET(void){
 		modulusMap.erase(itm);
 	}
 	RELLOCK(&modulusMapMtx,"modulusMapMtx")
+#else
+//	map<const string, int>::iterator itm;
+//    GETLOCK(&modulusMapMtx,"modulusMapMtx",14);
+//	itm = modulusMap.find(callId_X);
+//	if(itm != modulusMap.end()){
+//		modulusMap.erase(itm);
+//	}
+//	RELLOCK(&modulusMapMtx,"modulusMapMtx")
+
+
+	const char* st = callId_X.c_str();
+	int k = strlen(st) - 1;
+	if (k > 100){
+		k = 100;
+	}
+	long long int tot=0;
+	for (int i = 0; i < k ; i++){
+		tot =  (long long int) st[i] + tot;
+	}
+
+	int premod = tot % PREMODMAP;
+
+	map<const string, int>::iterator itm;
+    GETLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod,23);
+	itm = modulusMap[premod].find(callId_X);
+	if(itm != modulusMap[premod].end()){
+		modulusMap[premod].erase(itm);
+	}
+	RELLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod)
+
+	#endif
 #endif
 
 

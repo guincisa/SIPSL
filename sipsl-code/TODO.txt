@@ -1,5 +1,19 @@
 ISSUES
 
+22 luglio
+
+i controlli nella comap non funzionano...
+Assertion failed: 0, file c/TRNSCT_SM.cpp, line 310
+zsh: 16361 IOT instruction (core dumped)  ./SI |
+zsh: 16362 done                           tee log > /dev/null
+
+
+il collo sta tra due engines 
+se il chiamante ha molti threads rallenta un sacco...
+
+
+
+
 20 luglio
 bool ENGINE::p_w_v2(void* _m) {
 
@@ -19,6 +33,10 @@ il tempo di sleep indica che il th non ha cpu disponibile
 potrebbe spiegare perche se aumento i threads i tempi salgono
 
 provare pthread_getcpuclockid
+
+rifare modulo messaggio usare una soluzione ibrida tra funzione e mappe
+vedere prova.exe si calcola un modulo basso (10) e poi si cerca
+in una delle 10 mappe
 
 i controlli nella comap non funzionano...
 Assertion failed: 0, file c/TRNSCT_SM.cpp, line 310

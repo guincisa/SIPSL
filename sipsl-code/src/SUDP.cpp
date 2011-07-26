@@ -133,13 +133,14 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 
     doa = _doa;
 
-    /* Create socket for sending/receiving datagrams */
+    /* Create socket for sending datagrams */
 	for (int i = 0 ; i <SUDPTH ; i++){
 		if ((sock_se[i] = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 			DEBASSERT("socket() failed)")
 			return;
 		}
 	}
+    /* Create socket for receiving datagrams */
 	if ((sock_re = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 		DEBASSERT("socket() failed)")
 		return;
@@ -158,8 +159,15 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
     }
 #endif
 #ifdef USEMAPMODUL
+#ifndef MAPMODULHYBRID
 	pthread_mutex_init(&modulusMapMtx,NULL);
 	modulusIter = 0;
+#else
+	for (int zi = 0 ; zi < PREMODMAP ; zi ++){
+		pthread_mutex_init(&(modulusMapMtx[zi]),NULL);
+		modulusIter[zi] = 0;
+	}
+#endif
 #endif
 
     /* Bind to the local address */
@@ -183,9 +191,11 @@ void SUDP::start(void) {
     // allocate thread and starts
 
 	DEBINFSUDP("SUDP::start threads",SUDPTH)
-	SUDPtuple *t1[SUDPTH*2];
+	//SUDPtuple *t1[SUDPTH*2];
+	SUDPtuple *t1[SUDPTH];
 
-	for (int i = 0 ; i <(2*SUDPTH) ; i++){
+	//for (int i = 0 ; i <(2*SUDPTH) ; i++){
+	for (int i = 0 ; i < SUDPTH; i++){
 	    NEWPTR2(listenerThread[i], ThreadWrapper,"ThreadWrapper"<<i)
 
 	    NEWPTR2(t1[i], SUDPtuple,"SUDPtuple")
@@ -202,7 +212,7 @@ void SUDP::start(void) {
 // *****************************************************************************************
 // Listen to network
 // *****************************************************************************************
-void SUDP::listen(int _socknum) {
+void SUDP::listen(int _socknum) { //argument not used
 
     TIMEDEF
 
@@ -213,12 +223,13 @@ void SUDP::listen(int _socknum) {
         memset(&echoBuffer, 0x0, ECHOMAX);
         int recvMsgSize;
         int _sok;
-        if ( _socknum < SUDPTH ){
-        	_sok = sock_se[_socknum];
-        }
-        else {
-        	_sok = sock_re;
-        }
+//        if ( _socknum < SUDPTH ){
+//        	_sok = sock_se[_socknum];
+//        }
+//        else {
+//        	_sok = sock_re;
+//        }
+        _sok = sock_re;
         if ((recvMsgSize = recvfrom(_sok, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
             DEBERROR("SUDP::listen() recvfrom() failed")
@@ -229,7 +240,7 @@ void SUDP::listen(int _socknum) {
             PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
-            CREATENEWMESSAGE_EXT(message, echoBuffer, sock_se[_socknum], echoClntAddr, SODE_NTWPOINT)
+            CREATENEWMESSAGE_EXT(message, echoBuffer, _sok, echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
 
