@@ -164,7 +164,8 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
         	SipUtil.genTryFromInvite(_mess, etry);
         	getSUDP()->sendReply(etry);
         	//transport->p_w(etry);
-        } else{
+        }
+        else{
             transport->upCall(_mess, (SL_CC*)sl_cc);
         }
     }

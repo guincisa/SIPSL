@@ -121,7 +121,7 @@ class ThreadWrapper {
 //#define USETRYLOCK
 
 //Sudp threads
-#define SUDPTH 1
+#define SUDPTH 10
 
 //Max engine threads
 //128
@@ -129,9 +129,9 @@ class ThreadWrapper {
 #define MAXMAPS 20
 
 //128
-#define SIPENGINETH 5
+#define SIPENGINETH 4
 //64
-#define SIPENGINMAPS 1
+#define SIPENGINMAPS 4
 
 //64
 #define TRNSPRTTH 1
@@ -164,11 +164,13 @@ class ThreadWrapper {
 #define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
 
-#define PROFILING
+//#define PROFILING
 //#define PROFILELOCK
 //#define PROFILELOCKCALC
 
 #define CHECKDOA
+
+#define NOWARNINGS
 
 //#define LOGLEVL1
 #ifdef LOGLEVL1
@@ -338,9 +340,13 @@ class ThreadWrapper {
 #undef DEBASSERT
 #define DEBASSERT(m1)  {stringstream xx ; xx << "\n\nDEBASSERT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< "\n ************ \n"<< m1 << "\n ************ \n"; cout << xx.str();cout.flush();assert(0);}
 
+#ifndef NOWARNINGS
 #undef DEBWARNING
 #define DEBWARNING(m1,m2)  BDEBUG("******************************\n   WARNING   \n******************************\n"<<m1,m2)
-
+#else
+#undef DEBWARNING
+#define DEBWARNING(m1,m2)
+#endif
 
 //#define DEBASSERT(m1) {cout << "\n\nDEBASSERT [" << pthread_self() << "] "<< __FILE__ << " " << __LINE__<< " ******" << m1 << "*****" << endl<<endl<< endl; cout.flush();assert(0);}
 //**********************************************************
@@ -480,6 +486,7 @@ class ThreadWrapper {
 #define TIMEDEF
 #define SETNOW
 #define PRINTDIFF(m)
+#define CALCPERF(m1,m2)
 #endif
 //**********************************************************
 #ifdef LOGALO

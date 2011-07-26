@@ -93,6 +93,8 @@
 #include "SIPUTIL.h"
 #endif
 
+static SIPUTIL SipUtil;
+
 // *****************************************************************************************
 // Socket listener thread
 // *****************************************************************************************
@@ -247,7 +249,12 @@ void SUDP::listen(int _socknum) { //argument not used
 				//problem if not sip...?
                 message->fillIn();
 
-                engine->p_w((void*)message);
+            	CREATEMESSAGE(etry, message, SODE_TRNSCT_SV,SODE_NTWPOINT)
+            	SipUtil.genTryFromInvite(message, etry);
+            	sendReply(etry);
+
+                //engine->p_w((void*)message);
+
             }else {
                 DEBERROR("SUDP::listen() could not allocate memory for incoming message")
             }
