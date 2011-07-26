@@ -116,41 +116,44 @@ class ThreadWrapper {
 
 //use map instead of calculating the modulus
 #define USEMAPMODUL
+#define MAPMODULHYBRID
 
 //#define USETRYLOCK
 
 //Sudp threads
-#define SUDPTH 2
+#define SUDPTH 1
 
 //Max engine threads
 //128
-#define MAXTHREADS 12
-#define MAXMAPS 12
+#define MAXTHREADS 20
+#define MAXMAPS 20
 
 //128
-#define SIPENGINETH 4
+#define SIPENGINETH 5
 //64
-#define SIPENGINMAPS 4
+#define SIPENGINMAPS 1
 
 //64
-#define TRNSPRTTH 4
+#define TRNSPRTTH 1
 //32
-#define TRNSPRTMAPS 4
+#define TRNSPRTMAPS 1
 
 //128
-#define SL_CCTH 4
+#define SL_CCTH 1
 //32
-#define SL_CCMAPS 4
+#define SL_CCMAPS 1
 
 //#define ENGINEMAPS 5
-#define ALARMTH 4
+#define ALARMTH 1
 #define ALARMMAPS 1
 #define ALARMENGINE
 #define TRYMAXLOCKALARM 9
 #define INHIBITALARM
 
-#define COMAPS 999
-#define COMAPS_DIG 3
+//number of maps for message module when using MAPMODULHYBRID
+#define PREMODMAP 10
+#define COMAPS 2000
+#define COMAPS_DIG 4
 #define ADDRESSPACE 8
 #define MESSAGEMAPS 100
 
@@ -162,7 +165,7 @@ class ThreadWrapper {
 #define TIMER_DOA 5000000
 
 #define PROFILING
-#define PROFILELOCK
+//#define PROFILELOCK
 //#define PROFILELOCKCALC
 
 #define CHECKDOA
@@ -698,7 +701,7 @@ class ThreadWrapper {
 //**********************************************************
 //**********************************************************
 #undef GETLOCK
-#define GETLOCK(m,message) \
+#define GETLOCK(m,message,i) \
 		pthread_mutex_lock(m);
 #undef RELLOCK
 #define RELLOCK(m,message) \

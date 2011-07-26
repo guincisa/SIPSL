@@ -840,6 +840,8 @@ int MESSAGE::getModulus(void){
 	DEBINFMESSAGE("int MESSAGE::getModulus(void) modulus",this<<"]["<<modulus)
 	return modulus;
 #else
+#ifndef MAPMODULHYBRID
+
 	DEBINFMESSAGE("int MESSAGE::getModulus(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getModulus invalid")
@@ -872,6 +874,56 @@ int MESSAGE::getModulus(void){
 	RELLOCK(&modulusMapMtx,"modulusMapMtx")
 	DEBOUT("int MESSAGE::getModulus(void) modulus", modulus)
 	return modulus;
+#else
+
+	DEBINFMESSAGE("int MESSAGE::getModulus(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getModulus invalid")
+
+	if (modulus != -1){
+		DEBINFMESSAGE("int MESSAGE::getModulus(void)",this<<"]["<<modulus)
+		return modulus;
+	}
+	string s = getHeadCallId();
+	DEBOUT("int MESSAGE::getModulus(void) getHeadCallId", s)
+	if (s.substr(0,5).compare("CoMap") == 0){
+		modulus = atoi(s.substr(5,COMAPS_DIG).c_str());
+		DEBOUT("int MESSAGE::getModulus(void) comap", modulus)
+		return modulus;
+	}
+
+	const char* st = s.c_str();
+	int k = strlen(st) - 1;
+	if (k > 100){
+		k = 100;
+	}
+	long long int tot=0;
+	for (int i = 0; i < k ; i++){
+		tot =  (long long int) st[i] + tot;
+	}
+
+	int premod = tot % PREMODMAP;
+
+	map<const string, int>::iterator itm;
+    GETLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod,23);
+	itm = modulusMap[premod].find(s);
+	if(itm != modulusMap[premod].end()){
+		RELLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod)
+		DEBOUT("int MESSAGE::getModulus(void) itm->second", itm->second)
+		return itm->second;
+	}
+	modulus = modulusIter[premod];
+	modulusMap[premod].insert(make_pair(s,modulus));
+	modulusIter[premod]++;
+	modulusIter[premod] = modulusIter[premod] % COMAPS;
+	RELLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod)
+	DEBOUT("int MESSAGE::getModulus(void) modulus", modulus)
+	return modulus;
+
+
+
+
+#endif
 #endif
 }
 void MESSAGE::purgeSDP(void){
@@ -1650,7 +1702,8 @@ int MESSAGE::getReqRepType(void){
 		headSipRequest = "CANCEL";
 	}
 	else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
-		reqRep = REQUNSUPP;
+		reqRep = REQSUPP;
+		requestCode = REGISTER_REQUEST;
 		headSipRequest = "REGISTER";
 	}
 	else if(strncmp(message_line[0].first,"PD-SIPSL",8) == 0){

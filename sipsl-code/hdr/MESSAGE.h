@@ -686,9 +686,15 @@ extern map<const MESSAGE*, MESSAGE *> globalMessTable[MESSAGEMAPS];
 extern pthread_mutex_t messTableMtx[MESSAGEMAPS];
 #endif
 #ifdef USEMAPMODUL
+#ifndef MAPMODULHYBRID
 extern map<const string, int> modulusMap;
 extern int modulusIter;
 extern pthread_mutex_t modulusMapMtx;
+#else
+extern map<const string, int> modulusMap[PREMODMAP];
+extern int modulusIter[PREMODMAP];
+extern pthread_mutex_t modulusMapMtx[PREMODMAP];
+#endif
 #endif
 
 extern MESSAGE* MainMessage;

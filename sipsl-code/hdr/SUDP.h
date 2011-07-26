@@ -84,7 +84,8 @@ class SUDP {
     private:
 
         ENGINE* engine;
-        ThreadWrapper *listenerThread[2*SUDPTH];
+        ThreadWrapper *listenerThread[SUDPTH];
+        //ThreadWrapper *listenerThread[2*SUDPTH];
         string domain;
         int sock_se[SUDPTH];
         int sock_re;
