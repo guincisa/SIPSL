@@ -92,6 +92,9 @@
 #ifndef SIPUTIL_H
 #include "SIPUTIL.h"
 #endif
+#ifndef TRNSPRT_H
+#include "TRNSPRT.h"
+#endif
 
 static SIPUTIL SipUtil;
 
@@ -249,11 +252,13 @@ void SUDP::listen(int _socknum) { //argument not used
 				//problem if not sip...?
                 message->fillIn();
 
-            	CREATEMESSAGE(etry, message, SODE_TRNSCT_SV,SODE_NTWPOINT)
-            	SipUtil.genTryFromInvite(message, etry);
-            	sendReply(etry);
+//            	CREATEMESSAGE(etry, message, SODE_TRNSCT_SV,SODE_NTWPOINT)
+//            	SipUtil.genTryFromInvite(message, etry);
+//            	((SIPENGINE*)engine)->getTRNSPRT()->p_w((void*)etry);
+//            	//sendReply(etry);
+//            	PURGEMESSAGE(message)
 
-                //engine->p_w((void*)message);
+                engine->p_w((void*)message);
 
             }else {
                 DEBERROR("SUDP::listen() could not allocate memory for incoming message")

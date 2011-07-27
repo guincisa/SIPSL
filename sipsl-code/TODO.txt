@@ -1,5 +1,11 @@
 ISSUES
 
+27 luglio
+
+leak nella message
+dovrebbe essere la PURGEMESSAGE che non toglie il record dalla module map
+
+
 22 luglio
 
 i controlli nella comap non funzionano...
