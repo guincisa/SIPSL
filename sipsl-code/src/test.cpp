@@ -209,6 +209,7 @@ int main(int argc, const char* argv[]) {
 //		SIPENGINE gg(SIPENGINETH);
 		sipeng->setSL_CC(sl_cc);
 		sipeng->linkSUDP(mystack);
+		sipeng->linkTransport(transport);
 
 		sl_cc->linkSipEngine(sipeng);
 

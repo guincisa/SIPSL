@@ -50,6 +50,8 @@ class SIPENGINE : public ENGINE {
 
         void linkTransport(TRNSPRT*);
 
+        TRNSPRT* getTRNSPRT(void);
+
 
     private:
         //Second stage link to call control

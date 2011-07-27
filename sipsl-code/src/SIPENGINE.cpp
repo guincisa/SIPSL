@@ -111,6 +111,9 @@ ENGINE * SIPENGINE::getSL_CC(void){
 void SIPENGINE::linkTransport(TRNSPRT* _transport){
 	transport = _transport;
 }
+TRNSPRT* SIPENGINE::getTRNSPRT(void){
+	return transport;
+}
 
 //**********************************************************************************
 //**********************************************************************************

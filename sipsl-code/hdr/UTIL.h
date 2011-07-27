@@ -121,7 +121,7 @@ class ThreadWrapper {
 //#define USETRYLOCK
 
 //Sudp threads
-#define SUDPTH 10
+#define SUDPTH 2
 
 //Max engine threads
 //128
@@ -164,7 +164,7 @@ class ThreadWrapper {
 #define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
 
-//#define PROFILING
+#define PROFILING
 //#define PROFILELOCK
 //#define PROFILELOCKCALC
 
