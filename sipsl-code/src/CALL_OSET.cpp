@@ -276,18 +276,7 @@ CALL_OSET::~CALL_OSET(void){
 //	}
 //	RELLOCK(&modulusMapMtx,"modulusMapMtx")
 
-
-	const char* st = callId_X.c_str();
-	int k = strlen(st) - 1;
-	if (k > 100){
-		k = 100;
-	}
-	long long int tot=0;
-	for (int i = 0; i < k ; i++){
-		tot =  (long long int) st[i] + tot;
-	}
-
-	int premod = tot % PREMODMAP;
+	int premod = getPreModulus(callId_X.c_str());
 
 	map<const string, int>::iterator itm;
     GETLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod,23);

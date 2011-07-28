@@ -140,8 +140,13 @@ void DAO::parse(void* __mess, int _mmod) {
             DEBOUT("void DAO::parse",m_l->first << "]["<<((pair <string,string>)m_l->second).first<<"]["<<((pair <string,string>)m_l->second).second)
             routingTable.insert(make_pair( ((pair <string,string>)m_l->second).first,((pair <string,string>)m_l->second).second));
         	RELLOCK(&mutex,"DAO mutex")
+            //tutto su umft1:
             //PD-SIPSL
             //i%service@10.21.99.79:5062%service@10.21.99.79:5062
+            //send
+            //sipp on umft2:
+            //PD-SIPSL
+            //i%service@10.21.99.79:5062%service@10.21.99.81:5062
             //send
 
         }

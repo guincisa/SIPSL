@@ -90,6 +90,7 @@ class ThreadWrapper {
 #ifdef SPARC
 
 #define GETDATA "service@10.21.99.79:5062"
+//#define GETDATA "service@10.21.99.81:5062"
 
 //The call_oset and valo do not reinject the message
 //but recall the sl_co->call
@@ -121,7 +122,8 @@ class ThreadWrapper {
 //#define USETRYLOCK
 
 //Sudp threads
-#define SUDPTH 2
+// its x 2
+#define SUDPTH 1
 
 //Max engine threads
 //128
@@ -200,6 +202,14 @@ class ThreadWrapper {
 //#define SELFCHECK
 //#define DEBCODE
 //#define MESSAGEUSAGE
+#endif
+
+//#define SHOWFLOWLOG
+#ifdef SHOWFLOWLOG
+#undef NOWARNINGS
+#define LOGMIN
+#define LOGDEV
+#define LOGSIPHIGH
 #endif
 
 //willgo getDoa everytime a call to call_oset is done
@@ -783,4 +793,15 @@ inline string b2S(bool _b){
         return "true";
     else
         return "false";
+}
+inline int getPreModulus(const char* st) {
+	int k = strlen(st) - 1;
+	if (k > 100){
+		k = 100;
+	}
+	long long int tot=0;
+	for (int i = 0; i < k ; i++){
+		tot =  (long long int) st[i] + tot;
+	}
+	return tot % PREMODMAP;
 }
