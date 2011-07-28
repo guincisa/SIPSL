@@ -504,7 +504,7 @@ void COMAP::setDoaRequested(CALL_OSET* _call_oset, int _mod) {
     return;
 
 }
-void COMAP::purgeDOA(void){
+void COMAP::purgeDOA(int _comapset){
 	DEBCOMAP_L("void COMAP::purgeDOA(void)",this)
 
     PROFILE("COMAP::purgeDOA")
@@ -513,13 +513,16 @@ void COMAP::purgeDOA(void){
 
     int mod;
 
-    for ( mod=0; mod< COMAPS; mod++){
+	int ex1 = _comapset * COMAPS / DOATH;
+	int ex2 = _comapset * COMAPS / DOATH + COMAPS / DOATH - 1;
+
+    for ( mod= ex1; mod < ex2; mod++){
         map<string, CALL_OSET*>::iterator p_comap_mm;
         CALL_OSET* call_oset;
         stack<string> todel_cx;
 
-        if (mod >= COMAPS){
-            DEBASSERT("invalid comap index "<<mod)
+        if (mod >= ex2){
+            DEBASSERT("invalid comap index "<<mod << "] ex2["<<ex2)
         }
         int trylok;
         TRYLOCK(&unique_exx[mod]," purgeDOA unique_exx"<<mod, trylok)

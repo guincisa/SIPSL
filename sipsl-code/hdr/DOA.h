@@ -25,17 +25,17 @@ class DOA {
     public:
 
 	void init(void);
-	void doa(void);
+	void doa(int);
 	DOA(SL_CC* sl_cc, __time_t sec, long int nsec);
 
 
     private:
 
-    pthread_mutex_t mutex;
+    //pthread_mutex_t mutex;
 
 	timespec sleep_time;
 	SL_CC* sl_cc;
 
-    ThreadWrapper *listenerThread;
+    ThreadWrapper *listenerThread[DOATH];
 
 };

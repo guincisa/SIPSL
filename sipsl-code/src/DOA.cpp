@@ -83,6 +83,7 @@
 //**********************************************************************************
 typedef struct tuple2 {
 	DOA* st;
+	int map;
 } DOAtuple;
 //**********************************************************************************
 extern "C" void* DOASTACK (void*);
@@ -95,7 +96,7 @@ void * DOASTACK(void *_tgtObject) {
 
 		DOAtuple *tgtObject = (DOAtuple *)_tgtObject;
 
-    tgtObject->st->doa();
+    tgtObject->st->doa(tgtObject->map);
 
     DEBDEV("DOASTACK started","")
 
@@ -112,26 +113,29 @@ DOA::DOA(SL_CC* _sl_cc, __time_t _sec, long int _nsec){
 void DOA::init(void) {
 	DEBDEV("DOA::init", "init")
 
-    NEWPTR2(listenerThread,ThreadWrapper,"ThreadWrapper");
-	DOAtuple *t1;
-    NEWPTR2(t1,DOAtuple,"DOAtuple");
-    t1->st = this;
     int res;
-    res = pthread_create(&(listenerThread->thread), NULL, DOASTACK, (void *) t1 );
+    for (int i = 0 ; i < DOATH; i ++){
+    	DOAtuple *t1;
+        NEWPTR2(t1,DOAtuple,"DOAtuple");
+        t1->st = this;
+        NEWPTR2(listenerThread[i],ThreadWrapper,"ThreadWrapper");
+    	t1->map = i;
+    	res = pthread_create(&(listenerThread[i]->thread), NULL, DOASTACK, (void *) t1 );
+    }
 
     //TODO check consistency!!!
-    pthread_mutex_init(&mutex, NULL);
+    //pthread_mutex_init(&mutex, NULL);
 
 	DEBDEV("DOA::init", "started")
     return;
 
-}void DOA::doa(void) {
+}void DOA::doa(int _map) {
 
 	for(;;) {
 		nanosleep(&sleep_time,NULL);
 		DEBDEV("DOA::doa", "started")
 		//DUMPMESSTABLE
-		sl_cc->getCOMAP()->purgeDOA();
+		sl_cc->getCOMAP()->purgeDOA(_map);
 	}
 
 }
