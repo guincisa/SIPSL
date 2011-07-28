@@ -78,7 +78,7 @@ class COMAP {
 		void use_CALL_OSET_setCallId_Y(CALL_OSET*, string _cally,int);
 		void setDoaRequested(CALL_OSET*,int);
 
-		void purgeDOA(void);
+		void purgeDOA(int comapset);
 
 		int getDoaState(CALL_OSET*,int);
 

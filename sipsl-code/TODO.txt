@@ -1,5 +1,8 @@
 ISSUES
 
+28 luglio 
+dividere la doa in + trheads
+
 27 luglio
 
 leak nella message

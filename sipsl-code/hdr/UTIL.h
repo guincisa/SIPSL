@@ -165,6 +165,8 @@ class ThreadWrapper {
 
 #define DOA_CLEANUP 3
 #define TIMER_DOA 5000000
+//COMAPS must be divisble by DOATH
+#define DOATH 2
 
 #define PROFILING
 //#define PROFILELOCK
