@@ -106,6 +106,7 @@ extern "C" void* SUPDSTACK (void*);
 
 void * SUDPSTACK(void *_tgtObject) {
 
+	BDEBUG("SUDPSTACK thread id",pthread_self())
 	DEBINFSUDP("SUDPSTACK start","")
 
     SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
@@ -196,11 +197,9 @@ void SUDP::start(void) {
     // allocate thread and starts
 
 	DEBINFSUDP("SUDP::start threads",SUDPTH)
-	//SUDPtuple *t1[SUDPTH*2];
-	SUDPtuple *t1[SUDPTH];
+	SUDPtuple *t1[SUDPTH*2];
 
-	//for (int i = 0 ; i <(2*SUDPTH) ; i++){
-	for (int i = 0 ; i < SUDPTH; i++){
+	for (int i = 0 ; i <(2*SUDPTH) ; i++){
 	    NEWPTR2(listenerThread[i], ThreadWrapper,"ThreadWrapper"<<i)
 
 	    NEWPTR2(t1[i], SUDPtuple,"SUDPtuple")
@@ -228,13 +227,12 @@ void SUDP::listen(int _socknum) { //argument not used
         memset(&echoBuffer, 0x0, ECHOMAX);
         int recvMsgSize;
         int _sok;
-//        if ( _socknum < SUDPTH ){
-//        	_sok = sock_se[_socknum];
-//        }
-//        else {
-//        	_sok = sock_re;
-//        }
-        _sok = sock_re;
+        if ( _socknum < SUDPTH ){
+        	_sok = sock_se[_socknum];
+        }
+        else {
+        	_sok = sock_re;
+        }
         if ((recvMsgSize = recvfrom(_sok, echoBuffer, ECHOMAX, 0,
             (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
             DEBERROR("SUDP::listen() recvfrom() failed")

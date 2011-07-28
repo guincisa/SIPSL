@@ -892,17 +892,7 @@ int MESSAGE::getModulus(void){
 		return modulus;
 	}
 
-	const char* st = s.c_str();
-	int k = strlen(st) - 1;
-	if (k > 100){
-		k = 100;
-	}
-	long long int tot=0;
-	for (int i = 0; i < k ; i++){
-		tot =  (long long int) st[i] + tot;
-	}
-
-	int premod = tot % PREMODMAP;
+	int premod = getPreModulus(s.c_str());
 
 	map<const string, int>::iterator itm;
     GETLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod,23);

@@ -163,6 +163,7 @@ int main(int argc, const char* argv[]) {
 	 (void) signal(SIGSEGV, ex_program);
          (void) signal(SIGBUS, ex_program);
 
+	BDEBUG("SIPSL main thread",pthread_self())
 
 	if (argc == 1){
 
@@ -214,7 +215,7 @@ int main(int argc, const char* argv[]) {
 		sl_cc->linkSipEngine(sipeng);
 
 		//data layer
-		NEWPTR(DAO*, daog, DAO(2,1,"DAO"), "DAO")
+		NEWPTR(DAO*, daog, DAO(1,1,"DAO"), "DAO")
 		sipeng->setDAO(daog);
 		sl_cc->setDAO(daog);
 

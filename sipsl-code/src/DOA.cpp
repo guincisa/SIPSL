@@ -89,6 +89,8 @@ extern "C" void* DOASTACK (void*);
 //**********************************************************************************
 void * DOASTACK(void *_tgtObject) {
 
+	BDEBUG("DOASTACK thread id",pthread_self())
+
     DEBDEV("DOASTACK start","")
 
 		DOAtuple *tgtObject = (DOAtuple *)_tgtObject;

@@ -142,11 +142,13 @@ ENGINE::ENGINE(int _i, int _em, string _type) {
 			t[k]->ps = this;
 			t[k]->id = 0;
 			t[k]->mmod = i;
+			t[k]->type = objectType.c_str();
 
 
 			NEWPTR2(parsethread[k], ThreadWrapper(), "ThreadWrapper()"<<k)
 
 			res = pthread_create(&(parsethread[k]->thread), NULL, threadparser, (void *) t[k]);
+
 
 			k ++;
 
@@ -215,8 +217,9 @@ bool ENGINE::p_w(void* _m) {
 void * threadparser (void * _pt){
 
     ENGtuple *pt = (ENGtuple *)  _pt;
-    int mmod = ((ENGtuple *)  _pt)->mmod;
+    int mmod = pt->mmod;
     ENGINE * ps = pt->ps;
+	BDEBUG("ENGINE TRHEAD CREATED ",pt->type <<"] id ["<<pthread_self())
     while(true) {
         DEBDEV("ENGINE thread",_pt)
             GETLOCK(&(ps->sb[mmod]->condvarmutex),"ps->sb["<<mmod<<"].condvarmutex",22);
