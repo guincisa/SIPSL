@@ -141,9 +141,9 @@ class ThreadWrapper {
 #define TRNSPRTMAPS 1
 
 //128
-#define SL_CCTH 1
+#define SL_CCTH 6
 //32
-#define SL_CCMAPS 1
+#define SL_CCMAPS 6
 
 //#define ENGINEMAPS 5
 #define ALARMTH 1
@@ -163,7 +163,9 @@ class ThreadWrapper {
 #define ARR_SHORT 30
 #define SPINC_MOD 50
 
-#define DOA_CLEANUP 3
+//intervallo attesa loop secs
+#define DOA_CLEANUP 10
+//time before object moves to deleted
 #define TIMER_DOA 5000000
 //COMAPS must be divisble by DOATH
 #define DOATH 2
@@ -206,7 +208,7 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-//#define SHOWFLOWLOG
+#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN

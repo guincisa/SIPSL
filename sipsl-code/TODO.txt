@@ -1,5 +1,23 @@
 ISSUES
 
+umft2
+PD-SIPSL
+i%10.21.99.81:5062%service@10.21.99.81:5062
+send
+umft1
+PD-SIPSL
+i%10.21.99.79:5062%service@10.21.99.79:5062
+send
+
+umf1 - mas set
+export mas=10.21.99.67
+export umf=10.21.99.79
+
+umf2 - mas set
+export mas=10.21.99.67
+export umf=10.21.99.81
+
+
 28 luglio 
 dividere la doa in + trheads
 
