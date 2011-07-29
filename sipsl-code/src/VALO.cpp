@@ -172,7 +172,15 @@ void VALO::onInvite(MESSAGE* _message){
 	}
 
 	DEBY
-	string ss = ((SL_CC*)sl_cc)->getDAO()->getData(GETDATA);
+	string sss = _message->getUri("REQUEST").first;
+	int ppp = _message->getUri("REQUEST").second;
+	DEBOUT("indirizzo request", sss << "] ["<<ppp)
+	stringstream css;
+	css << sss;
+	css << ":";
+	css <<ppp;
+	string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
+
 	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",ss)
 	stringstream tmps ;
 	tmps << "INVITE sip:"<< ss <<" SIP/2.0";
@@ -292,10 +300,24 @@ void VALO::onAck(MESSAGE* _message){
 		DEBALO("Exception ", e.getMessage())
 	}
 
-	//Change request
+	string sss = _message->getUri("REQUEST").first;
+	int ppp = _message->getUri("REQUEST").second;
+	DEBOUT("indirizzo request", sss << "] ["<<ppp)
+	stringstream css;
+	css << sss;
+	css << ":";
+	css <<ppp;
+	string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
+
+	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",ss)
 	stringstream tmps ;
-	tmps << "ACK sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
+	tmps << "ACK sip:"<< ss <<" SIP/2.0";
 	newack->setHeadSipRequest(tmps.str());
+
+//	//Change request
+//	stringstream tmps ;
+//	tmps << "ACK sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
+//	newack->setHeadSipRequest(tmps.str());
 
 	//Purge SDP
 	newack->purgeSDP();
@@ -487,9 +509,24 @@ void VALO::onBye(MESSAGE* _message){
 
 		//message->setDestEntity(SODE_TRNSCT_CL);
 
-		stringstream tmps;
-		tmps << "BYE sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
+//		stringstream tmps;
+//		tmps << "BYE sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
+//		message->setHeadSipRequest(tmps.str());
+
+		string sss = _message->getUri("REQUEST").first;
+		int ppp = _message->getUri("REQUEST").second;
+		DEBOUT("indirizzo request", sss << "] ["<<ppp)
+		stringstream css;
+		css << sss;
+		css << ":";
+		css <<ppp;
+		string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
+
+		DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",ss)
+		stringstream tmps ;
+		tmps << "BYE sip:"<< ss <<" SIP/2.0";
 		message->setHeadSipRequest(tmps.str());
+
 
 		stringstream viatmp;
 		viatmp << "SIP/2.0/UDP "<<getSUDP()->getDomain().c_str()<<":"<<getSUDP()->getPort()<<";branch=z9hG4bK"<<message->getKey()<<";rport";
@@ -531,6 +568,8 @@ void VALO::onBye(MESSAGE* _message){
 
 	}
 	else if (_message->getRequestDirection() == SODE_BKWD ) {
+
+		DEBASSERT("implement!!!!")
 
 		map<string, void*> ::iterator p;
 		p = ctxt_store.find("invite_a");
