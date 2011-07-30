@@ -3,6 +3,11 @@ ISSUES
 
 Luglio 30
 
+OM-SIPSL
+dump comap
+
+scarica nel log tutti gli oggetti ancora aperti e il loro overall state
+
 http://download.oracle.com/docs/cd/E18752_01/html/816-5137/ggfbr.html
 
 umft2
