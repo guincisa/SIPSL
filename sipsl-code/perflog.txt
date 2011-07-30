@@ -1,4 +1,11 @@
 performance su linux
+
+
+con ritrasmissioni
+1060 cps forse poco meno
+
+
+
 400/s
 cpu (top) 100-120%
 
@@ -338,3 +345,5 @@ guic      7461  7479  8.8   18 29.9 2813568 2406872 pts/1 Sl+  20:38   8:28 ./SI
 
 
 1100cps
+
+
