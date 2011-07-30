@@ -300,8 +300,8 @@ void VALO::onAck(MESSAGE* _message){
 		DEBALO("Exception ", e.getMessage())
 	}
 
-	string sss = _message->getUri("REQUEST").first;
-	int ppp = _message->getUri("REQUEST").second;
+	string sss = newack->getUri("REQUEST").first;
+	int ppp = newack->getUri("REQUEST").second;
 	DEBOUT("indirizzo request", sss << "] ["<<ppp)
 	stringstream css;
 	css << sss;

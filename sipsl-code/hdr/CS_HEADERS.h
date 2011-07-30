@@ -84,11 +84,12 @@ inline vector<string> brkSpaces(string s) {
 
 	vector<string> output;
 
-	char* tok = strtok(st, " ");
+	char *saveptr1;
+	char* tok = strtok_r(st, " ", &saveptr1);
 
 	while (tok != NULL){
 		output.push_back(tok);
-		tok = strtok(NULL, " ");
+		tok = strtok_r(NULL, " ",&saveptr1);
 	}
 	return output;
 

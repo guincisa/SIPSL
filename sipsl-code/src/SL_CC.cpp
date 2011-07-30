@@ -133,7 +133,7 @@ void SL_CC::parse(void* __mess, int _mmod){
 	MESSAGE* _mess = (MESSAGE*)__mess;
 
     DEBDEV("SL_CC::parse", _mess)
-    DEBMESSAGESHORT("SL_CC::parse", _mess)
+    DEBMESSAGE("SL_CC::parse", _mess)
 
     if (_mess == MainMessage){
         DEBASSERT("_mess == MainMessage")

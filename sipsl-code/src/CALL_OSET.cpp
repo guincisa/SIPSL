@@ -557,6 +557,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
 
     //Message is going to Server SM
     int dest = _message->getDestEntity();
+    _message->dumpMessageBuffer();
 
     if (dest == SODE_TRNSCT_SV) {
 
