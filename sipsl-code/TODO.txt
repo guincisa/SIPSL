@@ -1,5 +1,10 @@
 ISSUES
 
+
+Luglio 30
+
+http://download.oracle.com/docs/cd/E18752_01/html/816-5137/ggfbr.html
+
 umft2
 PD-SIPSL
 i%10.21.99.81:5062%service@10.21.99.81:5062
@@ -8,6 +13,12 @@ umft1
 PD-SIPSL
 i%10.21.99.79:5062%service@10.21.99.79:5062
 send
+
+suse
+PD-SIPSL
+i%127.0.0.1:5062%service@127.0.0.1:5062
+send
+
 
 umf1 - mas set
 export mas=10.21.99.67

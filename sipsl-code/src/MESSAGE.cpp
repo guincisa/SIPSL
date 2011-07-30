@@ -398,15 +398,19 @@ int MESSAGE::fillIn(void){
 
 	//messageStatus == 0
 	//serve???
+	DEBINFMESSAGE("****************** original message",original_message)
 	NEWPTR2(message_char, char[strlen(original_message)+1],"message_char "<<strlen(original_message)+1)
 	strcpy(message_char, original_message);
+	DEBINFMESSAGE("****************** message_char",message_char)
 
 	_clearStatus();
 
 
 	bool fillSDP = false;
-	char* tok = strtok(message_char, "\n");
+	char *saveptr1;
+	char* tok = strtok_r(message_char, "\n",&saveptr1);
 	while (tok != NULL){
+		DEBINFMESSAGE("MESSAGE::tok", tok)
 		//v= means begin of SDP
 		if (strncmp(tok,"v=", 2) == 0){
 			fillSDP = true;
@@ -447,11 +451,12 @@ int MESSAGE::fillIn(void){
 			DEBINFMESSAGE("MESSAGE::fillIn sdp", tok)
 			sdp_line.push_back( make_pair(tok,false));
 		}
-		tok = strtok(NULL, "\n");
+		tok = strtok_r(NULL, "\n",&saveptr1);
 	}
 	messageStatus = 1;
 
 	DEBINFMESSAGE("int MESSAGE::fillIn(void)", this<<"]["<<message_line.size())
+
 	return message_line.size();
 
 }
@@ -1905,14 +1910,15 @@ int MESSAGE::fillCommand(void){
 	strcpy(message_char, original_message);
 
 	bool fillSDP = false;
-	char* tok = strtok(message_char, "\n");
+	char* saveptr1;
+	char* tok = strtok_r(message_char, "\n",&saveptr1);
 	while (tok != NULL){
 		int ll = strlen(tok);
 		char* trok = tok + ll - 1 ;
 		strcpy(trok,"");
 		DEBINFMESSAGE("MESSAGE::fillCommand line", tok)
 			message_line.push_back( make_pair (tok,false) );
-		tok = strtok(NULL, "\n");
+		tok = strtok_r(NULL, "\n",&saveptr1);
 	}
 
 	DEBINFMESSAGE("int MESSAGE::fillCommand(void)", this<<"]["<<message_line.size())
@@ -1930,7 +1936,9 @@ bool MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >& _command){
 		DEBOUT("MESSAGE::buildCommand",m_l->first)
 		char temp[strlen(m_l->first) +1];
 		strcpy(temp, m_l->first);
-		char* tok = strtok(temp, "%");
+
+		char *saveptr1;
+		char* tok = strtok_r(temp, "%",&saveptr1);
 		int i = 0;
 		string s[3];
 		while (tok != NULL || i < 3){
@@ -1939,7 +1947,7 @@ bool MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >& _command){
 			strcpy(trok,"");
 			s[i] = tok;
 			i++;
-			tok = strtok(NULL, "%");
+			tok = strtok_r(NULL, "%",&saveptr1);
 		}
 		int k = 0;
 		if(s[0].compare("i") == 0){
