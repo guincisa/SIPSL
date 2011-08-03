@@ -215,7 +215,7 @@ int main(int argc, const char* argv[]) {
 		sl_cc->linkSipEngine(sipeng);
 
 		//data layer
-		NEWPTR(DAO*, daog, DAO(1,1,"DAO"), "DAO")
+		NEWPTR(DAO*, daog, DAO(1,1,"DAO",sl_cc, sipeng, transport), "DAO")
 		sipeng->setDAO(daog);
 		sl_cc->setDAO(daog);
 

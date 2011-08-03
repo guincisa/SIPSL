@@ -265,23 +265,31 @@ class ThreadWrapper {
 
 //Max engine threads
 //128
-#define MAXTHREADS 20
-#define MAXMAPS 20
+#define MAXTHREADS 8
+#define MAXMAPS 8
+#define MAXTH_Q 1
+
 
 //128
-#define SIPENGINETH 4
+#define SIPENGINETH 3
 //64
-#define SIPENGINMAPS 4
+#define SIPENGINMAPS 3
+#define SIPENGINTH_Q 1
+
 
 //64
-#define TRNSPRTTH 1
+#define TRNSPRTTH 2
 //32
-#define TRNSPRTMAPS 1
+#define TRNSPRTMAPS 2
+#define TRNSPRTTH_Q 1
+
 
 //128
 #define SL_CCTH 6
 //32
 #define SL_CCMAPS 6
+#define SL_CCTH_Q 1
+
 
 //#define ENGINEMAPS 5
 #define ALARMTH 1
@@ -291,8 +299,8 @@ class ThreadWrapper {
 #define INHIBITALARM
 
 //number of maps for message module when using MAPMODULHYBRID
-#define PREMODMAP 10
-#define COMAPS 300
+#define PREMODMAP 20
+#define COMAPS 600
 #define COMAPS_DIG 3
 #define MESSAGEMAPS 100
 
@@ -307,9 +315,10 @@ class ThreadWrapper {
 //COMAPS must be divisble by DOATH
 #define DOATH 2
 
-#define PROFILING
+//#define PROFILING
 //#define PROFILELOCK
 //#define PROFILELOCKCALC
+#define TUNEPERF
 
 #define CHECKDOA
 
@@ -345,7 +354,7 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-//#define SHOWFLOWLOG
+#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN

@@ -90,6 +90,8 @@ class ENGINE {
 	    void lockBuffer(void);
 	    void unLockBuffer(void);
 
+	    void changeEngineMaps(int);
+
 };
 
 

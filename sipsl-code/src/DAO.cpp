@@ -98,9 +98,14 @@
 
 //**********************************************************************************
 //**********************************************************************************
-DAO::DAO(int _i, int _m, string _s):ENGINE(_i,_m,_s){
+DAO::DAO(int _i, int _m, string _s,SL_CC* _sl_cc, SIPENGINE* _sipengine, TRNSPRT* _trnsprt):ENGINE(_i,_m,_s){
 
     pthread_mutex_init(&mutex, NULL);
+
+    sl_cc = _sl_cc;
+    sipengine = _sipengine;
+    trnsprt = _trnsprt;
+
 
 }
 string DAO::getData(string _data){
@@ -150,8 +155,31 @@ void DAO::parse(void* __mess, int _mmod) {
             //send
 
         }
+        if (m_l->first == 20){
+            //PD-SIPSL
+            //t%SL_CC%10
+            //send
+        	//change tuning params
+        	//riduce o aumenta le code e non i loro trheads
+        	DEBOUT("void DAO::parse",m_l->first << "]["<<((pair <string,string>)m_l->second).first<<"]["<<((pair <string,string>)m_l->second).second)
+        	if (((string)((pair <string,string>)m_l->second).first).compare("SL_CC") == 0){
+            	int k = atoi(((string)((pair <string,string>)m_l->second).second).c_str());
+            	sl_cc->changeEngineMaps(k);
+        	}
+        	if (((string)((pair <string,string>)m_l->second).first).compare("SIPENGINE") == 0){
+            	int k = atoi(((string)((pair <string,string>)m_l->second).second).c_str());
+            	sipengine->changeEngineMaps(k);
+        	}
+        	if (((string)((pair <string,string>)m_l->second).first).compare("TRNSPRT") == 0){
+            	int k = atoi(((string)((pair <string,string>)m_l->second).second).c_str());
+            	trnsprt->changeEngineMaps(k);
+        	}
+
+        }
+
         m_l ++;
     }
+    PURGEMESSAGE(_mess)
 
 
 }

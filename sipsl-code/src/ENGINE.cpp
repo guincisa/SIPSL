@@ -123,15 +123,35 @@ ENGINE::ENGINE(int _i, int _em, string _type) {
     		_i = EngineMaps;
     	}
     }
-    DEBOUT("ENGINE::ENGINE _i", _i<<"]["<<_type)
+    DEBOUT("ENGINE::ENGINE MAXTHREADS", MAXTHREADS <<"]["<<_type)
     ENGtuple *t[MAXTHREADS];
 
+#ifdef TUNEPERF
 
-    //TODO terrible!!!
-    // if _i not divisible by ENGINEMAPS
+    int mxp;
+    int mxt;
+
+    if (objectType.compare("DAO") == 0 || objectType.compare("ALMGR") == 0){
+        mxp = _em;
+        mxt = _i;
+    }else{
+        mxp = MAXMAPS;
+        mxt = MAXTHREADS;
+
+    }
+#endif
+
+
+    // if _i not divisible by ENGINEMAPS...
     int k = 0;
-    int rapp = _i / EngineMaps;
+#ifdef TUNEPERF
+
+    int rapp = mxt /  mxp;
+	for ( int i = 0 ; i < mxp ; i++){
+#else
+	int rapp = _i / EngineMaps;
 	for ( int i = 0 ; i < EngineMaps ; i++){
+#endif
 
 		sb[i] = new SPINC();
 
@@ -159,7 +179,9 @@ ENGINE::ENGINE(int _i, int _em, string _type) {
 }
 //**********************************************************************************
 //**********************************************************************************
-
+void ENGINE::changeEngineMaps(int _m){
+	EngineMaps = _m;
+}
 int ENGINE::modEngineMap(MESSAGE* _message){
 
 	int mm = _message->getModulus() % EngineMaps;
