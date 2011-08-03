@@ -25,6 +25,10 @@
   provisioning object
 ************************************************************/
 #define DAO_H
+class TRNSPRT;
+class SIPENGINE;
+class SL_CC;
+
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
@@ -35,7 +39,7 @@ class DAO : public ENGINE {
 
         void parse(void *, int);
 
-        DAO(int,int,string);
+        DAO(int,int,string,SL_CC*, SIPENGINE*, TRNSPRT*);
 
         string getData(string);
 
@@ -45,6 +49,11 @@ class DAO : public ENGINE {
         int putData(string,string);
 
         map<string,string> routingTable;
+
+        SL_CC* sl_cc;
+        SIPENGINE* sipengine;
+        TRNSPRT* trnsprt;
+
 };
 
 class COMMAND {

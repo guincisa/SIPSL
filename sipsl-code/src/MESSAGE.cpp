@@ -399,6 +399,9 @@ int MESSAGE::fillIn(void){
 	//messageStatus == 0
 	//serve???
 	DEBINFMESSAGE("****************** original message",original_message)
+	if (message_char != 0x0){
+		DELPTRARR(message_char,"message_char")
+	}
 	NEWPTR2(message_char, char[strlen(original_message)+1],"message_char "<<strlen(original_message)+1)
 	strcpy(message_char, original_message);
 	DEBINFMESSAGE("****************** message_char",message_char)
@@ -592,7 +595,7 @@ void MESSAGE::compileMessage(void){
 		}
 	}
 	else{
-		origmess << "\r\n";
+		origmess << "\r\n\r\n";
 	}
 
 	messageStatus = 0;
@@ -607,6 +610,7 @@ void MESSAGE::compileMessage(void){
 	DEBINFMESSAGE("void MESSAGE::compileMessage(void) original_message", original_message)
 
 	DELPTRARR(message_char,"message_char")
+	message_char = 0x0;
 }
 void MESSAGE::dumpMessageBuffer(void){
 	DEBINFMESSAGE("void MESSAGE::dumpMessageBuffer(void)",this)
@@ -1956,10 +1960,17 @@ bool MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >& _command){
 		else if (s[0].compare("d")  == 0){
 			k = 2;
 		}
+		else if (s[0].compare("t")  == 0){
+			k = 20;
+		}
+
 		_command.push_back(make_pair(k, make_pair(s[1],s[2])));
 		DEBOUT("MESSAGE::buildCommand",k<<"]["<<s[1]<<"]["<<s[2])
 		m_l++;
 	}
+	messageStatus = 1;
+
+
 
 }
 

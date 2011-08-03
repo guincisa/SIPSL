@@ -216,7 +216,7 @@ void SUDP::start(void) {
 // *****************************************************************************************
 // Listen to network
 // *****************************************************************************************
-void SUDP::listen(int _socknum) { //argument not used
+void SUDP::listen(int _socknum) {
 
     TIMEDEF
 
@@ -329,7 +329,7 @@ void SUDP::sendReply(MESSAGE* _message){
     char _hostchar[_message->getViaUriHost().length()+1];
     DEBY
     strcpy(_hostchar,_message->getViaUriHost().c_str());
-    DEBY
+    DEBOUT("strcpy(_hostchar,_message->getViaUriHost().c_str());", _hostchar)
     host = gethostbyname(_hostchar);
     DEBY
     bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
@@ -341,9 +341,10 @@ void SUDP::sendReply(MESSAGE* _message){
             DEBASSERT ("can set reply address")
     }
     DEBY
-    int i = _message->getModulus() % SUDPTH;
+    //int i = _message->getModulus() % SUDPTH;
     DEBY
-    sendto(sock_se[i],  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    sendto(sock_re,  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    //sendto(sock_se[i],  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
     DEBY
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
