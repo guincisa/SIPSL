@@ -318,7 +318,7 @@ class ThreadWrapper {
 //#define PROFILING
 //#define PROFILELOCK
 //#define PROFILELOCKCALC
-#define TUNEPERF
+//#define TUNEPERF
 
 #define CHECKDOA
 
@@ -354,7 +354,7 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-#define SHOWFLOWLOG
+//#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
