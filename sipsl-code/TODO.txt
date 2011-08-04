@@ -1,5 +1,13 @@
 ISSUES
 
+
+4 agosto
+
+sendReply e sendRequest
+ma la host a che serve???
+che succede se uso indirizzi non numerici????
+
+
 2 agosto
 
 overload protection

@@ -295,14 +295,18 @@ void SUDP::sendRequest(MESSAGE* _message){
     strcpy(_hostchar,_pair.first.c_str());
     DEBY
     host = gethostbyname(_hostchar);
+    if (host == NULL){
+    	DEBASSERT("host = gethostbyname(_hostchar); is null "<< _hostchar)
+    }
+
     DEBY
-    bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
+    //memcpy((char *)&si_part.sin_addr.s_addr, (char *)host->h_addr, host->h_length);
     DEBY
     si_part.sin_port = htons(_pair.second);
     DEBY
-//	if( inet_aton(_message->getHeadSipRequest().getC_AttSipUri().getChangeS_AttHostPort().getHostName().c_str(), &si_part.sin_addr) == 0 ){
-//		DEBASSERT ("Can't set request address")
-//	}
+	if( inet_aton(_hostchar, &si_part.sin_addr) == 0 ){
+		DEBASSERT ("Can't set request address")
+	}
 
     int i = _message->getModulus() % SUDPTH;
 
@@ -331,8 +335,11 @@ void SUDP::sendReply(MESSAGE* _message){
     strcpy(_hostchar,_message->getViaUriHost().c_str());
     DEBOUT("strcpy(_hostchar,_message->getViaUriHost().c_str());", _hostchar)
     host = gethostbyname(_hostchar);
+    if (host == NULL){
+    	DEBASSERT("host = gethostbyname(_hostchar); is null "<< _hostchar)
+    }
     DEBY
-    bcopy((char *)host->h_addr, (char *)&si_part.sin_addr.s_addr, host->h_length);
+    //memcpy((char *)&si_part.sin_addr.s_addr, (char *)host->h_addr, host->h_length);
     DEBY
     si_part.sin_port = htons(_message->getViaUriPort());
     DEBY
@@ -350,4 +357,4 @@ void SUDP::sendReply(MESSAGE* _message){
         PURGEMESSAGE(_message)
     }
     return;
-}
+    }
