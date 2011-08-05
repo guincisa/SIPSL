@@ -354,7 +354,7 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-//#define SHOWFLOWLOG
+#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
