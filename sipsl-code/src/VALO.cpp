@@ -143,6 +143,12 @@ VALO::~VALO(void){
 		DELPTR((string*)p->second,"fromhead_200ok_a");
 		ctxt_store.erase(p);
 	}
+	p = ctxt_store.find("getData");
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"getData");
+		ctxt_store.erase(p);
+	}
+
 }
 void VALO::onInvite(MESSAGE* _message){
 	DEBINF("void VALO::onInvite(MESSAGE* _message)",this<<"]["<<_message)
@@ -179,11 +185,14 @@ void VALO::onInvite(MESSAGE* _message){
 	css << sss;
 	css << ":";
 	css <<ppp;
-	string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
 
-	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",ss)
+	NEWPTR(string*, ss, string(((SL_CC*)sl_cc)->getDAO()->getData(css.str())),"getData")
+
+	ctxt_store.insert(pair<string, void*>("getData", (void*) ss ));
+
+	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
 	stringstream tmps ;
-	tmps << "INVITE sip:"<< ss <<" SIP/2.0";
+	tmps << "INVITE sip:"<< *ss <<" SIP/2.0";
 	message->setHeadSipRequest(tmps.str());
 
 	//message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
@@ -300,18 +309,22 @@ void VALO::onAck(MESSAGE* _message){
 		DEBALO("Exception ", e.getMessage())
 	}
 
-	string sss = newack->getUri("REQUEST").first;
-	int ppp = newack->getUri("REQUEST").second;
-	DEBOUT("indirizzo request", sss << "] ["<<ppp)
-	stringstream css;
-	css << sss;
-	css << ":";
-	css <<ppp;
-	string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
+//	string sss = newack->getUri("REQUEST").first;
+//	int ppp = newack->getUri("REQUEST").second;
+//	DEBOUT("indirizzo request", sss << "] ["<<ppp)
+//	stringstream css;
+//	css << sss;
+//	css << ":";
+//	css <<ppp;
 
-	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",ss)
+	map<string, void*> ::iterator p;
+	p = ctxt_store.find("getData");
+
+	string* ss = (string*)p->second;
+
+	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
 	stringstream tmps ;
-	tmps << "ACK sip:"<< ss <<" SIP/2.0";
+	tmps << "ACK sip:"<< *ss <<" SIP/2.0";
 	newack->setHeadSipRequest(tmps.str());
 
 //	//Change request
@@ -323,7 +336,6 @@ void VALO::onAck(MESSAGE* _message){
 	newack->purgeSDP();
 
 	//FROM and TO copied from B 200 OK
-	map<string, void*> ::iterator p;
 	p = ctxt_store.find("tohead_200ok_b");
 	string tohead_200ok_b = *((string*)p->second);
 	p = ctxt_store.find("fromhead_200ok_b");
@@ -513,20 +525,24 @@ void VALO::onBye(MESSAGE* _message){
 //		tmps << "BYE sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
 //		message->setHeadSipRequest(tmps.str());
 
-		string sss = _message->getUri("REQUEST").first;
-		int ppp = _message->getUri("REQUEST").second;
-		DEBOUT("indirizzo request", sss << "] ["<<ppp)
-		stringstream css;
-		css << sss;
-		css << ":";
-		css <<ppp;
-		string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
+//		string sss = _message->getUri("REQUEST").first;
+//		int ppp = _message->getUri("REQUEST").second;
+//		DEBOUT("indirizzo request", sss << "] ["<<ppp)
+//		stringstream css;
+//		css << sss;
+//		css << ":";
+//		css <<ppp;
+//		string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
 
-		DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",ss)
+		map<string, void*> ::iterator p;
+		p = ctxt_store.find("getData");
+
+		string* ss = (string*)p->second;
+
+		DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
 		stringstream tmps ;
-		tmps << "BYE sip:"<< ss <<" SIP/2.0";
+		tmps << "BYE sip:"<< *ss <<" SIP/2.0";
 		message->setHeadSipRequest(tmps.str());
-
 
 		stringstream viatmp;
 		viatmp << "SIP/2.0/UDP "<<getSUDP()->getDomain().c_str()<<":"<<getSUDP()->getPort()<<";branch=z9hG4bK"<<message->getKey()<<";rport";
@@ -539,7 +555,6 @@ void VALO::onBye(MESSAGE* _message){
 		message->setGenericHeader("CSeq:", cst.str());
 
 
-		map<string, void*> ::iterator p;
 		p = ctxt_store.find("tohead_200ok_b");
 		string tohead_200ok_b = *((string*)p->second);
 		p = ctxt_store.find("fromhead_200ok_b");
@@ -718,4 +733,3 @@ void VALO::on200Ok(MESSAGE* _message){
 
 
 }
-
