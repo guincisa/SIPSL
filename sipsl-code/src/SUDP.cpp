@@ -278,60 +278,116 @@ int SUDP::getPort(void){
 ALMGR* SUDP::getAlmgr(void){
 	return alarm;
 }
+//void SUDP::sendRequest(MESSAGE* _message){
+//	DEBINFSUDP("void SUDP::sendRequest(MESSAGE* _message)",_message)
+//
+//    struct sockaddr_in si_part;
+//    struct hostent *host;
+//    memset((char *) &si_part, 0, sizeof(si_part));
+//
+//    DEBMESSAGE("SUDP::sendRequest sending Message ", _message)
+//
+//    pair<string,int> _pair = _message->getUri("REQUEST");
+//    const char* _hostchar = _pair.first.c_str();
+//    host = gethostbyname(_hostchar);
+//    if (host == NULL){
+//    	DEBASSERT("host = gethostbyname(_hostchar); is null "<< _hostchar)
+//    }
+//
+//    si_part.sin_family = AF_INET;
+//    si_part.sin_port = htons(_pair.second);
+//    //core qui
+//    si_part.sin_addr = *( struct in_addr*)( host -> h_addr_list[0]);
+//
+//    int i = _message->getModulus() % SUDPTH;
+//
+//    sendto(sock_se[i], _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+//    if (!_message->getLock()){
+//        PURGEMESSAGE(_message)
+//    }
+//
+//    return;
+//}
 void SUDP::sendRequest(MESSAGE* _message){
 	DEBINFSUDP("void SUDP::sendRequest(MESSAGE* _message)",_message)
 
-    struct sockaddr_in si_part;
-    struct hostent *host;
-    memset((char *) &si_part, 0, sizeof(si_part));
-
     DEBMESSAGE("SUDP::sendRequest sending Message ", _message)
 
-    pair<string,int> _pair = _message->getUri("REQUEST");
+    pair<string,string> _pair = _message->getUriProtocol("REQUEST");
     const char* _hostchar = _pair.first.c_str();
-    host = gethostbyname(_hostchar);
-    if (host == NULL){
-    	DEBASSERT("host = gethostbyname(_hostchar); is null "<< _hostchar)
-    }
 
-    si_part.sin_family = AF_INET;
-    si_part.sin_port = htons(_pair.second);
-    si_part.sin_addr = *( struct in_addr*)( host -> h_addr_list[0]);
+    struct addrinfo hints, *servinfo;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM;
+
+    int res = getaddrinfo(_hostchar,_pair.second.c_str(),&hints, &servinfo);
+    if (res != 0){
+    	DEBASSERT("getaddrinfo")
+    }
 
     int i = _message->getModulus() % SUDPTH;
 
-    sendto(sock_se[i], _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    //CHECK ERROR HERE
+    sendto(sock_se[i], _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, servinfo->ai_addr, servinfo->ai_addrlen);
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
     }
-
+    freeaddrinfo(servinfo);
     return;
 }
+
 void SUDP::sendReply(MESSAGE* _message){
 	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
 
     //Reply uses topmost Via header
 
-    struct sockaddr_in si_part;
-    struct hostent *host;
-    memset((char *) &si_part, 0, sizeof(si_part));
-
     DEBMESSAGE("SUDP::sendReply sending Message ", _message)
 
 
     const char* _hostchar = _message->getViaUriHost().c_str();
-    host = gethostbyname(_hostchar);
-    if (host == NULL){
-    	DEBASSERT("host = gethostbyname(_hostchar); is null "<< _hostchar)
+    struct addrinfo hints, *servinfo;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM;
+    int res = getaddrinfo(_hostchar,_message->getViaUriProtocol().c_str(),&hints, &servinfo);
+    if (res != 0){
+    	DEBASSERT("getaddrinfo")
     }
-
-    si_part.sin_family = AF_INET;
-    si_part.sin_addr = *( struct in_addr*)( host -> h_addr_list[0]);
-    si_part.sin_port = htons(_message->getViaUriPort());
-
-    sendto(sock_re,  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    //CHECK ERROR HERE
+    sendto(sock_re,  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, servinfo->ai_addr, servinfo->ai_addrlen);
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
     }
+    freeaddrinfo(servinfo);
     return;
 }
+//void SUDP::sendReply(MESSAGE* _message){
+//	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
+//
+//    //Reply uses topmost Via header
+//
+//    struct sockaddr_in si_part;
+//    struct hostent *host;
+//    memset((char *) &si_part, 0, sizeof(si_part));
+//
+//    DEBMESSAGE("SUDP::sendReply sending Message ", _message)
+//
+//
+//    const char* _hostchar = _message->getViaUriHost().c_str();
+//    host = gethostbyname(_hostchar);
+//    if (host == NULL){
+//    	DEBASSERT("host = gethostbyname(_hostchar); is null "<< _hostchar)
+//    }
+//
+//    si_part.sin_family = AF_INET;
+//    //core qui
+//    si_part.sin_addr = *( struct in_addr*)( host -> h_addr_list[0]);
+//    si_part.sin_port = htons(_message->getViaUriPort());
+//
+//    sendto(sock_re,  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+//    if (!_message->getLock()){
+//        PURGEMESSAGE(_message)
+//    }
+//    return;
+//}
