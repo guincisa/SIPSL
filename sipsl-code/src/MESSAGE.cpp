@@ -1448,6 +1448,7 @@ string MESSAGE::getViaUriHost(void){
 			viaUriHost = workline;
 			viaUriParsed = true;
 			viaUriPort = atoi(ccc);
+			viaUriProtocol = ccc;
 			DEBINFMESSAGE("string MESSAGE::getViaUriHost(void)",this<<"]["<<viaUriHost)
 		}
 	}
@@ -1471,6 +1472,26 @@ int MESSAGE::getViaUriPort(void){
 	}
 	DEBINFMESSAGE("int MESSAGE::getViaUriPort(void)",this<<"]["<<viaUriPort)
 	return viaUriPort;
+
+}
+string MESSAGE::getViaUriProtocol(void){
+	DEBINFMESSAGE("int MESSAGE::getViaUriProtocol(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getViaUriPort invalid")
+
+	DEBWARNING("MESSAGE::getViaUriHost works with fixed values","")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
+	if (viaUriParsed){
+	}
+	else{
+		getViaUriHost();
+	}
+	DEBINFMESSAGE("int MESSAGE::getViaUriPort(void)",this<<"]["<<viaUriPort)
+	return viaUriProtocol;
+
 
 }
 
@@ -1836,7 +1857,7 @@ pair<string,int> MESSAGE::getUri(string header){
 
 	if(header.compare("REQUEST") == 0){
 		//INVITE sip:service@10.21.99.79:5062 SIP/2.0
-		string Via="INVITE sip:service@10.21.99.79:5062 SIP/2.0";
+		//string Via="INVITE sip:service@10.21.99.79:5062 SIP/2.0";
 		char* xxx = new char[strlen(message_line[0].first) + 1];
 		strcpy(xxx,message_line[0].first);
 		char* aaa = strstr(xxx," ");
@@ -1855,6 +1876,37 @@ pair<string,int> MESSAGE::getUri(string header){
 	return (make_pair("",0));
 
 }
+pair<string,string> MESSAGE::getUriProtocol(string header){
+	DEBINFMESSAGE("string MESSAGE::getUriProtocol(string header)",this<<"]["<<header)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getUriProtocol invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+
+	if(header.compare("REQUEST") == 0){
+		//INVITE sip:service@10.21.99.79:5062 SIP/2.0
+		//string Via="INVITE sip:service@10.21.99.79:5062 SIP/2.0";
+		char* xxx = new char[strlen(message_line[0].first) + 1];
+		strcpy(xxx,message_line[0].first);
+		char* aaa = strstr(xxx," ");
+		char* bbb = strstr(aaa+1," ");
+		strcpy(bbb,"");
+		char* ccc = aaa+1;
+		char* ddd = strstr(ccc,"@");
+		char* eee = ddd+1;
+		char* fff = strstr(eee,":");
+		strcpy(fff,"");
+		string return1 = eee;
+		DEBINFMESSAGE("pair<string,int> MESSAGE::getUriProtocol(string header)",this<<"]["<<header<<"]["<<return1<<"]["<<return2)
+		return(make_pair(return1,fff+1));
+	}
+	return (make_pair("",""));
+
+}
+
 string MESSAGE::getHeadCSeqMethod(void){
 	DEBINFMESSAGE("string MESSAGE::getHeadCSeqMethod(void)",this)
 	if (invalid == 1)

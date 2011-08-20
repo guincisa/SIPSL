@@ -293,6 +293,7 @@ class MESSAGE {
     	string getViaBranch(void);
     	string getViaUriHost(void);
     	int getViaUriPort(void);
+    	string getViaUriProtocol(void);
     	bool hasVia(void);
     	void popVia(void);
     	void pushNewVia(string);
@@ -300,6 +301,7 @@ class MESSAGE {
     	string branch;
     	bool parsedBranch;
     	string viaUriHost;
+    	string viaUriProtocol;
     	int viaUriPort;
     	bool viaUriParsed;
 
@@ -370,6 +372,7 @@ class MESSAGE {
 	public:
     	bool isUriSecure(string header);
     	pair<string,int> getUri(string header);
+    	pair<string,string> getUriProtocol(string header);
 	public:
     	string getHeadCSeqMethod(void);
     	int getHeadCSeq(void);

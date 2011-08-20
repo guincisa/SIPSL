@@ -2,6 +2,18 @@ ISSUES
 
 5 agosto 
 
+http://docs.jboss.org/mobicents/jain-slee/2.4.1.FINAL/examples/sip-b2bua/user-guide/en-US/html/design_overview.html
+
+nello schema ACK verso B parte con il 200OK e non aspetta ACK da A...
+
+   This header field should be inserted by elements that can not
+   otherwise guarantee loop detection.  For example, a B2BUA should
+   insert a Max-Forwards header field.
+
+
+
+
+
 indirizzi numerici o a stringa
 se grog$=127.0.0.1
 oppure $grog=grog.sipsl.org

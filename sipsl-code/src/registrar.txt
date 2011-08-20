@@ -1,0 +1,65 @@
+Questo esce dal Ekiga
+
+
+in vodafone con indirizzo non locale
+
+REGISTER sip:sipslvf.org SIP/2.0
+Via: SIP/2.0/UDP 172.20.174.109:5061;rport;branch=z9hG4bKezovnghe
+Max-Forwards: 70
+To: "Gugli" <sip:guic@sipslvf.org>
+From: "Gugli" <sip:guic@sipslvf.org>;tag=rtvax
+Call-ID: nijypptubepaswr@dhcp-172-20-174-109.oskarmobil.cz
+CSeq: 600 REGISTER
+Contact: <sip:guic@172.20.174.109:5061>;expires=3600
+Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE
+User-Agent: Twinkle/1.4.2
+Content-Length: 0
+
+
+
+non va il via
+
+[REGISTER sip:registrar.sipsl.org SIP/2.0
+CSeq: 1 REGISTER
+Via: SIP/2.0/UDP 127.0.0.1:5061;branch=z9hG4bKba44363b-d5c8-e011-9c20-68b599e80ba8;rport
+User-Agent: Ekiga/3.2.7
+From: <sip:guic@registrar.sipsl.org>;tag=cac0313b-d5c8-e011-9c20-68b599e80ba8
+Call-ID: faa9313b-d5c8-e011-9c20-68b599e80ba8@linux-ubsi.site
+To: <sip:guic@registrar.sipsl.org>
+Contact: <sip:guic@172.20.174.109>;q=1
+Allow: INVITE,ACK,OPTIONS,BYE,CANCEL,SUBSCRIBE,NOTIFY,REFER,MESSAGE,INFO,PING
+Expires: 3600
+Content-Length: 0
+Max-Forwards: 70
+
+]
+
+Linphone
+[REGISTER sip:registrar.sipsl.org SIP/2.0^M
+Via: SIP/2.0/UDP 172.20.174.109:5062;rport;branch=z9hG4bK830847043^M
+From: <sip:majo@sipsl.org>;tag=1383296703^M
+To: <sip:majo@sipsl.org>^M
+Call-ID: 2021731133^M
+CSeq: 1 REGISTER^M
+Contact: <sip:majo@172.20.174.109:5062>^M
+Max-Forwards: 70^M
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)^M
+Expires: 3600^M
+Content-Length: 0^M
+^M
+]
+
+twinkle
+[REGISTER sip:sipsl.org SIP/2.0^M
+Via: SIP/2.0/UDP 127.0.0.1:5061;rport;branch=z9hG4bKuomntqdp^M
+Max-Forwards: 70^M
+To: "Gugli" <sip:guic@sipsl.org>^M
+From: "Gugli" <sip:guic@sipsl.org>;tag=pvbtj^M
+Call-ID: bqtutcyuofrkdok@linux-ubsi.site^M
+CSeq: 605 REGISTER^M
+Contact: <sip:guic@127.0.0.1:5061>;expires=3600^M
+Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE^M
+User-Agent: Twinkle/1.4.2^M
+Content-Length: 0^M
+^M
+]
