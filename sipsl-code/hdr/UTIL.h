@@ -41,7 +41,7 @@
 
 extern double PERFARRAY[4][50];
 
-//#define SPARC
+#define SPARC
 
 using namespace std;
 
@@ -65,8 +65,6 @@ class ThreadWrapper {
         //pthread_mutex_t mutex;
         ThreadWrapper();
 };
-
-
 
 
 
@@ -130,7 +128,7 @@ class ThreadWrapper {
 
 //Sudp threads
 // its x 2
-#define SUDPTH 1
+#define SUDPTH 10
 
 //Max engine threads
 //128
@@ -138,19 +136,19 @@ class ThreadWrapper {
 #define MAXMAPS 20
 
 //128
-#define SIPENGINETH 4
+#define SIPENGINETH 12
 //64
-#define SIPENGINMAPS 4
+#define SIPENGINMAPS 12
 
 //64
-#define TRNSPRTTH 1
+#define TRNSPRTTH 10
 //32
-#define TRNSPRTMAPS 1
+#define TRNSPRTMAPS 10
 
 //128
-#define SL_CCTH 6
+#define SL_CCTH 20
 //32
-#define SL_CCMAPS 6
+#define SL_CCMAPS 20
 
 //#define ENGINEMAPS 5
 #define ALARMTH 1
@@ -174,9 +172,9 @@ class ThreadWrapper {
 //time before object moves to deleted
 #define TIMER_DOA 5000000
 //COMAPS must be divisble by DOATH
-#define DOATH 2
+#define DOATH 6
 
-#define PROFILING
+//#define PROFILING
 //#define PROFILELOCK
 //#define PROFILELOCKCALC
 
@@ -214,12 +212,14 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-#define SHOWFLOWLOG
+//#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
 #define LOGDEV
 #define LOGSIPHIGH
+#define LOGPTR
+#define LOGINFMESSAGE
 #endif
 
 //willgo getDoa everytime a call to call_oset is done
@@ -489,6 +489,7 @@ class ThreadWrapper {
 
 #define BDEBUG(m1, m2) {stringstream xx ; \
 		char bu[128];\
+		cout.precision(20);\
 		TIME_S\
 		string time(bu);\
 		xx << m1 << " [" << pthread_self() << " " << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3) << "]"\

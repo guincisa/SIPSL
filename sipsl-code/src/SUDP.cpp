@@ -221,9 +221,9 @@ void SUDP::listen(int _socknum) {
     TIMEDEF
 
     DEBINFSUDP("SUDP::listen","listen " << _socknum)
+    char echoBuffer[ECHOMAX];
     for (;;){
         /* Block until receive message from a client */
-        char echoBuffer[ECHOMAX];
         memset(&echoBuffer, 0x0, ECHOMAX);
         int recvMsgSize;
         int _sok;
@@ -239,7 +239,11 @@ void SUDP::listen(int _socknum) {
         }else if ( recvMsgSize < 1){
         	DEBERROR("SUDP::listen() abnormal message")
         }else {
-            SETNOW
+        	SETNOW
+//        	//UDP perf begin
+//            BDEBUG("listen","")
+//            continue;
+            //UDP perf end
             PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
