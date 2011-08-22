@@ -1,0 +1,40 @@
+Qui specifico le funzioni egli header nel routing
+
+A->SIPSL
+
+INVITE sip:service@10.21.99.79:5062 SIP/2.0
+Via: SIP/2.0/UDP 10.21.99.79:5061;branch=z9hG4bK-22189-1-0
+From: sipp <sip:sipp@10.21.99.79:5061>;tag=22189SIPpTag001
+To: sut <sip:service@10.21.99.79:5062>
+Contact: sip:sipp@10.21.99.79:5061
+
+Il messaggio e' diretto a service@10.21.99.79:5062 ma la sipp lo manda fisicamente a SIPSL nella porta 5060
+Non c'e' traccia di cio negli header.
+
+Quindi quando esce B la SIPSL deve mandarlo and un indirizzo dato e qusto indirizzo non compare nel messaggio
+se per esempio e' diretto verso un'altro servizio.
+Quindi la SIPSL deve avere una tabella interna con l'indirizzo reale a cui mandare
+Per ora la SIPSL manda all'indirizzo specificato nella REQUEST...
+
+Non capisco se l;'indirizzo di SIPSL e' in realta dato da qualche info negli header oppure
+sicuramente puo essere impostato nel softphone.
+Credo di no... (vedi invite che esce dal proxy atlanta.com contiene nel via il nom
+completo del proxy che non potrebbe essere definito a partire dall'linvite di alice
+quindi l'indirizzo del proxy e' nella configurazione del softphone
+
+quindi per analogie SIPSL deve avere la configurazione e mandare fisicamente il messaggio
+verso il proxy o il servizio a cui fa capo esse stesso oppure dipendente dal destinatario
+se usa il contact (che e' sempre sip:sipsl@grog:5060) mandera sempre verso un indirizzo
+se usa il contentuto della request puo mandare secondo una tabella
+se usa il to idem...
+
+INVITE sip:GUGLISIPSL@10.21.99.79:5062 SIP/2.0
+From: sipp <sip:sipp@10.21.99.79:5061>;tag=1c7c281306836789409645
+To: sut <sip:service@10.21.99.79:5062>
+Contact: <sip:sipsl@grog:5060>
+Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK1c28881306836789394442;rport
+
+
+
+risposta a A:
+ 

@@ -214,8 +214,15 @@ bool ENGINE::p_w(void* _m) {
 	int mmod = modEngineMap((MESSAGE*)_m);
     DEBDEV("bool ENGINE::p_w(void* _m) ", _m << "] modulus SP["<<mmod)
 
+#ifdef ENGINETRYLOCK
+    int trylok;
+    TRYLOCK(&unique_exx[mod]," purgeDOA unique_exx"<<mod, trylok)
+    if(trylok != 0){
+#else
+
     GETLOCK(&(sb[mmod]->condvarmutex),"[" << objectType << "] sb["<< mmod << "].condvarmutex",21);
 
+#endif
     SETNOW
 
 #ifdef MESSAGEUSAGE

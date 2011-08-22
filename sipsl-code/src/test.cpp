@@ -101,6 +101,7 @@ COMAP* Comap;
 double PERFARRAY[4][50];
 
 
+
 void ex_program(int sig) {
 	DEBOUT("SIG", sig);
 	DEBASSERT("...")
@@ -238,9 +239,59 @@ int main(int argc, const char* argv[]) {
 		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
 		int res = pthread_mutex_lock(&gu);
 		res = pthread_mutex_lock(&gu);
-		res = pthread_mutex_lock(&gu);
-
 		return 0;
+
+//    	//UDP perf begin
+//
+//		//Wait and send a message
+//		timespec sleep_time;
+//		sleep_time.tv_sec = 10;
+//		sleep_time.tv_nsec = 0;
+//		BDEBUG("start","start")
+//
+//		nanosleep(&sleep_time,NULL);
+//
+//		string message_char="INVITE sip:gugli_linphone@127.0.0.1:5060 SIP/2.0\
+//		\nSIP/2.0 200 OK\
+//		\nVia: SIP/2.0/UDP 127.0.0.1:5062;rport;branch=z9hG4bKmzisdwji\
+//		\nVia: SIP/2.0/UDP 127.0.0.1:5062;rport;branch=secondo\
+//		\nMax-Forwards: 70\
+//		\nTo: sto <sip:gugli_linphone@172.21.160.181:5061>\
+//		\nFrom: sfrom <sip:gugli_twinkle@guglicorp.com>;tag=zylee\
+//		\nCall-ID: pyqilxurpvljjey@grog\
+//		\nCSeq: 728 INVITE\
+//		\nContact: <sip:gugli_twinkle@127.0.0.1:5062>\
+//		\nContent-Type: application/sdp\
+//		\nAllow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE\
+//		\nSupported: replaces,norefersub,100rel\
+//		\nUser-Agent: Twinkle/1.4.2\
+//		\nContent-Length: 301\
+//		\n\
+//		\nv=0\
+//		\no=twinkle 259098868 421636418 IN IP4 127.0.0.1\
+//		\ns=-\
+//		\nc=IN IP4 127.0.0.1\
+//		\nt=0 0\
+//		\nm=audio 8000 RTP/AVP 98 97 8 0 3 101\
+//		\na=rtpmap:98 speex/16000\
+//		\na=rtpmap:97 speex/8000\
+//		\na=rtpmap:8 PCMA/8000\
+//		\na=rtpmap:0 PCMU/8000\
+//		\na=rtpmap:3 GSM/8000\
+//		\na=rtpmap:101 telephone-event/8000\
+//		\na=fmtp:101 0-15\
+//		\na=ptime:20\n";
+//		BDEBUG("start","start 10")
+//		MESSAGE* MYMESS;
+//		NEWPTR2(MYMESS, MESSAGE(message_char.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"MY Message")
+//		MYMESS->lock = true;
+//		for(int kk = 0; kk < 1000;kk++)
+//			mystack->sendRequest(MYMESS);
+//    	//UDP perf end
+
+
+
+
 	}
 	else {
 		//NANOSPEE TEST

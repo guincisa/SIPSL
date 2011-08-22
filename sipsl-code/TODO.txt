@@ -1,5 +1,63 @@
 ISSUES
 
+A
+INVITE sip:service@10.21.99.79:5062 SIP/2.0
+Via: SIP/2.0/UDP 10.21.99.79:5061;branch=z9hG4bK-22189-1-0
+From: sipp <sip:sipp@10.21.99.79:5061>;tag=22189SIPpTag001
+To: sut <sip:service@10.21.99.79:5062>
+Contact: sip:sipp@10.21.99.79:5061
+
+
+B
+INVITE sip:GUGLISIPSL@10.21.99.79:5062 SIP/2.0
+From: sipp <sip:sipp@10.21.99.79:5061>;tag=1c7c281306836789409645
+To: sut <sip:service@10.21.99.79:5062>
+Call-ID: CoMap051c28881306836789394442@sipsl.gugli.com
+Contact: <sip:sipsl@grog:5060>
+Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK1c28881306836789394442;rport
+
+mas multiistanze sipp
+PD-SIPSL
+i%127.0.0.1:5061%service@127.0.0.1:5061
+send
+PD-SIPSL
+i%127.0.0.1:5062%service@127.0.0.1:5062
+send
+PD-SIPSL
+i%127.0.0.1:5063%service@127.0.0.1:5063
+send
+PD-SIPSL
+i%127.0.0.1:5064%service@127.0.0.1:5064
+send
+PD-SIPSL
+i%127.0.0.1:5065%service@127.0.0.1:5065
+send
+PD-SIPSL
+i%127.0.0.1:5066%service@127.0.0.1:5066
+send
+PD-SIPSL
+i%127.0.0.1:5067%service@127.0.0.1:5067
+send
+
+
+
+
+
+
+
+PD-SIPSL
+i%10.21.99.79:5061%service@10.21.99.79:5061
+send
+PD-SIPSL
+i%10.21.99.79:5063%service@10.21.99.79:5063
+send
+PD-SIPSL
+i%10.21.99.79:5064%service@10.21.99.79:5064
+send
+
+tcp!!!
+
+
 5 agosto 
 
 http://docs.jboss.org/mobicents/jain-slee/2.4.1.FINAL/examples/sip-b2bua/user-guide/en-US/html/design_overview.html
@@ -21,6 +79,7 @@ oppure $grog=grog.sipsl.org
 PD-SIPSL
 i%127.0.0.1:5062%service@127.0.0.1:5062
 send
+
 oppure
 PD-SIPSL
 i%127.0.0.1:5062%service@grog.sipsl.org:5062
@@ -71,6 +130,13 @@ export umf=10.21.99.79
 umf2 - mas set
 export mas=10.21.99.67
 export umf=10.21.99.81
+
+sip call flow
+
+per vedere il max tps di sipp provare uac-uas diretto
+
+http://www.3gpp2.org/public_html/specs/X.S0013-009-0_v1.0_080224.pdf
+
 
 
 28 luglio 
