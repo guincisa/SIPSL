@@ -1,5 +1,11 @@
 ISSUES
 
+Agosto 23
+introduzione dell'indirizzo di routing
+
+
+
+
 A
 INVITE sip:service@10.21.99.79:5062 SIP/2.0
 Via: SIP/2.0/UDP 10.21.99.79:5061;branch=z9hG4bK-22189-1-0

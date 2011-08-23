@@ -342,7 +342,17 @@ class MESSAGE {
     	bool parsedToUri;
     	bool parsedToParms;
 
-
+    	////////////////////////////////
+    	//Routing
+	private:
+    	string route_address;
+    	string route_port;
+    	bool has_route;
+	public:
+    	void setRoute(string,string);
+    	bool hasRoute(void);
+    	pair<string, string> getRoute(void);
+    	void unsetRoute(void);
 		////////////////////////////////
     	//REQUEST-REPLY
 	public:
@@ -390,7 +400,7 @@ class MESSAGE {
     	int fillCommand(void);
 
     //Command
-    	bool buildCommand(vector< pair<int, pair<string,string> > >&);
+    	bool buildCommand(vector< pair<int,pair<int, pair<string,string> > > >&);
 
 };
 

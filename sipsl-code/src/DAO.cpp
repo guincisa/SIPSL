@@ -108,20 +108,16 @@ DAO::DAO(int _i, int _m, string _s,SL_CC* _sl_cc, SIPENGINE* _sipengine, TRNSPRT
 
 
 }
-string DAO::getData(string _data){
-
+string DAO::getData(int _table, string _data){
 
     map <string,string>::iterator it;
 	GETLOCK(&mutex,"DAO mutex",19)
-	it = routingTable.find(_data);
+	it = datatable[_table].find(_data);
 	RELLOCK(&mutex,"DAO mutex")
 
 	return it->second;
 
-
 }
-//string getData(string);
-
 //**********************************************************************************
 //**********************************************************************************
 void DAO::parse(void* __mess, int _mmod) {
@@ -137,13 +133,19 @@ void DAO::parse(void* __mess, int _mmod) {
     COMMAND com;
     _mess->buildCommand(com.commandTable);
 
-    vector< pair<int, pair<string,string> > >::iterator m_l;
+    vector< pair<int,pair<int, pair<string,string> > > >::iterator m_l;
     m_l = com.commandTable.begin();
     while (m_l  != com.commandTable.end()){
-        if (m_l->first == 1){
+    	int table = m_l->first;
+    	if(table >= TABLES){
+    		DEBASSERT("table index incorrect")
+    	}
+        pair<int, pair<string,string> >  m_l_2;
+        m_l_2 = m_l->second;
+        if (m_l_2.first == 1){
             GETLOCK(&mutex,"DAO mutex",20)
-            DEBOUT("void DAO::parse",m_l->first << "]["<<((pair <string,string>)m_l->second).first<<"]["<<((pair <string,string>)m_l->second).second)
-            routingTable.insert(make_pair( ((pair <string,string>)m_l->second).first,((pair <string,string>)m_l->second).second));
+            DEBOUT("void DAO::parse",m_l_2.first << "]["<<((pair <string,string>)m_l_2.second).first<<"]["<<((pair <string,string>)m_l_2.second).second)
+            datatable[table].insert(make_pair( ((pair <string,string>)m_l_2.second).first,((pair <string,string>)m_l_2.second).second));
         	RELLOCK(&mutex,"DAO mutex")
             //tutto su umft1:
             //PD-SIPSL
@@ -155,23 +157,23 @@ void DAO::parse(void* __mess, int _mmod) {
             //send
 
         }
-        if (m_l->first == 20){
+        if (m_l_2.first == 20){
             //PD-SIPSL
             //t%SL_CC%10
             //send
         	//change tuning params
         	//riduce o aumenta le code e non i loro trheads
-        	DEBOUT("void DAO::parse",m_l->first << "]["<<((pair <string,string>)m_l->second).first<<"]["<<((pair <string,string>)m_l->second).second)
-        	if (((string)((pair <string,string>)m_l->second).first).compare("SL_CC") == 0){
-            	int k = atoi(((string)((pair <string,string>)m_l->second).second).c_str());
+        	DEBOUT("void DAO::parse",m_l_2->first << "]["<<((pair <string,string>)m_l_2->second).first<<"]["<<((pair <string,string>)m_l_2->second).second)
+        	if (((string)((pair <string,string>)m_l_2.second).first).compare("SL_CC") == 0){
+            	int k = atoi(((string)((pair <string,string>)m_l_2.second).second).c_str());
             	sl_cc->changeEngineMaps(k);
         	}
-        	if (((string)((pair <string,string>)m_l->second).first).compare("SIPENGINE") == 0){
-            	int k = atoi(((string)((pair <string,string>)m_l->second).second).c_str());
+        	if (((string)((pair <string,string>)m_l_2.second).first).compare("SIPENGINE") == 0){
+            	int k = atoi(((string)((pair <string,string>)m_l_2.second).second).c_str());
             	sipengine->changeEngineMaps(k);
         	}
-        	if (((string)((pair <string,string>)m_l->second).first).compare("TRNSPRT") == 0){
-            	int k = atoi(((string)((pair <string,string>)m_l->second).second).c_str());
+        	if (((string)((pair <string,string>)m_l_2.second).first).compare("TRNSPRT") == 0){
+            	int k = atoi(((string)((pair <string,string>)m_l_2.second).second).c_str());
             	trnsprt->changeEngineMaps(k);
         	}
 

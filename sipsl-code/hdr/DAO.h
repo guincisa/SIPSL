@@ -29,6 +29,7 @@ class TRNSPRT;
 class SIPENGINE;
 class SL_CC;
 
+
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
@@ -41,14 +42,16 @@ class DAO : public ENGINE {
 
         DAO(int,int,string,SL_CC*, SIPENGINE*, TRNSPRT*);
 
-        string getData(string);
+        string getData(int,string);
 
     private:
         pthread_mutex_t mutex;
 
-        int putData(string,string);
+        //table id, key, data
+        int putData(int,pair<string,string>);
 
-        map<string,string> routingTable;
+        //
+        map<string,string> datatable[TABLES];
 
         SL_CC* sl_cc;
         SIPENGINE* sipengine;
@@ -58,9 +61,10 @@ class DAO : public ENGINE {
 
 class COMMAND {
 	public:
-		pair<int, pair<string,string> > topTuple(void);
-		bool popTuple(void);
-		vector< pair<int, pair<string,string> > > commandTable;
+		//table id, operation, key, data
+		pair<int,pair<int, pair<string,string> > > topTuple(void);
+		bool popCommand(void);
+		vector< pair<int, pair<int, pair<string,string> > > > commandTable;
 };
 //**********************************************************************************
 //**********************************************************************************
