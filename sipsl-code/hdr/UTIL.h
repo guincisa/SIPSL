@@ -174,6 +174,11 @@ class ThreadWrapper {
 //COMAPS must be divisble by DOATH
 #define DOATH 6
 
+//DATA TABLES
+#define TBL_ROUTE 0
+#define TABLES 1
+
+
 //#define PROFILING
 //#define PROFILELOCK
 //#define PROFILELOCKCALC

@@ -317,7 +317,14 @@ void SUDP::sendRequest(MESSAGE* _message){
 
     DEBMESSAGE("SUDP::sendRequest sending Message ", _message)
 
-    pair<string,string> _pair = _message->getUriProtocol("REQUEST");
+    pair<string,string> _pair;
+    if(_message->hasRoute()){
+    	_pair = _message->getRoute();
+    }
+    else{
+    	_pair = _message->getUriProtocol("REQUEST");
+    }
+
     const char* _hostchar = _pair.first.c_str();
 
     struct addrinfo hints, *servinfo;

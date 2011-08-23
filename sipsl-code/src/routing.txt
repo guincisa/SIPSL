@@ -8,6 +8,7 @@ From: sipp <sip:sipp@10.21.99.79:5061>;tag=22189SIPpTag001
 To: sut <sip:service@10.21.99.79:5062>
 Contact: sip:sipp@10.21.99.79:5061
 
+
 Il messaggio e' diretto a service@10.21.99.79:5062 ma la sipp lo manda fisicamente a SIPSL nella porta 5060
 Non c'e' traccia di cio negli header.
 
@@ -36,5 +37,25 @@ Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK1c28881306836789394442;rport
 
 
 
-risposta a A:
- 
+----------------------------------------------------------------------------------------
+A->SIPSL
+messaggio semplice senza cambi di porte
+info:
+user_id 			= gugli
+domain 				= sipsl.org
+display name		= Guglielmo Incisa
+Proxy 				= 10.10.35.22
+chiamato			= majo@ecuadorcafe.org
+local_ip 			= 172.20.174.109
+local_port (random) = 14114
+
+Esce:
+Route				= 10.10.35.22 (= proxy)
+INVITE sip:majo@ecuadorcafe.org SIP/2.0
+Via: SIP/2.0/UDP 172.20.174.109:14114;branch=...
+Contact: <sip:gugli@172.20.174.109:14114>
+To: <sip:majo@ecuadorcafe.org>
+From: "Guglielmo Incisa"<sip:gugli@sipsl.org>;tag=...
+
+
+

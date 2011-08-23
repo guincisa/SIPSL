@@ -155,6 +155,9 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	parsedToUri				= false;
 	parsedToParms			= false;
 
+	route_address			= "";
+	route_port				= "";
+	has_route				= false;
 
 	reqRep					= 0;
 	headSipRequest			= "";
@@ -240,6 +243,9 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	parsedToUri				= false;
 	parsedToParms			= false;
 
+	route_address			= "";
+	route_port				= "";
+	has_route				= false;
 
 	reqRep					= 0;
 	headSipRequest			= "";
@@ -1677,6 +1683,29 @@ string MESSAGE::getHeadToParams(void){
 
 	return headToParms;
 }
+void MESSAGE::setRoute(string _r,string _p){
+	DEBINFMESSAGE("int MESSAGE::setRoute(string _r,string _p)",this<<"]["<<_r<<"]["<<"]["<<_p)
+
+	route_address = _r;
+	route_port = _p;
+	has_route = true;
+	return;
+
+}
+bool MESSAGE::hasRoute(void){
+	DEBINFMESSAGE("bool MESSAGE::hasRoute(void)",this)
+	return has_route;
+}
+pair<string, string> MESSAGE::getRoute(void){
+	DEBINFMESSAGE("pair<char*, bool> MESSAGE::getRoute(void)",this)
+
+	return( make_pair(route_address,route_port));
+
+}
+void MESSAGE::unsetRoute(void){
+	DEBINFMESSAGE("void MESSAGE::unsetRoute(void)",this)
+	has_route = false;
+}
 int MESSAGE::getReqRepType(void){
 	DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this)
 	if (invalid == 1)
@@ -1981,8 +2010,16 @@ int MESSAGE::fillCommand(void){
 	return message_line.size();
 
 }
-bool MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >& _command){
+bool MESSAGE::buildCommand(vector< pair<int,pair<int, pair<string,string> > > >& _command){
 	//DEBINFMESSAGE("int MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >&)",this<<"]["<<_command)
+
+	/*
+	 0%i%127.0.0.1:5061%service@127.0.0.1:5061
+	 0 table id
+	 i operation
+	 127.0.0.1:5061 key
+	 service@127.0.0.1:5061 data
+	 */
 
 	vector< pair<char*, bool> >::iterator m_l;
 
@@ -1996,8 +2033,8 @@ bool MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >& _command){
 		char *saveptr1;
 		char* tok = strtok_r(temp, "%",&saveptr1);
 		int i = 0;
-		string s[3];
-		while (tok != NULL || i < 3){
+		string s[4];
+		while (tok != NULL || i < 4){
 			int ll = strlen(tok);
 			char* trok = tok + ll;
 			strcpy(trok,"");
@@ -2005,19 +2042,23 @@ bool MESSAGE::buildCommand(vector< pair<int, pair<string,string> > >& _command){
 			i++;
 			tok = strtok_r(NULL, "%",&saveptr1);
 		}
+		//table
+		int table = atoi(s[0].c_str());
 		int k = 0;
-		if(s[0].compare("i") == 0){
+		if(s[1].compare("i") == 0){
 			k = 1;
 		}
-		else if (s[0].compare("d")  == 0){
+		else if (s[1].compare("d")  == 0){
 			k = 2;
 		}
-		else if (s[0].compare("t")  == 0){
+		else if (s[1].compare("t")  == 0){
 			k = 20;
 		}
 
-		_command.push_back(make_pair(k, make_pair(s[1],s[2])));
+		_command.push_back(make_pair(table,make_pair(k, make_pair(s[2],s[3]))));
 		DEBOUT("MESSAGE::buildCommand",k<<"]["<<s[1]<<"]["<<s[2])
+		DEBOUT("MESSAGE::buildCommand",k<<"]["<<s[1]<<"]["<<s[2]<<"]["<<s[3])
+
 		m_l++;
 	}
 	messageStatus = 1;
