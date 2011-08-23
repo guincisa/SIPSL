@@ -3,8 +3,11 @@ ISSUES
 Agosto 23
 introduzione dell'indirizzo di routing
 
+PD-SIPSL
+0%i%10.21.99.79:5062%10.21.99.79:5062
+send
 
-
+contact non va bene deve essere l'indirizzo locale di SIPSL
 
 A
 INVITE sip:service@10.21.99.79:5062 SIP/2.0

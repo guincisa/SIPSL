@@ -179,15 +179,15 @@ class ThreadWrapper {
 #define TABLES 1
 
 
-//#define PROFILING
-//#define PROFILELOCK
-//#define PROFILELOCKCALC
+#define PROFILING
+#define PROFILELOCK
+#define PROFILELOCKCALC
 
 #define CHECKDOA
 
 #define NOWARNINGS
 
-//#define LOGLEVL1
+#define LOGLEVL1
 #ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK

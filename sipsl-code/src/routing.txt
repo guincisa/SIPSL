@@ -58,4 +58,40 @@ To: <sip:majo@ecuadorcafe.org>
 From: "Guglielmo Incisa"<sip:gugli@sipsl.org>;tag=...
 
 
+quindi la SIPSL->B
+Route				= indirizzo ip di majo@ecuadorcafe.org  oppure proxy
+INVITE sip:majo@ecuadorcafe.org SIP/2.0
+Via: SIP/2.0/UDP SIPSL_IPADDRESS:5060;branch=...
+Contact: <sip:gugli@SIPSL_IPADDRESS:5060>
+oppure?
+Contact: <sip:SIPSL@SIPSL_IPADDRESS:5060>
+To: <sip:majo@ecuadorcafe.org>
+From: "Guglielmo Incisa"<sip:gugli@sipsl.org>;tag=...
 
+
+TEST:
+[INVITE sip:sippcalled@10.21.99.79:5062 SIP/2.0^M
+Via: SIP/2.0/UDP 10.21.99.79:5072;branch=z9hG4bK-28034-1-0^M
+From: sippcaller <sip:sippcaller@10.21.99.79:5072>;tag=28034SIPpTag001^M
+To: sippcalled <sip:sippcalled@10.21.99.79:5062>^M
+Call-ID: 1-28034@10.21.99.79^M
+CSeq: 1 INVITE^M
+Contact: sip:sipp@10.21.99.79:5072^M
+Max-Forwards: 70^M
+Subject: Performance Test^M
+Content-Type: application/sdp^M
+Content-Length:   133^M
+
+INVITE sip:sippcalled@10.21.99.79:5062 SIP/2.0^M
+From: sippcaller <sip:sippcaller@10.21.99.79:5072>;tag=209f081314116067575973^M
+To: sippcalled <sip:sippcalled@10.21.99.79:5062>^M
+Call-ID: CoMap0000207a101314116067567040@sipsl.gugli.com^M
+CSeq: 1 INVITE^M
+Contact: <sip:sipsl@grog:5060>^M
+Max-Forwards: 70^M
+Subject: Performance Test^M
+Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK207a101314116067567040;rport^M
+Content-Type: application/sdp^M
+Content-Length: 133^M
+
+il sipp usa lo stesso indirizzo per il via from e contact
