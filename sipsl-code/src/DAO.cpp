@@ -163,7 +163,7 @@ void DAO::parse(void* __mess, int _mmod) {
             //send
         	//change tuning params
         	//riduce o aumenta le code e non i loro trheads
-        	DEBOUT("void DAO::parse",m_l_2->first << "]["<<((pair <string,string>)m_l_2->second).first<<"]["<<((pair <string,string>)m_l_2->second).second)
+        	DEBOUT("void DAO::parse",m_l_2.first << "]["<<((pair <string,string>)m_l_2.second).first<<"]["<<((pair <string,string>)m_l_2.second).second)
         	if (((string)((pair <string,string>)m_l_2.second).first).compare("SL_CC") == 0){
             	int k = atoi(((string)((pair <string,string>)m_l_2.second).second).c_str());
             	sl_cc->changeEngineMaps(k);

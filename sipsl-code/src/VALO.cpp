@@ -143,12 +143,16 @@ VALO::~VALO(void){
 		DELPTR((string*)p->second,"fromhead_200ok_a");
 		ctxt_store.erase(p);
 	}
-	p = ctxt_store.find("getData");
+	p = ctxt_store.find("RouteIp");
 	if (p != ctxt_store.end()){
-		DELPTR((string*)p->second,"getData");
+		DELPTR((string*)p->second,"RouteIp");
 		ctxt_store.erase(p);
 	}
-
+	p = ctxt_store.find("RoutePort");
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"RoutePort");
+		ctxt_store.erase(p);
+	}
 }
 void VALO::onInvite(MESSAGE* _message){
 	DEBINF("void VALO::onInvite(MESSAGE* _message)",this<<"]["<<_message)
@@ -186,14 +190,28 @@ void VALO::onInvite(MESSAGE* _message){
 	css << ":";
 	css <<ppp;
 
-	NEWPTR(string*, ss, string(((SL_CC*)sl_cc)->getDAO()->getData(css.str())),"getData")
+	string tmpR = ((SL_CC*)sl_cc)->getDAO()->getData(TBL_ROUTE,css.str());
+	size_t found = tmpR.find(":");
+	if ( found!=string::npos){
+		NEWPTR(string*, ss, string(tmpR.substr(0,found-1)),"RouteIp")
+		NEWPTR(string*, ss2, string(tmpR.substr(found+1)),"RoutePort")
+		DEBOUT("message->setRoute",tmpR.substr(0,found-1) <<"]["<<tmpR.substr(found+1))
+		ctxt_store.insert(pair<string, void*>("RouteIp", (void*) ss ));
+		ctxt_store.insert(pair<string, void*>("RoutePort", (void*) ss2 ));
 
-	ctxt_store.insert(pair<string, void*>("getData", (void*) ss ));
+		message->setRoute(tmpR.substr(0,found-1) , tmpR.substr(found+1));
+	}else{
+		NEWPTR(string*, ss, string(tmpR.substr(0,found-1)),"RouteIp")
+		NEWPTR(string*, ss2, string("5060"),"RoutePort")
+		ctxt_store.insert(pair<string, void*>("RouteIp", (void*) ss ));
+		ctxt_store.insert(pair<string, void*>("RoutePort", (void*) ss2 ));
+		message->setRoute(tmpR,"5060");
+	}
 
-	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
+
 	stringstream tmps ;
-	tmps << "INVITE sip:"<< *ss <<" SIP/2.0";
-	message->setHeadSipRequest(tmps.str());
+//	tmps << "INVITE sip:"<< *ss <<" SIP/2.0";
+//	message->setHeadSipRequest(tmps.str());
 
 	//message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
@@ -206,6 +224,7 @@ void VALO::onInvite(MESSAGE* _message){
 	//Standard changes
 	string newCallid = call_oset->getCallId_Y();
 	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP(), newCallid);
+	//no good contact
 	message->setGenericHeader("Contact:", "<sip:sipsl@grog:5060>");
 
 	message->dumpMessageBuffer();
@@ -318,14 +337,17 @@ void VALO::onAck(MESSAGE* _message){
 //	css <<ppp;
 
 	map<string, void*> ::iterator p;
-	p = ctxt_store.find("getData");
 
-	string* ss = (string*)p->second;
+	p = ctxt_store.find("RouteIp");
+	string* ss1 = (string*)p->second;
+	p = ctxt_store.find("RoutePort");
+	string* ss2 = (string*)p->second;
+	newack->setRoute(*ss1,*ss2);
 
-	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
-	stringstream tmps ;
-	tmps << "ACK sip:"<< *ss <<" SIP/2.0";
-	newack->setHeadSipRequest(tmps.str());
+//	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
+//	stringstream tmps ;
+//	tmps << "ACK sip:"<< *ss <<" SIP/2.0";
+//	newack->setHeadSipRequest(tmps.str());
 
 //	//Change request
 //	stringstream tmps ;
@@ -535,14 +557,14 @@ void VALO::onBye(MESSAGE* _message){
 //		string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
 
 		map<string, void*> ::iterator p;
-		p = ctxt_store.find("getData");
-
-		string* ss = (string*)p->second;
-
-		DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
-		stringstream tmps ;
-		tmps << "BYE sip:"<< *ss <<" SIP/2.0";
-		message->setHeadSipRequest(tmps.str());
+		p = ctxt_store.find("RouteIp");
+		string* ss1 = (string*)p->second;
+		p = ctxt_store.find("RoutePort");
+		string* ss2 = (string*)p->second;
+		message->setRoute(*ss1,*ss2);
+//		stringstream tmps ;
+//		tmps << "BYE sip:"<< *ss <<" SIP/2.0";
+//		message->setHeadSipRequest(tmps.str());
 
 		stringstream viatmp;
 		viatmp << "SIP/2.0/UDP "<<getSUDP()->getDomain().c_str()<<":"<<getSUDP()->getPort()<<";branch=z9hG4bK"<<message->getKey()<<";rport";
@@ -596,6 +618,7 @@ void VALO::onBye(MESSAGE* _message){
 		//Request has to be made using INVITE_A via address
 		//string viatmps = __message->getViaLine();
 		DEBY
+		///not default route here!
 		stringstream _ss;
 		_ss << "BYE sip:ceppadim@" << __message->getViaUriHost() << ":" << __message->getViaUriPort() << " SIP/2.0";
 		message->setHeadSipRequest(_ss.str());

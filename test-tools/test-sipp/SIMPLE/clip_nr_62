@@ -1,0 +1,1 @@
+sipp -nr -sf c_su.xml -s sippcalled -rsa $mas:5060 -p 5072 -m $1 -d $2 -r $3 -rp 1000 $umf:5062 
