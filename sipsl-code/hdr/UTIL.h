@@ -128,7 +128,7 @@ class ThreadWrapper {
 
 //Sudp threads
 // its x 2
-#define SUDPTH 10
+#define SUDPTH 1
 
 //Max engine threads
 //128
@@ -136,19 +136,19 @@ class ThreadWrapper {
 #define MAXMAPS 20
 
 //128
-#define SIPENGINETH 12
+#define SIPENGINETH 3
 //64
-#define SIPENGINMAPS 12
+#define SIPENGINMAPS 3
 
 //64
-#define TRNSPRTTH 10
+#define TRNSPRTTH 2
 //32
-#define TRNSPRTMAPS 10
+#define TRNSPRTMAPS 2
 
 //128
-#define SL_CCTH 20
+#define SL_CCTH 5
 //32
-#define SL_CCMAPS 20
+#define SL_CCMAPS 5
 
 //#define ENGINEMAPS 5
 #define ALARMTH 1
@@ -159,8 +159,8 @@ class ThreadWrapper {
 
 //number of maps for message module when using MAPMODULHYBRID
 #define PREMODMAP 10
-#define COMAPS 2000
-#define COMAPS_DIG 4
+#define COMAPS 600
+#define COMAPS_DIG 3
 #define MESSAGEMAPS 100
 
 #define ARR 4000

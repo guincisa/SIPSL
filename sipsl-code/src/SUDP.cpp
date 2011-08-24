@@ -181,7 +181,30 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 		DEBERROR("bind() failed)");
 	}
 
-    _engine->linkSUDP(this);
+	//DEFINE LOCAL ADDRESS for VIA
+	char hostname[1024];
+	char str[INET_ADDRSTRLEN];
+	hostname[1023]='\0';
+	gethostname(hostname,1023);
+
+	struct addrinfo hints, *info;
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_UNSPEC; /*either IPV4 or IPV6*/
+	hints.ai_socktype = SOCK_DGRAM;
+
+	stringstream ss;
+	ss<<echoServPort;
+	localport = ss.str();
+
+	if (getaddrinfo(hostname, localport.c_str(), &hints, &info) != 0) {
+	    DEBASSERT("getaddrinfo")
+	}
+	inet_ntop(AF_INET, &((struct sockaddr_in *) info->ai_addr)->sin_addr, str, INET_ADDRSTRLEN);
+	localip = str;
+	DEBINFSUDP("local ip address",localip<<"]["<<localport)
+	// END DEFINE LOCAL ADDRESS
+
+	_engine->linkSUDP(this);
 
     DEBINFSUDP("SUDP init done","")
 
@@ -373,6 +396,13 @@ void SUDP::sendReply(MESSAGE* _message){
     freeaddrinfo(servinfo);
     return;
 }
+string SUDP::getLocalIp(void){
+	return localip;
+}
+string SUDP::getLocalPort(void){
+	return localport;
+}
+
 //void SUDP::sendReply(MESSAGE* _message){
 //	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
 //
