@@ -80,12 +80,16 @@ class SUDP {
         void sendReply(MESSAGE* message);
 
         ENGINE* getDoa();
+        string getLocalIp(void);
+        string getLocalPort(void);
 
     private:
 
         ENGINE* engine;
         ThreadWrapper *listenerThread[2*SUDPTH];
         string domain;
+        string localip;
+        string localport;
         int sock_se[SUDPTH];
         int sock_re;
         sockaddr_inX echoServAddr;

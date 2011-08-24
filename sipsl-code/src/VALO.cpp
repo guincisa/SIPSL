@@ -225,7 +225,6 @@ void VALO::onInvite(MESSAGE* _message){
 	string newCallid = call_oset->getCallId_Y();
 	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP(), newCallid);
 	//no good contact
-	message->setGenericHeader("Contact:", "<sip:sipsl@grog:5060>");
 
 	message->dumpMessageBuffer();
 

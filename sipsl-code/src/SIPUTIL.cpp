@@ -192,10 +192,12 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 	//set new Via, is used by the b part to send replies
 	_gted->popVia();
 	stringstream viatmp;
-	viatmp << ("SIP/2.0/UDP ") << sudp->getDomain() << ":" << sudp->getPort() << ";branch=z9hG4bK" <<_gtor->getKey() << ";rport";
+	viatmp << ("SIP/2.0/UDP ") << sudp->getLocalIp() << ":" << sudp->getLocalPort() << ";branch=z9hG4bK" <<_gtor->getKey() << ";rport";
 	_gted->pushNewVia(viatmp.str());
 
 	_gted->setGenericHeader("Call-ID:", _callidy);
+
+	_gted->setGenericHeader("Contact:", "<sip:sipsl@grog:5060>");
 
 	_gted->setProperty("From:", "tag", _gted->getKey());
 
