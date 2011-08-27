@@ -1883,6 +1883,8 @@ pair<string,int> MESSAGE::getUri(string header){
 		fillIn();
 	}
 
+	string return1;
+	int return2 = 0;
 
 	if(header.compare("REQUEST") == 0){
 		//INVITE sip:service@10.21.99.79:5062 SIP/2.0
@@ -1896,9 +1898,11 @@ pair<string,int> MESSAGE::getUri(string header){
 		char* ddd = strstr(ccc,"@");
 		char* eee = ddd+1;
 		char* fff = strstr(eee,":");
-		strcpy(fff,"");
-		string return1 = eee;
-		int return2 = atoi(fff+1);
+		if (fff != NULL){
+			strcpy(fff,"");
+			return2 = atoi(fff+1);
+		}
+		return1 = eee;
 		DEBINFMESSAGE("pair<string,int> MESSAGE::getUri(string header)",this<<"]["<<header<<"]["<<return1<<"]["<<return2)
 		return(make_pair(return1,return2));
 	}
@@ -1914,7 +1918,7 @@ pair<string,string> MESSAGE::getUriProtocol(string header){
 		fillIn();
 	}
 
-
+	string return1;
 	if(header.compare("REQUEST") == 0){
 		//INVITE sip:service@10.21.99.79:5062 SIP/2.0
 		//string Via="INVITE sip:service@10.21.99.79:5062 SIP/2.0";
@@ -1927,10 +1931,14 @@ pair<string,string> MESSAGE::getUriProtocol(string header){
 		char* ddd = strstr(ccc,"@");
 		char* eee = ddd+1;
 		char* fff = strstr(eee,":");
-		strcpy(fff,"");
-		string return1 = eee;
-		DEBINFMESSAGE("pair<string,int> MESSAGE::getUriProtocol(string header)",this<<"]["<<header<<"]["<<return1<<"]["<<return2)
-		return(make_pair(return1,fff+1));
+		return1 = eee;
+		if (fff != NULL){
+			strcpy(fff,"");
+			return(make_pair(return1,fff+1));
+		}else{
+			return(make_pair(return1,""));
+		}
+		DEBINFMESSAGE("pair<string,int> MESSAGE::getUriProtocol(string header)",this<<"]["<<header<<"]["<<return1)
 	}
 	return (make_pair("",""));
 

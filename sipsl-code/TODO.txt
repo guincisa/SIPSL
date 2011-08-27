@@ -1,7 +1,20 @@
 ISSUES
 
+uniformare il parser troppe funzioni fanno la stessa cosa
+ma se la sipsl usa il route 
+devo mettere Route negli header...?
+
+il parser si pianta qui....
+To: ":5062" <sip:guic@192.168.0.103>
+
 Agosto 23
 introduzione dell'indirizzo di routing
+
+ubu-ubu2
+PD-SIPSL
+0%i%192.168.0.100:5060%192.168.0.100:5060
+send
+
 
 PD-SIPSL
 0%i%10.21.99.79:5062%10.21.99.79:5062
