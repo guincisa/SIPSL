@@ -346,8 +346,11 @@ void SUDP::sendRequest(MESSAGE* _message){
     }
     else{
     	_pair = _message->getUriProtocol("REQUEST");
+    	if (_pair.second.length() == 0){
+    		_pair.second = "5060";
+    	}
     }
-
+    DEBOUT("ufff",_pair.first<<"]["<<_pair.second)
     const char* _hostchar = _pair.first.c_str();
 
     struct addrinfo hints, *servinfo;

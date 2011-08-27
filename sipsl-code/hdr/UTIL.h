@@ -132,8 +132,8 @@ class ThreadWrapper {
 
 //Max engine threads
 //128
-#define MAXTHREADS 20
-#define MAXMAPS 20
+#define MAXTHREADS 5
+#define MAXMAPS 5
 
 //128
 #define SIPENGINETH 3
@@ -159,7 +159,7 @@ class ThreadWrapper {
 
 //number of maps for message module when using MAPMODULHYBRID
 #define PREMODMAP 10
-#define COMAPS 600
+#define COMAPS 300
 #define COMAPS_DIG 3
 #define MESSAGEMAPS 100
 
@@ -217,14 +217,13 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-//#define SHOWFLOWLOG
+#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
 #define LOGDEV
 #define LOGSIPHIGH
 #define LOGPTR
-#define LOGINFMESSAGE
 #endif
 
 //willgo getDoa everytime a call to call_oset is done

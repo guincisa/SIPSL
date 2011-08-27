@@ -114,6 +114,9 @@ string DAO::getData(int _table, string _data){
 	GETLOCK(&mutex,"DAO mutex",19)
 	it = datatable[_table].find(_data);
 	RELLOCK(&mutex,"DAO mutex")
+	if (it == datatable[_table].end()){
+		return "";
+	}
 
 	return it->second;
 

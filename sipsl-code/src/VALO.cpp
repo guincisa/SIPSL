@@ -182,30 +182,35 @@ void VALO::onInvite(MESSAGE* _message){
 	}
 
 	DEBY
-	string sss = _message->getUri("REQUEST").first;
-	int ppp = _message->getUri("REQUEST").second;
-	DEBOUT("indirizzo request", sss << "] ["<<ppp)
+	pair<string,int> tp = _message->getUri("REQUEST");
+	DEBOUT("indirizzo request", tp.first << "] ["<<tp.second)
 	stringstream css;
-	css << sss;
-	css << ":";
-	css <<ppp;
-
+	css << tp.first;
+	if (tp.second != 0){
+		css << ":";
+		css << tp.second;
+	}
+	DEBY
 	string tmpR = ((SL_CC*)sl_cc)->getDAO()->getData(TBL_ROUTE,css.str());
+	DEBOUT("tmpR", tmpR)
+	if (tmpR.length() != 0){
+		DEBY
 	size_t found = tmpR.find(":");
-	if ( found!=string::npos){
-		NEWPTR(string*, ss, string(tmpR.substr(0,found-1)),"RouteIp")
-		NEWPTR(string*, ss2, string(tmpR.substr(found+1)),"RoutePort")
-		DEBOUT("message->setRoute",tmpR.substr(0,found-1) <<"]["<<tmpR.substr(found+1))
-		ctxt_store.insert(pair<string, void*>("RouteIp", (void*) ss ));
-		ctxt_store.insert(pair<string, void*>("RoutePort", (void*) ss2 ));
+		if ( found!=string::npos){
+			NEWPTR(string*, ss, string(tmpR.substr(0,found-1)),"RouteIp")
+			NEWPTR(string*, ss2, string(tmpR.substr(found+1)),"RoutePort")
+			DEBOUT("message->setRoute",tmpR.substr(0,found-1) <<"]["<<tmpR.substr(found+1))
+			ctxt_store.insert(pair<string, void*>("RouteIp", (void*) ss ));
+			ctxt_store.insert(pair<string, void*>("RoutePort", (void*) ss2 ));
 
-		message->setRoute(tmpR.substr(0,found-1) , tmpR.substr(found+1));
-	}else{
-		NEWPTR(string*, ss, string(tmpR.substr(0,found-1)),"RouteIp")
-		NEWPTR(string*, ss2, string("5060"),"RoutePort")
-		ctxt_store.insert(pair<string, void*>("RouteIp", (void*) ss ));
-		ctxt_store.insert(pair<string, void*>("RoutePort", (void*) ss2 ));
-		message->setRoute(tmpR,"5060");
+			message->setRoute(tmpR.substr(0,found-1) , tmpR.substr(found+1));
+		}else{
+			NEWPTR(string*, ss, string(tmpR.substr(0,found-1)),"RouteIp")
+			NEWPTR(string*, ss2, string("5060"),"RoutePort")
+			ctxt_store.insert(pair<string, void*>("RouteIp", (void*) ss ));
+			ctxt_store.insert(pair<string, void*>("RoutePort", (void*) ss2 ));
+			message->setRoute(tmpR,"5060");
+		}
 	}
 
 
@@ -338,10 +343,12 @@ void VALO::onAck(MESSAGE* _message){
 	map<string, void*> ::iterator p;
 
 	p = ctxt_store.find("RouteIp");
-	string* ss1 = (string*)p->second;
-	p = ctxt_store.find("RoutePort");
-	string* ss2 = (string*)p->second;
-	newack->setRoute(*ss1,*ss2);
+	if (p != ctxt_store.end()){
+		string* ss1 = (string*)p->second;
+		p = ctxt_store.find("RoutePort");
+		string* ss2 = (string*)p->second;
+		newack->setRoute(*ss1,*ss2);
+	}
 
 //	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
 //	stringstream tmps ;
@@ -556,11 +563,13 @@ void VALO::onBye(MESSAGE* _message){
 //		string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
 
 		map<string, void*> ::iterator p;
-		p = ctxt_store.find("RouteIp");
-		string* ss1 = (string*)p->second;
-		p = ctxt_store.find("RoutePort");
-		string* ss2 = (string*)p->second;
-		message->setRoute(*ss1,*ss2);
+		if (p != ctxt_store.end()){
+			p = ctxt_store.find("RouteIp");
+			string* ss1 = (string*)p->second;
+			p = ctxt_store.find("RoutePort");
+			string* ss2 = (string*)p->second;
+			message->setRoute(*ss1,*ss2);
+		}
 //		stringstream tmps ;
 //		tmps << "BYE sip:"<< *ss <<" SIP/2.0";
 //		message->setHeadSipRequest(tmps.str());
