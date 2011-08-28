@@ -79,19 +79,19 @@ void ALO::call(MESSAGE* _message) {
 
 	if (_message->getReqRepType() == REQSUPP){
 		if (_message->getHeadSipRequestCode() == INVITE_REQUEST){
-			DEBALO("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBALO("ALO Dispatches INVITE_REQUEST",_message->getHeadSipRequestCode())
 			onInvite(_message);
 		}
 		else if (_message->getHeadSipRequestCode()== ACK_REQUEST && _message->getTypeOfInternal() == TYPE_MESS && _message->getType_trnsct() == TYPE_TRNSCT){
-			DEBALO("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBALO("ALO Dispatches ACK_REQUEST TRANSCT",_message->getHeadSipRequestCode())
 			onAck(_message);
 		}
 		else if (_message->getHeadSipRequestCode() == ACK_REQUEST && _message->getTypeOfInternal() == TYPE_MESS && _message->getType_trnsct() == TYPE_NNTRNSCT ){
-			DEBALO("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBALO("ALO Dispatches ACK_REQUEST NOTRANSCT",_message->getHeadSipRequestCode())
 			onAckNoTrnsct(_message);
 		}
 		else if (_message->getHeadSipRequestCode() == BYE_REQUEST){
-			DEBALO("ALO Dispatches ",_message->getHeadSipRequest().getContent())
+			DEBALO("ALO Dispatches BYE_REQUEST",_message->getHeadSipRequestCode())
 			onBye(_message);
 		}
 		else {
@@ -100,7 +100,7 @@ void ALO::call(MESSAGE* _message) {
 	}
 	else if (_message->getReqRepType() == REPSUPP){
 		if (_message->getHeadSipReplyCode() == OK_200){
-			DEBALO("ALO Dispatches ",_message->getHeadSipReply().getContent())
+			DEBALO("ALO Dispatches ",_message->getHeadSipReplyCode())
 			on200Ok(_message);
 		}
 		else {
@@ -125,7 +125,7 @@ void ALO::onAckNoTrnsct(MESSAGE* m){
 }
 void ALO::noCallBack(MESSAGE* _message){
 
-	DEBALO("ALO noCallBack - Decoupling ",_message->getHeadSipRequest().getContent())
+	DEBALO("ALO noCallBack - Decoupling ",_message->getHeadSipRequestCode())
 	if(_message->getGenEntity() == SODE_SMCLPOINT)
 		_message->setDestEntity(SODE_SMSVPOINT);
 	else if (_message->getGenEntity() == SODE_SMSVPOINT)

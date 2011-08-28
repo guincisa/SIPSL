@@ -155,6 +155,13 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	parsedToUri				= false;
 	parsedToParms			= false;
 
+	parsedContact			= false;
+	contactUri				= "";
+	contactName				= "";
+	contactAddress			= "";
+	contactPort				= "";
+
+
 	route_address			= "";
 	route_port				= "";
 	has_route				= false;
@@ -242,6 +249,14 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	parsedToName			= false;
 	parsedToUri				= false;
 	parsedToParms			= false;
+
+	parsedContact			= false;
+	contactUri				= "";
+	contactName				= "";
+	contactAddress			= "";
+	contactPort				= "";
+
+
 
 	route_address			= "";
 	route_port				= "";
@@ -1683,6 +1698,93 @@ string MESSAGE::getHeadToParams(void){
 
 	return headToParms;
 }
+string MESSAGE::getContactUri(void){
+	DEBINFMESSAGE("string MESSAGE::getContact(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getContact invalid")
+
+	if (parsedContact){
+		return contactUri;
+	}
+
+	//Contact: <sip:majo@192.168.0.100:5062>
+
+	string cont = getGenericHeader("Contact:");
+	//remove brackets <>
+    char contch[cont.length() +1];
+    strcpy(contch, cont.c_str());
+    char* pun1 = strchr(contch,'<');
+    if ( pun1 != NULL){
+        char* pun2 = strchr(contch,'>');
+		sprintf(pun2,"");
+		contactUri = pun1+5;
+		DEBOUT("MESSAGE::getContactUri",contactUri)
+    }
+    else {
+    	contactUri = contch;
+		DEBOUT("MESSAGE::getContactUri",contactUri)
+    }
+
+    //majo@192.168.0.100:5062
+    char contch2[contactUri.length() +1];
+    strcpy(contch2, contactUri.c_str());
+    char* pun3 = strchr(contch2,'@');
+	if (pun3 == NULL){
+		DEBASSERT("unexpected")
+	}
+	sprintf(pun3,"");
+	contactName = contch2;
+	DEBOUT("MESSAGE::getContactUri contactName",contactName)
+
+	DEBOUT("pun3+1", pun3 + 1)
+
+	//192.168.0.100:5062
+    char* pun5 = strchr(pun3 + 1,':');
+	if (pun5 == NULL){
+		contactPort = "5060";
+	}else{
+		contactPort = pun5 +1;
+		sprintf(pun5,"");
+	}
+	contactAddress = pun3 + 1;
+	DEBOUT("MESSAGE::getContactUri contactAddress",contactAddress)
+	DEBOUT("MESSAGE::getContactUri contactPort",contactPort)
+
+	parsedContact = true;
+	return contactUri;
+
+}
+string MESSAGE::getContactName(void){
+	DEBINFMESSAGE("string MESSAGE::getContactName(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getContactName invalid")
+
+	if (!parsedContact){
+		getContactUri();
+	}
+	return contactName;
+}
+string MESSAGE::getContactAddress(void){
+	DEBINFMESSAGE("string MESSAGE::getContactAddress(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getContactAddress invalid")
+
+	if (!parsedContact){
+		getContactUri();
+	}
+	return contactAddress;
+}
+
+string MESSAGE::getContactPort(void){
+	DEBINFMESSAGE("string MESSAGE::getContactPort(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getContactPort invalid")
+
+	if (!parsedContact){
+		getContactUri();
+	}
+	return contactPort;
+}
 void MESSAGE::setRoute(string _r,string _p){
 	DEBINFMESSAGE("int MESSAGE::setRoute(string _r,string _p)",this<<"]["<<_r<<"]["<<"]["<<_p)
 
@@ -1931,11 +2033,12 @@ pair<string,string> MESSAGE::getUriProtocol(string header){
 		char* ddd = strstr(ccc,"@");
 		char* eee = ddd+1;
 		char* fff = strstr(eee,":");
-		return1 = eee;
 		if (fff != NULL){
 			strcpy(fff,"");
+			return1 = eee;
 			return(make_pair(return1,fff+1));
 		}else{
+			return1 = eee;
 			return(make_pair(return1,""));
 		}
 		DEBINFMESSAGE("pair<string,int> MESSAGE::getUriProtocol(string header)",this<<"]["<<header<<"]["<<return1)

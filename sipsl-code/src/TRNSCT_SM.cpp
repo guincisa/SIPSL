@@ -1272,7 +1272,7 @@ ACTION* act_provrep_to_sv(SM_V6* _sm, MESSAGE* _message) {
 	MESSAGE* __message = ((TRNSCT_SM*)_sm)->getA_Matrix();
 	DEBDEV("MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(reply_x, __message, SODE_TRNSCT_CL, SODE_TRNSCT_SV)
-	SipUtil.genASideReplyFromBReply(_message, __message, reply_x);
+	SipUtil.genASideReplyFromBReply(_message, __message, reply_x,_sm->getSL_CC()->getSUDP());
 	reply_x->purgeSDP();
 	reply_x->compileMessage();
 	//DEBDEV("CONTACT", reply_x->getHeadContact()->getContent())

@@ -31,7 +31,7 @@ class SIPUTIL {
 
 	public:
 		// Generate a reply to A from a Reply
-		void genASideReplyFromBReply(MESSAGE* gtor, MESSAGE* _gtor, MESSAGE* gted);
+		void genASideReplyFromBReply(MESSAGE* gtor, MESSAGE* _gtor, MESSAGE* gted, SUDP* sudp);
 		void genASideReplyFromRequest(MESSAGE* gtor, MESSAGE* getd);
 
 		// Generate B Request from A Request

@@ -153,6 +153,22 @@ VALO::~VALO(void){
 		DELPTR((string*)p->second,"RoutePort");
 		ctxt_store.erase(p);
 	}
+	p = ctxt_store.find("ContactBAddress");
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"ContactBAddress");
+		ctxt_store.erase(p);
+	}
+	p = ctxt_store.find("ContactBPort");
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"ContactBPort");
+		ctxt_store.erase(p);
+	}
+	p = ctxt_store.find("ContactBName");
+	if (p != ctxt_store.end()){
+		DELPTR((string*)p->second,"ContactBName");
+		ctxt_store.erase(p);
+	}
+
 }
 void VALO::onInvite(MESSAGE* _message){
 	DEBINF("void VALO::onInvite(MESSAGE* _message)",this<<"]["<<_message)
@@ -160,8 +176,6 @@ void VALO::onInvite(MESSAGE* _message){
     TIMEDEF
     SETNOW
     PROFILE("VALO::onInvite")
-
-	DEBALO("VALO::onInvite", _message->getHeadSipRequest().getContent())
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
 
@@ -172,8 +186,6 @@ void VALO::onInvite(MESSAGE* _message){
     //PURGEMESSAGE(_message)
 
 	try {
-		DEBALO("VALO message->getHeadRoute().getRoute().getHostName()",message->getHeadRoute()->getRoute().getHostName())
-		DEBALO("VALO message->getHeadRoute().getRoute().getPort()",message->getHeadRoute()->getRoute().getPort())
 		DEBALO("VALO","remove route")
 		message->dropHeader("Route:");
 	}
@@ -271,7 +283,6 @@ void VALO::onAck(MESSAGE* _message){
     SETNOW
     PROFILE("VALO::onAck")
 
-	DEBALO("VALO::onAck",_message->getHeadSipRequest().getContent())
 	/*
 	SIP/2.0 200 OK
 	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK1c28881306836789394442;rport
@@ -323,8 +334,6 @@ void VALO::onAck(MESSAGE* _message){
 
 	//Remove route
 	try {
-		DEBALO("VALO message->getHeadRoute().getRoute().getHostName()",newack->getHeadRoute()->getRoute().getHostName())
-		DEBALO("VALO message->getHeadRoute().getRoute().getPort()",newack->getHeadRoute()->getRoute().getPort())
 		DEBALO("VALO","remove route")
 		newack->dropHeader("Route:");
 	}
@@ -350,15 +359,14 @@ void VALO::onAck(MESSAGE* _message){
 		newack->setRoute(*ss1,*ss2);
 	}
 
-//	DEBOUT("((SL_CC*)sl_cc)->getDAO()->getData",*ss)
-//	stringstream tmps ;
-//	tmps << "ACK sip:"<< *ss <<" SIP/2.0";
-//	newack->setHeadSipRequest(tmps.str());
-
-//	//Change request
-//	stringstream tmps ;
-//	tmps << "ACK sip:GUGLISIPSL@"<<BPHONE<<":5062 SIP/2.0";
-//	newack->setHeadSipRequest(tmps.str());
+	p = ctxt_store.find("ContactBName");
+	stringstream tmps ;
+	tmps << "ACK sip:"<< *((string*)p->second);
+	p = ctxt_store.find("ContactBAddress");
+	tmps << "@" << *((string*)p->second);
+	p = ctxt_store.find("ContactBPort");
+	tmps << ":" << *((string*)p->second)  << " SIP/2.0";
+	newack->setHeadSipRequest(tmps.str());
 
 	//Purge SDP
 	newack->purgeSDP();
@@ -540,12 +548,19 @@ void VALO::onBye(MESSAGE* _message){
 //	CREATEMESSAGE(message, invite_b, SODE_ALOPOINT)
 
 	CREATEMESSAGE(message, _message, SODE_ALOPOINT, SODE_TRNSCT_CL)
+	//wrong!?
+	//bye cannot have sourcemessage
 	message->setSourceMessage(_message->getSourceMessage());
+	//message->setSourceMessage(_message);
 
 
-	DEBALO("BYE DIRECTION",_message->getHeadCSeq().getContent() << " " << _message->getRequestDirection())
+	DEBALO("BYE DIRECTION",_message->getRequestDirection() )
+	if (_message->getRequestDirection() == 0){
+		DEBASSERT("BYE DIRECTION missing")
+	}
 
 	if (_message->getRequestDirection() == SODE_FWD ) {
+		DEBALO("VALO::onBye SODE_FWD",this<<"]["<<_message)
 
 		//message->setDestEntity(SODE_TRNSCT_CL);
 
@@ -563,16 +578,21 @@ void VALO::onBye(MESSAGE* _message){
 //		string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
 
 		map<string, void*> ::iterator p;
+		p = ctxt_store.find("RouteIp");
 		if (p != ctxt_store.end()){
-			p = ctxt_store.find("RouteIp");
 			string* ss1 = (string*)p->second;
 			p = ctxt_store.find("RoutePort");
 			string* ss2 = (string*)p->second;
 			message->setRoute(*ss1,*ss2);
 		}
-//		stringstream tmps ;
-//		tmps << "BYE sip:"<< *ss <<" SIP/2.0";
-//		message->setHeadSipRequest(tmps.str());
+		p = ctxt_store.find("ContactBName");
+		stringstream tmps ;
+		tmps << "BYE sip:"<< *((string*)p->second);
+		p = ctxt_store.find("ContactBAddress");
+		tmps << "@" << *((string*)p->second);
+		p = ctxt_store.find("ContactBPort");
+		tmps << ":" << *((string*)p->second) << " SIP/2.0";
+		message->setHeadSipRequest(tmps.str());
 
 		stringstream viatmp;
 		viatmp << "SIP/2.0/UDP "<<getSUDP()->getDomain().c_str()<<":"<<getSUDP()->getPort()<<";branch=z9hG4bK"<<message->getKey()<<";rport";
@@ -613,6 +633,7 @@ void VALO::onBye(MESSAGE* _message){
 
 	}
 	else if (_message->getRequestDirection() == SODE_BKWD ) {
+		DEBALO("VALO::onBye SODE_BKWD",this<<"]["<<_message)
 
 		DEBASSERT("implement!!!!")
 
@@ -714,6 +735,21 @@ void VALO::on200Ok(MESSAGE* _message){
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("callid_200ok_b", (void*) callid_200ok_b )))
 	}
 
+	//contact
+	if (ctxt_store.find("ContactBName") == ctxt_store.end()){
+		NEWPTR(string*, ContactBName, string(_message->getContactName()),"ContactBName")
+		DEBALO("STORE ContactBName 200 ok", ContactBName)
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("ContactBName", (void*) ContactBName )))
+
+		NEWPTR(string*, ContactBPort, string(_message->getContactPort()),"ContactBPort")
+		DEBALO("STORE ContactBPort 200 ok", ContactBPort)
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("ContactBPort", (void*) ContactBPort )))
+
+		NEWPTR(string*, ContactBAddress, string(_message->getContactAddress()),"ContactBAddress")
+		DEBALO("STORE ContactBAddress 200 ok", ContactBName)
+		TRYCATCH(ctxt_store.insert(pair<string, void*>("ContactBAddress", (void*) ContactBAddress )))
+	}
+
 	DEBALO("on200Ok MESSAGE GENERATOR", __message)
 	CREATEMESSAGE(ok_x, __message, SODE_ALOPOINT , SODE_TRNSCT_SV)
 
@@ -731,17 +767,17 @@ void VALO::on200Ok(MESSAGE* _message){
 
 	ok_x->setGenericHeader("Contact:","<sip:sipsl@grog:5060>");
 
-	SipUtil.genASideReplyFromBReply(_message, __message, ok_x);
+	SipUtil.genASideReplyFromBReply(_message, __message, ok_x, getSUDP());
 	ok_x->compileMessage();
 
 	if (ctxt_store.find("tohead_200ok_a") == ctxt_store.end()){
-		DEBALO("STORE tags of 200 OK to A",ok_x->getHeadTo()->getContent() << "]["<<ok_x->getHeadFrom()->getContent())
 		NEWPTR(string*, tohead_a, string(ok_x->getGenericHeader("To:")),"tohead_200ok_a")
+		DEBALO("STORE tags of 200 OK to A",*tohead_a)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("tohead_200ok_a", (void*) tohead_a )))
 	}
 	if (ctxt_store.find("fromhead_200ok_a") == ctxt_store.end()){
-		DEBALO("STORE FROM HEAD of 200 ok", ok_x->getHeadTo()->getContent())
 		NEWPTR(string*, fromhead_a, string(ok_x->getGenericHeader("From:")),"fromhead_200ok_a")
+		DEBALO("STORE FROM HEAD of 200 ok", *fromhead_a)
 		TRYCATCH(ctxt_store.insert(pair<string, void*>("fromhead_200ok_a", (void*) fromhead_a )))
 	}
 

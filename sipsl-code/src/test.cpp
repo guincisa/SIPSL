@@ -233,7 +233,7 @@ int main(int argc, const char* argv[]) {
 
 
 
-		mystack->init(5060, sipeng, doa, "sipsl.gugli.com", alarm);
+		mystack->init(5060, sipeng, doa, "grog.sipsl.org", alarm);
 		mystack->start();
 
 		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
