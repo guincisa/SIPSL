@@ -341,6 +341,18 @@ class MESSAGE {
     	bool parsedToName;
     	bool parsedToUri;
     	bool parsedToParms;
+	private:
+    	string contactUri;
+    	string contactName;
+    	string contactAddress;
+    	string contactPort;
+    	bool parsedContact;
+	public:
+    	string getContactUri(void);
+    	string getContactName(void);
+    	string getContactAddress(void);
+    	string getContactPort(void);
+
 
     	////////////////////////////////
     	//Routing

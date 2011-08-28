@@ -224,6 +224,7 @@ class ThreadWrapper {
 #define LOGDEV
 #define LOGSIPHIGH
 #define LOGPTR
+#define LOGALO
 #endif
 
 //willgo getDoa everytime a call to call_oset is done

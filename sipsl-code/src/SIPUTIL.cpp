@@ -78,7 +78,7 @@
 #endif
 
 
-void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted){
+void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted, SUDP* _sudp){
 	DEBINF("void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted)",_gtor<<"]["<<__gtor<<"]["<<_gted)
 
 	//__gtor is the B reply
@@ -158,7 +158,11 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 //		_gted->setProperty("To:", "tag", ttt.str());
 //
 //	}
-	_gted->setGenericHeader("Contact:","<sip:sipsl@grog:5060>");
+	stringstream cons;
+	cons << "<sip:sipsl@";
+	cons << _sudp->getLocalIp() << ":" << _sudp->getLocalPort() <<">";
+
+	_gted->setGenericHeader("Contact:",cons.str());
 	_gted->setHeadSipReply(_gtor->getHeadSipReply());
 	_gted->dropHeader("User-Agent:");
 	_gted->dropHeader("Max-Forwards:");
@@ -196,8 +200,11 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 	_gted->pushNewVia(viatmp.str());
 
 	_gted->setGenericHeader("Call-ID:", _callidy);
+	stringstream cons;
+	cons << "<sip:sipsl@";
+	cons << sudp->getLocalIp() << ":" << sudp->getLocalPort() <<">";
 
-	_gted->setGenericHeader("Contact:", "<sip:sipsl@grog:5060>");
+	_gted->setGenericHeader("Contact:", cons.str());
 
 	_gted->setProperty("From:", "tag", _gted->getKey());
 

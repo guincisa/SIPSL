@@ -596,7 +596,11 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
                 if(_message->getLock()){
                     DEBASSERT("Unexpected message to be ignored found locked")
                 }
-                oper = 1;
+                if (OverallState_SV == OS_INIT && OverallState_CL == OS_INIT){
+                	//object is in init state
+                	oper = 1;
+                	//this to fix the deletion during linphone-linphone call in progress
+                }
                 _r_modulus = _message->getModulus();
                 PRINTDIFF("SL_CO::call() end")
 
