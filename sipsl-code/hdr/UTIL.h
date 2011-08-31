@@ -2,7 +2,7 @@
 //**********************************************************************************
 //**********************************************************************************
 // SIPSL Sip Service Layer
-// Copyright (C) 2007 Guglielmo Incisa di Camerana
+// Copyright (C) 2011 Guglielmo Incisa di Camerana
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -21,6 +21,14 @@
 //**********************************************************************************
 
 #define UTIL_H
+//#include <pthread.h>
+//#include <string>
+
+//#include <memory>
+
+//#include <sys/socket.h>
+//#include <arpa/inet.h>
+
 #include <assert.h>
 #include <iostream>
 #include <sstream>
@@ -28,6 +36,7 @@
 #include <vector>
 #include <algorithm>
 #include <string.h>
+
 #include <stdio.h>
 
 extern double PERFARRAY[4][50];
@@ -56,21 +65,6 @@ class ThreadWrapper {
         //pthread_mutex_t mutex;
         ThreadWrapper();
 };
-
-//Logger
-class ThreadWrapperLog {
-    public:
-        pthread_t thread;
-        //pthread_mutex_t mutex;
-        ThreadWrapperLog();
-};
-#define MAXFILES 5
-#define MAXLOGTYPES 100
-#ifndef LOGGER_H
-#include "LOGGER.h"
-#endif
-class LOGGER;
-extern LOGGER logger;
 
 
 
@@ -122,7 +116,6 @@ extern LOGGER logger;
 
 //The state machine will send the message directly to transport
 #define USEFASTSEND
-
 
 //The try is sent by SL_CC
 #define QUICKTRY
@@ -499,31 +492,17 @@ extern LOGGER logger;
 		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
 		sprintf(bu, "%llu",num);}
 
-//#define BDEBUG(m1, m2) {stringstream xx ; \
-//		char bu[128];\
-//		cout.precision(20);\
-//		TIME_S\
-//		string time(bu);\
-//		xx << m1 << " [" << pthread_self() << " " << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3) << "]"\
-//		<<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
-//		cout << xx.str();cout.flush();}
-
-#define ROTFUNCTION char* xxx = new char[501];strncpy(xxx,xx.str().c_str(),500);logger.p_w(xxx);
-
 #define BDEBUG(m1, m2) {stringstream xx ; \
 		char bu[128];\
+		cout.precision(20);\
 		TIME_S\
 		string time(bu);\
 		xx << m1 << " [" << pthread_self() << " " << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3) << "]"\
 		<<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
-		ROTFUNCTION}
-
+		cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBASSERT
-//#define DEBASSERT(m1)  {stringstream xx ; xx << "\n\nDEBASSERT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< "\n ************ \n"<< m1 << "\n ************ \n"; cout << xx.str();cout.flush();assert(0);}
-#define DEBASSERT(m1)  {stringstream xx ;\
-	xx << "\n\nDEBASSERT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< "\n ************ \n"<< m1 << "\n ************ \n";\
-	ROTFUNCTION;assert(0);}
+#define DEBASSERT(m1)  {stringstream xx ; xx << "\n\nDEBASSERT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< "\n ************ \n"<< m1 << "\n ************ \n"; cout << xx.str();cout.flush();assert(0);}
 
 #ifndef NOWARNINGS
 #undef DEBWARNING
@@ -542,6 +521,13 @@ extern LOGGER logger;
 
 
 #define GETTIME(mytime) gettimeofday(&mytime.tv, &mytime.tz);
+
+//HANDLER - Reference to Pointer
+#define MKHANDMESSAGE(pointer,reference) \
+		MESSAGE* pointer;\
+		MESSAGE*& reference = pointer;
+
+#define MESSAGEH MESSAGE*&
 
 #ifndef LOGPTR
 #undef NEWPTR
@@ -832,7 +818,6 @@ extern LOGGER logger;
 #undef DEBOUT
 //#define DEBOUT(m1,m2)  {stringstream xx ; xx << "DEBOUT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
 #define DEBOUT(m1,m2) BDEBUG("DEBOUT", m1 << "[" << m2 << "]")
-#define DEBOUTROT(m1,m2) BDEBUGROT("DEBOUT", m1 << "[" << m2 << "]")
 #else
 #define DEBERROR(m)
 #endif
@@ -949,15 +934,15 @@ extern LOGGER logger;
 //**********************************************************
 //**********************************************************
 
-//inline int getModulus(void* pointer) {
-//
-//	//Addresses are all multiple of ADDRESSPACE
-//	//DEBOUT("MESSAGE pointer modulus",(long long unsigned int)pointer)
-//	int i = (int)((long long unsigned int)pointer % (MESSAGEMAPS*ADDRESSPACE));
-//	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i/ADDRESSPACE)
-//	return i/ADDRESSPACE;
-//
-//}
+inline int getModulus(void* pointer) {
+
+	//Addresses are all multiple of ADDRESSPACE
+	//DEBOUT("MESSAGE pointer modulus",(long long unsigned int)pointer)
+	int i = (int)((long long unsigned int)pointer % (MESSAGEMAPS*ADDRESSPACE));
+	DEBOUT("MESSAGE pointer modulus",pointer<<"]["<<i/ADDRESSPACE)
+	return i/ADDRESSPACE;
+
+}
 inline string b2S(bool _b){
     if (_b)
         return "true";
