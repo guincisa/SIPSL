@@ -71,6 +71,9 @@
 #ifndef DAO_H
 #include "DAO.h"
 #endif
+#ifndef LOGGER_H
+#include "LOGGER.h"
+#endif
 
 
 #ifdef USEMESSAGEMAP
@@ -91,6 +94,7 @@ pthread_mutex_t modulusMapMtx[PREMODMAP];
 
 MESSAGE* MainMessage;
 COMAP* Comap;
+LOGGER logger = LOGGER(1000,8);
 //CALL_OSET* MainOset;
 
 //Perf array
@@ -163,6 +167,7 @@ int main(int argc, const char* argv[]) {
 
 	 (void) signal(SIGSEGV, ex_program);
          (void) signal(SIGBUS, ex_program);
+
 
 	BDEBUG("SIPSL main thread",pthread_self())
 
