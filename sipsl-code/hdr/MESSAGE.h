@@ -297,6 +297,7 @@ class MESSAGE {
     	bool hasVia(void);
     	void popVia(void);
     	void pushNewVia(string);
+    	//TODO getViaRport and getViaReceied
 	private:
     	string branch;
     	bool parsedBranch;

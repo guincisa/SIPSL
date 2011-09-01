@@ -1273,137 +1273,216 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 	}
 
 	char xxx[_fullstring.length() +1];
+	char yyy[_fullstring.length() +1];
 	strcpy(xxx,_fullstring.c_str());
-	string _property = ";" + __property;
+	strcpy(yyy,_fullstring.c_str());
 
-	char* aaa = strstr(xxx + _property.length(), _property.c_str());
+	string _1_property = __property + "=";
+	string _2_property = __property + "=;";
+	string _3_property = __property + ";";
 
-	if ( aaa != NULL ){
-		if (strncmp(aaa + _property.length(),";",1) == 0){
-			//caso a senza valore ma in mezzo
-			DEBY
-			char* yyy = aaa+1;
-			strcpy(yyy,"");
-			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] first part xxx ["<<xxx);
-			yyy = aaa+_property.length();
-			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] first part yyy ["<<yyy);
-			string newinse = xxx;
-			newinse += _property;
-			newinse += "=";
-			newinse += _value;
-			newinse += yyy;
-			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
-			if(isVia){
-				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"via_line")
-				strcpy(nx,newinse.c_str());
-				via_line[0].first = nx;
-				via_line[0].second = true;
-			}
-			else{
-				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"message_line")
-				strcpy(nx,newinse.c_str());
-				message_line[idx].first = nx;
-				message_line[idx].second = true;
-			}
-			return;
-		}
-		else if (strncmp(aaa + _property.length(),"\0",1) == 0){
-			//caso b senza valore alla fine
-			DEBY
-			char* yyy = aaa+1;
-			strcpy(yyy,"");
-			string newinse = xxx;
-			newinse += _property;
-			newinse += "=";
-			newinse += _value;
-			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
-			if(isVia){
-				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"via_line")
-				strcpy(nx,newinse.c_str());
-				via_line[0].first = nx;
-				via_line[0].second = true;
-			}
-			else{
-				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"message_line")
-				strcpy(nx,newinse.c_str());
-				message_line[idx].first = nx;
-				message_line[idx].second = true;
-			}
-			return;
-		}
-		else if (strncmp(aaa + _property.length(),"=",1) == 0){
-			//caso con valore
-			DEBY
-			char* bbb=NULL;
-			if (aaa!=NULL){
-				bbb = strchr(aaa+_property.length(),';');
-			}
-			if (bbb != NULL){
-				sprintf(bbb,"");
-				DEBY
-			}
+	//if present delete it and put in yyy
+	char* aaa = strstr(xxx, __property.c_str());
+	if (aaa !=NULL){
+		//present
+		char* bbb = strstr(xxx, _1_property.c_str());
+		if (bbb != NULL){
+			char* ccc = strstr(xxx, _2_property.c_str());
+			if (ccc!=NULL){
+				//property=;
+				DEBASSERT("")
+			}else{
+				//property=xxx...
+				char* ddd = strstr(bbb,";");
+				if( ddd != NULL){
+					//property=xxxx;....
+					//remove it
+					sprintf(aaa,"");
+					sprintf(yyy,"%s%s",xxx,ddd+1);
+					DEBOUT("yyy",yyy)
+				}else{
+					//property=xxx last position
+					sprintf(aaa-1,"");
+					sprintf(yyy,"%s",xxx);
+					DEBOUT("yyy",yyy)
+				}
 
-			char* yyy = aaa+1;
-			sprintf(yyy,"");
-			if (bbb!=NULL)
-				yyy = bbb+1;
-			string newinse = xxx;
-			//doppio ;
-			//newinse += _property;
-			newinse += __property;
-			newinse += "=";
-			newinse += _value;
-			if(bbb!=NULL){
-				newinse += ";";
-				newinse += yyy;
 			}
-			if(isVia){
-				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"via_line")
-				strcpy(nx,newinse.c_str());
-				via_line[0].first = nx;
-				via_line[0].second = true;
+		}else{
+			//no value
+			//property;
+			char* eee = strstr(xxx, _3_property.c_str());
+			if ( eee != NULL){
+				char* fff = strstr(eee,";");
+				sprintf(aaa,"");
+				sprintf(yyy,"%s%s",xxx,fff+1);
+				DEBOUT("yyy",yyy)
+			}else{
+				sprintf(aaa,"");
+				sprintf(yyy,"%s",xxx);
+				DEBOUT("yyy",yyy)
 			}
-			else{
-				char* nx;
-				NEWPTR2(nx, char[newinse.length()+1],"message_line")
-				strcpy(nx,newinse.c_str());
-				message_line[idx].first = nx;
-				message_line[idx].second = true;
-			}
-			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
-			return;
 		}
+
 	}
-	else {
-		DEBY
-		//remove last char
-		string newinse = xxx;
-		//string newinse = _newinse.substr(0,_newinse.length());
-		newinse += _property;
-		newinse += "=";
-		newinse += _value;
-		if(isVia){
-			char* nx;
-			NEWPTR2(nx, char[newinse.length()+1],"via_line")
-			strcpy(nx,newinse.c_str());
+	//use yyy which has not property set adn add it
+	if (isVia){
+		char* nx;
+		NEWPTR2(nx, char[strlen(yyy) + __property.length() + _value.length() + 3],"via_line")
+		sprintf(nx,"%s;%s=%s",yyy,__property.c_str(),_value.c_str());
+		if (via_line[0].second){
+			DELPTRARR(via_line[0].first,"via_line")
 			via_line[0].first = nx;
+		}else{
 			via_line[0].second = true;
+			via_line[0].first = nx;
 		}
-		else{
-			char* nx;
-			NEWPTR2(nx, char[newinse.length()+1],"message_line")
-			strcpy(nx,newinse.c_str());
+	}else{
+		char* nx;
+		NEWPTR2(nx, char[strlen(yyy) + __property.length() + _value.length() + 3],"message_line")
+		sprintf(nx,"%s;%s=%s",yyy,__property.c_str(),_value.c_str());
+		if (message_line[idx].second){
+			DELPTRARR(message_line[idx].first,"message_line")
 			message_line[idx].first = nx;
+		}else{
 			message_line[idx].second = true;
+			message_line[idx].first = nx;
 		}
-		DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
-		return;
 	}
+	return;
+
+//	char xxx[_fullstring.length() +1];
+//	strcpy(xxx,_fullstring.c_str());
+//	string _property = ";" + __property;
+//
+//	char* aaa = strstr(xxx + _property.length(), _property.c_str());
+//
+//	if ( aaa != NULL ){
+//		if (strncmp(aaa + _property.length(),";",1) == 0){
+//			//caso a senza valore ma in mezzo
+//			DEBY
+//			char* yyy = aaa+1;
+//			strcpy(yyy,"");
+//			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] first part xxx ["<<xxx);
+//			yyy = aaa+_property.length();
+//			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] first part yyy ["<<yyy);
+//			string newinse = xxx;
+//			newinse += _property;
+//			newinse += "=";
+//			newinse += _value;
+//			newinse += yyy;
+//			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
+//			if(isVia){
+//				char* nx;
+//				NEWPTR2(nx, char[newinse.length()+1],"via_line")
+//				strcpy(nx,newinse.c_str());
+//				via_line[0].first = nx;
+//				via_line[0].second = true;
+//			}
+//			else{
+//				char* nx;
+//				NEWPTR2(nx, char[newinse.length()+1],"message_line")
+//				strcpy(nx,newinse.c_str());
+//				message_line[idx].first = nx;
+//				message_line[idx].second = true;
+//			}
+//			return;
+//		}
+//		else if (strncmp(aaa + _property.length(),"\0",1) == 0){
+//			//caso b senza valore alla fine
+//			DEBY
+//			char* yyy = aaa+1;
+//			strcpy(yyy,"");
+//			string newinse = xxx;
+//			newinse += _property;
+//			newinse += "=";
+//			newinse += _value;
+//			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
+//			if(isVia){
+//				char* nx;
+//				NEWPTR2(nx, char[newinse.length()+1],"via_line")
+//				strcpy(nx,newinse.c_str());
+//				via_line[0].first = nx;
+//				via_line[0].second = true;
+//			}
+//			else{
+//				char* nx;
+//				NEWPTR2(nx, char[newinse.length()+1],"message_line")
+//				strcpy(nx,newinse.c_str());
+//				message_line[idx].first = nx;
+//				message_line[idx].second = true;
+//			}
+//			return;
+//		}
+//		else if (strncmp(aaa + _property.length(),"=",1) == 0){
+//			//caso con valore
+//			DEBY
+//			char* bbb=NULL;
+//			if (aaa!=NULL){
+//				bbb = strchr(aaa+_property.length(),';');
+//			}
+//			if (bbb != NULL){
+//				sprintf(bbb,"");
+//				DEBY
+//			}
+//
+//			char* yyy = aaa+1;
+//			sprintf(yyy,"");
+//			if (bbb!=NULL)
+//				yyy = bbb+1;
+//			string newinse = xxx;
+//			//doppio ;
+//			//newinse += _property;
+//			newinse += __property;
+//			newinse += "=";
+//			newinse += _value;
+//			if(bbb!=NULL){
+//				newinse += ";";
+//				newinse += yyy;
+//			}
+//			if(isVia){
+//				char* nx;
+//				NEWPTR2(nx, char[newinse.length()+1],"via_line")
+//				strcpy(nx,newinse.c_str());
+//				via_line[0].first = nx;
+//				via_line[0].second = true;
+//			}
+//			else{
+//				char* nx;
+//				NEWPTR2(nx, char[newinse.length()+1],"message_line")
+//				strcpy(nx,newinse.c_str());
+//				message_line[idx].first = nx;
+//				message_line[idx].second = true;
+//			}
+//			DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
+//			return;
+//		}
+//	}
+//	else {
+//		DEBY
+//		//remove last char
+//		string newinse = xxx;
+//		//string newinse = _newinse.substr(0,_newinse.length());
+//		newinse += _property;
+//		newinse += "=";
+//		newinse += _value;
+//		if(isVia){
+//			char* nx;
+//			NEWPTR2(nx, char[newinse.length()+1],"via_line")
+//			strcpy(nx,newinse.c_str());
+//			via_line[0].first = nx;
+//			via_line[0].second = true;
+//		}
+//		else{
+//			char* nx;
+//			NEWPTR2(nx, char[newinse.length()+1],"message_line")
+//			strcpy(nx,newinse.c_str());
+//			message_line[idx].first = nx;
+//			message_line[idx].second = true;
+//		}
+//		DEBINFMESSAGE("void MESSAGE::setProperty(string _head,string __property,string _value)",this<<"] new line ["<<newinse);
+//		return;
+//	}
 
 
 }

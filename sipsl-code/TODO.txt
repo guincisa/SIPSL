@@ -1,10 +1,15 @@
 ISSUES
 
+
+1 sett
+1. il mio try non ha rport impostato nel via
+
+
+
+
 il contact:
 il 200 ok per A deve contenere sipsl@b2bua.sipsl.org
 le request verso b devono contenere il contact del 200ok venuto da b
-
-
 
 
 uniformare il parser troppe funzioni fanno la stessa cosa
