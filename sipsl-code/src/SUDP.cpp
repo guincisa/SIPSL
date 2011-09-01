@@ -380,16 +380,28 @@ void SUDP::sendReply(MESSAGE* _message){
     //Reply uses topmost Via header
 
     DEBMESSAGE("SUDP::sendReply sending Message ", _message)
-
-
-    const char* _hostchar = _message->getViaUriHost().c_str();
+    //check first if the via has rport and and received set up
+    //TODO
+    //rport is not usefull???
     struct addrinfo hints, *servinfo;
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
-    int res = getaddrinfo(_hostchar,_message->getViaUriProtocol().c_str(),&hints, &servinfo);
-    if (res != 0){
-    	DEBASSERT("getaddrinfo")
+    string receivedProp = _message->getProperty("Via:","received");
+    if (receivedProp.length() != 0){
+        //string reportPro = _message->getProperty("Via:","rport");
+        const char* _hostchar = receivedProp.c_str();
+        int res = getaddrinfo(_hostchar,_message->getViaUriProtocol().c_str(),&hints, &servinfo);
+        if (res != 0){
+        	DEBASSERT("getaddrinfo")
+        }
+
+    }else{
+        const char* _hostchar = _message->getViaUriHost().c_str();
+        int res = getaddrinfo(_hostchar,_message->getViaUriProtocol().c_str(),&hints, &servinfo);
+        if (res != 0){
+        	DEBASSERT("getaddrinfo")
+        }
     }
     //CHECK ERROR HERE
     sendto(sock_re,  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, servinfo->ai_addr, servinfo->ai_addrlen);

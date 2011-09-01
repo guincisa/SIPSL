@@ -1,0 +1,263 @@
+This is a call between 
+A: EKIGA on Hard SUSE (port 5062, proxy = SIPSL)
+SIPSL: on Hard SUSE
+B:EKIGA on VM UBUNTU (no proxy)
+A calls B
+A byes B
+
+Addresses:
+A: 		172.20.174.172 : 5062
+SIPSL:	172.20.174.172
+B: 		172.20.174.140
+*********************************************************
+[INVITE sip:guic@172.20.174.140 SIP/2.0
+Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK2055898557
+From: <sip:majo@172.20.174.172>;tag=176805852
+To: <sip:guic@172.20.174.140>
+Call-ID: 1269242827
+CSeq: 20 INVITE
+Contact: <sip:majo@172.20.174.172:5062>
+Content-Type: application/sdp
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO
+Max-Forwards: 70
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Subject: Phone call
+Content-Length:   383
+
+v=0
+o=majo 123456 654321 IN IP4 172.20.174.172
+s=A conversation
+c=IN IP4 172.20.174.172
+t=0 0
+m=audio 7078 RTP/AVP 112 111 110 0 8 101
+a=rtpmap:112 speex/32000/1
+a=fmtp:112 vbr=on
+a=rtpmap:111 speex/16000/1
+a=fmtp:111 vbr=on
+a=rtpmap:110 speex/8000/1
+a=fmtp:110 vbr=on
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000/1
+a=fmtp:101 0-11
+]
+*********************************************************
+[SIP/2.0 100 Trying
+From: <sip:majo@172.20.174.172>;tag=176805852
+To: <sip:guic@172.20.174.140>
+Call-ID: 1269242827
+CSeq: 20 INVITE
+Subject: Phone call
+Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK2055898557
+Content-Length: 0
+
+]
+*********************************************************
+[INVITE sip:guic@172.20.174.140 SIP/2.0
+From: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+To: <sip:guic@172.20.174.140>
+Call-ID: CoMap0007cf4c01314891107032105@grog.sipsl.org
+CSeq: 1 INVITE
+Contact: <sip:sipsl@172.20.174.172:5060>
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO
+Max-Forwards: 70
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Subject: Phone call
+Via: SIP/2.0/UDP 172.20.174.172:5060;branch=z9hG4bK7cf4c01314891107032105;rport
+Content-Type: application/sdp
+Content-Length: 383
+
+v=0
+o=majo 123456 654321 IN IP4 172.20.174.172
+s=A conversation
+c=IN IP4 172.20.174.172
+t=0 0
+m=audio 7078 RTP/AVP 112 111 110 0 8 101
+a=rtpmap:112 speex/32000/1
+a=fmtp:112 vbr=on
+a=rtpmap:111 speex/16000/1
+a=fmtp:111 vbr=on
+a=rtpmap:110 speex/8000/1
+a=fmtp:110 vbr=on
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000/1
+a=fmtp:101 0-11
+]
+[SIP/2.0 100 Trying
+Via: SIP/2.0/UDP 172.20.174.172:5060;branch=z9hG4bK7cf4c01314891107032105;rport=59061
+From: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+To: <sip:guic@172.20.174.140>
+Call-ID: CoMap0007cf4c01314891107032105@grog.sipsl.org
+CSeq: 1 INVITE
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Content-Length: 0
+
+]
+*********************************************************
+[SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 172.20.174.172:5060;branch=z9hG4bK7cf4c01314891107032105;rport=59061
+From: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+To: <sip:guic@172.20.174.140>;tag=834248023
+Call-ID: CoMap0007cf4c01314891107032105@grog.sipsl.org
+CSeq: 1 INVITE
+Contact: <sip:guic@172.20.174.140:5060>
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Content-Length: 0
+
+]
+*********************************************************
+[OPTIONS sip:172.20.174.172:59061 SIP/2.0
+Via: SIP/2.0/UDP 172.20.174.140:5060;rport;branch=z9hG4bK163793823
+Route: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+From: <sip:guic@172.20.174.140>;tag=652669134
+To: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+Call-ID: 854458916
+CSeq: 20 OPTIONS
+Accept: application/sdp
+Max-Forwards: 70
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Expires: 120
+Content-Length: 0
+
+]
+[SIP/2.0 101 Dialog Establishement
+Via: SIP/2.0/UDP 172.20.174.172:5060;branch=z9hG4bK7cf4c01314891107032105;rport=59061
+From: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+To: <sip:guic@172.20.174.140>;tag=834248023
+Call-ID: CoMap0007cf4c01314891107032105@grog.sipsl.org
+CSeq: 1 INVITE
+Contact: <sip:guic@172.20.174.140:5060>
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Content-Length: 0
+
+]
+[SIP/2.0 180 Ringing
+Via: SIP/2.0/UDP 172.20.174.172:5060;branch=z9hG4bK7cf4c01314891107032105;rport=59061
+From: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+To: <sip:guic@172.20.174.140>;tag=834248023
+Call-ID: CoMap0007cf4c01314891107032105@grog.sipsl.org
+CSeq: 1 INVITE
+Contact: <sip:guic@172.20.174.140:5060>
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Content-Length: 0
+
+]
+*********************************************************
+[SIP/2.0 200 OK
+Via: SIP/2.0/UDP 172.20.174.172:5060;branch=z9hG4bK7cf4c01314891107032105;rport=59061
+From: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+To: <sip:guic@172.20.174.140>;tag=834248023
+Call-ID: CoMap0007cf4c01314891107032105@grog.sipsl.org
+CSeq: 1 INVITE
+Contact: <sip:majo@172.20.174.140>
+Content-Type: application/sdp
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Content-Length:   383
+
+v=0
+o=majo 123456 654321 IN IP4 172.20.174.140
+s=A conversation
+c=IN IP4 172.20.174.140
+t=0 0
+m=audio 7078 RTP/AVP 112 111 110 0 8 101
+a=rtpmap:112 speex/32000/1
+a=fmtp:112 vbr=on
+a=rtpmap:111 speex/16000/1
+a=fmtp:111 vbr=on
+a=rtpmap:110 speex/8000/1
+a=fmtp:110 vbr=on
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000/1
+a=fmtp:101 0-11
+]
+*********************************************************
+[SIP/2.0 200 OK
+From: <sip:majo@172.20.174.172>;tag=176805852
+To: <sip:guic@172.20.174.140>
+Call-ID: 1269242827
+CSeq: 20 INVITE
+Contact: <sip:sipsl@172.20.174.172:5060>
+Subject: Phone call
+Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK2055898557
+Content-Type: application/sdp
+Content-Length: 383
+
+v=0
+o=majo 123456 654321 IN IP4 172.20.174.140
+s=A conversation
+c=IN IP4 172.20.174.140
+t=0 0
+m=audio 7078 RTP/AVP 112 111 110 0 8 101
+a=rtpmap:112 speex/32000/1
+a=fmtp:112 vbr=on
+a=rtpmap:111 speex/16000/1
+a=fmtp:111 vbr=on
+a=rtpmap:110 speex/8000/1
+a=fmtp:110 vbr=on
+a=rtpmap:0 PCMU/8000/1
+a=rtpmap:8 PCMA/8000/1
+a=rtpmap:101 telephone-event/8000/1
+a=fmtp:101 0-11
+]
+*********************************************************
+[ACK sip:sipsl@172.20.174.172:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK904019353
+From: <sip:majo@172.20.174.172>;tag=176805852
+To: <sip:guic@172.20.174.140>
+Call-ID: 1269242827
+CSeq: 20 ACK
+Contact: <sip:majo@172.20.174.172>
+Max-Forwards: 70
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Content-Length: 0
+
+]
+*********************************************************
+[ACK sip:majo@172.20.174.140:5060 SIP/2.0
+From: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+To: <sip:guic@172.20.174.140>;tag=834248023
+Call-ID: CoMap0007cf4c01314891107032105@grog.sipsl.org
+CSeq: 1 ACK
+Contact: <sip:majo@172.20.174.172>
+Max-Forwards: 70
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Via: SIP/2.0/UDP grog.sipsl.org:5060;branch=z9hG4bK380040401314891108633781;rport
+Content-Length: 0
+
+]
+[BYE sip:sipsl@172.20.174.172:5060 SIP/2.0
+Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK1460934356
+From: <sip:majo@172.20.174.172>;tag=176805852
+To: <sip:guic@172.20.174.140>
+Call-ID: 1269242827
+CSeq: 21 BYE
+Contact: <sip:majo@172.20.174.172:5062>
+Max-Forwards: 70
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Content-Length: 0
+
+]
+[SIP/2.0 200 OK
+From: <sip:majo@172.20.174.172>;tag=115574635
+To: <sip:guic@172.20.174.140>
+Call-ID: 1269242827
+CSeq: 21 BYE
+Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK1460934356
+Content-Length: 0
+
+]
+*********************************************************
+[SIP/2.0 200 OK
+Via: SIP/2.0/UDP grog.sipsl.org:5060;branch=z9hG4bK380071e01314891110218375;rport=59061;received=172.20.174.172
+From: <sip:majo@172.20.174.172>;tag=380032101314891107033268
+To: <sip:guic@172.20.174.140>;tag=834248023
+Call-ID: CoMap0007cf4c01314891107032105@grog.sipsl.org
+CSeq: 2 BYE
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Content-Length: 0
+
+]
+*********************************************************
+ultimo ok???
