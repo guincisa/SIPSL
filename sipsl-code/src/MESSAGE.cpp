@@ -119,6 +119,9 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	requestDirection		= 0;
 	genEntity				= _genEntity;
 	destEntity				= 0;
+	natAddress				= "";
+	natPort					= "";
+
 
 	fireTime				= 0;
 	orderOfOperation		= "";
@@ -214,6 +217,9 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
     requestDirection 		= _sourceMessage->getRequestDirection();
     genEntity				= _genEntity;
 	destEntity				= 0;
+	natAddress				= "";
+	natPort					= "";
+
 
 	fireTime				= 0;
 	orderOfOperation		= "";
@@ -757,6 +763,28 @@ int MESSAGE::getDestEntity(void){
 	DEBINFMESSAGE("int MESSAGE::getDestEntity(void)", this<<"]["<<destEntity)
 	return destEntity;
 }
+bool MESSAGE::natTraversal(void){
+	DEBINFMESSAGE("lli MESSAGE::natTraversal(void)", this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::natTraversal invalid")
+
+	return (natAddress.length()>0);
+}
+void MESSAGE::setNatTraversal(string _address, string _port){
+	DEBINFMESSAGE("lli MESSAGE::setNatTraversal(void)", this<<"]["<<_address<<"]["<<_port)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::setNatTraversal invalid")
+	natAddress = _address;
+	natPort = _port;
+}
+pair < string, string > MESSAGE::getNatAddress(void){
+	DEBINFMESSAGE("lli MESSAGE::getNatAddress(void)", this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getNatAddress invalid")
+
+		return make_pair(natAddress,natPort);
+}
+
 lli MESSAGE::getFireTime(void){
 	DEBINFMESSAGE("lli MESSAGE::getFireTime(void)", this)
 	if (invalid == 1)

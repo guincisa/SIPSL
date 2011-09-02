@@ -346,6 +346,9 @@ void SUDP::sendRequest(MESSAGE* _message){
     if(_message->hasRoute()){
     	_pair = _message->getRoute();
     }
+    else if (_message->natTraversal()){
+    	_pair = _message->getNatAddress();
+    }
     else{
     	_pair = _message->getUriProtocol("REQUEST");
     	if (_pair.second.length() == 0){

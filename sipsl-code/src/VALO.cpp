@@ -262,6 +262,7 @@ void VALO::onInvite(MESSAGE* _message){
 	ctxt_store.insert(pair<string, void*>("invite_a", (void*) _message->getSourceMessage() ));
 	ctxt_store.insert(pair<string, void*>("invite_b", (void*) message ));
 
+
 #ifdef NONESTEDPW
 	int r;
 	call_oset->getSL_CO()->call(message,r);
@@ -635,20 +636,25 @@ void VALO::onBye(MESSAGE* _message){
 	else if (_message->getRequestDirection() == SODE_BKWD ) {
 		DEBALO("VALO::onBye SODE_BKWD",this<<"]["<<_message)
 
-		DEBASSERT("implement!!!!")
+		DEBASSERT("implement nat!!!!")
 
 		map<string, void*> ::iterator p;
 		p = ctxt_store.find("invite_a");
 		MESSAGE* __message = (MESSAGE*)p->second;
 
 		DEBALO("Search for INVITE A sequence", call_oset->getCurrentSequence("INVITE_A"));
-		//message->setDestEntity(SODE_TRNSCT_CL);
 
-		//Request has to be made using INVITE_A via address
-		//string viatmps = __message->getViaLine();
-		DEBY
-		///not default route here!
+		//BYE Auser@domain
+		//to A
+		//from B
+		stringstream _xx;
+		_xx << ntohs((__message->getEchoClntAddr()).sin_port);
+
+		message->setNatTraversal(inet_ntoa(__message->getEchoClntAddr().sin_addr),_xx.str());
+
+		//need to send to NAT address....
 		stringstream _ss;
+		//sbagliato.....
 		_ss << "BYE sip:ceppadim@" << __message->getViaUriHost() << ":" << __message->getViaUriPort() << " SIP/2.0";
 		message->setHeadSipRequest(_ss.str());
 
