@@ -2,6 +2,20 @@ ISSUES
 
 
 
+NAT:
+
+le info della nat vanno messe sul call_object
+perche il barkward bye deve usarle...
+
+
+
+
+
+il linphone non funziona bene e ekiga neanche
+
+linphone non manda ack
+ekiga crasha al bye e non lo manda...
+
 Register
 [REGISTER sip:172.20.174.172 SIP/2.0
 Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK1703488235

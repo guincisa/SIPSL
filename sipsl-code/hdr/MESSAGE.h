@@ -229,10 +229,15 @@ class MESSAGE {
         void setGenEntity(int);
         void setDestEntity(int);
         int getDestEntity(void);
+        bool natTraversal(void);
+        void setNatTraversal(string address, string port);
+        pair < string, string > getNatAddress(void);
 	private:
     	int requestDirection;
 		int genEntity;
 		int destEntity;
+		string natAddress;
+		string natPort;
 
 		////////////////////////////////
         //Timer
