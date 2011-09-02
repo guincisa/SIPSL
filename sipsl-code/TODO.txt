@@ -1,6 +1,25 @@
 ISSUES
 
 
+
+Register
+[REGISTER sip:172.20.174.172 SIP/2.0
+Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK1703488235
+From: <sip:majo@sipsl.org>;tag=1038505188
+To: <sip:majo@sipsl.org>
+Call-ID: 366143169
+CSeq: 1 REGISTER
+Contact: <sip:majo@172.20.174.172:5062>
+Max-Forwards: 70
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Expires: 3600
+Content-Length: 0
+
+]
+
+
+
+
 1 sett
 1. il mio try non ha rport impostato nel via
 

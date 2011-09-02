@@ -169,7 +169,11 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	_gted->dropHeader("Allow:");
 	_gted->dropHeader("Route:");
 	_gted->dropHeader("Date:");
-	//_gted->setProperty("Via:","rport","1234");
+
+//	_gted->setProperty("Via:","received",inet_ntoa(_gted->getEchoClntAddr().sin_addr));
+//	stringstream xx;
+//	xx << ntohs((_gted->getEchoClntAddr()).sin_port);
+//	_gted->setProperty("Via:","rport",xx.str());
 
 }
 
@@ -188,9 +192,10 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 	//now check if Via has the rport property and is empty
 	//fill it in with inet_ntoa(echoClntAddr.sin_addr):echoClntAddr.sin_port
 	//received=192.0.2.1;rport=9988
+	//vanno nello strato di trasporto!!!!
 //	_gted->setProperty("Via:","received",inet_ntoa(_gted->getEchoClntAddr().sin_addr));
 //	stringstream xx;
-//	xx << (_gted->getEchoClntAddr()).sin_port;
+//	xx << ntohs((_gted->getEchoClntAddr()).sin_port);
 //	_gted->setProperty("Via:","rport",xx.str());
 
 

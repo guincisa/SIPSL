@@ -158,6 +158,13 @@ void TRNSPRT::parse(void* __message, int _mmod){
 
 	if (_message->getReqRepType() == REPSUPP) {
 		//TODO Check if there is a ROUTE header
+
+//		_message->setProperty("Via:","received",inet_ntoa(_message->getEchoClntAddr().sin_addr));
+//		stringstream xx;
+//		xx << ntohs((_message->getEchoClntAddr()).sin_port);
+//		_message->setProperty("Via:","rport",xx.str());
+
+
 		getSUDP()->sendReply(_message);
 	}
 	else if (_message->getReqRepType() == REQSUPP) {
