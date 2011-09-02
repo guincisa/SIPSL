@@ -196,7 +196,7 @@ class ThreadWrapper {
 #define LOGSIPLOW
 #define LOGINF
 #define LOGDEV
-#define LOGMEM
+//#define LOGMEM
 #define DEBCODEALARM1
 #define LOGINFMESSAGE_MIN
 #define LOGINFCALLOSET
