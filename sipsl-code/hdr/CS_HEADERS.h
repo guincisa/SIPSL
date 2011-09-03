@@ -34,6 +34,7 @@ using namespace std;
 #define ACK_REQUEST 3
 #define BYE_REQUEST 4
 #define CANCEL_REQUEST 5
+#define MESSAGE_REQUEST 6
 
 #define TRY_RESPONSE 51
 #define RINGING_RESPONSE 52

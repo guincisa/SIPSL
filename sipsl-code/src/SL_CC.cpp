@@ -276,6 +276,26 @@ void SL_CC::parse(void* __mess, int _mmod){
         	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
 
         }
+        else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == MESSAGE_REQUEST) {
+
+        	//mettere questo in una classe
+
+        	DEBOUT("username@domain",_mess->getFromUser())
+			DEBOUT("MESSGAGE port",ntohs(_mess->getEchoClntAddr().sin_port))
+			DEBOUT("MESSGAGE address",inet_ntoa(_mess->getEchoClntAddr().sin_addr))
+			stringstream _xx;
+			_xx << inet_ntoa(_mess->getEchoClntAddr().sin_addr) << ":" << ntohs((_mess->getEchoClntAddr()).sin_port);
+			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
+        	CREATEMESSAGE(OKregister, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)
+			SipUtil.genASideReplyFromRequest(_mess,OKregister);
+			OKregister->setHeadSipReply("200 OK");
+        	OKregister->dropHeader("Contact:");
+        	OKregister->compileMessage();
+        	transport->p_w(OKregister);
+        	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
+
+        }
+
         else {
             DEBMESSAGE("Unexpected message ignored", _mess)
             if(!_mess->getLock()){

@@ -150,6 +150,8 @@ void TRNSPRT::parse(void* __message, int _mmod){
 
         DEBNTW("TRNSPRT::downCall", _message)
 
+        //compile message goes here
+
 	if(_message->getTypeOfInternal() == TYPE_OP){
 		//Thsi rule is needed to clear alarms when running ~CALL_OSET
 		DEBDEV("RULE Break, can't send a message with type op",this)
