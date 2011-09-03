@@ -43,12 +43,12 @@ class DAO : public ENGINE {
         DAO(int,int,string,SL_CC*, SIPENGINE*, TRNSPRT*);
 
         string getData(int,string);
+        void putData(int,pair<string,string>);
 
     private:
         pthread_mutex_t mutex;
 
         //table id, key, data
-        int putData(int,pair<string,string>);
 
         //
         map<string,string> datatable[TABLES];

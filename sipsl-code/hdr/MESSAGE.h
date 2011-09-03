@@ -322,9 +322,11 @@ class MESSAGE {
 		////////////////////////////////
 	public:
     	string getFromTag(void);
+    	string getFromUser(void);
     	string getToTag(void);
 
 	private:
+    	string fromUser;
     	string fromTag;
     	bool parsedFromTag;
     	string toTag;

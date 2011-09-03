@@ -1,5 +1,29 @@
 Questo esce dal Ekiga
 
+dal mmobile verso server a casa
+
+[REGISTER sip:server.sipsl.org SIP/2.0
+Via: SIP/2.0/UDP 217.77.165.52:30336;branch=z9hG4bKPjQmM0IJRXjBLIeZ2MiSVVyMeyQuOKcEoH
+Route: <sip:89.233.186.16;lr>
+Max-Forwards: 70
+From: "guic" <sip:guic@server.sipsl.org>;tag=VzKG5CMdUMQWJUiKcG.2fgRNxeJ6KUz9
+To: "guic" <sip:guic@server.sipsl.org>
+Call-ID: KcwjPUU4XAtkocsocqWd4AYLknlu2G8C
+CSeq: 28489 REGISTER
+User-Agent: CSipSimple r944 / passion-10
+Contact: "guic" <sip:guic@217.77.165.52:30336;ob>
+Expires: 900
+Allow: PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS
+Content-Length: 0
+
+]
+
+l'indirizzo della nat e' poi nel echoClntAddr
+
+quindi quando arriva una call verso guic@server.sipsl.org
+va mandata alla nat
+
+
 
 in vodafone con indirizzo non locale
 

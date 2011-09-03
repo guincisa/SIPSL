@@ -142,7 +142,7 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	callId					= "";
 	parsedCallId			= false;
 
-
+	fromUser				= "" ;
 	fromTag					= "";
 	parsedFromTag			= false;
 	toTag					= "";
@@ -240,7 +240,7 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	callId					= "";
 	parsedCallId			= false;
 
-
+	fromUser				= "" ;
 	fromTag					= "";
 	parsedFromTag			= false;
 	toTag					= "";
@@ -280,6 +280,55 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	parsedCseq				= false;
 
 }
+//TODO put in constructor
+void MESSAGE::_clearStatus(void){
+
+	branch					= "";
+	parsedBranch			= false;
+	viaUriHost				= "";
+	viaUriParsed   			= false;
+	viaUriPort				= 0;
+
+
+	callId					= "";
+	parsedCallId			= false;
+
+
+	fromUser				= "" ;
+	fromTag					= "";
+	parsedFromTag			= false;
+	toTag					= "";
+	parsedToTag				= false;
+
+
+	headTo					= "";
+	headToName				= "";
+	headToUri				= "";
+	headToParms				= "";
+	parsedTo				= false;
+	parsedToName			= false;
+	parsedToUri				= false;
+	parsedToParms			= false;
+
+
+	reqRep					= 0;
+	headSipRequest			= "";
+	headSipReply			= "";
+	replyCode				= 0;
+	requestCode				= 0;
+
+
+	cSeqMethod				= "";
+	cSeq					= 0;
+	parsedCseq				= false;
+
+	sdp_line.clear();
+	via_line.clear();
+	message_line.clear();
+
+}
+
+
 MESSAGE::~MESSAGE(){
 	DEBINFMESSAGE_MIN("MESSAGE::~MESSAGE()",this)
 
@@ -654,52 +703,6 @@ void MESSAGE::dumpMessageBuffer(void){
 		DEBINFMESSAGE("MESSAGE::dumpMessageBuffer s", sdp_line[i].second << "][" << sdp_line[i].first)
 	}
 }
-void MESSAGE::_clearStatus(void){
-
-	branch					= "";
-	parsedBranch			= false;
-	viaUriHost				= "";
-	viaUriParsed   			= false;
-	viaUriPort				= 0;
-
-
-	callId					= "";
-	parsedCallId			= false;
-
-
-	fromTag					= "";
-	parsedFromTag			= false;
-	toTag					= "";
-	parsedToTag				= false;
-
-
-	headTo					= "";
-	headToName				= "";
-	headToUri				= "";
-	headToParms				= "";
-	parsedTo				= false;
-	parsedToName			= false;
-	parsedToUri				= false;
-	parsedToParms			= false;
-
-
-	reqRep					= 0;
-	headSipRequest			= "";
-	headSipReply			= "";
-	replyCode				= 0;
-	requestCode				= 0;
-
-
-	cSeqMethod				= "";
-	cSeq					= 0;
-	parsedCseq			= false;
-
-	sdp_line.clear();
-	via_line.clear();
-	message_line.clear();
-
-}
-
 int MESSAGE::getSock(void){
 	DEBINFMESSAGE("int MESSAGE::getSock(void)",this)
 	if (invalid == 1)
@@ -1727,6 +1730,55 @@ string MESSAGE::getFromTag(void){
 	DEBINFMESSAGE("string MESSAGE::getFromTag(void)", this<<"]["<<fromTag)
 	return fromTag;
 }
+string MESSAGE::getFromUser(void){
+	DEBINFMESSAGE("string MESSAGE::getFromUser(void)", this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getFromUser invalid")
+
+	if(messageStatus != 1){
+		fillIn();
+	}
+	if (fromUser.length()!=0){
+		return fromUser;
+	}
+
+	//From: "user" ...
+	//From: user ..
+	string fromLine = getGenericHeader("From:");
+	DEBOUT("string fromLine",fromLine)
+	char workline[fromLine.length() +1];
+	strcpy(workline, fromLine.c_str());
+	char* aaa = strstr(workline,"\"");
+	if (aaa == NULL){
+		// no ""
+		aaa = strstr(workline," ");
+		if (aaa == NULL){
+			//malformed
+			DEBOUT("string fromLine malformed",fromLine)
+			fromUser =  "";
+		}
+		else{
+			sprintf(aaa,"");
+			DEBOUT("string fromLine",workline)
+			fromUser = workline;
+		}
+	}else{
+		DEBOUT("string fromLine",aaa+1)
+		char* bbb = strstr(aaa+1,"\"");
+		if (bbb == NULL){
+			//malformed
+			DEBOUT("string fromLine malformed",fromLine)
+			fromUser = "";
+		}
+		else{
+			sprintf(bbb,"");
+			DEBOUT("string fromLine",aaa+1)
+			fromUser = aaa+1;
+		}
+	}
+	return fromUser;
+}
+
 string MESSAGE::getToTag(void){
 	DEBINFMESSAGE("string MESSAGE::getToTag(void)",this)
 	if (invalid == 1)
