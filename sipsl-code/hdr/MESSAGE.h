@@ -187,6 +187,8 @@ class MESSAGE {
 		char* getMessageBuffer(void);
     	void compileMessage(void);
 		void dumpMessageBuffer(void);
+		void _dumpMessageBuffer(void);
+
 	private:
 		//this one resets all the parse flags and variables
 		// like branch and parsedBranch

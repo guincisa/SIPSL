@@ -157,16 +157,12 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
             method != INVITE_REQUEST &&
             method != BYE_REQUEST &&
             method != ACK_REQUEST &&
-            method != REGISTER_REQUEST) {
+            method != REGISTER_REQUEST &&
+            method != MESSAGE_REQUEST) {
 
 			DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getOriginalString())
 			PURGEMESSAGE(_mess)
 
-//        } else if (method == REGISTER_REQUEST){
-//        	CREATEMESSAGE(etry, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)
-//        	SipUtil.genTryFromInvite(_mess, etry);
-//        	getSUDP()->sendReply(etry);
-//        	//transport->p_w(etry);
         }
         else{
             transport->upCall(_mess, (SL_CC*)sl_cc);

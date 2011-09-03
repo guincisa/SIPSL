@@ -490,10 +490,12 @@ int MESSAGE::fillIn(void){
 	char* tok = strtok_r(message_char, "\n",&saveptr1);
 	while (tok != NULL){
 		DEBINFMESSAGE("MESSAGE::tok", tok)
-		//v= means begin of SDP
-		if (strncmp(tok,"v=", 2) == 0){
+		DEBOUT("tok!", tok)
+		//SDP of payload first line empty
+		if (strlen(tok) == 1){
 			fillSDP = true;
 			hasSdp = true;
+			DEBOUT("has sdp", tok)
 		}
 		//cut ^M
 		int ll = strlen(tok);
@@ -535,7 +537,7 @@ int MESSAGE::fillIn(void){
 	messageStatus = 1;
 
 	DEBINFMESSAGE("int MESSAGE::fillIn(void)", this<<"]["<<message_line.size())
-
+	_dumpMessageBuffer();
 	return message_line.size();
 
 }
@@ -627,7 +629,7 @@ void MESSAGE::compileMessage(void){
 
 	if (hasSdp){
 		//calculate size
-		for(unsigned int i = 0; i < sdp_line.size(); i ++){
+		for(unsigned int i = 1; i < sdp_line.size(); i ++){
 			sizeOfSdp += strlen(sdp_line[i].first) + 2;
 		}
 	}
@@ -660,7 +662,7 @@ void MESSAGE::compileMessage(void){
 		origmess << "Content-Type: application/sdp\r\n";
 		origmess << "Content-Length: ";
 		origmess << sizeOfSdp;
-		origmess << "\r\n\r\n";
+		origmess << "\r\n";
 		for(unsigned int i = 0; i < sdp_line.size(); i ++){
 			origmess << sdp_line[i].first;
 			origmess << "\r\n";
@@ -702,6 +704,22 @@ void MESSAGE::dumpMessageBuffer(void){
 	for(unsigned int i = 0; i < sdp_line.size(); i ++){
 		DEBINFMESSAGE("MESSAGE::dumpMessageBuffer s", sdp_line[i].second << "][" << sdp_line[i].first)
 	}
+}
+void MESSAGE::_dumpMessageBuffer(void){
+	DEBINFMESSAGE("void MESSAGE::_dumpMessageBuffer(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::_dumpMessageBuffer invalid")
+
+	for(unsigned int i = 0; i < message_line.size(); i ++){
+		DEBOUT("MESSAGE::_dumpMessageBuffer m", message_line[i].second << "][" << message_line[i].first)
+	}
+	for(unsigned int i = 0; i < via_line.size(); i ++){
+		DEBOUT("MESSAGE::_dumpMessageBuffer v", via_line[i].second << "][" << via_line[i].first)
+	}
+	for(unsigned int i = 0; i < sdp_line.size(); i ++){
+		DEBOUT("MESSAGE::_dumpMessageBuffer s", sdp_line[i].second << "][" << sdp_line[i].first)
+	}
+
 }
 int MESSAGE::getSock(void){
 	DEBINFMESSAGE("int MESSAGE::getSock(void)",this)
@@ -2015,6 +2033,11 @@ int MESSAGE::getReqRepType(void){
 		reqRep = REQSUPP;
 		requestCode = REGISTER_REQUEST;
 		headSipRequest = "REGISTER";
+	}
+	else if(strncmp(message_line[0].first,"MESSAGE",7) == 0){
+		reqRep = REQSUPP;
+		requestCode = MESSAGE_REQUEST;
+		headSipRequest = "MESSAGE";
 	}
 	else if(strncmp(message_line[0].first,"PD-SIPSL",8) == 0){
 		reqRep = RECOMMPD;

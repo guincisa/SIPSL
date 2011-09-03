@@ -345,17 +345,20 @@ void SUDP::sendRequest(MESSAGE* _message){
     pair<string,string> _pair;
     if(_message->hasRoute()){
     	_pair = _message->getRoute();
+        DEBOUT("hasroute",_pair.first<<"]["<<_pair.second)
     }
     else if (_message->natTraversal()){
     	_pair = _message->getNatAddress();
+        DEBOUT("hasNat",_pair.first<<"]["<<_pair.second)
     }
     else{
     	_pair = _message->getUriProtocol("REQUEST");
     	if (_pair.second.length() == 0){
     		_pair.second = "5060";
     	}
+        DEBOUT("use request",_pair.first<<"]["<<_pair.second)
     }
-    DEBOUT("ufff",_pair.first<<"]["<<_pair.second)
+    DEBOUT("sending to",_pair.first<<"]["<<_pair.second)
     const char* _hostchar = _pair.first.c_str();
 
     struct addrinfo hints, *servinfo;
@@ -409,6 +412,7 @@ void SUDP::sendReply(MESSAGE* _message){
 	stringstream xx;
 	xx << ntohs((_message->getEchoClntAddr()).sin_port);
 
+	DEBOUT("sendReply to", _hostchar <<"]["<<xx.str())
 	int res = getaddrinfo(_hostchar,xx.str().c_str(),&hints, &servinfo);
 	if (res != 0){
 		DEBASSERT("getaddrinfo")
