@@ -21,8 +21,9 @@
 //**********************************************************************************
 
 #define TRNSCT_SM_H
-
+class SL_CO_P;
 class SL_CO;
+class SL_MO;
 class ALO;
 class SL_SM;
 class TRNSCT_SM;
@@ -42,7 +43,7 @@ class SM_V6{
 		ENGINE* sl_cc;
 
 	protected:
-	    SL_CO* sl_co;
+	    SL_CO_P* sl_co;
 
 	public:
 
@@ -51,8 +52,8 @@ class SM_V6{
 		int State;
 
 		ENGINE* getSL_CC(void);
-		SL_CO* getSL_CO(void);
-		SM_V6(ENGINE* sl_cc, SL_CO* sl_co);
+		SL_CO_P* getSL_CO_P(void);
+		SM_V6(ENGINE* sl_cc, SL_CO_P* sl_co);
 
 };
 //**********************************************************************************
@@ -106,7 +107,7 @@ class TRNSCT_SM  :  public SM_V6{
 
 		MESSAGE* getA_Matrix(void);
 
-		TRNSCT_SM(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO* sl_co);
+		TRNSCT_SM(int requestType, MESSAGE* matrixMess, MESSAGE* A_Matrix, ENGINE* sl_cc, SL_CO_P* sl_co);
 
 		~TRNSCT_SM();
 

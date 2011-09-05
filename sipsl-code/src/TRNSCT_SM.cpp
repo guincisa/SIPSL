@@ -99,7 +99,7 @@ static SIPUTIL SipUtil;
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):
+TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO_P* _sl_co):
 	SM_V6(_sl_cc, _sl_co){
 	DEBINF("TRNSCT_SM::TRNSCT_SM(int _requestType, MESSAGE* _matrixMess, MESSAGE* _a_Matrix, ENGINE* _sl_cc, SL_CO* _sl_co):SM(_sl_cc, _sl_co)",
 			this<<"]["<<_requestType<<"]["<<_matrixMess<<"]["<<_a_Matrix<<"]["<<_sl_cc<<"]["<<_sl_co)
@@ -231,7 +231,7 @@ SingleAction TRNSCT_SM::clearTimerS(int genPoint){
 //    move_sm.insert(pair<const int, PREDICATE_ACTION*>(_i, _pa));
 //
 //}
-SM_V6::SM_V6(ENGINE* _eng, SL_CO* _sl_co){
+SM_V6::SM_V6(ENGINE* _eng, SL_CO_P* _sl_co){
 
     sl_cc = _eng;
     sl_co = _sl_co;
@@ -242,7 +242,7 @@ SM_V6::SM_V6(ENGINE* _eng, SL_CO* _sl_co){
 ENGINE* SM_V6::getSL_CC(void){
     return sl_cc;
 }
-SL_CO* SM_V6::getSL_CO(void){
+SL_CO_P* SM_V6::getSL_CO_P(void){
     return sl_co;
 }
 //**********************************************************************************
@@ -306,11 +306,11 @@ ACTION* act_invite_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1 = etry;
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
-	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock(_sm->getSL_CO()->call_oset);
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_1->setLock(_sm->getSL_CO_P()->call_oset);
 
 	#ifdef USEFASTSEND
 #ifndef QUICKTRY //if defined, already sent
@@ -331,7 +331,7 @@ ACTION* act_invite_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	//**************************************
 	//OverallState_SV = OS_PROCEEDING
 	DEBDEV("TRSNCT_INV_SV::act_invite_to_alo move OverallState_SV to ","OS_PROCEEDING")
-	_sm->getSL_CO()->OverallState_SV = OS_PROCEEDING;
+	_sm->getSL_CO_P()->OverallState_SV = OS_PROCEEDING;
 
 	//OVERALL
 	//Send to ALARM: message for maximum time in calling state (64*T1)
@@ -400,7 +400,7 @@ ACTION* act_send_servunav_to_a(SM_V6* _sm, MESSAGE* _message) {
 	_sm->State = 5;
 
 	DEBDEV("SM act_send_servunav_to_a move OverallState_SV","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
+	_sm->getSL_CO_P()->OverallState_SV = OS_TERMINATED;
 
 	return action;
 
@@ -445,13 +445,13 @@ ACTION* act_provreply_to_a(SM_V6* _sm, MESSAGE* _message) {
 	//cannot store the _message since I can't change destination
 	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2 = m2netw;
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
-	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock(_sm->getSL_CO()->call_oset);
+	((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_2->setLock(_sm->getSL_CO_P()->call_oset);
 #ifdef USEFASTSEND
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(m2netw);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(m2netw);
 #else
 	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
@@ -472,7 +472,7 @@ ACTION* act_provreply_to_a(SM_V6* _sm, MESSAGE* _message) {
 	//**************************************
 	//OverallState_SV OS_PROCEEDING
 	DEBDEV("TRSNCT_INV_SV::act_provreply_to_a move OverallState_SV","OS_PROCEEDING")
-	_sm->getSL_CO()->OverallState_SV = OS_PROCEEDING;
+	_sm->getSL_CO_P()->OverallState_SV = OS_PROCEEDING;
 
 	return action;
 }
@@ -528,8 +528,8 @@ ACTION* act_200ok_fwdto_a(SM_V6* _sm, MESSAGE* _message) {
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
 	//**************************************
@@ -537,14 +537,14 @@ ACTION* act_200ok_fwdto_a(SM_V6* _sm, MESSAGE* _message) {
 	if( ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 == MainMessage && _message->getReqRepType() == REPSUPP){
 		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3 = _message;
 		DEBDEV("STORED_MESSAGE_1_3", ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3)
-		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock(_sm->getSL_CO()->call_oset);
+		((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3->setLock(_sm->getSL_CO_P()->call_oset);
 	}else {
 		DEBASSERT("Don't know what to do")
 	}
 	//MLF2
 	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_SV, SODE_NTWPOINT)
 #ifdef USEFASTSEND
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(m2netw);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(m2netw);
 #else
 	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
@@ -578,7 +578,7 @@ ACTION* act_200ok_fwdto_a(SM_V6* _sm, MESSAGE* _message) {
 	_sm->State = 3;
 
 	DEBDEV("SM act_200ok_to_a move OverallState_SV","OS_COMPLETED")
-	_sm->getSL_CO()->OverallState_SV = OS_COMPLETED;
+	_sm->getSL_CO_P()->OverallState_SV = OS_COMPLETED;
 
 	return action;
 
@@ -606,13 +606,13 @@ ACTION* act_200ok_refwdto_a(SM_V6* _sm, MESSAGE* _message) {
 	CREATEMESSAGE(mnetw, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_NTWPOINT)
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
 
 #ifdef USEFASTSEND
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(mnetw);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(mnetw);
 #else
 	SingleAction sa_1 = SingleAction(mnetw);
 	action->addSingleAction(sa_1);
@@ -674,13 +674,13 @@ ACTION* act_200ok_resendto_a(SM_V6* _sm, MESSAGE* _message) {
 	CREATEMESSAGE(mnetw, ((TRNSCT_SM_INVITE_SV*)_sm)->STOREMESS_1_3, SODE_TRNSCT_SV, SODE_NTWPOINT)
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
 
 #ifdef USEFASTSEND
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(mnetw);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(mnetw);
 #else
 	SingleAction sa_1 = SingleAction(mnetw);
 	action->addSingleAction(sa_1);
@@ -737,7 +737,7 @@ bool pre_200ok_from_alarm(SM_V6* _sm, MESSAGE* _message){
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  ((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok < MAX_INVITE_RESEND
-		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
+		&& _sm->getSL_CO_P()->OverallState_SV != OS_CONFIRMED) {
 			DEBDEV("SM_V5 pre_200ok_from_alarm","true")
 			return true;
 	}
@@ -758,7 +758,7 @@ bool pre_200ok_from_alarm_maxreach(SM_V6* _sm, MESSAGE* _message){
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
 		&&  ((TRNSCT_SM_INVITE_SV*)_sm)->resend_200ok >= MAX_INVITE_RESEND
-		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
+		&& _sm->getSL_CO_P()->OverallState_SV != OS_CONFIRMED) {
 			DEBDEV("SM_V5 pre_200ok_from_alarm_maxreach","true")
 			return true;
 	}
@@ -790,7 +790,7 @@ ACTION* act_terminate_sv(SM_V6* _sm, MESSAGE* _message) {
 	_sm->State = 5;
 
 	DEBDEV("SM act_terminate_sv move OverallState_SV","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
+	_sm->getSL_CO_P()->OverallState_SV = OS_TERMINATED;
 
 	return (action);
 }
@@ -805,7 +805,7 @@ bool pre_200ok_from_alarm_confirm(SM_V6* _sm, MESSAGE* _message){
 		&& _message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
-		&&  _sm->getSL_CO()->OverallState_SV == OS_CONFIRMED) {
+		&&  _sm->getSL_CO_P()->OverallState_SV == OS_CONFIRMED) {
 			DEBDEV("SM_V5 pre_200ok_from_alarm_confirm","true")
 			return true;
 	}
@@ -839,7 +839,7 @@ bool pre_N_99_inv_sv(SM_V6* _sm, MESSAGE* _message){
 		&& _message->getHeadSipReplyCode() == SU_503
 		&& _message->getDestEntity() == SODE_TRNSCT_SV
 		&& _message->getGenEntity() ==  SODE_TRNSCT_SV
-		&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED) {
+		&& _sm->getSL_CO_P()->OverallState_SV != OS_CONFIRMED) {
 			DEBDEV("SM_V5 pre_N_99_inv_sv","true")
 			return true;
 	}
@@ -869,7 +869,7 @@ ACTION* act_N_99_inv_sv(SM_V6* _sm, MESSAGE* _message) {
 	_sm->State = 99;
 
 	DEBDEV("SM act_N_99_inv_sv move OverallState_SV","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
+	_sm->getSL_CO_P()->OverallState_SV = OS_TERMINATED;
 
 	//TODO finish here
 	return(action);
@@ -885,7 +885,7 @@ bool pre_timer_s_sv(SM_V6* _sm, MESSAGE* _message){
 			&& _message->getOrderOfOperation().compare("TIMER_S") == 0
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_TRNSCT_SV
-			&& _sm->getSL_CO()->OverallState_SV != OS_CONFIRMED){
+			&& _sm->getSL_CO_P()->OverallState_SV != OS_CONFIRMED){
 		DEBDEV("TRNSCT_INV_SV pre_timer_s","true")
 		return true;
 	}
@@ -909,8 +909,8 @@ ACTION* act_timer_s_sv(SM_V6* _sm, MESSAGE* _message) {
 	_sm->State = 99;
 
 	DEBDEV("SM act_timer_s move OverallState_SV","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
-	DEBDEV("SM act_timer_s killed by timer s",_sm->getSL_CO())
+	_sm->getSL_CO_P()->OverallState_SV = OS_TERMINATED;
+	DEBDEV("SM act_timer_s killed by timer s",_sm->getSL_CO_P())
 
 	return(action);
 
@@ -1095,13 +1095,13 @@ ACTION* act_invite_to_b(SM_V6* _sm, MESSAGE* _message) {
 	CREATEMESSAGE(m2netw, _message, SODE_TRNSCT_CL, SODE_NTWPOINT)
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
 
 #ifdef USEFASTSEND
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(m2netw);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(m2netw);
 #else
 	SingleAction sa_1 = SingleAction(m2netw);
 	action->addSingleAction(sa_1);
@@ -1135,7 +1135,7 @@ ACTION* act_invite_to_b(SM_V6* _sm, MESSAGE* _message) {
 	DEBDEV("SM act_invite_to_b move to state","1")
 	_sm->State = 1;
 	DEBDEV("SM act_invite_to_b move OverallState_CL","OS_CALLING")
-	_sm->getSL_CO()->OverallState_CL = OS_CALLING;
+	_sm->getSL_CO_P()->OverallState_CL = OS_CALLING;
 
 	return action;
 }
@@ -1177,7 +1177,7 @@ ACTION* act_terminate_cl(SM_V6* _sm, MESSAGE* _message) {
 
 
 	DEBDEV("SM act_terminate_cl move OverallState_CL to","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_CL = OS_TERMINATED;
+	_sm->getSL_CO_P()->OverallState_CL = OS_TERMINATED;
 	DEBDEV("SM act_terminate_cl move to",99)
 	_sm->State = 99;
 
@@ -1232,7 +1232,7 @@ ACTION* act_clear_invite_alarm(SM_V6* _sm, MESSAGE* _message) {
 	DEBDEV("SM act_clear_invite_alarm move to state","2")
 	_sm->State = 2;
 	DEBDEV("SM act_clear_invite_alarm move OverallState_CL to ","OS_PROCEEDING")
-	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
+	_sm->getSL_CO_P()->OverallState_CL = OS_PROCEEDING;
 
 	return action;
 }
@@ -1301,7 +1301,7 @@ ACTION* act_provrep_to_sv(SM_V6* _sm, MESSAGE* _message) {
 	_sm->State = 3;
 
 	DEBDEV("SM act_provrep_to_sv move OverallState_CL to","OS_PROCEEDING")
-	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
+	_sm->getSL_CO_P()->OverallState_CL = OS_PROCEEDING;
 
 
 	return action;
@@ -1362,7 +1362,7 @@ ACTION* act_200ok_inv_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	DEBDEV("SM act_200ok_inv_to_alo move to state","4")
 	_sm->State = 4;
 	DEBDEV("SM act_200ok_inv_to_alo move OverallState_CL to","OS_PROCEEDING")
-	_sm->getSL_CO()->OverallState_CL = OS_PROCEEDING;
+	_sm->getSL_CO_P()->OverallState_CL = OS_PROCEEDING;
 
 
 	//OVERALL
@@ -1387,7 +1387,7 @@ bool pre_200ok_from_b_proceeding(SM_V6* _sm, MESSAGE* _message){
 		&&_message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT
-		&& _sm->getSL_CO()->OverallState_CL == OS_PROCEEDING){
+		&& _sm->getSL_CO_P()->OverallState_CL == OS_PROCEEDING){
 			DEBDEV("SM pre_200ok_from_b_proceeding","true")
 			return true;
 		}
@@ -1419,7 +1419,7 @@ bool pre_200ok_from_b_completed(SM_V6* _sm, MESSAGE* _message){
 		&&_message->getHeadSipReplyCode() == OK_200
 		&& _message->getDestEntity() == SODE_TRNSCT_CL
 		&& _message->getGenEntity() ==  SODE_NTWPOINT
-		&& _sm->getSL_CO()->OverallState_CL == OS_COMPLETED){
+		&& _sm->getSL_CO_P()->OverallState_CL == OS_COMPLETED){
 			DEBDEV("SM pre_200ok_from_b_completed","true")
 			return true;
 		}
@@ -1455,11 +1455,11 @@ ACTION* act_resend_ack(SM_V6* _sm, MESSAGE* _message) {
 	//Look for ACKTOB and send it
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
-	TRNSCT_SM_ACK_CL* ackcli = (TRNSCT_SM_ACK_CL*)_sm->getSL_CO()->call_oset->lastTRNSCT_SM_ACK_CL;
+	TRNSCT_SM_ACK_CL* ackcli = (TRNSCT_SM_ACK_CL*)_sm->getSL_CO_P()->call_oset->lastTRNSCT_SM_ACK_CL;
 
     if (ackcli == 0x0){
     	DEBY
@@ -1513,7 +1513,7 @@ bool pre_timer_s_cl(SM_V6* _sm, MESSAGE* _message){
 			&& _message->getOrderOfOperation().compare("TIMER_S") == 0
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_TRNSCT_SV
-			&& _sm->getSL_CO()->OverallState_CL != OS_COMPLETED){
+			&& _sm->getSL_CO_P()->OverallState_CL != OS_COMPLETED){
 		DEBDEV("TRNSCT_INV_CL pre_timer_s_cl","true")
 		return true;
 	}
@@ -1538,8 +1538,8 @@ ACTION* act_timer_s_cl(SM_V6* _sm, MESSAGE* _message) {
 	_sm->State = 99;
 
 	DEBDEV("SM act_timer_s move OverallState_CL","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_CL = OS_TERMINATED;
-	DEBDEV("SM act_timer_s killed by timer s",_sm->getSL_CO())
+	_sm->getSL_CO_P()->OverallState_CL = OS_TERMINATED;
+	DEBDEV("SM act_timer_s killed by timer s",_sm->getSL_CO_P())
 
 	return(action);
 
@@ -1704,7 +1704,7 @@ ACTION* act_ack_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	DEBDEV("SM act_ack_to_alo move to state 1","")
 	_sm->State = 1;
 	DEBDEV("SM act_ack_to_alo move OverallState_SV to 1","OS_CONFIRMED")
-	_sm->getSL_CO()->OverallState_SV = OS_CONFIRMED;
+	_sm->getSL_CO_P()->OverallState_SV = OS_CONFIRMED;
 
 	//TODO
 	// clear 200 ok alarm sent by invite sv
@@ -1787,15 +1787,15 @@ ACTION* act_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 	((TRNSCT_SM_ACK_CL*)_sm)->ACKTOB = ack;
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
 
-	((TRNSCT_SM_ACK_CL*)_sm)->ACKTOB->setLock(_sm->getSL_CO()->call_oset);
+	((TRNSCT_SM_ACK_CL*)_sm)->ACKTOB->setLock(_sm->getSL_CO_P()->call_oset);
 
 #ifdef USEFASTSEND
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(ack);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(ack);
 #else
 	SingleAction sa_1 = SingleAction(ack);
 	action->addSingleAction(sa_1);
@@ -1804,7 +1804,7 @@ ACTION* act_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 	DEBDEV("SM act_ack_to_b move to state","1")
 	_sm->State = 1;
 	DEBDEV("SM act_ack_to_b move OverallState_CL to","OS_COMPLETED")
-	_sm->getSL_CO()->OverallState_CL = OS_COMPLETED;
+	_sm->getSL_CO_P()->OverallState_CL = OS_COMPLETED;
 
 
 	//
@@ -1843,12 +1843,12 @@ ACTION* act_resend_ack_to_b(SM_V6* _sm, MESSAGE* _message) {
 	CREATEMESSAGE(__message, ((TRNSCT_SM*)_sm)->getMatrixMessage(), SODE_TRNSCT_CL,SODE_NTWPOINT)
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
 
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(__message);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(__message);
 //	SingleAction sa_1 = SingleAction(__message);
 //	action->addSingleAction(sa_1);
 	DEBMESSAGE("SECOND ACK B", __message)
@@ -1920,14 +1920,14 @@ ACTION* act_bye_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	DEBDEV("STORED_MESSAGE", ((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE)
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
 
-	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO()->call_oset);
+	((TRNSCT_SM_BYE_SV*)_sm)->STORED_MESSAGE->setLock(_sm->getSL_CO_P()->call_oset);
 #ifdef USEFASTSEND
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(a200ok);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(a200ok);
 #else
 	NEWPTR(ACTION*, action, ACTION(),"ACTION")
 	SingleAction sa_2 = SingleAction(a200ok);
@@ -1964,7 +1964,7 @@ ACTION* act_bye_to_alo(SM_V6* _sm, MESSAGE* _message) {
 	//_sm->State = 1;
 	DEBDEV("TRSNCT_INV_SV::act_bye_to_alo move to state 2","")
 	DEBDEV("SM act_200ok_bye_to_a move OverallState_SV to","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_SV = OS_TERMINATED;
+	_sm->getSL_CO_P()->OverallState_SV = OS_TERMINATED;
 	DEBDEV("SM act_200ok_bye_to_a move to state 2","")
 	_sm->State = 2;
 
@@ -2053,7 +2053,7 @@ bool pre_timer_s_sv_bye(SM_V6* _sm, MESSAGE* _message){
 			&& _message->getOrderOfOperation().compare("TIMER_S") == 0
 			&& _message->getDestEntity() == SODE_TRNSCT_SV
 			&& _message->getGenEntity() ==  SODE_TRNSCT_SV
-			&& _sm->getSL_CO()->OverallState_SV != OS_TERMINATED){
+			&& _sm->getSL_CO_P()->OverallState_SV != OS_TERMINATED){
 		DEBDEV("TRNSCT_BYE_SV pre_timer_s_sv_bye","true")
 		return true;
 	}
@@ -2178,13 +2178,13 @@ ACTION* act_bye_to_b(SM_V6* _sm, MESSAGE* _message) {
     _m->setSourceMessage(_message);
 
 #ifdef CHECKDOA
-		if ( Comap->getDoaState(_sm->getSL_CO()->call_oset,_message->getModulus()) == DOA_DELETED){
-			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO()->call_oset)
+		if ( Comap->getDoaState(_sm->getSL_CO_P()->call_oset,_message->getModulus()) == DOA_DELETED){
+			DEBASSERT("CHECKDOA DOA_DELETED call_oset" <<_sm->getSL_CO_P()->call_oset)
 		}
 #endif
 
 #ifdef USEFASTSEND
-	_sm->getSL_CO()->call_oset->getTRNSPRT()->p_w(_m);
+	_sm->getSL_CO_P()->call_oset->getTRNSPRT()->p_w(_m);
 #else
 	SingleAction sa_1 = SingleAction(_m);
     action->addSingleAction(sa_1);
@@ -2251,7 +2251,7 @@ ACTION* act_200ok_bye_to_alo(SM_V6* _sm, MESSAGE* _message) {
 
 
 	DEBDEV("SM act_200ok_bye_to_alo move OverallState_CL to","OS_TERMINATED")
-	_sm->getSL_CO()->OverallState_CL = OS_TERMINATED;
+	_sm->getSL_CO_P()->OverallState_CL = OS_TERMINATED;
 
 	DEBDEV("TRNSCT_SM_BYE_CL act_200ok_bye_to_alo move to state 2","")
 	_sm->State = 2;

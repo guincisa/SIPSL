@@ -236,7 +236,7 @@ void SL_CC::parse(void* __mess, int _mmod){
             //////////////////////////////
             //Start - Initialization block
             CALL_OSET* call_oset = 0x0;
-            call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain());
+            call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain(),TYPE_SL_CO);
             //End
             //////////////////////////////
 

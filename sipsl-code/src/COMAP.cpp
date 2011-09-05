@@ -210,7 +210,7 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
 }
 //**********************************************************************************
 //**********************************************************************************
-CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSPRT* _transport, MESSAGE* _message, string _domain){
+CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSPRT* _transport, MESSAGE* _message, string _domain, int _typeofco){
 	DEBCOMAP_L("CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSPRT* _transport, MESSAGE* _message, string _domain)",
 			this<<"]["<<_callId_X<<"]["<<_mod<<"]["<<_sl_cc<<"]["<<_transport<<"]["<<_message<<"]["<<_domain)
     PROFILE("COMAP::setCALL_OSET")
@@ -228,7 +228,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     }
 
     CALL_OSET* call_oset = 0x0;
-    NEWPTR2(call_oset, CALL_OSET(_sl_cc, _transport, _callId_X, _mod),"CALL_OSET")
+    NEWPTR2(call_oset, CALL_OSET(_sl_cc, _transport, _callId_X, _mod,_typeofco),"CALL_OSET")
 
     DEBCOMAP_L("COMAP::setCALL_OSET inserting ", _callId_X << "] [" << call_oset << " comap [" << _mod)
 

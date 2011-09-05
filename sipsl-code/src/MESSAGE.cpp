@@ -1884,7 +1884,8 @@ string MESSAGE::getContactUri(void){
 		return contactUri;
 	}
 
-	//Contact: <sip:majo@192.168.0.100:5062>
+	//Contact: <sip:majo@192.168.0.100:5062;transport=...>
+	//Contact: <sip:192.168.0.100:5062>
 
 	string cont = getGenericHeader("Contact:");
 	//remove brackets <>
@@ -1903,27 +1904,37 @@ string MESSAGE::getContactUri(void){
     }
 
     //majo@192.168.0.100:5062
+    //192.168.0.100:5062
     char contch2[contactUri.length() +1];
     strcpy(contch2, contactUri.c_str());
     char* pun3 = strchr(contch2,'@');
+    char* pun4;
 	if (pun3 == NULL){
-		DEBASSERT("unexpected")
+		pun3 = contch2;
+		contactName = "";
+		pun4 = pun3;
+	}else{
+		sprintf(pun3,"");
+		contactName = contch2;
+		pun4 = pun3 +1;
 	}
-	sprintf(pun3,"");
-	contactName = contch2;
 	DEBOUT("MESSAGE::getContactUri contactName",contactName)
-
-	DEBOUT("pun3+1", pun3 + 1)
+	DEBOUT("pun4", pun4)
 
 	//192.168.0.100:5062
-    char* pun5 = strchr(pun3 + 1,':');
+    char* pun5 = strchr(pun4,':');
 	if (pun5 == NULL){
 		contactPort = "5060";
 	}else{
-		contactPort = pun5 +1;
 		sprintf(pun5,"");
+		char* pun6 = strchr(pun5+1,';');
+		if (pun6 != NULL){
+			//;transport=...
+			sprintf(pun6,"");
+		}
+		contactPort = pun5 +1;
 	}
-	contactAddress = pun3 + 1;
+	contactAddress = pun4;
 	DEBOUT("MESSAGE::getContactUri contactAddress",contactAddress)
 	DEBOUT("MESSAGE::getContactUri contactPort",contactPort)
 
