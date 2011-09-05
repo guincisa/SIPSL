@@ -178,7 +178,8 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 
 	cSeqMethod				= "";
 	cSeq					= 0;
-	parsedCseq			= false;
+	parsedCseq				= false;
+	requestUriProtocol      = make_pair("","");
 
 }
 
@@ -278,6 +279,7 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	cSeqMethod				= "";
 	cSeq					= 0;
 	parsedCseq				= false;
+	requestUriProtocol      = make_pair("","");
 
 }
 //TODO put in constructor
@@ -321,6 +323,8 @@ void MESSAGE::_clearStatus(void){
 	cSeqMethod				= "";
 	cSeq					= 0;
 	parsedCseq				= false;
+	requestUriProtocol      = make_pair("","");
+
 
 	sdp_line.clear();
 	via_line.clear();
@@ -537,7 +541,7 @@ int MESSAGE::fillIn(void){
 	messageStatus = 1;
 
 	DEBINFMESSAGE("int MESSAGE::fillIn(void)", this<<"]["<<message_line.size())
-	_dumpMessageBuffer();
+	//_dumpMessageBuffer();
 	return message_line.size();
 
 }
@@ -694,6 +698,9 @@ void MESSAGE::dumpMessageBuffer(void){
 	DEBINFMESSAGE("void MESSAGE::dumpMessageBuffer(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::dumpMessageBuffer invalid")
+#ifndef LOGMIN
+		DEBASSERT("MESSAGE::dumpMessageBuffer active")
+#endif
 
 	for(unsigned int i = 0; i < message_line.size(); i ++){
 		DEBINFMESSAGE("MESSAGE::dumpMessageBuffer m", message_line[i].second << "][" << message_line[i].first)
@@ -709,6 +716,10 @@ void MESSAGE::_dumpMessageBuffer(void){
 	DEBINFMESSAGE("void MESSAGE::_dumpMessageBuffer(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::_dumpMessageBuffer invalid")
+
+#ifndef LOGMIN
+		DEBASSERT("MESSAGE::dumpMessageBuffer active")
+#endif
 
 	for(unsigned int i = 0; i < message_line.size(); i ++){
 		DEBOUT("MESSAGE::_dumpMessageBuffer m", message_line[i].second << "][" << message_line[i].first)
@@ -2160,6 +2171,14 @@ string  MESSAGE::getHeadSipReply(void){
 	return headSipReply;
 
 }
+void MESSAGE::_forceHeadSipReply(int _code){
+	DEBINFMESSAGE("string  MESSAGE::_forceHeadSipReply(int)",this<<"]["<<_code)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadSipReply invalid")
+	reqRep = REPSUPP;
+	replyCode = _code;
+}
+
 bool MESSAGE::isUriSecure(string header){
 	DEBINFMESSAGE("bool MESSAGE::isUriSecure(string header)",this)
 	if (invalid == 1)
@@ -2169,41 +2188,59 @@ bool MESSAGE::isUriSecure(string header){
 	}
 	DEBASSERT("")
 }
-pair<string,int> MESSAGE::getUri(string header){
-	DEBINFMESSAGE("string MESSAGE::getUriHost(string header)",this<<"]["<<header)
+//pair<string,int> MESSAGE::getUri(string header){
+//	DEBINFMESSAGE("string MESSAGE::getUriHost(string header)",this<<"]["<<header)
+//	if (invalid == 1)
+//		DEBASSERT("MESSAGE::getUriHost invalid")
+//
+//	if(messageStatus !=1){
+//		fillIn();
+//	}
+//
+//	string return1;
+//	int return2 = 0;
+//
+//	if(header.compare("REQUEST") == 0){
+//		//INVITE sip:service@10.21.99.79:5062 SIP/2.0
+//		//string Via="INVITE sip:service@10.21.99.79:5062 SIP/2.0";
+//		char* xxx = new char[strlen(message_line[0].first) + 1];
+//		strcpy(xxx,message_line[0].first);
+//		char* aaa = strstr(xxx," ");
+//		char* bbb = strstr(aaa+1," ");
+//		strcpy(bbb,"");
+//		char* ccc = aaa+1;
+//		char* ddd = strstr(ccc,"@");
+//		char* eee = ddd+1;
+//		char* fff = strstr(eee,":");
+//		if (fff != NULL){
+//			strcpy(fff,"");
+//			return2 = atoi(fff+1);
+//		}
+//		return1 = eee;
+//		DEBINFMESSAGE("pair<string,int> MESSAGE::getUri(string header)",this<<"]["<<header<<"]["<<return1<<"]["<<return2)
+//		return(make_pair(return1,return2));
+//	}
+//	return (make_pair("",0));
+//
+//}
+pair<string,string> MESSAGE::getRequestUriProtocol(void){
+	DEBINFMESSAGE("string MESSAGE::getRequestUriProtocol(void)",this)
 	if (invalid == 1)
-		DEBASSERT("MESSAGE::getUriHost invalid")
+		DEBASSERT("MESSAGE::getRequestUriProtocol invalid")
 
 	if(messageStatus !=1){
 		fillIn();
 	}
 
-	string return1;
-	int return2 = 0;
-
-	if(header.compare("REQUEST") == 0){
-		//INVITE sip:service@10.21.99.79:5062 SIP/2.0
-		//string Via="INVITE sip:service@10.21.99.79:5062 SIP/2.0";
-		char* xxx = new char[strlen(message_line[0].first) + 1];
-		strcpy(xxx,message_line[0].first);
-		char* aaa = strstr(xxx," ");
-		char* bbb = strstr(aaa+1," ");
-		strcpy(bbb,"");
-		char* ccc = aaa+1;
-		char* ddd = strstr(ccc,"@");
-		char* eee = ddd+1;
-		char* fff = strstr(eee,":");
-		if (fff != NULL){
-			strcpy(fff,"");
-			return2 = atoi(fff+1);
+	if (requestUriProtocol.first.length()==0){
+		requestUriProtocol = getUriProtocol("REQUEST");
+		if (requestUriProtocol.second.length() == 0){
+			requestUriProtocol.second = "5060";
 		}
-		return1 = eee;
-		DEBINFMESSAGE("pair<string,int> MESSAGE::getUri(string header)",this<<"]["<<header<<"]["<<return1<<"]["<<return2)
-		return(make_pair(return1,return2));
 	}
-	return (make_pair("",0));
-
+	return requestUriProtocol;
 }
+
 pair<string,string> MESSAGE::getUriProtocol(string header){
 	DEBINFMESSAGE("string MESSAGE::getUriProtocol(string header)",this<<"]["<<header)
 	if (invalid == 1)

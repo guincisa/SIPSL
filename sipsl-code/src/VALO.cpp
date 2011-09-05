@@ -194,11 +194,11 @@ void VALO::onInvite(MESSAGE* _message){
 	}
 
 	DEBY
-	pair<string,int> tp = _message->getUri("REQUEST");
+	pair<string,string> tp = _message->getRequestUriProtocol();
 	DEBOUT("indirizzo request", tp.first << "] ["<<tp.second)
 	char css[GENSTRINGLEN];
-	if (tp.second != 0){
-		sprintf(css,"%s:%d",tp.first.c_str(),tp.second);
+	if (tp.second.compare("5060") != 0){
+		sprintf(css,"%s:%s",tp.first.c_str(),tp.second.c_str());
 	}else{
 		sprintf(css,"%s",tp.first.c_str());
 	}
@@ -241,8 +241,6 @@ void VALO::onInvite(MESSAGE* _message){
 	string newCallid = call_oset->getCallId_Y();
 	SipUtil.genBInvitefromAInvite(_message->getSourceMessage(), message, getSUDP(), newCallid);
 	//no good contact
-
-	message->dumpMessageBuffer();
 
 	message->compileMessage();
 

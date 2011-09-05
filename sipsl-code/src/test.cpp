@@ -295,34 +295,64 @@ int main(int argc, const char* argv[]) {
 
 	}
 	else {
-		//NANOSPEE TEST
-		timespec sleep_time;
 
-		sleep_time.tv_sec = 0;
-		sleep_time.tv_nsec = 10000000;
-
+		string pippo = "";
+		cout << "pippo"<<pippo.length()<<endl;
+		//string management...
+		// concat aaa111aaa11
+		string aaa = "aaa";
+		int iii = 111;
+		string x;
 		TIMEDEF
 		SETNOW
-		nanosleep(&sleep_time,NULL);
-		PRINTDIFF("10000000")
-
+		for (int i = 0 ; i < 10000; i++){
+			stringstream xx;
+			xx << "aaa";
+			xx << iii;
+			xx << aaa;
+			xx << 111;
+			x = xx.str();
+		}
+		PRINTDIFF("stringstream")
+		DEBOUT("stringstream",x)
 		SETNOW
-		sleep_time.tv_sec = 0;
-		sleep_time.tv_nsec = 20000000;
-		nanosleep(&sleep_time,NULL);
-		PRINTDIFF("20000000")
+		for (int i = 0 ; i < 10000; i++){
+			char xx[1024];
+			sprintf(xx,"aaa%d%s%d",iii,aaa.c_str(),111);
+			x = xx;
+		}
+		PRINTDIFF("char []")
+		DEBOUT("char []",x)
 
-		SETNOW
-		sleep_time.tv_sec = 0;
-		sleep_time.tv_nsec = 40000000;
-		nanosleep(&sleep_time,NULL);
-		PRINTDIFF("40000000")
 
-		SETNOW
-		sleep_time.tv_sec = 1;
-		sleep_time.tv_nsec = 0;
-		nanosleep(&sleep_time,NULL);
-		PRINTDIFF("1 sec")
+//		//NANOSPEE TEST
+//		timespec sleep_time;
+//
+//		sleep_time.tv_sec = 0;
+//		sleep_time.tv_nsec = 10000000;
+//
+//		TIMEDEF
+//		SETNOW
+//		nanosleep(&sleep_time,NULL);
+//		PRINTDIFF("10000000")
+//
+//		SETNOW
+//		sleep_time.tv_sec = 0;
+//		sleep_time.tv_nsec = 20000000;
+//		nanosleep(&sleep_time,NULL);
+//		PRINTDIFF("20000000")
+//
+//		SETNOW
+//		sleep_time.tv_sec = 0;
+//		sleep_time.tv_nsec = 40000000;
+//		nanosleep(&sleep_time,NULL);
+//		PRINTDIFF("40000000")
+//
+//		SETNOW
+//		sleep_time.tv_sec = 1;
+//		sleep_time.tv_nsec = 0;
+//		nanosleep(&sleep_time,NULL);
+//		PRINTDIFF("1 sec")
 
 	}
 //		//Engine test
