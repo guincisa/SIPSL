@@ -67,7 +67,7 @@ class COMAP {
 		void resetDoaRequestTimer(CALL_OSET* call_oset,int modulus);
 
 	public:
-		CALL_OSET* setCALL_OSET(string callId_X,int, ENGINE*, TRNSPRT*, MESSAGE*, string);
+		CALL_OSET* setCALL_OSET(string callId_X,int, ENGINE*, TRNSPRT*, MESSAGE*, string, int);
 
 		CALL_OSET* getCALL_OSET_XMain(string callId_X,int);
 		CALL_OSET* getCALL_OSET_YDerived(string callId_Y,int);

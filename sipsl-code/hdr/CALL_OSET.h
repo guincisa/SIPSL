@@ -22,7 +22,10 @@
 
 #define CALL_OSET_H
 
+class SL_CO_P;
+class SL_MO;
 class SL_CO;
+
 class ALO;
 class SL_SM;
 class TRNSCT_SM;
@@ -31,11 +34,17 @@ class TRNSPRT;
 class MESSAGE;
 class ACTION;
 
+#define TYPE_SL_CO 1
+#define TYPE_SL_MO 2
+
 //Umbrella class which hosts states machines and call object
 //This must be controlled by a mutex
 class CALL_OSET {
 
+	friend class SL_CO_P;
+	friend class SL_MO;
 	friend class SL_CO;
+
 	friend class ALO;
 	friend class VALO;
 	friend class TRNSCT_SM;
@@ -44,15 +53,15 @@ class CALL_OSET {
 	private:
 
 		TRNSPRT* transport;
-		SL_CO* sl_co;
+		SL_CO_P* sl_co;
 		ALO* alo;
 		ENGINE* engine;
 		string callId_X;
 		string callId_Y;
 		void setCallId_Y(string _cally);
 		void setCallId_X(string callId_X);
-		void setSL_CO(SL_CO*);
-		SL_CO* getSL_CO(void);
+		void setSL_CO(SL_CO_P*);
+		SL_CO_P* getSL_CO(void);
 		ALO* getALO(void);
 		void setALO(ALO*);
 
@@ -95,7 +104,7 @@ class CALL_OSET {
 		MESSAGE* getNextLockedMessage(void);
 
 	public:
-		CALL_OSET(ENGINE*, TRNSPRT*, string call_x, int modulus);
+		CALL_OSET(ENGINE*, TRNSPRT*, string call_x, int modulus, int typeofco);
 		~CALL_OSET(void);
 
 		string getCallId_Y(void);
@@ -104,7 +113,7 @@ class CALL_OSET {
 		int getOverallState_CL(void);
 		int getOverallState_SV(void);
 
-		//Wrapper for SL_CO::call
+		//Wrapper for SL_CO_P::call
 		void call(MESSAGE*);
 
 		void insertLockedMessage(MESSAGE*);
@@ -128,7 +137,39 @@ class CALL_OSET {
 // Call object
 //**********************************************************************************
 //**********************************************************************************
-class SL_CO {
+class SL_CO_P {
+
+	private:
+	virtual int actionCall_SV(ACTION*, int& mod) = 0;
+	virtual int actionCall_CL(ACTION*, int& mod) = 0;
+
+	int typeofco;
+
+	public:
+		int getTypeOfCo(void);
+
+		int placeholder;
+
+		int OverallState_SV;
+		int OverallState_CL;
+
+		SL_CO_P(CALL_OSET*,int);
+
+		CALL_OSET* call_oset;
+
+
+		//operation
+		// 0 nothing
+		// 1 do
+		virtual int call(MESSAGE*,int& modulus) = 0;
+
+};
+//**********************************************************************************
+//**********************************************************************************
+// Message object
+//**********************************************************************************
+//**********************************************************************************
+class SL_CO : public SL_CO_P{
 
 	private:
 
@@ -137,16 +178,24 @@ class SL_CO {
 
 
 	public:
-		int placeholder;
-
-		int OverallState_SV;
-		int OverallState_CL;
-
 		SL_CO(CALL_OSET*);
 
-		CALL_OSET* call_oset;
+		//operation
+		// 0 nothing
+		// 1 do
+		int call(MESSAGE*,int& modulus);
+
+};
+class SL_MO : public SL_CO_P{
+
+	private:
+
+	int actionCall_SV(ACTION*, int& mod);
+	int actionCall_CL(ACTION*, int& mod);
 
 
+	public:
+		SL_MO(CALL_OSET*);
 		//operation
 		// 0 nothing
 		// 1 do

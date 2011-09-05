@@ -101,7 +101,7 @@
 //**********************************************************************************
 // CALL_OSET
 //**********************************************************************************
-CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _modulus){
+CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _modulus, int _typeofco){
 	DEBINFCALLOSET("CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _modulus)", this<<"]["<<_engine<<"]["<<_transport<<"]["<<_call<<"]["<<_modulus)
 
 #ifdef SV_CL_MUTEX
@@ -125,7 +125,12 @@ CALL_OSET::CALL_OSET(ENGINE* _engine, TRNSPRT* _transport, string _call, int _mo
 	alo = 0x0;
 	lastTRNSCT_SM_ACK_CL = 0x0;
 
-	NEWPTR2(sl_co, SL_CO(this), "SL_CO(this)")
+	if (_typeofco == TYPE_SL_CO){
+		NEWPTR2(sl_co, SL_CO(this), "SL_CO(this)")
+	}
+	else if (_typeofco == TYPE_SL_MO){
+		NEWPTR2(sl_co, SL_MO(this), "SL_CO(this)")
+	}
 	NEWPTR2(alo, VALO(_engine, this), "VALO(_engine, this)")
 	alo->linkSUDP(_engine->getSUDP());
 	callId_X = _call;
@@ -254,7 +259,12 @@ CALL_OSET::~CALL_OSET(void){
 	}
 #endif
 
-	DELPTR(sl_co, "SL_CO")
+	if (sl_co->getTypeOfCo() == TYPE_SL_CO){
+		DELPTR((SL_CO*)sl_co, "SL_CO")
+	}
+	else if (sl_co->getTypeOfCo() == TYPE_SL_MO){
+		DELPTR((SL_MO*)sl_co, "SL_CO")
+	}
 	DEBY
 
 	//remove from modulusMap
@@ -345,10 +355,10 @@ void CALL_OSET::setALO(ALO* _alo){
 	alo = _alo;
 }
 //**********************************************************************************
-SL_CO* CALL_OSET::getSL_CO(void){
+SL_CO_P* CALL_OSET::getSL_CO(void){
 	return sl_co;
 }
-void CALL_OSET::setSL_CO(SL_CO* _sl_co){
+void CALL_OSET::setSL_CO(SL_CO_P* _sl_co){
 	sl_co = _sl_co;
 }
 TRNSPRT* CALL_OSET::getTRNSPRT(void){
@@ -528,12 +538,21 @@ int CALL_OSET::getOverallState_SV(void){
 //**********************************************************************************
 // SL_CO
 //**********************************************************************************
-SL_CO::SL_CO(CALL_OSET* _call_oset){
+SL_CO_P::SL_CO_P(CALL_OSET* _call_oset,int _typeofco){
 	call_oset = _call_oset;
     OverallState_SV = OS_INIT;
     OverallState_CL = OS_INIT;
+    typeofco = _typeofco;
 
 }
+int SL_CO_P::getTypeOfCo(void){
+	return typeofco;
+}
+
+//**********************************************************************************
+//**********************************************************************************
+SL_CO::SL_CO(CALL_OSET* _call_oset):SL_CO_P(_call_oset,TYPE_SL_CO){}
+SL_MO::SL_MO(CALL_OSET* _call_oset):SL_CO_P(_call_oset,TYPE_SL_MO){}
 //**********************************************************************************
 //**********************************************************************************
 int SL_CO::call(MESSAGE* _message, int& _r_modulus){
@@ -981,5 +1000,13 @@ int SL_CO::actionCall_CL(ACTION* action, int& _r_modulus){
     PRINTDIFF("SL_CO::actionCall_CL() ")
 	return oper;
 }
+int SL_MO::actionCall_SV(ACTION* action, int& _r_modulus){
+}
+int SL_MO::actionCall_CL(ACTION* action, int& _r_modulus){
+}
+int SL_MO::call(MESSAGE*,int& modulus){
+
+}
+
 
 

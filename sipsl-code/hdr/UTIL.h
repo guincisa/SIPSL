@@ -180,15 +180,15 @@ class ThreadWrapper {
 #define TABLES 2
 
 
-#define PROFILING
-#define PROFILELOCK
-#define PROFILELOCKCALC
+//#define PROFILING
+//#define PROFILELOCK
+//#define PROFILELOCKCALC
 
 #define CHECKDOA
 
 #define NOWARNINGS
 
-#define LOGLEVL1
+//#define LOGLEVL1
 #ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
@@ -218,7 +218,7 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-#define SHOWFLOWLOG
+//#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
