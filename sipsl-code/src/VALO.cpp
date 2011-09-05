@@ -196,18 +196,18 @@ void VALO::onInvite(MESSAGE* _message){
 	DEBY
 	pair<string,int> tp = _message->getUri("REQUEST");
 	DEBOUT("indirizzo request", tp.first << "] ["<<tp.second)
-	stringstream css;
-	css << tp.first;
+	char css[GENSTRINGLEN];
 	if (tp.second != 0){
-		css << ":";
-		css << tp.second;
+		sprintf(css,"%s:%d",tp.first.c_str(),tp.second);
+	}else{
+		sprintf(css,"%s",tp.first.c_str());
 	}
 	DEBY
-	string tmpR = ((SL_CC*)sl_cc)->getDAO()->getData(TBL_ROUTE,css.str());
+	string tmpR = ((SL_CC*)sl_cc)->getDAO()->getData(TBL_ROUTE,css);
 	DEBOUT("tmpR", tmpR)
 	if (tmpR.length() != 0){
 		DEBY
-	size_t found = tmpR.find(":");
+		size_t found = tmpR.find(":");
 		if ( found!=string::npos){
 			NEWPTR(string*, ss, string(tmpR.substr(0,found-1)),"RouteIp")
 			NEWPTR(string*, ss2, string(tmpR.substr(found+1)),"RoutePort")
@@ -226,17 +226,16 @@ void VALO::onInvite(MESSAGE* _message){
 	}
 
 
-	stringstream tmps ;
+//	stringstream tmps ;
 //	tmps << "INVITE sip:"<< *ss <<" SIP/2.0";
 //	message->setHeadSipRequest(tmps.str());
 
 	//message->setHeadSipRequest("INVITE sip:GUGLISIPSL@bphone.gugli.com:5062 SIP/2.0");
 
-	stringstream cs;
+	char cs[GENSTRINGLEN];
 	int csnext = call_oset->getNextSequence("INVITE_B");
-	cs << csnext;
-	cs << " INVITE";
-	message->setGenericHeader("CSeq:",cs.str());
+	sprintf(cs,"%d INVITE",csnext);
+	message->setGenericHeader("CSeq:",cs);
 
 	//Standard changes
 	string newCallid = call_oset->getCallId_Y();
@@ -350,7 +349,7 @@ void VALO::onAck(MESSAGE* _message){
 //	css << ":";
 //	css <<ppp;
 
-	map<string, void*> ::iterator p;
+	map<string, void*> ::iterator p,p1,p2,p3;
 
 	p = ctxt_store.find("RouteIp");
 	if (p != ctxt_store.end()){
@@ -360,14 +359,13 @@ void VALO::onAck(MESSAGE* _message){
 		newack->setRoute(*ss1,*ss2);
 	}
 
-	p = ctxt_store.find("ContactBName");
-	stringstream tmps ;
-	tmps << "ACK sip:"<< *((string*)p->second);
-	p = ctxt_store.find("ContactBAddress");
-	tmps << "@" << *((string*)p->second);
-	p = ctxt_store.find("ContactBPort");
-	tmps << ":" << *((string*)p->second)  << " SIP/2.0";
-	newack->setHeadSipRequest(tmps.str());
+	p1 = ctxt_store.find("ContactBName");
+	p2 = ctxt_store.find("ContactBAddress");
+	p3 = ctxt_store.find("ContactBPort");
+	
+	char tmps[GENSTRINGLEN];
+	sprintf(tmps,"ACK sip:%s@%s:%s SIP/2.0",((string*)p1->second)->c_str(),((string*)p2->second)->c_str(),((string*)p3->second)->c_str());
+	newack->setHeadSipRequest(tmps);
 
 	//Purge SDP
 	newack->purgeSDP();
@@ -386,25 +384,16 @@ void VALO::onAck(MESSAGE* _message){
 
 	//CSEQ
 	p = ctxt_store.find("CSeqB2BINVITE");
-	int CSeqB2BINVITE = *((int*)p->second);
-	stringstream cst;
-	cst << CSeqB2BINVITE;
-	cst << " ";
-	cst << _message->getHeadCSeqMethod();
-	newack->setGenericHeader("CSeq:", cst.str());
+	char cst[GENSTRINGLEN];
+	sprintf(cst,"%d %s",*((int*)p->second),_message->getHeadCSeqMethod().c_str());
+	newack->setGenericHeader("CSeq:", cst);
 
 	//Via
-	stringstream viatmpS;
-	viatmpS << "SIP/2.0/UDP ";
-	viatmpS << getSUDP()->getDomain();
-	viatmpS << ":";
-	viatmpS << getSUDP()->getPort();
-	viatmpS << ";branch=z9hG4bK";
-	viatmpS << newack->getKey();
-	viatmpS << ";rport";
+	char viatmpS[GENSTRINGLEN];
+	sprintf(viatmpS,"SIP/2.0/UDP %s:%i;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),newack->getKey().c_str());
 	newack->popVia();
-	newack->pushNewVia(viatmpS.str());
-	DEBALO("newack->pushHeadVia(viatmpS);", viatmpS.str())
+	newack->pushNewVia(viatmpS);
+	DEBALO("newack->pushHeadVia(viatmpS);", viatmpS)
 
 	newack->compileMessage();
 
@@ -578,7 +567,7 @@ void VALO::onBye(MESSAGE* _message){
 //		css <<ppp;
 //		string ss = ((SL_CC*)sl_cc)->getDAO()->getData(css.str());
 
-		map<string, void*> ::iterator p;
+		map<string, void*> ::iterator p,p1,p2,p3;
 		p = ctxt_store.find("RouteIp");
 		if (p != ctxt_store.end()){
 			string* ss1 = (string*)p->second;
@@ -586,24 +575,22 @@ void VALO::onBye(MESSAGE* _message){
 			string* ss2 = (string*)p->second;
 			message->setRoute(*ss1,*ss2);
 		}
-		p = ctxt_store.find("ContactBName");
-		stringstream tmps ;
-		tmps << "BYE sip:"<< *((string*)p->second);
-		p = ctxt_store.find("ContactBAddress");
-		tmps << "@" << *((string*)p->second);
-		p = ctxt_store.find("ContactBPort");
-		tmps << ":" << *((string*)p->second) << " SIP/2.0";
-		message->setHeadSipRequest(tmps.str());
+		p1 = ctxt_store.find("ContactBName");
+		p2 = ctxt_store.find("ContactBAddress");
+		p3 = ctxt_store.find("ContactBPort");
+		
+		char tmps[GENSTRINGLEN] ;
+		sprintf(tmps,"BYE sip:%s@%s:%s SIP/2.0",((string*)p1->second)->c_str(),((string*)p2->second)->c_str(),((string*)p3->second)->c_str());
+		message->setHeadSipRequest(tmps);
 
-		stringstream viatmp;
-		viatmp << "SIP/2.0/UDP "<<getSUDP()->getDomain().c_str()<<":"<<getSUDP()->getPort()<<";branch=z9hG4bK"<<message->getKey()<<";rport";
+		char viatmp[GENSTRINGLEN];
+		sprintf(viatmp,"SIP/2.0/UDP %s:%d;branch=z9hG4bK%s;rport",getSUDP()->getDomain().c_str(),getSUDP()->getPort(),message->getKey().c_str());
 		message->popVia();
-		message->pushNewVia(viatmp.str());
+		message->pushNewVia(viatmp);
 
-		stringstream cst;
-		cst << call_oset->getNextSequence("INVITE_B");
-		cst << " BYE";
-		message->setGenericHeader("CSeq:", cst.str());
+		char cst[GENSTRINGLEN];
+		sprintf(cst,"%d BYE",call_oset->getNextSequence("INVITE_B"));
+		message->setGenericHeader("CSeq:", cst);
 
 
 		p = ctxt_store.find("tohead_200ok_b");
