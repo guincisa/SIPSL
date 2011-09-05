@@ -187,16 +187,16 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 	hostname[1023]='\0';
 	gethostname(hostname,1023);
 
-	struct addrinfo hints, *info;
-	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC; /*either IPV4 or IPV6*/
-	hints.ai_socktype = SOCK_DGRAM;
+	struct addrinfo _hints, *info;
+	memset(&_hints, 0, sizeof _hints);
+	_hints.ai_family = AF_UNSPEC; /*either IPV4 or IPV6*/
+	_hints.ai_socktype = SOCK_DGRAM;
 
-	stringstream ss;
-	ss<<echoServPort;
-	localport = ss.str();
+	char ss[GENSTRINGLEN];
+	sprintf(ss,"%d",echoServPort);
+	localport = ss;
 
-	if (getaddrinfo(hostname, localport.c_str(), &hints, &info) != 0) {
+	if (getaddrinfo(hostname, ss, &_hints, &info) != 0) {
 	    DEBASSERT("getaddrinfo")
 	}
 	inet_ntop(AF_INET, &((struct sockaddr_in *) info->ai_addr)->sin_addr, str, INET_ADDRSTRLEN);
@@ -352,21 +352,23 @@ void SUDP::sendRequest(MESSAGE* _message){
         DEBOUT("hasNat",_pair.first<<"]["<<_pair.second)
     }
     else{
-    	_pair = _message->getUriProtocol("REQUEST");
-    	if (_pair.second.length() == 0){
-    		_pair.second = "5060";
-    	}
-        DEBOUT("use request",_pair.first<<"]["<<_pair.second)
+    	_pair = _message->getRequestUriProtocol();
+    	DEBOUT("use request",_pair.first<<"]["<<_pair.second)
     }
     DEBOUT("sending to",_pair.first<<"]["<<_pair.second)
     const char* _hostchar = _pair.first.c_str();
 
-    struct addrinfo hints, *servinfo;
+    struct addrinfo hints,*servinfo;
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_NUMERICHOST;
 
+    TIMEDEF
+    SETNOW
     int res = getaddrinfo(_hostchar,_pair.second.c_str(),&hints, &servinfo);
+	PRINTDIFF("getaddrinfo request")
+
     if (res != 0){
     	DEBASSERT("getaddrinfo")
     }
@@ -388,10 +390,12 @@ void SUDP::sendReply(MESSAGE* _message){
     //Reply uses topmost Via header
 
     DEBMESSAGE("SUDP::sendReply sending Message ", _message)
-    struct addrinfo hints, *servinfo;
+    struct addrinfo hints,*servinfo;
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_NUMERICHOST;
+
 //    string receivedProp = _message->getProperty("Via:","received");
 //    if (receivedProp.length() != 0){
 //        string reportPro = _message->getProperty("Via:","rport");
@@ -409,11 +413,15 @@ void SUDP::sendReply(MESSAGE* _message){
 //        }
 //    }
     const char* _hostchar = inet_ntoa(_message->getEchoClntAddr().sin_addr);
-	stringstream xx;
-	xx << ntohs((_message->getEchoClntAddr()).sin_port);
+	char xx[GENSTRINGLEN];
+	sprintf(xx,"%d",ntohs((_message->getEchoClntAddr()).sin_port));
 
-	DEBOUT("sendReply to", _hostchar <<"]["<<xx.str())
-	int res = getaddrinfo(_hostchar,xx.str().c_str(),&hints, &servinfo);
+	DEBOUT("sendReply to", _hostchar <<"]["<<xx)
+    TIMEDEF
+    SETNOW
+	int res = getaddrinfo(_hostchar,xx,&hints, &servinfo);
+	PRINTDIFF("getaddrinfo reply")
+
 	if (res != 0){
 		DEBASSERT("getaddrinfo")
 	}

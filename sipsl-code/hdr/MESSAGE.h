@@ -385,6 +385,7 @@ class MESSAGE {
     	string getHeadSipRequest(void);
     	int getHeadSipReplyCode(void);
     	string getHeadSipReply(void);
+    	void _forceHeadSipReply(int);
 	private:
     	int reqRep;
     	string headSipRequest;
@@ -403,8 +404,8 @@ class MESSAGE {
     	//argument is the header, or "REQUEST"
 	public:
     	bool isUriSecure(string header);
-    	pair<string,int> getUri(string header);
     	pair<string,string> getUriProtocol(string header);
+    	pair<string,string> getRequestUriProtocol(void);
 	public:
     	string getHeadCSeqMethod(void);
     	int getHeadCSeq(void);
@@ -412,6 +413,7 @@ class MESSAGE {
     	string cSeqMethod;
     	int cSeq;
     	bool parsedCseq;
+    	pair <string,string> requestUriProtocol;
 
 	public:
     	//reading commands:

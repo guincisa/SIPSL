@@ -44,6 +44,7 @@ typedef struct tuple {
     SUDP * st;
     int thid;
 } SUDPtuple;
+typedef struct addrinfo addrinfoX;
 //**********************************************************************************
 //**********************************************************************************
 //SUDP
@@ -100,4 +101,5 @@ class SUDP {
         ALMGR* alarm;
 
         DOA* doa;
+
 };

@@ -58,6 +58,7 @@ typedef struct {
 } SysTime;
 
 #define ECHOMAX 2048
+#define GENSTRINGLEN 128
 
 class ThreadWrapper {
     public:
@@ -128,7 +129,7 @@ class ThreadWrapper {
 
 //Sudp threads
 // its x 2
-#define SUDPTH 1
+#define SUDPTH 2
 
 //Max engine threads
 //128
@@ -172,7 +173,7 @@ class ThreadWrapper {
 //time before object moves to deleted
 #define TIMER_DOA 5000000
 //COMAPS must be divisble by DOATH
-#define DOATH 6
+#define DOATH 2
 
 //DATA TABLES
 #define TBL_ROUTE 0
@@ -180,9 +181,9 @@ class ThreadWrapper {
 #define TABLES 2
 
 
-//#define PROFILING
-//#define PROFILELOCK
-//#define PROFILELOCKCALC
+#define PROFILING
+#define PROFILELOCK
+#define PROFILELOCKCALC
 
 #define CHECKDOA
 

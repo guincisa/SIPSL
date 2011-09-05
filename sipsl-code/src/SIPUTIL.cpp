@@ -158,11 +158,10 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 //		_gted->setProperty("To:", "tag", ttt.str());
 //
 //	}
-	stringstream cons;
-	cons << "<sip:sipsl@";
-	cons << _sudp->getLocalIp() << ":" << _sudp->getLocalPort() <<">";
+	char cons[GENSTRINGLEN];
+	sprintf(cons, "<sip:sipsl@%s:%s>",_sudp->getLocalIp().c_str(),_sudp->getLocalPort().c_str());
 
-	_gted->setGenericHeader("Contact:",cons.str());
+	_gted->setGenericHeader("Contact:",cons);
 	_gted->setHeadSipReply(_gtor->getHeadSipReply());
 	_gted->dropHeader("User-Agent:");
 	_gted->dropHeader("Max-Forwards:");
@@ -207,16 +206,15 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 	//set new Via, is used by the b part to send replies
 	_gted->popVia();
-	stringstream viatmp;
-	viatmp << ("SIP/2.0/UDP ") << sudp->getLocalIp() << ":" << sudp->getLocalPort() << ";branch=z9hG4bK" <<_gtor->getKey() << ";rport";
-	_gted->pushNewVia(viatmp.str());
+	char viatmp[GENSTRINGLEN];
+	sprintf(viatmp,"SIP/2.0/UDP %s:%s;branch=z9hG4bK%s;rport",sudp->getLocalIp().c_str(),sudp->getLocalPort().c_str(),_gtor->getKey().c_str());
+	_gted->pushNewVia(viatmp);
 
 	_gted->setGenericHeader("Call-ID:", _callidy);
-	stringstream cons;
-	cons << "<sip:sipsl@";
-	cons << sudp->getLocalIp() << ":" << sudp->getLocalPort() <<">";
+	char cons[GENSTRINGLEN];
+	sprintf(cons,"<sip:sipsl@%s:%s>",sudp->getLocalIp().c_str(),sudp->getLocalPort().c_str());
 
-	_gted->setGenericHeader("Contact:", cons.str());
+	_gted->setGenericHeader("Contact:", cons);
 
 	_gted->setProperty("From:", "tag", _gted->getKey());
 
@@ -237,6 +235,7 @@ void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 	_etry->dropHeader("Contact:");
 
 	genASideReplyFromRequest(_invite, _etry);
+	_etry->_forceHeadSipReply(100);
 	_etry->compileMessage();
 
 }
@@ -248,6 +247,7 @@ void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _
 	_qrep->dropHeader("Contact:");
 
 	genASideReplyFromRequest(_invite, _qrep);
+
 	_qrep->compileMessage();
 #ifdef LOGSIP
 	_qrep->dumpVector();
