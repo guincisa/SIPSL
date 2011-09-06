@@ -668,6 +668,11 @@ class ThreadWrapper {
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\
                 BDEBUG("PROFILE DIFFERENCE ", m << "]["<<num)}
+#define PRINTDIFF_A(m,m2) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
+		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
+                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
+                BDEBUG("PROFILE DIFFERENCE ", m << "]["<<num)\
+				if (num > m2){ DEBASSERT("TIME EXCEEDED" << m << "]["<<num)}}
 #define PRINTDIFFMIN(m,min) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
 		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
                 gettimeofday(&mytime1111.tv, &mytime1111.tz);\

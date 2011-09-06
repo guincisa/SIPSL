@@ -263,10 +263,6 @@ void SUDP::listen(int _socknum) {
         	DEBERROR("SUDP::listen() abnormal message")
         }else {
         	SETNOW
-//        	//UDP perf begin
-//            BDEBUG("listen","")
-//            continue;
-            //UDP perf end
             PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
@@ -279,14 +275,8 @@ void SUDP::listen(int _socknum) {
 				//problem if not sip...?
                 message->fillIn();
 
-//            	CREATEMESSAGE(etry, message, SODE_TRNSCT_SV,SODE_NTWPOINT)
-//            	SipUtil.genTryFromInvite(message, etry);
-//            	((SIPENGINE*)engine)->getTRNSPRT()->p_w((void*)etry);
-//            	//sendReply(etry);
-//            	PURGEMESSAGE(message)
-
                 engine->p_w((void*)message);
-
+                PRINTDIFF("SUDP listen")
             }else {
                 DEBERROR("SUDP::listen() could not allocate memory for incoming message")
             }
@@ -342,6 +332,9 @@ void SUDP::sendRequest(MESSAGE* _message){
 
     DEBMESSAGE("SUDP::sendRequest sending Message ", _message)
 
+    TIMEDEF
+    SETNOW
+
     pair<string,string> _pair;
     if(_message->hasRoute()){
     	_pair = _message->getRoute();
@@ -364,10 +357,8 @@ void SUDP::sendRequest(MESSAGE* _message){
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_flags = AI_NUMERICHOST;
 
-    TIMEDEF
-    SETNOW
+
     int res = getaddrinfo(_hostchar,_pair.second.c_str(),&hints, &servinfo);
-	PRINTDIFF("getaddrinfo request")
 
     if (res != 0){
     	DEBASSERT("getaddrinfo")
@@ -381,11 +372,16 @@ void SUDP::sendRequest(MESSAGE* _message){
         PURGEMESSAGE(_message)
     }
     freeaddrinfo(servinfo);
+	PRINTDIFF("SUDP::sendRequest")
+
     return;
 }
 
 void SUDP::sendReply(MESSAGE* _message){
 	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
+
+	TIMEDEF
+	SETNOW
 
     //Reply uses topmost Via header
 
@@ -417,10 +413,7 @@ void SUDP::sendReply(MESSAGE* _message){
 	sprintf(xx,"%d",ntohs((_message->getEchoClntAddr()).sin_port));
 
 	DEBOUT("sendReply to", _hostchar <<"]["<<xx)
-    TIMEDEF
-    SETNOW
 	int res = getaddrinfo(_hostchar,xx,&hints, &servinfo);
-	PRINTDIFF("getaddrinfo reply")
 
 	if (res != 0){
 		DEBASSERT("getaddrinfo")
@@ -432,6 +425,7 @@ void SUDP::sendReply(MESSAGE* _message){
         PURGEMESSAGE(_message)
     }
     freeaddrinfo(servinfo);
+	PRINTDIFF("SUDP::sendReply")
     return;
 }
 string SUDP::getLocalIp(void){

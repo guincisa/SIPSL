@@ -186,7 +186,7 @@ void SL_CC::parse(void* __mess, int _mmod){
                 DEBY
             }
             //Message has been worked by SL_CO
-            //PRINTDIFF("SL_CC::parse() end")
+            PRINTDIFF("SL_CC::parse() end - x found")
             CALCPERF("SL_CC::parse() end",3)
             return;
         }
@@ -208,7 +208,7 @@ void SL_CC::parse(void* __mess, int _mmod){
                 if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
                     DEBINF("SL_CC::parse rejected by COMAP", callids)
                 }
-                //PRINTDIFF("SL_CC::parse() end")
+                PRINTDIFF("SL_CC::parse() end - y found")
                 CALCPERF("SL_CC::parse() end",3)
                 return;
             }
@@ -235,7 +235,6 @@ void SL_CC::parse(void* __mess, int _mmod){
 
             //////////////////////////////
             //Start - Initialization block
-            CALL_OSET* call_oset = 0x0;
             call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain(),TYPE_SL_CO);
             //End
             //////////////////////////////
@@ -253,7 +252,7 @@ void SL_CC::parse(void* __mess, int _mmod){
             }else {
                 DEBY
             }
-            //PRINTDIFF("SL_CC::parse() end")
+            PRINTDIFF("SL_CC::parse() end - new calloset")
             CALCPERF("SL_CC::parse() end",3)
             return;
         }
@@ -304,7 +303,7 @@ void SL_CC::parse(void* __mess, int _mmod){
                  DEBASSERT ("Unexpected message ignored found locked")
             }
         	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
-            //PRINTDIFF("SL_CC::parse() end")
+            PRINTDIFF("SL_CC::parse() end - unexpected message")
             CALCPERF("SL_CC::parse() end",3)
             return;
         }
@@ -355,7 +354,7 @@ void SL_CC::parse(void* __mess, int _mmod){
                 } else{
                     DEBY
                 }
-                //PRINTDIFF("SL_CC::parse() end")
+                PRINTDIFF("SL_CC::parse() end - reply (y) sm found")
                 CALCPERF("SL_CC::parse() end",3)
                 return;
             }else{
@@ -384,7 +383,7 @@ void SL_CC::parse(void* __mess, int _mmod){
             }else{
                 DEBY
             }
-            //PRINTDIFF("SL_CC::parse() end")
+            PRINTDIFF("SL_CC::parse() end - reply (x) sm found")
             CALCPERF("SL_CC::parse() end",3)
             return;
         }
@@ -392,7 +391,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         DEBINF("Unexpected source of the message", _mess->getGenEntity())
         DEBASSERT("")
     }
-    //PRINTDIFF("SL_CC::parse() end")
+    PRINTDIFF("SL_CC::parse() end - end")
     CALCPERF("SL_CC::parse() end",3)
     return;
 }

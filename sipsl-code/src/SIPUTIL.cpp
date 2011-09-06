@@ -81,6 +81,8 @@
 void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted, SUDP* _sudp){
 	DEBINF("void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted)",_gtor<<"]["<<__gtor<<"]["<<_gted)
 
+	TIMEDEF
+	SETNOW
 	//__gtor is the B reply
 	// _gtor is the A Invite
 	// _getd reply for A
@@ -169,6 +171,7 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 	_gted->dropHeader("Route:");
 	_gted->dropHeader("Date:");
 
+	PRINTDIFF("SIPUTIL::genASideReplyFromBReply")
 //	_gted->setProperty("Via:","received",inet_ntoa(_gted->getEchoClntAddr().sin_addr));
 //	stringstream xx;
 //	xx << ntohs((_gted->getEchoClntAddr()).sin_port);
@@ -179,6 +182,8 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 	DEBINF("void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted)",_gtor<<"]["<<_gted)
 
+	TIMEDEF
+	SETNOW
 	_gted->purgeSDP();
 	_gted->dropHeader("User-Agent:");
 	_gted->dropHeader("Max-Forwards:");
@@ -188,6 +193,7 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 	_gted->dropHeader("Date:");
 	_gted->setGenericHeader("Content-Length:","0");
 
+	PRINTDIFF("SIPUTIL::genASideReplyFromRequest")
 	//now check if Via has the rport property and is empty
 	//fill it in with inet_ntoa(echoClntAddr.sin_addr):echoClntAddr.sin_port
 	//received=192.0.2.1;rport=9988
@@ -203,6 +209,8 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, string _callidy){
 	DEBINF("void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, string _callidy)",_gtor<<"]["<<_gted<<"]["<<sudp<<"]["<<_callidy)
 
+	TIMEDEF
+	SETNOW
 	//Via Via: SIP/2.0/TCP 127.0.0.1:5060;branch=z9hG4bKYesTAZxWOfNDtT97ie51tw
 	//set new Via, is used by the b part to send replies
 	_gted->popVia();
@@ -223,13 +231,16 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 		_gted->purgeSDP();
 		_gted->setSDP(_gtor->getSDP());
 	}
+	PRINTDIFF("SIPUTIL::genBInvitefromAInvite")
 
 }
 
 void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 	DEBINF("void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry)",_invite<<"]["<<_etry)
 
-	//DEBOUT("ETRY","SIP/2.0 100 Trying")
+	TIMEDEF
+	SETNOW
+
 	_etry->setHeadSipReply("100 Trying");
 
 	_etry->dropHeader("Contact:");
@@ -237,11 +248,14 @@ void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 	genASideReplyFromRequest(_invite, _etry);
 	_etry->_forceHeadSipReply(100);
 	_etry->compileMessage();
+	PRINTDIFF("SIPUTIL::genTryFromInvite")
 
 }
 void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header){
 	DEBINF("void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header)",_invite<<"]["<<_qrep<<"]["<<_header)
 	//DEBOUT("Reply",_header)
+	TIMEDEF
+	SETNOW
 	_qrep->setHeadSipReply(_header);
 
 	_qrep->dropHeader("Contact:");
@@ -249,6 +263,8 @@ void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _
 	genASideReplyFromRequest(_invite, _qrep);
 
 	_qrep->compileMessage();
+	PRINTDIFF("SIPUTIL::genQuickReplyFromInvite")
+
 #ifdef LOGSIP
 	_qrep->dumpVector();
 #endif

@@ -458,10 +458,13 @@ int MESSAGE::fillIn(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::fillIn invalid")
 
+	TIMEDEF
+	SETNOW
 
 	if(messageStatus == 1){
 		DEBINFMESSAGE("int MESSAGE::fillIn(void)",this<<"][already filled")
 		return message_line.size();
+		PRINTDIFF("MESSAGE::fillIn already filled")
 	}
 
 	if(messageStatus == 2){
@@ -514,22 +517,6 @@ int MESSAGE::fillIn(void){
 			else{
 				DEBINFMESSAGE("MESSAGE::fillIn line", tok)
 				message_line.push_back( make_pair (tok,false) );
-//				char xxx[strlen(tok) + 1];
-//				strcpy(xxx,tok);
-//				char* beg = strchr(tok,' ');
-//				char* endh = strchr(xxx,' ');
-//				int i = 0;
-//				for (;;){
-//					if (strncmp(beg," ",1)!=0)
-//						break;
-//					beg++;
-//					i++;
-//					if(i>100)
-//						DEBASSERT("???")
-//				}
-//				strcpy(endh,"");
-//				DEBINFMESSAGE("int MESSAGE::fillIn(void)",this<<"]["<<xxx<<"]["<<beg)
-//				ex_message_line.push_back( make_pair (make_pair(xxx,beg),false) );
 			}
 		}
 		else{
@@ -542,6 +529,7 @@ int MESSAGE::fillIn(void){
 
 	DEBINFMESSAGE("int MESSAGE::fillIn(void)", this<<"]["<<message_line.size())
 	//_dumpMessageBuffer();
+	PRINTDIFF("MESSAGE::fillIn filled")
 	return message_line.size();
 
 }
@@ -584,11 +572,13 @@ string MESSAGE::getFirstLine(void){
 	DEBINFMESSAGE("string MESSAGE::getFirstLine(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getFirstLine invalid")
-
+	TIMEDEF
+	SETNOW
 	if(messageStatus !=1){
 		fillIn();
 	}
 	DEBINFMESSAGE("string MESSAGE::getFirstLine(void)", this<<"]["<<message_line[0].first)
+	PRINTDIFF("MESSAGE::getFirstLine")
 	return message_line[0].first;
 }
 char* MESSAGE::getMessageBuffer(void){
@@ -899,6 +889,8 @@ void MESSAGE::setTypeOfOperation(int _t){
 	typeOfOperation = _t;
 }
 int MESSAGE::getModulus(void){
+	TIMEDEF
+	SETNOW
 #ifndef USEMAPMODUL
 	DEBINFMESSAGE("int MESSAGE::getModulus(void)",this)
 	if (invalid == 1)
@@ -972,6 +964,7 @@ int MESSAGE::getModulus(void){
 
 	if (modulus != -1){
 		DEBINFMESSAGE("int MESSAGE::getModulus(void)",this<<"]["<<modulus)
+		PRINTDIFF("MESSAGE::getModulus already parsed")
 		return modulus;
 	}
 	string s = getHeadCallId();
@@ -979,6 +972,7 @@ int MESSAGE::getModulus(void){
 	if (s.substr(0,5).compare("CoMap") == 0){
 		modulus = atoi(s.substr(5,COMAPS_DIG).c_str());
 		DEBOUT("int MESSAGE::getModulus(void) comap", modulus)
+		PRINTDIFF("MESSAGE::getModulus CoMap")
 		return modulus;
 	}
 
@@ -990,6 +984,7 @@ int MESSAGE::getModulus(void){
 	if(itm != modulusMap[premod].end()){
 		RELLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod)
 		DEBOUT("int MESSAGE::getModulus(void) itm->second", itm->second)
+		PRINTDIFF("MESSAGE::getModulus calc")
 		return itm->second;
 	}
 	modulus = modulusIter[premod];
@@ -998,6 +993,7 @@ int MESSAGE::getModulus(void){
 	modulusIter[premod] = modulusIter[premod] % COMAPS;
 	RELLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod)
 	DEBOUT("int MESSAGE::getModulus(void) modulus", modulus)
+	PRINTDIFF("MESSAGE::getModulus calc")
 	return modulus;
 
 
@@ -1568,7 +1564,8 @@ string MESSAGE::getViaBranch(void){
 	DEBINFMESSAGE("string MESSAGE::getViaBranch(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getViaProperty invalid")
-
+	TIMEDEF
+	SETNOW
 	if(messageStatus !=1){
 		fillIn();
 	}
@@ -1578,7 +1575,7 @@ string MESSAGE::getViaBranch(void){
 		parsedBranch = true;
 	}
 	DEBINFMESSAGE("string MESSAGE::getViaBranch(void)",this<<"]["<<branch)
-
+	PRINTDIFF("MESSAGE::getViaBranch")
 	return branch;
 }
 string MESSAGE::getViaUriHost(void){
@@ -1713,6 +1710,9 @@ string MESSAGE::getHeadCallId(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadCallId invalid")
 
+	TIMEDEF
+	SETNOW
+
 	if(messageStatus !=1){
 		fillIn();
 	}
@@ -1722,6 +1722,7 @@ string MESSAGE::getHeadCallId(void){
 		parsedCallId = true;
 	}
 	DEBINFMESSAGE("string MESSAGE::getHeadCallId(void)",this<<"]["<<callId)
+	PRINTDIFF("MESSAGE::getHeadCallId")
 	return callId;
 
 }
@@ -2012,12 +2013,16 @@ int MESSAGE::getReqRepType(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getReqRepType invalid")
 
+	TIMEDEF
+	SETNOW
+
 	if(messageStatus !=1){
 		fillIn();
 	}
 
 	if (reqRep != 0) {
 		DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
+		PRINTDIFF("MESSAGE::getReqRepType - already parsed")
 		return reqRep;
 	}
 	if(strncmp(message_line[0].first,"SIP",3) == 0){
@@ -2074,6 +2079,7 @@ int MESSAGE::getReqRepType(void){
 		headSipRequest = "???";
 	}
 	DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
+	PRINTDIFF("MESSAGE::getReqRepType - parsed")
 	return reqRep;
 
 }
@@ -2114,6 +2120,9 @@ int  MESSAGE::getHeadSipRequestCode(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadSipRequestCode invalid")
 
+	TIMEDEF
+	SETNOW
+
 	if(messageStatus !=1){
 		fillIn();
 	}
@@ -2122,6 +2131,7 @@ int  MESSAGE::getHeadSipRequestCode(void){
 		getReqRepType();
 	}
 	DEBINFMESSAGE("int  MESSAGE::getHeadSipRequestCode(void)",this<<"]["<<requestCode)
+	PRINTDIFF("MESSAGE::getHeadSipRequestCode")
 	return requestCode;
 }
 string  MESSAGE::getHeadSipRequest(void){
@@ -2281,7 +2291,8 @@ string MESSAGE::getHeadCSeqMethod(void){
 	DEBINFMESSAGE("string MESSAGE::getHeadCSeqMethod(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadCSeqMethod invalid")
-
+	TIMEDEF
+	SETNOW
 	if(messageStatus !=1){
 		fillIn();
 	}
@@ -2290,6 +2301,7 @@ string MESSAGE::getHeadCSeqMethod(void){
 		getHeadCSeq();
 	}
 	DEBINFMESSAGE("string MESSAGE::getHeadCSeqMethod(void)",this<<"]["<<cSeqMethod)
+	PRINTDIFF("MESSAGE::getHeadCSeqMethod")
 	return cSeqMethod;
 
 }
@@ -2297,7 +2309,8 @@ int MESSAGE::getHeadCSeq(void){
 	DEBINFMESSAGE("int MESSAGE::getHeadCSeq(void)", this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadCSeq invalid")
-
+	TIMEDEF
+	SETNOW
 	if(messageStatus !=1){
 		fillIn();
 	}
@@ -2322,7 +2335,7 @@ int MESSAGE::getHeadCSeq(void){
 		DEBY
 	}
 	DEBINFMESSAGE("int MESSAGE::getHeadCSeq(void)", this<<"]["<<cSeq)
-
+	PRINTDIFF("MESSAGE::getHeadCSeq")
 	return cSeq;
 
 }
