@@ -106,27 +106,69 @@ using namespace std;
 #define RECOMMOM 1001
 
 class CALL_OSET;
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//// BASEMESSAGE
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
+//new message(m){
+//	buffer = m;
+//	lines[] = 0x0;
+//	property1 = "";
+//	property2 = "";
+//	property1_compiled = true;
+//	property1_parsed = false;
+//	property2_compiled = true;
+//	filled = false;
+//	atleast_one_not_compiled = false;
+//}
+//m->fill{
+//	if( fill == false){
+//		filled = true;
+//		lines[] = FILLED;
+//	}
+//}
+//m->getProp(property1){
+//    if (property1_parsed){
+//        return property1)
+//    }
+//    if (filled == false){
+//        fill();
+//    }
+//    property1 = lookup(property1,lines[])
+//    property1_parsed = true
+//}
+//m->setProperty(property1 value){
+//    if(filled = false){
+//        fill()
+//    }
+//    property1 = value;
+//    property1_parsed = true
+//    property1_compiled = false
+//}
+//compile{
+//    if (property1_compiled == false(
+//    	put(lines[],property1)
+//    	property1_compiled = true
+//    	property1_parsed = true
+//    	changed = true
+//    } repeat for all properties
+//    if(changed == true){
+//    	delete buffer;
+//    	buffer = tobuffer(lines[])
+//    	filled  = true;
+//    }
+//    niente
+//}
+//m2 = copymessage(m2){
+//    m2.buffer = m1.buffer
+//    m2.lines[] = m2.lines[]
+//    m2.properties... = m1.propertuies
+//    m2.fill = m1.fill
+//}
+//getBuffer(){
+//	if (filled = false)
+//	    return buffer
+//	compile()
+//	return buffer
 typedef struct sockaddr_in sockaddr_inX;
 
 class MESSAGE {
-
-
-	//Message lifecycle
-	//New message: original_message has the buffer
-	//parse:
-	// original_message not touched, compiled = true
-	// message_char is for working
-	//change some header
-	// compiled = false
-	// compileMessage-> replaces the original_message with new
-	// message_char purged
-	// fillin false
 
 	////////////////////////////////
 	public:
@@ -138,6 +180,11 @@ class MESSAGE {
 		MESSAGE(MESSAGE*,
 				int genEntity,
 				SysTime creaTime);
+		//This is the new duplicate message, will copy all properties
+		MESSAGE(MESSAGE*,
+				int genEntity,
+				SysTime creaTime,
+				int dummy);
 		~MESSAGE();
 
 		////////////////////////////////
@@ -186,6 +233,9 @@ class MESSAGE {
 		string getFirstLine(void);
 		char* getMessageBuffer(void);
     	void compileMessage(void);
+    	//This is the new compile
+    	void _compileMessage(void);
+
 		void dumpMessageBuffer(void);
 		void _dumpMessageBuffer(void);
 
@@ -316,10 +366,16 @@ class MESSAGE {
 		////////////////////////////////
 	public:
     	string getHeadCallId(void);
+    	void setHeadCallId(string);
     	string getDialogExtendedCID();
 	private:
     	string callId;
+    	//if true:  it has been estracted from buffer or from array
+    	//if false: it has not beed estracted from buffer or array
     	bool parsedCallId;
+    	//if true then the callId is already set in array
+    	//if false then the callid is not in array
+    	bool compiledCallId;
 
 		////////////////////////////////
 	public:
