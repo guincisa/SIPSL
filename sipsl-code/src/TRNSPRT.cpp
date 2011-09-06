@@ -101,6 +101,7 @@ void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
     DEBNTW("TRNSPRT::upCall", _message)
     _sl_cc->p_w((void*)_message);
 
+
 }
 void TRNSPRT::parse(void* __message, int _mmod){
 
@@ -139,16 +140,17 @@ void TRNSPRT::parse(void* __message, int _mmod){
 	//for timeouts (
 	//for errors messages from network
 
-    RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
+
+	PROFILE("TRNSPRT::downCall start ")
+	TIMEDEF
+	SETNOW
+
+	RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
 
 	MESSAGE* _message = (MESSAGE*)__message;
 
-        PROFILE("TRNSPRT::downCall start ")
-        TIMEDEF
-        SETNOW
 
-
-        DEBNTW("TRNSPRT::downCall", _message)
+	DEBNTW("TRNSPRT::downCall", _message)
 
         //compile message goes here
 
@@ -168,15 +170,18 @@ void TRNSPRT::parse(void* __message, int _mmod){
 
 
 		getSUDP()->sendReply(_message);
+
 	}
 	else if (_message->getReqRepType() == REQSUPP) {
+
 		getSUDP()->sendRequest(_message);
+
 	}
 	else {
 		DEBASSERT("Unexpected sending to network")
 	}
 	CALCPERF("TRNSPRT::downCall end",4)
-    //PRINTDIFF("TRNSPRT::downCall end ")
+    PRINTDIFF("TRNSPRT::downCall end ")
 }
 
 

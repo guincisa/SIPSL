@@ -319,7 +319,9 @@ int CALL_OSET::getNextSequence(string _method){
 void CALL_OSET::insertSequence(string _method, int _i){
 	DEBINFCALLOSET("void CALL_OSET::insertSequence(string _method, int _i)", this<<"]["<<_method<<"]["<<_i)
 
-	DEBINFCALLOSET("int CALL_OSET::getNextSequence(string _method)", _method)
+	TIMEDEF
+	SETNOW
+
 	map<string, int> ::iterator p;
 	p = sequenceMap.find(_method);
 	if (p != sequenceMap.end()){
@@ -328,6 +330,7 @@ void CALL_OSET::insertSequence(string _method, int _i){
 	}
 
 	sequenceMap.insert(pair<string, int>(_method,_i));
+	PRINTDIFF("CALL_OSET::insertSequence")
 }
 int CALL_OSET::getCurrentSequence(string _method){
 	DEBINFCALLOSET("int CALL_OSET::getCurrentSequence(string _method)", this<<"]["<<_method)
@@ -446,7 +449,13 @@ void CALL_OSET::dumpTrnsctSm(void){
 //**********************************************************************************
 TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 	DEBINFCALLOSET("TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch)",this<<"]["<<_method <<"]["<<_sode <<"]["<<_branch)
-	char t_key[512];
+
+	TIMEDEF
+	SETNOW
+
+	TRNSCT_SM* tmp_sm = 0x0;
+
+	char t_key[GENSTRINGLEN];
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode,_branch.c_str());
 
 	string stmp = t_key;
@@ -457,18 +466,23 @@ TRNSCT_SM* CALL_OSET::getTrnsctSm(string _method, int _sode, string _branch){
 	p = trnsctSmMap.find(stmp);
 	if (p != trnsctSmMap.end()){
 		DEBINFCALLOSET("CALL_OSET::getTrnsctSm found",_method <<"#"<< _sode <<"#"<<_branch << "["<<(TRNSCT_SM*)p->second<<"]")
-		return ((TRNSCT_SM*)p->second);
+		tmp_sm = ((TRNSCT_SM*)p->second);
 	}else {
 		DEBINFCALLOSET("CALL_OSET::getTrnsctSm not found",_method <<"#"<< _sode <<"#"<<_branch)
-		return 0x0;
 	}
+	return tmp_sm;
+	PRINTDIFF("CALL_OSET::getTrnsctSm")
 }
 //**********************************************************************************
 void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm){
 	DEBINFCALLOSET("void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM* _trnsctSm)",this<<"]["<<_method<<"]["<<_sode<<"]["<<_branch<<"]["<<_trnsctSm)
 
 	DEBINFCALLOSET("CALL_OSET::addTrnsctSm",_method <<"#"<< _sode <<"#"<<_branch << "] ["<<_trnsctSm<<"] call_oset ["<<this)
-	char t_key[512];
+
+	TIMEDEF
+	SETNOW
+
+	char t_key[GENSTRINGLEN];
 	sprintf(t_key, "%s#%d#%s", _method.c_str(), _sode, _branch.c_str());
 
 	string stmp = t_key;
@@ -487,7 +501,9 @@ void CALL_OSET::addTrnsctSm(string _method, int _sode, string _branch, TRNSCT_SM
 	if (_sode == SODE_TRNSCT_CL && _method.substr(0,3).compare("ACK") == 0 ){
 		DEBINFCALLOSET("CALL_OSET::addTrnsctSm special Ack sm cl pointer",_method <<"#"<< _sode <<"#"<<_branch <<"#"<<_trnsctSm)
 		lastTRNSCT_SM_ACK_CL = _trnsctSm;
-	}	return;
+	}
+	PRINTDIFF("CALL_OSET::addTrnsctSm")
+	return;
 }
 
 void CALL_OSET::call(MESSAGE* _message){
@@ -586,10 +602,11 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
         TRNSCT_SM* trnsctSM = 0x0;
         //First look for an existing SM using METHOD+SM_SV+branch
         //DEBINFCALLOSET("((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue(\"branch\")",((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+
         trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_SV, _message->getViaBranch());
+
         //There are no sm, create it
         //OVERALLSTATE lock usage start here
-
         //Quicktry :
         //create the INVITE_SV during creation of call_oset
         //and here set only the callID
@@ -648,11 +665,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
             action = trnsctSM->event(_message);
 
             if (action != 0x0){
-                PRINTDIFF("Before actionCall_SV")
-                SETNOW
                 oper = actionCall_SV(action, _r_modulus);
-                PRINTDIFF("After actionCall_SV")
-
             }
             else {
 
@@ -746,10 +759,7 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
         action = trnsct_cl->event(_message);
 
         if (action != 0x0){
-            PRINTDIFF("Before actionCall_CL")
-            SETNOW
             oper = actionCall_CL(action, _r_modulus);
-            PRINTDIFF("After actionCall_CL")
         }
         else {
             //_message must be deleted using an action and sode_kill
@@ -768,12 +778,12 @@ int SL_CO::call(MESSAGE* _message, int& _r_modulus){
         DELPTR(action,"ACTION");
     }
     //RELLOCK(&mutex,"mutex");
-    PRINTDIFF("SL_CO::call() ")
 
     //DELETE _message here!
 	if(!_message->getLock()){
 		PURGEMESSAGE(_message)
 	}
+    PRINTDIFF("SL_CO::call() ")
     return oper;
 }
 

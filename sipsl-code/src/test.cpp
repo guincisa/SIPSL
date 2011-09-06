@@ -296,6 +296,16 @@ int main(int argc, const char* argv[]) {
 	}
 	else {
 
+		char a[4];
+		sprintf(a,"123");
+		a[1] = '\0';
+		cout << "a"<<a<<endl;
+		char b[4];
+		sprintf(b,"123");
+		sprintf(b+1,"");
+		cout << "b"<<b<<endl;
+
+
 		string pippo = "";
 		cout << "pippo"<<pippo.length()<<endl;
 		//string management...

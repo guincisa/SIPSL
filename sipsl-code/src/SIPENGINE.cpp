@@ -139,6 +139,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
     RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
 
     PROFILE("SIPENGINE::parse() start")
+
     TIMEDEF
     SETNOW
 
@@ -166,6 +167,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
         }
         else{
             transport->upCall(_mess, (SL_CC*)sl_cc);
+            PRINTDIFF("SIPENGINE p_w")
         }
     }
     else if ( type == REPSUPP) {
@@ -174,6 +176,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
         //All replies must be considered
         transport->upCall(_mess, (SL_CC*)sl_cc);
+        PRINTDIFF("SIPENGINE p_w")
 
     }
     else if (type == RECOMMPD){
