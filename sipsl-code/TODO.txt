@@ -2,6 +2,73 @@ ISSUES
 
 
 
+new message(m){
+	buffer = m;
+	lines[] = 0x0;
+	property1 = "";
+	property2 = "";
+	property1_compiled = true;
+	property1_parsed = false;
+	property2_compiled = true;
+	filled = false;
+	atleast_one_not_compiled = false;
+}
+m->fill{
+	if( fill == false){
+		filled = true;
+		lines[] = FILLED;
+	}
+}	
+m->getProp(property1){
+    if (property1_parsed){
+        return property1)
+    }
+    if (filled == false){
+        fill();
+    }
+    property1 = lookup(property1,lines[])
+    property1_parsed = true
+}
+m->setProperty(property1 value){
+    if(filled = false){
+        fill()
+    }
+    property1 = value;
+    property1_parsed = true
+    property1_compiled = false    
+}
+compile{
+    if (property1_compiled == false(
+    	put(lines[],property1)
+    	property1_compiled = true
+    	property1_parsed = true
+    	changed = true
+    } repeat for all properties
+    if(changed == true){
+    	delete buffer;
+    	buffer = tobuffer(lines[])
+    	filled  = true;
+    }
+    niente
+}
+m2 = copymessage(m2){
+    m2.buffer = m1.buffer
+    m2.lines[] = m2.lines[]
+    m2.properties... = m1.propertuies
+    m2.fill = m1.fill
+}
+getBuffer(){
+	if (filled = false)
+	    return buffer
+	compile()
+	return buffer
+
+
+         
+    
+    
+
+
 NAT:
 
 le info della nat vanno messe sul call_object

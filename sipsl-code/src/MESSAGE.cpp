@@ -618,6 +618,7 @@ void MESSAGE::compileMessage(void){
 		DEBASSERT("compileCounter")
 	}
 
+
 	stringstream origmess;
 	int sizeOfSdp = 0;
 
@@ -628,6 +629,9 @@ void MESSAGE::compileMessage(void){
 		}
 	}
 
+	char mess[ECHOMAX];
+	char* messX = mess;
+
 	for(unsigned int i = 0; i < message_line.size(); i ++){
 		if (strncmp(message_line[i].first,"Content-Length: ", 16) != 0 &&
 				strncmp(message_line[i].first,"Content-Type: ", 14) != 0
@@ -635,29 +639,43 @@ void MESSAGE::compileMessage(void){
 				&& strlen(message_line[i].first)!=0 ){
 			origmess << message_line[i].first;
 			origmess << "\r\n";
+			sprintf(messX,"%s\r\n",message_line[i].first);
 		}
 		if (message_line[i].second){
 			DELPTRARR(message_line[i].first,"message_line "<<i)
 		}
+		//start where the last sprintf has put the \0
+		messX = messX+strlen(messX);
 	}
 	for(unsigned int i = 0; i < via_line.size(); i ++){
 		origmess << via_line[i].first;
 		origmess << "\r\n";
+		sprintf(messX,"%s\r\n",via_line[i].first);
 		if (via_line[i].second){
 			DELPTRARR(via_line[i].first,"via_line")
 		}
-		if(!hasSdp){
-			origmess << "Content-Length: 0";
-		}
+		messX = messX+strlen(messX);
 	}
+	if(!hasSdp){
+		strcpy(messX,"Content-Length: 0\r\n");
+		origmess << "Content-Length: 0"<< "\r\n";
+	}
+	messX = messX+strlen(messX);
+
 
 
 	if (hasSdp){
+		strcpy(messX,"Content-Type: application/sdp\r\n");
+		messX = messX+strlen(messX);
+		sprintf(messX,"Content-Length: %d\r\n",sizeOfSdp);
+		messX = messX+strlen(messX);
 		origmess << "Content-Type: application/sdp\r\n";
 		origmess << "Content-Length: ";
 		origmess << sizeOfSdp;
 		origmess << "\r\n";
 		for(unsigned int i = 0; i < sdp_line.size(); i ++){
+			sprintf(messX,"%s\r\n",sdp_line[i].first);
+			messX = messX+strlen(messX);
 			origmess << sdp_line[i].first;
 			origmess << "\r\n";
 			if (sdp_line[i].second){
@@ -667,8 +685,10 @@ void MESSAGE::compileMessage(void){
 		}
 	}
 	else{
-		origmess << "\r\n\r\n";
+		strcpy(messX,"\r\n");
+		origmess << "\r\n";
 	}
+	DEBOUT("messX",messX)
 
 	messageStatus = 0;
 	_clearStatus();
