@@ -619,7 +619,6 @@ void MESSAGE::compileMessage(void){
 	}
 
 
-	stringstream origmess;
 	int sizeOfSdp = 0;
 
 	if (hasSdp){
@@ -637,8 +636,6 @@ void MESSAGE::compileMessage(void){
 				strncmp(message_line[i].first,"Content-Type: ", 14) != 0
 				&& strncmp(message_line[i].first,"xxDxx",5) != 0
 				&& strlen(message_line[i].first)!=0 ){
-			origmess << message_line[i].first;
-			origmess << "\r\n";
 			sprintf(messX,"%s\r\n",message_line[i].first);
 		}
 		if (message_line[i].second){
@@ -648,8 +645,6 @@ void MESSAGE::compileMessage(void){
 		messX = messX+strlen(messX);
 	}
 	for(unsigned int i = 0; i < via_line.size(); i ++){
-		origmess << via_line[i].first;
-		origmess << "\r\n";
 		sprintf(messX,"%s\r\n",via_line[i].first);
 		if (via_line[i].second){
 			DELPTRARR(via_line[i].first,"via_line")
@@ -658,7 +653,6 @@ void MESSAGE::compileMessage(void){
 	}
 	if(!hasSdp){
 		strcpy(messX,"Content-Length: 0\r\n");
-		origmess << "Content-Length: 0"<< "\r\n";
 	}
 	messX = messX+strlen(messX);
 
@@ -669,15 +663,9 @@ void MESSAGE::compileMessage(void){
 		messX = messX+strlen(messX);
 		sprintf(messX,"Content-Length: %d\r\n",sizeOfSdp);
 		messX = messX+strlen(messX);
-		origmess << "Content-Type: application/sdp\r\n";
-		origmess << "Content-Length: ";
-		origmess << sizeOfSdp;
-		origmess << "\r\n";
 		for(unsigned int i = 0; i < sdp_line.size(); i ++){
 			sprintf(messX,"%s\r\n",sdp_line[i].first);
 			messX = messX+strlen(messX);
-			origmess << sdp_line[i].first;
-			origmess << "\r\n";
 			if (sdp_line[i].second){
 				DELPTRARR(sdp_line[i].first,"sdp_line")
 			}
@@ -686,19 +674,16 @@ void MESSAGE::compileMessage(void){
 	}
 	else{
 		strcpy(messX,"\r\n");
-		origmess << "\r\n";
 	}
-	DEBOUT("messX",messX)
 
 	messageStatus = 0;
 	_clearStatus();
 
-	DEBINFMESSAGE("void MESSAGE::compileMessage(void) origmess.str()", origmess.str())
+	DEBINFMESSAGE("void MESSAGE::compileMessage(void) origmess.str()", mess)
 
 	DELPTRARR(original_message,"original_message")
-
-	NEWPTR2(original_message, char[origmess.str().length()+1],"original_message "<<origmess.str().length()+1)
-	strcpy(original_message, origmess.str().c_str());
+	NEWPTR2(original_message, char[strlen(mess)+1],"original_message "<<strlen(mess)+1)
+	strcpy(original_message,mess);
 	DEBINFMESSAGE("void MESSAGE::compileMessage(void) original_message", original_message)
 
 	DELPTRARR(message_char,"message_char")
