@@ -277,21 +277,47 @@ void SL_CC::parse(void* __mess, int _mmod){
         }
         else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == MESSAGE_REQUEST) {
 
-        	//mettere questo in una classe
+            call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
-        	DEBOUT("username@domain",_mess->getFromUser())
-			DEBOUT("MESSGAGE port",ntohs(_mess->getEchoClntAddr().sin_port))
-			DEBOUT("MESSGAGE address",inet_ntoa(_mess->getEchoClntAddr().sin_addr))
-			stringstream _xx;
-			_xx << inet_ntoa(_mess->getEchoClntAddr().sin_addr) << ":" << ntohs((_mess->getEchoClntAddr()).sin_port);
-			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
-        	CREATEMESSAGE(OKregister, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)
-			SipUtil.genASideReplyFromRequest(_mess,OKregister);
-			OKregister->setHeadSipReply("200 OK");
-        	OKregister->dropHeader("Contact:");
-        	OKregister->compileMessage();
-        	transport->p_w(OKregister);
-        	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
+            //First try to get the Call object using x side parameters
+            if (call_oset != 0x0) {
+                DEBINF("SL_CC::parse", "A SIDE call_oset exists ["<<call_oset)
+            }
+            else if (call_oset == 0x0){
+                call_oset = comap->getCALL_OSET_YDerived(callids,modulus);
+            }
+            if (call_oset !=0){
+            	//exist
+            }
+            else{
+            	//create
+                call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain(),TYPE_SL_MO);
+            }
+            if (comap->use_CALL_OSET_SL_CO_call(call_oset, _mess,modulus) == -1 ){
+                DEBINF("SL_CC::parse rejected by COMAP", callids)
+                if(!_mess->getLock()){
+                    PURGEMESSAGE(_mess)
+                }
+                else {
+                    DEBINF("Put this message into the locked messages table",_mess)
+                    DEBASSERT("")
+                }
+            }else {
+                DEBY
+            }
+//        	DEBOUT("username@domain",_mess->getFromUser())
+//			DEBOUT("MESSGAGE port",ntohs(_mess->getEchoClntAddr().sin_port))
+//			DEBOUT("MESSGAGE address",inet_ntoa(_mess->getEchoClntAddr().sin_addr))
+//			stringstream _xx;
+//			_xx << inet_ntoa(_mess->getEchoClntAddr().sin_addr) << ":" << ntohs((_mess->getEchoClntAddr()).sin_port);
+//			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
+//        	CREATEMESSAGE(OKregister, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)
+//			SipUtil.genASideReplyFromRequest(_mess,OKregister);
+//			OKregister->setHeadSipReply("200 OK");
+//        	OKregister->dropHeader("Contact:");
+//        	OKregister->compileMessage();
+//        	transport->p_w(OKregister);
+//        	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
 
         }
 
