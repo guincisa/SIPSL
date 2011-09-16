@@ -118,11 +118,11 @@ COMAP::COMAP(const COMAP& x){
 CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
 	DEBCOMAP_L("CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod)",this<<"]["<<_callId_X<<"]["<<_mod)
     PROFILE("COMAP::getCALL_OSET_XMain")
+
     TIMEDEF
     SETNOW
 
     //if deleted?!?!?!?!?
-
 
     if (_mod >= COMAPS){
             DEBASSERT("invalid comap index")

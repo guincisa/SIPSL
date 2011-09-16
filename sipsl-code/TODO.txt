@@ -1,5 +1,10 @@
 ISSUES
 
+messenger:
+
+il branch cambia 
+quindi la macchina deve essere definita 
+con altro...
 
 
 new message(m){
