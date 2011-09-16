@@ -1014,9 +1014,224 @@ int SL_MO::actionCall_SV(ACTION* action, int& _r_modulus){
 }
 int SL_MO::actionCall_CL(ACTION* action, int& _r_modulus){
 }
-int SL_MO::call(MESSAGE*,int& modulus){
-
-}
+//**********************************************************************************
+int SL_MO::call(MESSAGE* _message, int& _r_modulus){}
+//	DEBINFCALLOSET("int SL_MO::call(MESSAGE* _message, int& _r_modulus)",this<<"]["<<_message<<"]["<<_r_modulus)
+//
+//    TIMEDEF
+//    SETNOW
+//    PROFILE("SL_MO::call begin")
+//    DEBMESSAGE("SL_MO::call incoming", _message)
+//
+//    ACTION* action = 0x0;
+//
+//    int oper = 0;
+//
+//    if(_message->getTypeOfInternal() == TYPE_OP && _message->getTypeOfOperation() !=  TYPE_OP_SMCOMMAND){
+//		if (_message->getLock()){
+//			DEBINFCALLOSET("Break rule: a message from alarm must not be locked", _message)
+//			DEBASSERT("Break rule: a message from alarm must not be locked")
+//		}
+//    }
+//
+//    //Message is going to Server SM
+//    int dest = _message->getDestEntity();
+//
+//#ifdef LOGSIPHIGH
+//    _message->dumpMessageBuffer();
+//#endif
+//
+//    if (dest == SODE_TRNSCT_SV) {
+//
+//        TRNSCT_SM* trnsctSM = 0x0;
+//        //First look for an existing SM using METHOD+SM_SV+branch
+//        //DEBINFCALLOSET("((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue(\"branch\")",((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+//
+//        trnsctSM = call_oset->getTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_SV, _message->getViaBranch());
+//
+//        //There are no sm, create it
+//        //OVERALLSTATE lock usage start here
+//        //Quicktry :
+//        //create the INVITE_SV during creation of call_oset
+//        //and here set only the callID
+//        if (trnsctSM == 0x0 ){
+//            if (OverallState_SV == OS_INIT && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == MESSAGE_REQUEST ){
+//                call_oset->insertSequence("INVITE_A", _message->getHeadCSeq());
+//                NEWPTR2(trnsctSM, TRNSCT_SM_INVITE_SV(_message->getHeadSipRequestCode(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_SV")
+//            }
+//            else if (OverallState_SV == OS_COMPLETED && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == ACK_REQUEST){
+//                NEWPTR2(trnsctSM, TRNSCT_SM_ACK_SV(_message->getHeadSipRequestCode(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_ACK_SV")
+//            }
+//            else if ( OverallState_SV == OS_CONFIRMED && _message->getRequestDirection() == SODE_FWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == BYE_REQUEST ){
+//                NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequestCode(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
+//            }
+//            //TODO To test
+//            else if ( OverallState_CL == OS_COMPLETED && _message->getRequestDirection() == SODE_BKWD && _message->getReqRepType() == REQSUPP && _message->getHeadSipRequestCode() == BYE_REQUEST ){
+//                NEWPTR2(trnsctSM, TRNSCT_SM_BYE_SV(_message->getHeadSipRequestCode(), _message, call_oset->getENGINE(), this),"TRNSCT_SM_BYE_SV")
+//            }
+//            else if (_message->getReqRepType() != REPSUPP ){
+//                // but the call object has been recognized!!!
+//                // SL_CO not in correct state
+//                DEBINFCALLOSET("Unexpected message ignored", _message)
+//                if(_message->getLock()){
+//                    DEBASSERT("Unexpected message to be ignored found locked")
+//                }
+//                if (OverallState_SV == OS_INIT && OverallState_CL == OS_INIT){
+//                	//object is in init state
+//                	oper = 1;
+//                	//this to fix the deletion during linphone-linphone call in progress
+//                }
+//                _r_modulus = _message->getModulus();
+//                PRINTDIFF("SL_CO::call() end")
+//
+//                //DELETE _message here!
+//    			if(!_message->getLock()){
+//    				PURGEMESSAGE(_message)
+//    			}
+//                return oper;
+//            }
+//            else {
+//                DEBINFCALLOSET("A unrecognized reply directed to server has reached the call object","")
+//                DEBASSERT("Unrecognized Reply message sent to SV machine")
+//            }
+//            //DEBINFCALLOSET("call_oset->addTrnsctSm", _message->getHeadCSeq().getMethod().getContent() << " " << ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+//            //call_oset->addTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_SV, ((C_HeadVia*) _message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"), trnsctSM);
+//            call_oset->addTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_SV, _message->getViaBranch(), trnsctSM);
+//            DEBINFCALLOSET("call_oset->addTrnsctSm","done")
+//
+//        }
+//
+//        //OVERALLSTATE lock ends here?
+//
+//    	if (trnsctSM != 0x0){
+//
+//            //send the message to sm
+//            action = trnsctSM->event(_message);
+//
+//            if (action != 0x0){
+//                oper = actionCall_SV(action, _r_modulus);
+//            }
+//            else {
+//
+//            }
+//        }
+//    	else {
+//            DEBMESSAGE("SL_CO::call the message has no SM clients *****", _message)
+//            DEBASSERT("Check this case out")
+//    	}
+//    }
+//    //Message is going to Client SM
+//    else if (dest == SODE_TRNSCT_CL){
+//
+//        string callidys = _message->getHeadCallId();
+//        DEBINFCALLOSET("SL_CO::call client state machine", callidys)
+//
+//        TRNSCT_SM* trnsct_cl = 0x0;
+//
+//        //Get into the ack cl state machine
+//        if (_message->getTypeOfInternal() == TYPE_OP && _message->getTypeOfOperation() == TYPE_OP_SMCOMMAND){
+//            DEBINFCALLOSET("lastTRNSCT_SM_ACK_CL", call_oset->lastTRNSCT_SM_ACK_CL)
+//            trnsct_cl = call_oset->lastTRNSCT_SM_ACK_CL;
+//            if ( trnsct_cl == 0x0){
+//            	//Still not created
+//            	//do nothing
+//            	//the message is deleted in comap
+//
+//            	//DELETE _message here!
+//    			if(!_message->getLock()){
+//    				PURGEMESSAGE(_message)
+//    			}
+//            	return oper;
+//            }
+//        }
+//        else if (_message->getReqRepType() == REPSUPP ){
+//            //Only Replies are recognized here
+//            string smid1 = _message->getHeadCSeqMethod();
+//            string smid2 = _message->getViaBranch();
+//            DEBINFCALLOSET("call_oset->getTrnsctSm",smid1 <<"#"<< SODE_TRNSCT_CL <<"#"<<smid2 )
+//            trnsct_cl = call_oset->getTrnsctSm(smid1,SODE_TRNSCT_CL,smid2);
+//        }else {
+//            //DEBINFCALLOSET("((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue(\"branch\")",((C_HeadVia*)_message->getSTKHeadVia().top())->getC_AttVia().getViaParms().findRvalue("branch"))
+//        	trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_CL, _message->getViaBranch());
+//        }
+//
+//        //OVERALLSTATE lock begin ?
+//
+//        if (trnsct_cl == 0x0){
+//
+//            DEBINFCALLOSET("Creating Trnsct Client machine callidy", callidys)
+//            // All those request are generated by ALO
+//
+//            DEBINFCALLOSET("_message->getReqRepType() == REQSUPP",_message->getReqRepType())
+//            DEBINFCALLOSET("_message->getHeadSipRequestCode() == INVITE_REQUEST",_message->getHeadSipRequestCode())
+//
+//            if(_message->getReqRepType() == REQSUPP){
+//                if (_message->getHeadSipRequestCode() == INVITE_REQUEST){
+//                    NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequestCode(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
+//                	SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+//                }
+//                else if (_message->getHeadSipRequestCode() == ACK_REQUEST){
+//                    NEWPTR2(trnsct_cl, TRNSCT_SM_ACK_CL(_message->getHeadSipRequestCode(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_ACK_CL")
+//                    if (call_oset->lastTRNSCT_SM_ACK_CL != 0x0){
+//                            DEBASSERT("An ACK CL SM already exists")
+//                    }
+//                    call_oset->lastTRNSCT_SM_ACK_CL = trnsct_cl;
+//                }
+//                else if (_message->getHeadSipRequestCode() == BYE_REQUEST){
+//                    NEWPTR2(trnsct_cl, TRNSCT_SM_BYE_CL(_message->getHeadSipRequestCode(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_BYE_CL")
+//                }
+//                DEBINFCALLOSET("_message->getHeadCSeqMethod()",_message->getHeadCSeqMethod())
+//                DEBINFCALLOSET("_message->getViaBranch()",_message->getViaBranch())
+//                DEBINFCALLOSET("trnsct_cl",trnsct_cl)
+//                call_oset->addTrnsctSm(_message->getHeadCSeqMethod(), SODE_TRNSCT_CL, _message->getViaBranch(), trnsct_cl);
+//            	DEBY
+//            }else{
+//                // but the call object has been recognized!!!
+//                // the sm may have been deleted
+//                DEBWARNING("An unexpected reply directed to client has reached the call object", _message)
+//                DEBMESSAGE("An unexpected reply directed to client has reached the call object", _message)
+//                DEBINFCALLOSET("An unexpected reply directed to client has reached the call object", _message <<"]["<<_message->getTypeOfInternal())
+//                call_oset->dumpTrnsctSm();
+//                action = 0x0;
+//                DEBASSERT("An unexpected reply directed to client has reached the call object")
+//            }
+//        }
+//        DEBY
+//
+//        //OVERALLSTATE end here?
+//
+//        action = trnsct_cl->event(_message);
+//
+//        if (action != 0x0){
+//            oper = actionCall_CL(action, _r_modulus);
+//        }
+//        else {
+//            //_message must be deleted using an action and sode_kill
+//
+//            // we may receive the message from above: An unexpected reply directed to client has reached the call object
+//
+//            //TODO we mayn receive an alarm that is expired
+//            //so the sm has ignored it
+//            DEBINFCALLOSET("SL_CO::event", "action is null nothing, event ignored")
+//        }
+//    }
+//
+//    DEBINFCALLOSET("SL_CO::call ended","")
+//    if (action != 0x0){
+//        DEBINFCALLOSET("SL_CO::call delete action","")
+//        DELPTR(action,"ACTION");
+//    }
+//    //RELLOCK(&mutex,"mutex");
+//
+//    //DELETE _message here!
+//	if(!_message->getLock()){
+//		PURGEMESSAGE(_message)
+//	}
+//    PRINTDIFF("SL_CO::call() ")
+//    return oper;
+//}
+//
+//}
 
 
 

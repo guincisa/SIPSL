@@ -1358,12 +1358,13 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 				if( ddd != NULL){
 					//property=xxxx;....
 					//remove it
-					sprintf(aaa,"");
+					*aaa = '\0';
 					sprintf(yyy,"%s%s",xxx,ddd+1);
 					DEBOUT("yyy",yyy)
 				}else{
 					//property=xxx last position
-					sprintf(aaa-1,"");
+					char* _aaa = aaa-1;
+					*_aaa = '\0';
 					sprintf(yyy,"%s",xxx);
 					DEBOUT("yyy",yyy)
 				}
@@ -1375,11 +1376,11 @@ void MESSAGE::setProperty(string _head,string __property,string _value){
 			char* eee = strstr(xxx, _3_property.c_str());
 			if ( eee != NULL){
 				char* fff = strstr(eee,";");
-				sprintf(aaa,"");
+				*aaa = '\0';
 				sprintf(yyy,"%s%s",xxx,fff+1);
 				DEBOUT("yyy",yyy)
 			}else{
-				sprintf(aaa,"");
+				*aaa = '\0';
 				sprintf(yyy,"%s",xxx);
 				DEBOUT("yyy",yyy)
 			}
@@ -1602,10 +1603,10 @@ string MESSAGE::getViaUriHost(void){
 			strcpy(workline, via_line[0].first+17);
 
 			char* bbb = strchr(workline,':');
-			sprintf(bbb,"");
+			*bbb = '\0';
 			char* ccc = bbb +1;
 			char* ddd = strchr(ccc,';');
-			sprintf(ddd,"");
+			*ddd = '\0';
 
 			viaUriHost = workline;
 			viaUriParsed = true;
@@ -1793,7 +1794,7 @@ string MESSAGE::getFromUser(void){
 			fromUser =  "";
 		}
 		else{
-			sprintf(aaa,"");
+			*aaa = '\0';
 			DEBOUT("string fromLine",workline)
 			fromUser = workline;
 		}
@@ -1806,7 +1807,7 @@ string MESSAGE::getFromUser(void){
 			fromUser = "";
 		}
 		else{
-			sprintf(bbb,"");
+			*bbb = '\0';
 			DEBOUT("string fromLine",aaa+1)
 			fromUser = aaa+1;
 		}
@@ -1911,7 +1912,7 @@ string MESSAGE::getContactUri(void){
     char* pun1 = strchr(contch,'<');
     if ( pun1 != NULL){
         char* pun2 = strchr(contch,'>');
-		sprintf(pun2,"");
+        *pun2 = '\0';
 		contactUri = pun1+5;
 		DEBOUT("MESSAGE::getContactUri",contactUri)
     }
@@ -1931,7 +1932,7 @@ string MESSAGE::getContactUri(void){
 		contactName = "";
 		pun4 = pun3;
 	}else{
-		sprintf(pun3,"");
+		*pun3 = '\0';
 		contactName = contch2;
 		pun4 = pun3 +1;
 	}
@@ -1943,11 +1944,11 @@ string MESSAGE::getContactUri(void){
 	if (pun5 == NULL){
 		contactPort = "5060";
 	}else{
-		sprintf(pun5,"");
+		*pun5 = '\0';
 		char* pun6 = strchr(pun5+1,';');
 		if (pun6 != NULL){
 			//;transport=...
-			sprintf(pun6,"");
+			*pun6 = '\0';
 		}
 		contactPort = pun5 +1;
 	}
@@ -2330,7 +2331,7 @@ int MESSAGE::getHeadCSeq(void){
 		DEBY
 		char* token = strchr(tsmp, ' ');
 		DEBY
-		sprintf(token,"");
+		*token = '\0';
 		DEBINFMESSAGE("int MESSAGE::getHeadCSeq(void)",tsmp)
 		cSeq = atoi(tsmp);
 		DEBY

@@ -357,12 +357,11 @@ void SUDP::sendRequest(MESSAGE* _message){
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_flags = AI_NUMERICHOST;
 
+	int res = getaddrinfo(_hostchar,_pair.second.c_str(),&hints, &servinfo);
 
-    int res = getaddrinfo(_hostchar,_pair.second.c_str(),&hints, &servinfo);
-
-    if (res != 0){
-    	DEBASSERT("getaddrinfo")
-    }
+	if (res != 0){
+		DEBASSERT("getaddrinfo")
+	}
 
     int i = _message->getModulus() % SUDPTH;
 
@@ -408,13 +407,12 @@ void SUDP::sendReply(MESSAGE* _message){
 //        	DEBASSERT("getaddrinfo")
 //        }
 //    }
-    const char* _hostchar = inet_ntoa(_message->getEchoClntAddr().sin_addr);
+	const char* _hostchar = inet_ntoa(_message->getEchoClntAddr().sin_addr);
 	char xx[GENSTRINGLEN];
 	sprintf(xx,"%d",ntohs((_message->getEchoClntAddr()).sin_port));
 
 	DEBOUT("sendReply to", _hostchar <<"]["<<xx)
 	int res = getaddrinfo(_hostchar,xx,&hints, &servinfo);
-
 	if (res != 0){
 		DEBASSERT("getaddrinfo")
 	}
