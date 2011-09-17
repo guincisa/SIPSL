@@ -41,6 +41,10 @@
 
 extern double PERFARRAY[4][50];
 
+#define UNDEF_REALM 0
+#define CALL_REALM 1
+#define MESSAGE_REALM 2
+
 #define SPARC
 
 using namespace std;

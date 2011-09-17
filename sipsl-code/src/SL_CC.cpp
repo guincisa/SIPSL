@@ -151,15 +151,18 @@ void SL_CC::parse(void* __mess, int _mmod){
         string callids = _mess->getHeadCallId();
         int modulus = _mess->getModulus();
 
+
         DEBSIP("SL_CC::parse CALLOSET normal ID",callids<<"]["<<modulus)
 
         GETLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus,24);
 
-        //if deleted?!?!?!?!?
-        call_oset = comap->getCALL_OSET_XMain(callids, modulus);
+        int realm = comap->getRealm(callids, modulus);
+
+		//if deleted?!?!?!?!?
+		call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
         //First try to get the Call object using x side parameters
-        if (call_oset != 0x0) {
+        if (call_oset != 0x0 ) {
             DEBINF("SL_CC::parse", "A SIDE call_oset exists ["<<call_oset)
 
             //to SV if Request to CL if Reply
@@ -233,6 +236,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         	transport->p_w(etry);
 #endif
 
+        	comap->setRealm(callids, modulus, CALL_REALM);
             //////////////////////////////
             //Start - Initialization block
             call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain(),TYPE_SL_CO);
@@ -258,7 +262,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         }
         else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == REGISTER_REQUEST) {
 
-        	//mettere questo in una classe
+        	comap->setRealm(callids, modulus, MESSAGE_REALM);
 
         	DEBOUT("username@domain",_mess->getFromUser())
 			DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
@@ -277,19 +281,15 @@ void SL_CC::parse(void* __mess, int _mmod){
         }
         else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == MESSAGE_REQUEST) {
 
-            call_oset = comap->getCALL_OSET_XMain(callids, modulus);
+        	comap->setRealm(callids, modulus, MESSAGE_REALM);
 
-            //First try to get the Call object using x side parameters
+            call_oset = comap->getCALL_OSET_XMain(_mess->getFromUser(), modulus);
+
             if (call_oset != 0x0) {
                 DEBINF("SL_CC::parse", "A SIDE call_oset exists ["<<call_oset)
             }
-            else if (call_oset == 0x0){
-                call_oset = comap->getCALL_OSET_YDerived(callids,modulus);
-            }
-            if (call_oset !=0){
-            	//exist
-            }
             else{
+            	//in messaging only X side exists
             	//create
                 call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain(),TYPE_SL_MO);
             }
@@ -305,19 +305,10 @@ void SL_CC::parse(void* __mess, int _mmod){
             }else {
                 DEBY
             }
-//        	DEBOUT("username@domain",_mess->getFromUser())
-//			DEBOUT("MESSGAGE port",ntohs(_mess->getEchoClntAddr().sin_port))
-//			DEBOUT("MESSGAGE address",inet_ntoa(_mess->getEchoClntAddr().sin_addr))
-//			stringstream _xx;
-//			_xx << inet_ntoa(_mess->getEchoClntAddr().sin_addr) << ":" << ntohs((_mess->getEchoClntAddr()).sin_port);
-//			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
-//        	CREATEMESSAGE(OKregister, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)
-//			SipUtil.genASideReplyFromRequest(_mess,OKregister);
-//			OKregister->setHeadSipReply("200 OK");
-//        	OKregister->dropHeader("Contact:");
-//        	OKregister->compileMessage();
-//        	transport->p_w(OKregister);
-//        	RELLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus);
+        }else if (call_oset == 0x0 && _mess->getReqRepType() == REPSUPP && realm == MESSAGE_REALM){
+
+            call_oset = comap->getCALL_OSET_XMain(_mess->getFromUser(), modulus);
+
 
         }
 
