@@ -1,0 +1,407 @@
+ISSUES
+
+messenger:
+
+il branch cambia 
+quindi la macchina deve essere definita 
+con altro...
+
+
+new message(m){
+	buffer = m;
+	lines[] = 0x0;
+	property1 = "";
+	property2 = "";
+	property1_compiled = true;
+	property1_parsed = false;
+	property2_compiled = true;
+	filled = false;
+	atleast_one_not_compiled = false;
+}
+m->fill{
+	if( fill == false){
+		filled = true;
+		lines[] = FILLED;
+	}
+}	
+m->getProp(property1){
+    if (property1_parsed){
+        return property1)
+    }
+    if (filled == false){
+        fill();
+    }
+    property1 = lookup(property1,lines[])
+    property1_parsed = true
+}
+m->setProperty(property1 value){
+    if(filled = false){
+        fill()
+    }
+    property1 = value;
+    property1_parsed = true
+    property1_compiled = false    
+}
+compile{
+    if (property1_compiled == false(
+    	put(lines[],property1)
+    	property1_compiled = true
+    	property1_parsed = true
+    	changed = true
+    } repeat for all properties
+    if(changed == true){
+    	delete buffer;
+    	buffer = tobuffer(lines[])
+    	filled  = true;
+    }
+    niente
+}
+m2 = copymessage(m2){
+    m2.buffer = m1.buffer
+    m2.lines[] = m2.lines[]
+    m2.properties... = m1.propertuies
+    m2.fill = m1.fill
+}
+getBuffer(){
+	if (filled = false)
+	    return buffer
+	compile()
+	return buffer
+
+
+         
+    
+    
+
+
+NAT:
+
+le info della nat vanno messe sul call_object
+perche il barkward bye deve usarle...
+
+
+
+
+
+il linphone non funziona bene e ekiga neanche
+
+linphone non manda ack
+ekiga crasha al bye e non lo manda...
+
+Register
+[REGISTER sip:172.20.174.172 SIP/2.0
+Via: SIP/2.0/UDP 172.20.174.172:5062;rport;branch=z9hG4bK1703488235
+From: <sip:majo@sipsl.org>;tag=1038505188
+To: <sip:majo@sipsl.org>
+Call-ID: 366143169
+CSeq: 1 REGISTER
+Contact: <sip:majo@172.20.174.172:5062>
+Max-Forwards: 70
+User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+Expires: 3600
+Content-Length: 0
+
+]
+
+
+
+
+1 sett
+1. il mio try non ha rport impostato nel via
+
+
+
+
+il contact:
+il 200 ok per A deve contenere sipsl@b2bua.sipsl.org
+le request verso b devono contenere il contact del 200ok venuto da b
+
+
+uniformare il parser troppe funzioni fanno la stessa cosa
+ma se la sipsl usa il route 
+devo mettere Route negli header...?
+
+il parser si pianta qui....
+To: ":5062" <sip:guic@192.168.0.103>
+
+Agosto 23
+introduzione dell'indirizzo di routing
+
+ubu-ubu2
+PD-SIPSL
+0%i%192.168.0.100:5060%192.168.0.100:5060
+send
+
+
+PD-SIPSL
+0%i%10.21.99.79:5062%10.21.99.79:5062
+send
+
+contact non va bene deve essere l'indirizzo locale di SIPSL
+
+A
+INVITE sip:service@10.21.99.79:5062 SIP/2.0
+Via: SIP/2.0/UDP 10.21.99.79:5061;branch=z9hG4bK-22189-1-0
+From: sipp <sip:sipp@10.21.99.79:5061>;tag=22189SIPpTag001
+To: sut <sip:service@10.21.99.79:5062>
+Contact: sip:sipp@10.21.99.79:5061
+
+
+B
+INVITE sip:GUGLISIPSL@10.21.99.79:5062 SIP/2.0
+From: sipp <sip:sipp@10.21.99.79:5061>;tag=1c7c281306836789409645
+To: sut <sip:service@10.21.99.79:5062>
+Call-ID: CoMap051c28881306836789394442@sipsl.gugli.com
+Contact: <sip:sipsl@grog:5060>
+Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK1c28881306836789394442;rport
+
+mas multiistanze sipp
+PD-SIPSL
+i%127.0.0.1:5061%service@127.0.0.1:5061
+send
+PD-SIPSL
+i%127.0.0.1:5062%service@127.0.0.1:5062
+send
+PD-SIPSL
+i%127.0.0.1:5063%service@127.0.0.1:5063
+send
+PD-SIPSL
+i%127.0.0.1:5064%service@127.0.0.1:5064
+send
+PD-SIPSL
+i%127.0.0.1:5065%service@127.0.0.1:5065
+send
+PD-SIPSL
+i%127.0.0.1:5066%service@127.0.0.1:5066
+send
+PD-SIPSL
+i%127.0.0.1:5067%service@127.0.0.1:5067
+send
+
+
+
+
+
+
+
+PD-SIPSL
+i%10.21.99.79:5061%service@10.21.99.79:5061
+send
+PD-SIPSL
+i%10.21.99.79:5063%service@10.21.99.79:5063
+send
+PD-SIPSL
+i%10.21.99.79:5064%service@10.21.99.79:5064
+send
+
+tcp!!!
+
+
+5 agosto 
+
+http://docs.jboss.org/mobicents/jain-slee/2.4.1.FINAL/examples/sip-b2bua/user-guide/en-US/html/design_overview.html
+
+nello schema ACK verso B parte con il 200OK e non aspetta ACK da A...
+
+   This header field should be inserted by elements that can not
+   otherwise guarantee loop detection.  For example, a B2BUA should
+   insert a Max-Forwards header field.
+
+
+
+
+
+indirizzi numerici o a stringa
+se grog$=127.0.0.1
+oppure $grog=grog.sipsl.org
+
+PD-SIPSL
+i%127.0.0.1:5062%service@127.0.0.1:5062
+send
+
+oppure
+PD-SIPSL
+i%127.0.0.1:5062%service@grog.sipsl.org:5062
+send
+
+
+
+4 agosto
+
+sendReply e sendRequest
+ma la host a che serve???
+che succede se uso indirizzi non numerici????
+
+
+2 agosto
+
+overload protection
+
+
+Luglio 30
+
+OM-SIPSL
+dump comap
+
+scarica nel log tutti gli oggetti ancora aperti e il loro overall state
+
+http://download.oracle.com/docs/cd/E18752_01/html/816-5137/ggfbr.html
+
+umft2
+PD-SIPSL
+i%10.21.99.81:5062%service@10.21.99.81:5062
+send
+umft1
+PD-SIPSL
+i%10.21.99.79:5062%service@10.21.99.79:5062
+send
+
+suse
+PD-SIPSL
+i%127.0.0.1:5062%service@127.0.0.1:5062
+send
+
+
+umf1 - mas set
+export mas=10.21.99.67
+export umf=10.21.99.79
+
+umf2 - mas set
+export mas=10.21.99.67
+export umf=10.21.99.81
+
+sip call flow
+
+per vedere il max tps di sipp provare uac-uas diretto
+
+http://www.3gpp2.org/public_html/specs/X.S0013-009-0_v1.0_080224.pdf
+
+
+
+28 luglio 
+dividere la doa in + trheads
+
+27 luglio
+
+leak nella message
+dovrebbe essere la PURGEMESSAGE che non toglie il record dalla module map
+
+
+22 luglio
+
+i controlli nella comap non funzionano...
+Assertion failed: 0, file c/TRNSCT_SM.cpp, line 310
+zsh: 16361 IOT instruction (core dumped)  ./SI |
+zsh: 16362 done                           tee log > /dev/null
+
+
+il collo sta tra due engines 
+se il chiamante ha molti threads rallenta un sacco...
+
+
+
+
+20 luglio
+bool ENGINE::p_w_v2(void* _m) {
+
+	//put message in queue (already th safe)
+	//return
+}
+// p_w_v2
+// if there is a message
+// take message execute parse
+
+togliere il mutex nello spin, non serve
+comunque non dovrebbe influre molto
+
+per ogni thread calcolare il tempo di sleep
+= tot - attesa nei lock - tempo mimino di computazione
+il tempo di sleep indica che il th non ha cpu disponibile
+potrebbe spiegare perche se aumento i threads i tempi salgono
+
+provare pthread_getcpuclockid
+
+rifare modulo messaggio usare una soluzione ibrida tra funzione e mappe
+vedere prova.exe si calcola un modulo basso (10) e poi si cerca
+in una delle 10 mappe
+
+i controlli nella comap non funzionano...
+Assertion failed: 0, file c/TRNSCT_SM.cpp, line 310
+zsh: 16361 IOT instruction (core dumped)  ./SI |
+zsh: 16362 done                           tee log > /dev/null
+
+----------------
+
+13 luglio
+
+issue:
+se arriva il BYE A no sempre parte il 200ok
+perche OVERALLstate e' diverso
+
+
+
+TODO
+
+1. ottimizzare le getXXX dopo la compile message
+
+- perche su UMF una chiamata usa meno messaggi???
+
+- spezzare SL_CO lato client e server son due lock separati
+ancora in test, fare gli scenari di errore
+
+- implementare il controllo  di carico e i messaggi di reject
+lato client 
+
+- timer sul temporary state nella comap se gli allarmi sono inibiti
+oppure riabilitare gli allarmi ma solo per le timer_s
+con un counter dipendente dal timer doa
+
+SUPERCARICO
+- in caso di super carico il bye non va quasi piu
+- il core avviene durante la downcall forse le funzioni unix
+
+
+2. perche quando un solo messaggio va in ritrasmissione scoppia il casino???
+3. base dati stl
+4. SIP messaggi di errore/overload
+4. come definire overload in SIPSL
+5.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Finire ritrasmissioni e deletion logic
+fatta la INV_SV
+test
+
+
+************************************************************************************
+La global message table è unica. E' possible usarne di piu?
+Controllare se impedisce la concorrenza.
+
+************************************************************************************
+Misure
+
+
+************************************************************************************
+Performance
+- aprire piu socket 
+
+
