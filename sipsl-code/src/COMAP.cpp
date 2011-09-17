@@ -664,3 +664,31 @@ void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
     call_oset_ttl[_modulus].insert(pair<CALL_OSET*, lli>(_call_oset,killtime));
     PRINTDIFF("COMAP::resetDoaRequestTimer")
 }
+int COMAP::getRealm(string _callid,int _modulus){
+	DEBCOMAP_L("void COMAP::getRealm(string callId, int modulus)",this<<"]["<<_callid<<"]["<<_modulus)
+
+
+    map<string,int>::iterator treal;
+	treal = realm_map[_modulus].find(_callid);
+	if ( treal == realm_map[_modulus].end()){
+		return UNDEF_REALM;
+	}
+	else{
+        return (int)treal->second;
+	}
+
+}
+void COMAP::setRealm(string _callid,int _realm,int _modulus){
+	DEBCOMAP_L("void COMAP::setRealm(string callId, int modulus)",this<<"]["<<_callid<<"]["<<_realm<<"]["<<_modulus)
+
+	map<string,int>::iterator treal;
+	treal = realm_map[_modulus].find(_callid);
+	if ( treal == realm_map[_modulus].end()){
+		realm_map[_modulus].erase(treal);
+	}
+	realm_map[_modulus].insert(pair<string, int>(_callid,_realm));
+	return;
+
+}
+
+

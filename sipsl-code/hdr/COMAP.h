@@ -66,6 +66,9 @@ class COMAP {
 
 		void resetDoaRequestTimer(CALL_OSET* call_oset,int modulus);
 
+//		//This will tell if a call is messaging real or call realm
+		map<string,int> realm_map[COMAPS];
+
 	public:
 		CALL_OSET* setCALL_OSET(string callId_X,int, ENGINE*, TRNSPRT*, MESSAGE*, string, int);
 
@@ -89,6 +92,10 @@ class COMAP {
 
 		//pthread_mutex_t unique_ex[COMAPS];
 		pthread_mutex_t unique_exx[COMAPS];
+
+        int getRealm(string,int);
+        void setRealm(string,int,int);
+
 
 
 
