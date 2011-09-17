@@ -1,0 +1,913 @@
+13 luglio
+
+
+act_resend_ack troppo lenta
+mandare l'ack subito
+l'ack viene memorizzato e se arriva il 200ok di nuovo si accede alla sm di ack e lo
+si manda subito senza il doppio accesso alla calloset
+
+21 giugno
+con overload
+no allarmi
+            }else{
+                // but the call object has been recognized!!!
+                // the sm may have been deleted
+                DEBWARNING("An unexpected reply directed to client has reached the call object", _message)
+                DEBMESSAGE("An unexpected reply directed to client has reached the call object", _message)
+                DEBINFCALLOSET("An unexpected reply directed to client has reached the call object", _message <<"]["<<_message->getTypeOfInternal())
+                call_oset->dumpTrnsctSm();
+                action = 0x0;
+                DEBASSERT("An unexpected reply directed to client has reached the call object")
+            }
+
+
+16 giugno 
+
+ACK???
+
+il doppio lock nella call_oset sembra ok
+mancano gli scenari di errore
+
+
+
+15 giugno 
+
+sembra che l'ack non venga rimandato
+sembra ci sia un leak
+
+10 giugno
+
+colli di bottiglia
+SIPENGINE
+191
+253
+
+ACTION* SM::event(MESSAGE* _event){
+ troppo lenta
+
+
+
+7 giugno
+
+ottimizzare fill/compile
+memory leaks???
+
+ACK sbagliato
+
+
+3 giugno
+
+ex_message_line finire implementazione
+
+2 giugno
+
+definire lo stato del messaggio fillIn e compile
+impatto sulle altre prioprieta? (uri cseq....)
+
+
+26 maggio
+
+implementare i metodi di MESSAGE
+
+ma il via che conta e' quello in cima o in basso???
+dalla SUDP sembra quello in cima!!!!
+
+
+19 maggio
+
+controllare che tutte le vasr sono inizializzate nel costruttore
+
+fare tutti glie header e properties cosi:
+
+getViaBranch(){
+	if parsedBranch
+		return branch
+	else
+		branch = propgetProperty("Via:","branch)
+		parsedBranch = true;
+}
+
+
+13 maggio
+
+per ora gli header si maneggiano solo con genericHeader
+per evitare di riempire di CSHEaders la classe messaggio
+
+riscrittura del parser
+via+messaggio+sdp
+implemtentare solo le parti che servono
+
+
+29 Aprile
+
+riscrittura del parser
+via+messaggio+sdp
+implemtentare solo le parti che servono
+
+
+
+21 Aprile
+
+ottimizzare la NONESTEDPW 
+
+migliorare allarmi che cora sempre
+
+capire se invertendo il lock c'e' rischio di core
+
+
+
+18 Aprile
+Tuning
+
+run minimo					FMIN	=	10
+run sostenuto senza ritrasm FMAX	= 	30
+run con ritrasm				FOVR	=   70
+
+210 messaggi
+durata 20 secondi senza sovrapposizione BYE
+
+con sovrapposizione BYE
+
+
+
+
+15 aprile
+
+
+il collo sta qui
+
+    GETLOCK(&(sb[mmod].condvarmutex),"[" << this << "] sb["<< mmod << "].condvarmutex");
+
+
+
+14 Aprile
+
+
+usare piu istanze di SL_CC???
+c'e' un bottleneck nella condvar
+
+quando arriva bye A mandare subito 200ok
+non aspettare il 200ok di b
+cambiato
+
+12 Aprile 
+
+rivedere le sm per il BYE
+perche il 180 non arriva?
+
+8 aprile
+
+
+rivedere le trylock
+alarm e' collo di bottiglia
+la cancel va messa in p_w
+
+1. :alarm con modulus
+
+2. migliorare le struttura dati dell'allarme
+
+
+
+4 aprile
+
+la call e le action_sv e cl ritornano -1 o mod se deve fare al setdoarequeste
+
+                    tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
+
+
+1 Aprile
+
+provare trylock nella usecalloset
+
+31 Marzo
+
+1: potrebbe essere nelle macchine
+non rimando il 200ok a A per avere l'ack
+on mando l'ack a B quando manda l'ok
+
+2:
+
+30 Marzo
+
+scenario 1i, chiamata rimane appesa
+
+ACTION* act_terminate_sv(SM* _sm, MESSAGE* _message) {
+
+	qui...
+	
+	//((SL_CC*)(_sm->getSL_CC()))->getCOMAP()->setDoaRequested(_sm->getSL_CO()->call_oset, _message->getModulus());
+
+22 Marzo
+
+timer_s non funziona
+quando il messaggio e' sparato non arriva alla stessa macchina
+
+
+21 Marzo
+
+il messaggio viene ripassato alla pw ma la sl_cc lo cancella in parallelo
+(cosi e' la regola)
+1. duplicare il messaggio prime del push
+2. non reinfilarlo ma aspettare sul lock.
+
+    int trylok;
+    TRYLOCK(&(_call_oset->mutex),"&(_call_oset->mutex)", trylok)
+    if(trylok != 0){
+    	//CALL OSET is locked reschedule in SL_CC
+    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call repushed to sl_cc", _call_oset )
+    	_call_oset->getENGINE()->p_w(_message);
+    	PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+    }
+    else {
+    	RELLOCK(&unique_exx[_mod],"unique_exx"<<_mod);
+    	DEBINF("COMAP::use_CALL_OSET_SL_CO_call accepted", _call_oset )
+    	 _call_oset->call(_message);
+    	 PRINTDIFF("COMAP::use_CALL_OSET_SL_CO_call end")
+    }
+
+
+16 marzo
+
+la prov reply entra in sl_cc e pasa alla state m server
+
+15 marzo
+continuare la MLF2 mandato invite a B
+
+
+1. Ogni messaggio deve avere una sola funzione e destinazione
+2. la rete non e' piu una destinazione finale
+3. locked message serve per lasciarlo in memoria
+dest = prossima destinazione
+
+i messaggi non possono cambiare destinazione 
+
+
+- Request da A
+	- finiscono in matrix server
+	- locked
+- Request da ALO a B
+   - finiscono in matrix client
+   - locked
+- Reply da B
+   - 
+   - 
+- Reply verso A
+   - 
+- messaggi verso Alarm
+i messagi verso alarm sono copie, e non locked
+una volta triggerati vanno eliminati
+non devono generare macchine
+
+   
+ 4. messaggi dalla rete che arrivano dopo la cancellazione del calloset
+ dovrebbero essere ignorati...
+
+
+11 Marzo
+
+ridisegnare la gestione dei messaggi
+quando elimino il call oset i messaggi potrebbero essere ovunque
+comunque in teoria solo quelli di allarmi
+perche gli altri dovrebbero essere bloccati dalla comap!
+
+possibili regole:
+1)
+- i messaggi allarmi non vanno messi nella locked table
+la locked table viene svuotata con il distruttore della calloset
+il modulo allarmi riesce a caapire se un mesasggio e' cancellato
+ma non e' thread safe sul messagio che puo sparire in qualsiasi
+momento
+- 
+
+
+
+
+3 Marzo
+
+canellazione della call_oset:
+non posso eliminare i messaggi locked perche potrebbero essere ovunque...
+
+
+2 Marzo
+
+il problema e' che sembra che lo stesso messaggio sia gestito da piu threads allo stesso momento
+
+usare una variabile 
+int inuse =  numero thread;
+loccata con il global message lock
+quando il messaggio entra nella parse 
+
+
+
+p_w(){
+    if inuse != 0
+       assert
+    else 
+        inuse = currentthread
+        
+        
+
+
+
+
+
+
+
+
+
+
+25 Feb
+
+void COMAP::setY2XCallId(string _callId_Y, string _callId_X, int _mod){
+
+
+controllare stato
+
+
+
+
+
+
+
+23 febbraio
+
+se il call-oset = maincalloset allora reject message
+
+se pero passa in deleted mentre imposto un x2y: no c'e' il lock e poi c'e' la macchina a stati:
+
+pero
+setto la x2y
+passa in deleted
+entro nella use_call
+-> rejected
+
+
+
+
+
+
+
+
+
+
+
+22 Feb
+
+            if(_message->getReqRepType() == REQSUPP){
+                if (_message->getHeadSipRequest().getS_AttMethod().getMethodID() == INVITE_REQUEST){
+                    NEWPTR2(trnsct_cl, TRNSCT_SM_INVITE_CL(_message->getHeadSipRequest().getS_AttMethod().getMethodID(), _message, _message->getSourceMessage(), call_oset->getENGINE(), this),"TRNSCT_SM_INVITE_CL")
+                    SL_CC* tmp_sl_cc = (SL_CC*)call_oset->getENGINE();
+                    tmp_sl_cc->getCOMAP()->setY2XCallId(callidys,call_oset->getCallId_X(), _message->getModulus());
+                }
+
+
+
+
+
+
+
+CHANGES
+
+13 ottobre 
+crash negli allarmi nella invite_b non corrisposto 
+
+tabelle allarmi non si svuotano
+
+11 Ottobre
+
+bug quando B non risponde a INVITE_B: non implementato
+attivare la DOA...
+
+bug: INVITE B ritrasmesso che arriva dall'allarme non è cancellato:
+	//TODO implement this like the 0_1 but the incoming message must be unlocked and deleted by SUDP
+
+
+
+8 Ottobre
+
+scenari
+
+3pcc??
+
+DONE:
+STOREMESSAGE_1_2 per ritrasmettere dialog or 180 ring
+
+TODO:
+STOREMESS_1_2: to be purged
+dove sparisce il message???
+
+---------------------------------------------------------------
+
+6 ottobre
+
+manca il bye da b???
+
+6 Ottobre
+
+A            SIPSL         B
+|  INVITE_A    |             |
+|------------->|             |
+|   100TRY_A   |             |
+|<-------------|   INVITE_B  |
+|              |------------>|
+|              |             |
+|              |  180RING_B  |
+|              |<------------|
+|  180RING_A   |             |
+|<-------------|             |
+|              |  200_OK_B   |
+|              |<------------|
+|   200A_OK_A  |             |
+|<-------------|             |
+|    ACK_A     |             |
+|------------->|             |
+|              |    ACK_B    |
+|              |------------>|
+|              |             |
+------------------------------
+|  BYE_A       |             |
+|------------->|             |
+|              |   BYE_B     |
+|              |------------>|
+|              |  200_OK_B   |
+|              |<------------|
+|   200OK_A    |             |
+|<-------------|             |
+
+------------------------------
+|              |   BYE_B     |
+|              |<------------|
+|  BYE_A       |             |
+|<-------------|             |
+|   200OK_A    |             |
+|------------->|             |
+|              |  200_OK_B   |
+|              |------------>|
+
+
+
+1. INVITE_A received again when 1xx not arriving to A.
+	Action: resend 1xx.
+	
+	IMPLEM: SIPSL must resend the 1xx try 
+	meglio modificare la sm_sv e rimandare l'ultimo messaggio
+	
+	
+	currently not implemented? SM_SV ignores the INVITE_A
+	
+	Soluzione: Quando la sv_sm manda il 1xx si aspetta che l'invite a sia acknowledged.
+	Se arriva di nuovo un invite_a deve rimandare il 1xx:
+	1. il 1xx viene messo in una tabella delle ritrasmissioni gestita dalla TRNSPRT, con chiave di accesso
+	uguale all'invite_a cosi se arriva allora lo ritrasmette automaticamente.
+	-> come fa a toglierlo? quano arriva l'ack?
+	
+	per ogni messaggio deve controllare la tabella...
+	
+	
+2. Retransmission of INVITE_B if 1xx/2xx missing.
+
+   IMPLEM:SIPSL must resend the INVITE_B
+   va bene cosi: tutto gestito in cl_sm con l'allarme
+		
+   Most be handled by TRNSPRT instead of SM_CL.
+   Could this be generic for any outgoing request? (Except ACK_B)
+   
+   Soluzione: INVITE_B deve portare una informazione concernente al sua ritrasmissione: quando
+   TRNSPRT vede questa info attiva l'allarme
+   Quando l'allarme scatta l'invite arriva alla sl_cc che to manda alla cl_sm (come adesso)
+   la sl_sm si comporta come adesso e controlla se ha raggiunto il numero massimo di trasmissioni,
+   se no manda giù l'invite (-- oppure se vede che manca un tentativo manda giu un invite senza
+   le informazioni di ritrasmissione cosi TRNSPRT non crea l'allarme
+   Se il numero massimo è raggiunto l'invite non viene passato alla trasnport e altre azioni
+   vengono intraprese (chiude la call).
+   Oppure quando la cl_sm manda giu l'ultimo invite, aggiunge altre info per l'allarme: chiudere
+   la call.
+   
+   
+3. 200ok_B is repeated if ACK_B missing
+	Action: resend ACK_B
+	
+	IMPLEM: resend ACK_B 
+	ACK_B stored by ALO
+	
+4. 200ok_A is resent if ACK_A is missing:	
+    Action: resend 200ok_A
+    
+    IMPLEM: timer is in SV waits for ACK_A
+    
+5. BYE_A is resent if 200OK_A is missing
+   Action: resend 200ok_A
+   
+   IMPLEM: 
+   
+6. BYE_B resent if 200ok_b missing
+   Action: resend BYE_b    	
+	
+
+
+28 Agosto
+TRNSPRT:
+	//RETRANSMISSIONS
+	//INVITE_B retransmission is setup using ALARM
+	//1) ALARM sends INVITE_B with destination = NTW
+	//2) INVITE_B arrives here and ALARM is armed again with higher timeout
+	//3) if max resends reached then ALARM is not triggered error is sent to CL
+	//   CL send error to VALO
+	//   VALO sends error to SV
+	//   SV sends error to A
+	//4) if 1xx arrives in upCall, ALARM is dearmed
+
+	// requirements:
+	// - ALARM are armed using (call-id, branch, orderOfOp)
+	// max-resend are referred using same tuple
+	// 1xx are identified by (call-id,branch) orderOfOp is predefined for this resend logic
+
+	//resend of 1xx if INVITE_A is arriving
+
+	//200OK_A retransmission in case ACK_A is missing
+	//ALARM is armed all is like above
+
+	//ACK_B Retransmission in case B resends 200OK_B
+	//ACK_B is stored and resent
+	//in case no ACK is found error is sent
+
+	//BYE_B in case 200Ok is missing
+
+	//TRNSPRT can be Engine:
+	//need map for max-invite retransm <(callid-branch), int>
+	// and for all other counters
+	// map for message to resend <(callid-branch),MESSAGE*>
+	// map indicating is call_oset is alive (?)
+
+	//CALL ABORT
+	//for timeouts (
+	//for errors messages from network
+
+
+
+20 Agosto
+
+se B non riceve l'ack rimanda il 200 ok.
+ma il 200_ok b non è correlato alla sm dell'ack: quindi:
+devo fa entrare il 200 ok nella sm dell'ack: 
+o reintegrare di nuovo l'ack nella state del invite
+
+18 Agosto
+
+- capitato che arriva un reply da b ma non trova la sm e da assert
+
+- rivedere i meccanismi di lock nella comap
+
+- è possibile che il call_oset venga eliminato mentre viene esguito da un'altro th? 
+
+Se arriva un BYE e non esiste la chiamata la call_oset viene creata...
+
+nuovi stati pagina 128 dell rfc
+
+-----------------------------------------------------------------------
+
+vedere la DOA
+
+16 agosto
+
+guic@grog:~/workspace/SIPSL_svn/Solaris$ ./SIPSL_svn > log
+SIPSL_svn: ../sipsl-code/src/TRNSCT_SM.cpp:506: Assertion `0' failed.
+Aborted
+
+
+13 Agosto
+
+usare un solo mutex in COMAP
+-------------------------------------------------------------------------------
+
+9 agosto
+
+mettere nella context store i messaggi locked
+-------------------------------------------------------------------------------
+
+7 agosto
+
+i messaggi resend devono essere cancellati
+-------------------------------------------------------------------------------
+
+4 agosto
+
+nella comap metto lo stato della call_oset
+se 0 vuold dire che non sta gestendo messaggi
+se non 0 non la DOA non lo cancella
+ma un messaggio potrebbe esere nella sl_cc mentre la doa cancella
+e quindi lo cancellerebbe
+
+-------------------------------------------------------------------------------
+
+2 agosto
+
+eliminato il codice per modificare i messaggi nelle SM
+alo non è piu un engine
+
+V6:
+ALO is not engine anymore due to concurrency issues.
+-------------------------------------------------------------------------------
+
+1 Agosto
+
+problemi di synch:
+mutex
+- CALL_OSET::call()
+
+Alo: analizzare se conviene eliminare l'eredità da engine e farlo girare sul thread del sl_cc 
+
+memoria:
+estendere la mappa dei messaggi e qualsiasi oggetto e mettere il tipo
+quando la call_oset ha raggiunto la fine della chiamata (bye-200ok) allora deve triggerare
+la cancellazione di tutte le sue strutture
+quindi o con la mappa oppure una mappa locale
+-------------------------------------------------------------------------------
+
+30 luglio
+BYE ok
+
+
+mettere a posto la map_context
+mettere a posto le sequece
+
+nella threadparser cambiata la posizione dell'unlock
+
+
+
+
+29 luglio
+
+
+correggere cseq di ACK
+controllare transact machines degli ack (sv e cl)
+modificare le transact machines degli invite perche non hanno piu l'ack
+il bye non funzione....
+
+transazione: branch
+Cseq: no
+
+problema: ACK arriva con un nuovo branch e non c'è il matchn con la SM dell'invite
+
+-------------------------------------------------------------------------------
+
+21 luglio
+i cseq ancora non sono correttamente gestiti (?)
+alcuni header (from/to/contact) sono sbaglaiti forse
+
+non va piu niente dopo che ho corretto gli indirizzi su etc/hosts
+
+-------------------------------------------------------------------------------
+
+
+13 luglio
+il callid per identificare l'allarme non è sufficente
+-------------------------------------------------------------------------------
+11 Luglio
+Routing
+
+Request INVITE
+se è presente un Route header mandare a questo (porta di default 5060 se non indicata)
+Mandare alla Request-URI altrimenti
+
+Response
+utilizza il Via per rispondere
+
+Request Ack
+come Invite
+
+
+TODO: mettere a posto matrix
+TODO: sistemare le classi state machine
+-------------------------------------------------------------------------------
+Luglio 9
+
+
+introdurre un network dispatcher, togliere SODE_APOINT e SODE_BPOINT e lasciare SODE_NTWPOINT.
+1. potrebbero esserci poi di due tier nella conversazione
+2. la destinazione del messaggio è definita negli header e non in base alla macchina a stati
+
+vedere: via , to, from, contact....
+
+
+Bye from B ancora probloemi, forse la state machine client va modificata.
+il bye non è mandato da quando ho invertito gli header
+
+mettere ratio nella compilazione degli header
+-------------------------------------------------------------------------------
+
+
+Finire bye from B.
+test
+consolidare l'identificatore al call_oset con il call id semplice e non quello
+esteso (cid+fromtag)
+-------------------------------------------------------------------------------
+Bye
+la chiusura si fa con i vari tag e non con il sequence (?)
+
+ok bye funziona
+
+manca bye da lato B.
+
+fare cleaning codice e 
+-------------------------------------------------------------------------------
+July 2
+
+bye ok ma
+getsequence va modificato perche il BYE viene mandato con il seq dell'invite +1
+ora pero il bye che manda la sipsl deve essere basato sul bye di a:
+se a manda un bye per un certo invite allora sipsl deve fare lo stesso
+(perche potrei avere piu dialoghi aperti e il bye chiude un solo)
+il sip sl deve capire quale invite si chiude e cercare il dialogo corretto.
+
+finire bye
+
+matrix e altrii messaggi memorizzati:
+uare la mappa o un campo nel call_oset?
+-------------------------------------------------------------------------------
+
+matrix message: confusione!
+finire bye
+
+-------------------------------------------------------
+
+24 giugno
+
+fixed ACK con due call back a seconda del tipo di ack
+il tipo di ACK è riconsiuto nel call_oset guardando se cè un invite con lo stesso CSeq e se è gia arrivato un 2xx
+(questo lo fa guardando lo stato della macchina dell'invite)
+
+chiamata connessa!
+
+-------------------------------------------------------
+
+23 giugno
+
+non transactional ack:
+se lo mando alla ALO non so che tipo di ack è 
+
+quindi potrei:
+l'ack lato B viene mandato con un nuovo tipo TYPE_NOTIF
+la alo chiama  una call back diversa: onAckNoTrnsct()
+
+TESTARE!!!
+-------------------------------------------------------
+
+
+23 giugno
+correzione gestione headers
+
+C_HeadCallId ok
+
+C_HeadFrom fixed
+C_HeadCSeq fixed
+C_HeadContact fixed
+C_HeadTo fixed
+C_HeadVia fixed
+
+sip-communicator doe not find the invite INVITE transaction
+
+deve essere:
+40 INVITE -> SIP
+SIP -> 50 INVITE
+40 ACK -> SIP
+SIP -> 50 ACK
+
+ma allora le transazioni???
+
+-------------------------------------------------------
+
+21 june
+Ack still not working
+7r/n ???
+From and to are ok.
+
+Decidere se il content di un header deve avere l'header o no!!!!
+
+-------------------------------------------------------
+
+
+June 10
+
+ACK almost done,
+need to fix this:
+
+To: To: <sip:gugli_linphone@172.21.160.181:5061>;tag=9f7bc830
+From: From: <sip:gugli_twinkle@guglicorp.com>;tag=9d448d81276175425117411
+
+-------------------------------------------------------
+
+V5 June 4
+alarm fixed.
+To do: the server state machine received the 180ringing from the client machine.
+
+change: 
+		TRNSCT_SM* trnsct_cl = call_oset->getTrnsctSm(_message->getHeadCSeq().getMethod().getContent(), SODE_TRNSCT_CL, _message->getHeadCSeq().getSequence());
+
+
+V5 June 2
+
+alarm issues 
+
+-------------------------------------------------------------
+
+V5 28 MAGGIO
+
+fix alarm! must pause!
+fix state machine design when invite has to be retransmitted!!!
+
+
+--------------------------------------------------------------
+
+28 Aprile
+
+bye ancora non completo 
+
+il messaggio matrice deve essere quello della transazione. quindi per esempio 
+il 200OK generatore dalla valo deriva dall'invite oppure dal bye.
+
+
+----> before
+following is ???
+fixe genMEssage v4??? is needede
+I need to store INVITE A and INVITE B
+
+************************************************************************************
+12 bug
+when parsing message
+header: aaa aaa aaa aaa
+is equivalent
+header: aaa
+ aaa
+ aaa
+(with space or tab)
+************************************************************************************
+************************************************************************************
+************************************************************************************
+11. fixed: all variable are stored in a map
+store to tag from B (sent with DE or 180 RING or 200 OK)
+10. fixed in call setup
+contact 
+------------------------------------------------------------------------------------
+9. (extends bug 7) DONE SIPUTIL
+must define a method oon which all the header changes are made in single part of the code
+like SIP factory...
+------------------------------------------------------------------------------------
+8. fixed
+outging INVITE has still the same call ID of the incoming
+------------------------------------------------------------------------------------
+7.
+Rport, and other headers required to go to bside must be put in common from alo
+and client machine, now they are hard coded.
+------------------------------------------------------------------------------------
+1.
+Incorporate SIPENGINE and SL_CC into a single Engine and run SL_CO over a new Engine
+This will allow to have a set of threads working on global data and a set of threads
+working on call (subscriber) data.
+ALO is engine.
+
+------------------------------------------------------------------------------------
+2.
+The ALO cannot create a call, because the message coming from it must have a generator
+The solution can be that ALO defines itself an APOINT so the message will be handled
+like a new call.
+
+------------------------------------------------------------------------------------
+3. FIXED 
+Change the Action and Alarm to support internal operation and message sending
+Now MESSAGE and INTERNALOP are 
+INTERNALOP : public MESSAGE
+then use dynamic_cast to check if the incoming message is operation or not.
+
+Fixed in other manner.
+
+------------------------------------------------------------------------------------
+4. FIXED 2OOok to ALO
+Dialog established, ringing and 200 ok must first go to ALO and then to SMSV
+ALO needs to build the message and send it to SMSV which changes state and
+sends to network side A
+
+------------------------------------------------------------------------------------
+5. FIXED
+Is it needed to have this as multimap???
+callx-cally 1:n
+typedef multimap<string, string> CALL_ID_Y2X;
+changed to map.
+
+------------------------------------------------------------------------------------
+6. OK 
+200 OK (and other replies) from B is sent to client sm and this one creates the new
+reply for A.
+It shoudl sent it to ALO. ALO can or not change it and forward to server sm, which
+sinds it to A.
+
+or:
+200OK arrives from B, is sent to client sm which fwd it to ALO, ALO creates the new
+200 ok (like the INVITE) and fwd to server sm which sends to A.
+
+INVITE arrives to svsm the to ALO, ALO creates the INVITE
+ALO must create the INVITE since it is made following business rules...
+
+************************************************************************************
+************************************************************************************

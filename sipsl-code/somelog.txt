@@ -1,0 +1,176 @@
+**************************************************************************************
+**************************************************************************************
+A->SIPSL
+	INVITE sip:gugli_linphone@172.21.160.165:5061 SIP/2.0
+	Via: SIP/2.0/UDP 127.0.0.1:5062;rport;branch=z9hG4bKkhlrojel
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
+	Call-ID: kvhahmvkjcrkljv@grog
+	Contact: <sip:gugli_twinkle@127.0.0.1·5062>
+**************************************************************************************
+**************************************************************************************
+A<-SIPSL
+	SIP/2.0 100 Trying
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
+	Call-ID: kvhahmvkjcrkljv@grog
+	Via: SIP/2.0/UDP 127.0.0.1:5062;branch=z9hG4bKkhlrojel;rport=124
+
++++ error remove contact +++
++++ fixed +++
+
+	Contact: <sip:gugli_twinkle@127.0.0.1·5062>
+
+
+**************************************************************************************
+**************************************************************************************
+SIPSL->B
+	INVITE sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	From:  <sip:gugli_twinkle@guglicorp.com>;tag=8ce2830#1265385945486371
+	
++++ incorrect call id  but not critical error +++
+	Call-ID: kvhahmvkjcrkljv@grog
++++ will change to
+	Call-ID: 8ce2830#1265385945486371@sipsl.gugli.com
++++ done +++
+
++++ contact wrong +++
+	Contact: <sip:sipsl.gugli.con:5060>
+++ must be 
+	Contact: <sip:sipsl@grog:5060>
+	fixed +++
+	
+	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce2830#1265385945486371;rport
+**************************************************************************************
+**************************************************************************************
+SIPSL<-B
+	SIP/2.0 100 Trying
+	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce2830#1265385945486371;rport=5060;received=127.0.0.1
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=8ce2830#1265385945486371
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	Call-ID: kvhahmvkjcrkljv@grog
+	
+	(no contact)
+**************************************************************************************
+**************************************************************************************
+SIPSL<-B
+	SIP/2.0 101 Dialog Establishement
+	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce2830#1265385945486371;rport=5060;received=127.0.0.1
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=8ce2830#1265385945486371
+	To: <sip:gugli_linphone@172.21.160.165:5061>;tag=1472372426
+	Call-ID: kvhahmvkjcrkljv@grog
+	
++++ contact has been changed by B using to +++
+	Contact: <sip:gugli:linphone@172.21.160.165:5061>
+**************************************************************************************
+**************************************************************************************
+A<-SIPSL
+	SIP/2.0 101 Dialog Establishement
+	Via: SIP/2.0/UDP 127.0.0.1:5062;branch=z9hG4bKkhlrojel;rport=124
+	
++++ incorrect to tag, must be filled +++
+	To: <sip:gugli_linphone@172.21.160.165:5061>
++++ fixed using short tag+++
+
++++ contact changed to +++
+	Contact: <sip:sipsl.gugli.con:5060>
++++ fixed +++
+	
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
+	Call-ID: kvhahmvkjcrkljv@grog
+**************************************************************************************
+**************************************************************************************
+SIPSL<-B
+	SIP/2.0 180 Ringing
+	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce2830#1265385945486371;rport=5060;received=127.0.0.1
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=8ce2830#1265385945486371
+	To: <sip:gugli_linphone@172.21.160.165:5061>;tag=1472372426
+	Call-ID: kvhahmvkjcrkljv@grog
+	
++++ contact changed to +++
+	Contact: <sip:sipsl.gugli.con:5060>
++++ fixed +++
+	
+**************************************************************************************
+**************************************************************************************
+A<-SIPSL
+	SIP/2.0 180 Ringing
+	
++++ incorrect to tag, must be filled +++
+	To: <sip:gugli_linphone@172.21.160.165:5061>
++++ fixed using short tab+++
+
++++ contact changed to +++
+	Contact: <sip:sipsl.gugli.con:5060>
++++ fixed +++
+	
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
+	Call-ID: kvhahmvkjcrkljv@grog
+	Via: SIP/2.0/UDP 127.0.0.1:5062;branch=z9hG4bKkhlrojel;rport=124
+**************************************************************************************
+**************************************************************************************
+SIPSL<-B
+	SIP/2.0 200 OK
+	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce2830#1265385945486371;rport=5060;received=127.0.0.1
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=8ce2830#1265385945486371
+	To: <sip:gugli_linphone@172.21.160.165:5061>;tag=1472372426
+	Call-ID: kvhahmvkjcrkljv@grog
+	
++++ contact has been changed by B using to +++
+	Contact: <sip:gugli:linphone@172.21.160.165:5061>
+	
+**************************************************************************************
+**************************************************************************************
+A<-SIPSL
+	SIP/2.0 200 OK
+	
++++ incorrect to tag, must be filled +++
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	
++++ contact changed to +++
+	Contact: <sip:sipsl.gugli.con:5060>
++++ fixed +++
+	
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
+	Call-ID: kvhahmvkjcrkljv@grog
+	Via: SIP/2.0/UDP 127.0.0.1:5062;branch=z9hG4bKkhlrojel;rport=124
+**************************************************************************************
+**************************************************************************************
+A->SIPSL
+	ACK sip:gugli_twinkle@127.0.0.1:5062 SIP/2.0
+	Via: SIP/2.0/UDP 127.0.0.1:5062;rport;branch=z9hG4bKvvayemvo
++++ to tag empty probably because it was not filled by SIPSL +++
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
+	Call-ID: kvhahmvkjcrkljv@grog
+**************************************************************************************
+**************************************************************************************
+SIPSL->B
+	ACK sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	From:  <sip:gugli_twinkle@guglicorp.com>;tag=8ce2830#1265385945486371
+	Call-ID: kvhahmvkjcrkljv@grog
++++ incorrect branch, must be a new one +++
+	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce0d78#1265385945482982;rport
+	
++++ fixed: via copied from 200OK coming from B +++
+**************************************************************************************
+**************************************************************************************
+A->SIPSL
+	BYE sip:gugli_twinkle@127.0.0.1:5062 SIP/2.0
+	Via: SIP/2.0/UDP 127.0.0.1:5062;rport;branch=z9hG4bKiintfnih
++++ to tag empty probably because it was not filled by SIPSL +++
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	From: <sip:gugli_twinkle@guglicorp.com>;tag=apcxq
+	Call-ID: kvhahmvkjcrkljv@grog
+**************************************************************************************
+**************************************************************************************
+SIPSL->B
+	BYE sip:SIPSLGUIC@172.21.160.117:5062 SIP/2.0
+	
++++ to tag missing +++ 
+	To: <sip:gugli_linphone@172.21.160.165:5061>
+	From:  <sip:gugli_twinkle@guglicorp.com>;tag=8ce2830#1265385945486371
+	Call-ID: kvhahmvkjcrkljv@grog
+	Via: SIP/2.0/UDP sipsl.gugli.com:5060;branch=z9hG4bK8ce0d78#1265385945482982;rport
