@@ -20,11 +20,8 @@
 //**********************************************************************************
 //**********************************************************************************
 
+#ifndef ALARM_H
 #define ALARM_H
-
-#include <queue>
-#include <map>
-
 
 class ALARM {
 
@@ -154,3 +151,4 @@ class ALMGR {
 #endif
         void insertAlarm(MESSAGE* message, lli fireTime);
 };
+#endif

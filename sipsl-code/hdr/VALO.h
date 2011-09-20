@@ -22,7 +22,7 @@
 
 //Vendor ALO: the final application
 //overrides ALO call backs
-
+#ifndef VALO_H
 #define VALO_H
 
 class VALO : public ALO {
@@ -46,3 +46,4 @@ class VALO : public ALO {
 		void onAckNoTrnsct(MESSAGE*);
 
 };
+#endif

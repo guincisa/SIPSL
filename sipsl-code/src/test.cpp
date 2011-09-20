@@ -1,23 +1,32 @@
 
-#include <vector>
-#include <string>
-#include <map>
+#include <algorithm>
+#include <arpa/inet.h>
 #include <assert.h>
-#include <sys/types.h>
-#include <stack>
-#include <pthread.h>
-#include <unistd.h>
+#include <errno.h>
 #include <iostream>
-#include <stdio.h>
-#include <string>
-#include <sys/socket.h> /* for socket() and bind() */
-#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
-#include <stdlib.h>     /* for atoi() and exit() */
+#include <map>
+#include <math.h>
+#include <memory>
+#include <pthread.h>
 #include <signal.h>
+#include <sstream>
+#include <stack>
+#include <stdio.h>
+#include <stdlib.h>     /* for atoi() and exit() */
+#include <string>
+#include <string.h>
+#include <sys/socket.h> /* for socket() and bind() */
+#include <sys/time.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+#include <vector>
 
-#ifndef UTIL_H
+
+using namespace std;
+
 #include "UTIL.h"
-#endif
+
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
@@ -158,7 +167,7 @@ public:
 //    PRINTDIFF("TESTENGINE_1::parse "<< ((TESTMESS*)__message)->id)
 //};
 
-
+const int SUDP::realm = MESSAGE_REALM;
 
 int main(int argc, const char* argv[]) {
 
@@ -231,9 +240,6 @@ int main(int argc, const char* argv[]) {
 		NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH,ALARMMAPS,"ALMGR",sl_cc, 0, 10000000), "ALMGR")
 //		ALMGR alarm(&sl_cc, 0, 10000000);
 		alarm->initAlarm();
-
-
-
 		mystack->init(5060, sipeng, doa, "grog.sipsl.org", alarm);
 		mystack->start();
 

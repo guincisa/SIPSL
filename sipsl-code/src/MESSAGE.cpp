@@ -20,21 +20,30 @@
 //**********************************************************************************
 //**********************************************************************************
 
-#include <string>
-#include <stack>
-#include <assert.h>
-#include <map>
-#include <vector>
-#include <sys/time.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <algorithm>
 #include <arpa/inet.h>
+#include <assert.h>
+#include <errno.h>
+#include <iostream>
+#include <map>
+#include <math.h>
+#include <memory>
+#include <pthread.h>
+#include <signal.h>
+#include <sstream>
+#include <stack>
 #include <stdio.h>
+#include <stdlib.h>     /* for atoi() and exit() */
+#include <string>
+#include <string.h>
+#include <sys/socket.h> /* for socket() and bind() */
+#include <sys/time.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+#include <vector>
 
-#ifndef UTIL_H
 #include "UTIL.h"
-#endif
 
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
@@ -48,6 +57,9 @@
 #include "MESSAGE.h"
 #endif
 
+#ifndef SUDP_H
+#include "SUDP.h"
+#endif
 
 // *****************************************************************************************
 // *****************************************************************************************
@@ -963,6 +975,16 @@ int MESSAGE::getModulus(void){
 	return modulus;
 #else
 
+	string s1,s2;
+	if (SUDP::getRealm() == CALL_REALM){
+		s1 = getHeadCallId();
+		s2 = s1;
+	}else if (SUDP::getRealm() == MESSAGE_REALM){
+		s1 = getFromUser();
+		//This is because the reply has the comap id in the call id
+		s2 = getHeadCallId();
+	}
+
 	DEBINFMESSAGE("int MESSAGE::getModulus(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getModulus invalid")
@@ -972,20 +994,19 @@ int MESSAGE::getModulus(void){
 		PRINTDIFF("MESSAGE::getModulus already parsed")
 		return modulus;
 	}
-	string s = getHeadCallId();
 	DEBOUT("int MESSAGE::getModulus(void) getHeadCallId", s)
-	if (s.substr(0,5).compare("CoMap") == 0){
-		modulus = atoi(s.substr(5,COMAPS_DIG).c_str());
+	if (s2.substr(0,5).compare("CoMap") == 0){
+		modulus = atoi(s2.substr(5,COMAPS_DIG).c_str());
 		DEBOUT("int MESSAGE::getModulus(void) comap", modulus)
 		PRINTDIFF("MESSAGE::getModulus CoMap")
 		return modulus;
 	}
 
-	int premod = getPreModulus(s.c_str());
+	int premod = getPreModulus(s1.c_str());
 
 	map<const string, int>::iterator itm;
-    GETLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod,23);
-	itm = modulusMap[premod].find(s);
+	GETLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod,23);
+	itm = modulusMap[premod].find(s1);
 	if(itm != modulusMap[premod].end()){
 		RELLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod)
 		DEBOUT("int MESSAGE::getModulus(void) itm->second", itm->second)
@@ -993,15 +1014,13 @@ int MESSAGE::getModulus(void){
 		return itm->second;
 	}
 	modulus = modulusIter[premod];
-	modulusMap[premod].insert(make_pair(s,modulus));
+	modulusMap[premod].insert(make_pair(s1,modulus));
 	modulusIter[premod]++;
 	modulusIter[premod] = modulusIter[premod] % COMAPS;
 	RELLOCK(&(modulusMapMtx[premod]),"modulusMapMtx "<<premod)
 	DEBOUT("int MESSAGE::getModulus(void) modulus", modulus)
 	PRINTDIFF("MESSAGE::getModulus calc")
 	return modulus;
-
-
 
 
 #endif

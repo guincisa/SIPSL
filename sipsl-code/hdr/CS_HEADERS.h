@@ -19,13 +19,8 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-
+#ifndef CS_HEADERS_H
 #define CS_HEADERS_H
-
-#include <map>
-#include <vector>
-#include <string>
-#include <string.h>
 
 
 using namespace std;
@@ -1118,3 +1113,4 @@ class C_HeadRoute : public S_HeadGeneric {
 [Supported: replaces,norefersub,100rel]
 [User-Agent: Twinkle/1.1]
  */
+#endif

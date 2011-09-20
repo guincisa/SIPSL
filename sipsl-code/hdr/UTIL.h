@@ -20,28 +20,11 @@
 //**********************************************************************************
 //**********************************************************************************
 
+#ifndef UTIL_H
 #define UTIL_H
-//#include <pthread.h>
-//#include <string>
-
-//#include <memory>
-
-//#include <sys/socket.h>
-//#include <arpa/inet.h>
-
-#include <assert.h>
-#include <iostream>
-#include <sstream>
-#include <sys/time.h>
-#include <vector>
-#include <algorithm>
-#include <string.h>
-
-#include <stdio.h>
 
 extern double PERFARRAY[4][50];
 
-#define UNDEF_REALM 0
 #define CALL_REALM 1
 #define MESSAGE_REALM 2
 
@@ -70,8 +53,6 @@ class ThreadWrapper {
         //pthread_mutex_t mutex;
         ThreadWrapper();
 };
-
-
 
 //Tuning
 //COMAPS: number of comaps
@@ -971,3 +952,5 @@ inline int getPreModulus(const char* st) {
 	}
 	return tot % PREMODMAP;
 }
+
+#endif //UTIL_H
