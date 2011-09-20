@@ -22,6 +22,7 @@
 
 // SIPUTIL is a static class to be used for creating messages from other messages
 
+#ifndef SIPUTIL_H
 #define SIPUTIL_H
 
 class SIPUTIL {
@@ -42,3 +43,4 @@ class SIPUTIL {
 
 
 };
+#endif

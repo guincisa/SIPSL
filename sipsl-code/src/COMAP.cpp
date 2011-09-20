@@ -23,25 +23,31 @@
 //COMAP CALL->CALLOBJECT map
 //before passing the call to the call_oset it checks the state
 //**********************************************************************************
-
-#include <vector>
-#include <string>
-#include <pthread.h>
-#include <unistd.h>
-#include <iostream>
-#include <stdio.h>
-#include <map>
-
-#include <assert.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <algorithm>
 #include <arpa/inet.h>
+#include <assert.h>
+#include <errno.h>
+#include <iostream>
+#include <map>
+#include <math.h>
+#include <memory>
+#include <pthread.h>
+#include <signal.h>
+#include <sstream>
 #include <stack>
+#include <stdio.h>
+#include <stdlib.h>     /* for atoi() and exit() */
+#include <string>
+#include <string.h>
+#include <sys/socket.h> /* for socket() and bind() */
+#include <sys/time.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+#include <vector>
 
-
-#ifndef UTIL_H
 #include "UTIL.h"
-#endif
+
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
@@ -664,31 +670,3 @@ void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
     call_oset_ttl[_modulus].insert(pair<CALL_OSET*, lli>(_call_oset,killtime));
     PRINTDIFF("COMAP::resetDoaRequestTimer")
 }
-int COMAP::getRealm(string _callid,int _modulus){
-	DEBCOMAP_L("void COMAP::getRealm(string callId, int modulus)",this<<"]["<<_callid<<"]["<<_modulus)
-
-
-    map<string,int>::iterator treal;
-	treal = realm_map[_modulus].find(_callid);
-	if ( treal == realm_map[_modulus].end()){
-		return UNDEF_REALM;
-	}
-	else{
-        return (int)treal->second;
-	}
-
-}
-void COMAP::setRealm(string _callid,int _realm,int _modulus){
-	DEBCOMAP_L("void COMAP::setRealm(string callId, int modulus)",this<<"]["<<_callid<<"]["<<_realm<<"]["<<_modulus)
-
-	map<string,int>::iterator treal;
-	treal = realm_map[_modulus].find(_callid);
-	if ( treal == realm_map[_modulus].end()){
-		realm_map[_modulus].erase(treal);
-	}
-	realm_map[_modulus].insert(pair<string, int>(_callid,_realm));
-	return;
-
-}
-
-

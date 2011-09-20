@@ -19,31 +19,33 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-
-#include <vector>
-#include <string>
-#include <map>
+#include <algorithm>
+#include <arpa/inet.h>
 #include <assert.h>
-#include <sys/types.h>
-#include <stack>
-#include <pthread.h>
-#include <unistd.h>
+#include <errno.h>
 #include <iostream>
+#include <map>
+#include <memory>
+#include <netdb.h>
+#include <pthread.h>
+#include <signal.h>
+#include <sstream>
+#include <stack>
 #include <stdio.h>
 #include <string>
 #include <string.h>
 #include <strings.h>
-#include <sys/socket.h> /* for socket() and bind() */
-#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
-#include <stdlib.h>     /* for atoi() and exit() */
-#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
+#include <vector>
 
 
 
-#ifndef UTIL_H
 #include "UTIL.h"
-#endif
+
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
@@ -431,6 +433,9 @@ string SUDP::getLocalIp(void){
 }
 string SUDP::getLocalPort(void){
 	return localport;
+}
+int SUDP::getRealm(void){
+	return realm;
 }
 
 //void SUDP::sendReply(MESSAGE* _message){

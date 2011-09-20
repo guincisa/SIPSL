@@ -29,7 +29,7 @@
   which is virtual and needs to be overridden by the
   ENGINE class which will parse message
 *****************************************************************************************/
-
+#ifndef SUDP_H
 #define SUDP_H
 
 ////**********************************************************************************
@@ -37,6 +37,7 @@
 class SUDP;
 class ENGINE;
 class ALMGR;
+class DOA;
 //
 //**********************************************************************************
 //**********************************************************************************
@@ -84,6 +85,9 @@ class SUDP {
         string getLocalIp(void);
         string getLocalPort(void);
 
+        static int getRealm(void);
+
+
     private:
 
         ENGINE* engine;
@@ -98,8 +102,12 @@ class SUDP {
         unsigned int cliAddrLen;
         sockaddr_inX echoClntAddr;
 
+        static const int realm;
+
+
         ALMGR* alarm;
 
         DOA* doa;
 
 };
+#endif

@@ -20,15 +20,8 @@
 //**********************************************************************************
 //**********************************************************************************
 
+#ifndef MESSAGE_H
 #define MESSAGE_H
-
-#include <stack>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
-
-using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -792,4 +785,4 @@ extern pthread_mutex_t modulusMapMtx[PREMODMAP];
 
 extern MESSAGE* MainMessage;
 
-
+#endif

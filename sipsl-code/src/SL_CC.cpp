@@ -24,24 +24,31 @@
 // Message Router
 //**********************************************************************************
 
-#include <vector>
-#include <string>
-#include <pthread.h>
-#include <unistd.h>
-#include <iostream>
-#include <stdio.h>
-#include <map>
-
-#include <assert.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <algorithm>
 #include <arpa/inet.h>
+#include <assert.h>
+#include <errno.h>
+#include <iostream>
+#include <map>
+#include <math.h>
+#include <memory>
+#include <pthread.h>
+#include <signal.h>
+#include <sstream>
 #include <stack>
-
-
-#ifndef UTIL_H
+#include <stdio.h>
+#include <stdlib.h>     /* for atoi() and exit() */
+#include <string>
+#include <string.h>
+#include <sys/socket.h> /* for socket() and bind() */
+#include <sys/time.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+#include <vector>
 #include "UTIL.h"
-#endif
+
+
 #ifndef CS_HEADERS_H
 #include "CS_HEADERS.h"
 #endif
@@ -156,8 +163,6 @@ void SL_CC::parse(void* __mess, int _mmod){
 
         GETLOCK(&(comap->unique_exx[modulus]),"unique_exx"<<modulus,24);
 
-        int realm = comap->getRealm(callids, modulus);
-
 		//if deleted?!?!?!?!?
 		call_oset = comap->getCALL_OSET_XMain(callids, modulus);
 
@@ -236,7 +241,6 @@ void SL_CC::parse(void* __mess, int _mmod){
         	transport->p_w(etry);
 #endif
 
-        	comap->setRealm(callids, modulus, CALL_REALM);
             //////////////////////////////
             //Start - Initialization block
             call_oset = comap->setCALL_OSET(callids, modulus, this, transport, _mess, getSUDP()->getDomain(),TYPE_SL_CO);
@@ -262,8 +266,6 @@ void SL_CC::parse(void* __mess, int _mmod){
         }
         else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == REGISTER_REQUEST) {
 
-        	comap->setRealm(callids, modulus, MESSAGE_REALM);
-
         	DEBOUT("username@domain",_mess->getFromUser())
 			DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
 			DEBOUT("REGISTER address",inet_ntoa(_mess->getEchoClntAddr().sin_addr))
@@ -280,8 +282,6 @@ void SL_CC::parse(void* __mess, int _mmod){
 
         }
         else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == MESSAGE_REQUEST) {
-
-        	comap->setRealm(callids, modulus, MESSAGE_REALM);
 
             call_oset = comap->getCALL_OSET_XMain(_mess->getFromUser(), modulus);
 
@@ -305,7 +305,7 @@ void SL_CC::parse(void* __mess, int _mmod){
             }else {
                 DEBY
             }
-        }else if (call_oset == 0x0 && _mess->getReqRepType() == REPSUPP && realm == MESSAGE_REALM){
+        }else if (call_oset == 0x0 && _mess->getReqRepType() == REPSUPP && SUDP::getRealm() == MESSAGE_REALM){
 
             call_oset = comap->getCALL_OSET_XMain(_mess->getFromUser(), modulus);
 
