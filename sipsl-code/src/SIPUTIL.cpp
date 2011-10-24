@@ -172,12 +172,11 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 
 	string totag = __gtor->getToTag();
 	DEBINF("SIPUTIL::genASideReplyFromBReply __gtor->getToTag()", totag)
-//	if( totag.length()!= 0 ){
-//		stringstream ttt;
-//		ttt << __gtor;
-//		_gted->setProperty("To:", "tag", ttt.str());
-//
-//	}
+	if( totag.length()!= 0 ){
+		_gted->setProperty("To:", "tag", totag.c_str());
+	}
+
+
 	char cons[GENSTRINGLEN];
 	sprintf(cons, "<sip:sipsl@%s:%s>",_sudp->getLocalIp().c_str(),_sudp->getLocalPort().c_str());
 

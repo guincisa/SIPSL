@@ -994,7 +994,7 @@ int MESSAGE::getModulus(void){
 		PRINTDIFF("MESSAGE::getModulus already parsed")
 		return modulus;
 	}
-	DEBOUT("int MESSAGE::getModulus(void) getHeadCallId", s)
+	DEBOUT("int MESSAGE::getModulus(void) getHeadCallId", s2)
 	if (s2.substr(0,5).compare("CoMap") == 0){
 		modulus = atoi(s2.substr(5,COMAPS_DIG).c_str());
 		DEBOUT("int MESSAGE::getModulus(void) comap", modulus)
@@ -1269,12 +1269,15 @@ string MESSAGE::getProperty(string _header,string _property){
 		for (size_t i = 0; i < message_line.size(); i++){
 			if(strncmp(message_line[i].first,_header.c_str(), _header.length()) == 0){
 				tmpr = _getProperty(message_line[i].first, _property);
+				DEBOUT("tag",tmpr)
+				return tmpr;
 			}
 			if (tmpr.compare("xxdxxdxx") == 0){
+				DEBY
 				return "";
 			}
-			return tmpr;
 		}
+		DEBY
 		return "";
 	}
 }
@@ -1300,18 +1303,24 @@ string MESSAGE::_getProperty(string _fullstring,string __property){
 		}
 		else if (strncmp(aaa + _property.length(),"=",1) == 0){
 			//caso con valore
+			DEBOUT("",aaa)
 			char* bbb;
 			if (aaa!=NULL){
 				bbb = strchr(aaa+_property.length(),';');
+				DEBOUT("",bbb)
+
 			}
 			if (bbb != NULL){
 				strcpy(bbb,"");
+				DEBOUT("",bbb)
 			}
 			DEBINFMESSAGE("string MESSAGE::_getProperty(string _fullstring,string __property) return",this<<"]["<<_fullstring<<"]["<<__property<<"]["<<aaa+_property.length()+1)
+			DEBOUT("",aaa)
 			return (aaa+_property.length() + 1);
 		}
 	}
 	else {
+		DEBY
 		DEBINFMESSAGE("string MESSAGE::_getProperty(string _fullstring,string __property) return",this<<"]["<<_fullstring<<"]["<<__property<<"][xxdxxdxx")
 		return "xxdxxdxx";
 	}
@@ -1844,6 +1853,7 @@ string MESSAGE::getToTag(void){
 	}
 
 	if(!parsedToTag){
+		DEBY
 		toTag = getProperty("To:", "tag");
 		parsedToTag = true;
 	}
