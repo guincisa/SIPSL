@@ -174,7 +174,7 @@ class ThreadWrapper {
 
 #define NOWARNINGS
 
-//#define LOGLEVL1
+#define LOGLEVL1
 #ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
