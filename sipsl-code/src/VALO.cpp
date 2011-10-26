@@ -636,6 +636,128 @@ void VALO::onBye(MESSAGE* _message){
 
 	}
 	else if (_message->getRequestDirection() == SODE_BKWD ) {
+//		Session Initiation Protocol
+//		    Request-Line: INVITE sip:guic@10.10.10.248:5061 SIP/2.0
+//		        Method: INVITE
+//		        Request-URI: sip:guic@10.10.10.248:5061
+//		            Request-URI User Part: guic
+//		            Request-URI Host Part: 10.10.10.248
+//		            Request-URI Host Port: 5061
+//		        [Resent Packet: False]
+//		    Message Header
+//		        Via: SIP/2.0/UDP 10.10.10.248:5062;rport;branch=z9hG4bK2018640705
+//		            Transport: UDP
+//		            Sent-by Address: 10.10.10.248
+//		            Sent-by port: 5062
+//		            RPort: rport
+//		            Branch: z9hG4bK2018640705
+//		        From: "majo" <sip:majo@10.10.10.248:5062>;tag=833511048
+//		            SIP Display info: "majo"
+//		            SIP from address: sip:majo@10.10.10.248:5062
+//		                SIP from address User Part: majo
+//		                SIP from address Host Part: 10.10.10.248
+//		                SIP from address Host Port: 5062
+//		            SIP tag: 833511048
+//		        To: <sip:guic@10.10.10.248:5061>
+//		            SIP to address: sip:guic@10.10.10.248:5061
+//		                SIP to address User Part: guic
+//		                SIP to address Host Part: 10.10.10.248
+//		                SIP to address Host Port: 5061
+//		        Call-ID: 134096379
+//		        CSeq: 20 INVITE
+//		            Sequence Number: 20
+//		            Method: INVITE
+//		        Contact: "majo" <sip:majo@10.10.10.248>
+//		            SIP Display info: "majo"
+//		            Contact-URI: sip:majo@10.10.10.248
+//		                Contactt-URI User Part: majo
+//		                Contact-URI Host Part: 10.10.10.248
+//		        Content-Type: application/sdp
+//		        Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO
+//		        Max-Forwards: 70
+//		        User-Agent: Linphone/3.3.2 (eXosip2/3.3.0)
+//		        Subject: Phone call
+//		        Content-Length:   404
+//		Session Initiation Protocol
+//		    Status-Line: SIP/2.0 200 OK
+//		        Status-Code: 200
+//		        [Resent Packet: False]
+//		        [Request Frame: 235]
+//		        [Response Time (ms): 1615]
+//		    Message Header
+//		        CSeq: 20 INVITE
+//		            Sequence Number: 20
+//		            Method: INVITE
+//		        Via: SIP/2.0/UDP 10.10.10.248:5062;rport;branch=z9hG4bK2018640705
+//		            Transport: UDP
+//		            Sent-by Address: 10.10.10.248
+//		            Sent-by port: 5062
+//		            RPort: rport
+//		            Branch: z9hG4bK2018640705
+//		        User-Agent: Ekiga/3.2.7
+//		        From: "majo" <sip:majo@10.10.10.248:5062>;tag=833511048
+//		            SIP Display info: "majo"
+//		            SIP from address: sip:majo@10.10.10.248:5062
+//		                SIP from address User Part: majo
+//		                SIP from address Host Part: 10.10.10.248
+//		                SIP from address Host Port: 5062
+//		            SIP tag: 833511048
+//		        Call-ID: 134096379
+//		        To: <sip:guic@10.10.10.248:5061>;tag=d45d67c1-82fe-e011-880f-68b599e80ba8
+//		            SIP to address: sip:guic@10.10.10.248:5061
+//		                SIP to address User Part: guic
+//		                SIP to address Host Part: 10.10.10.248
+//		                SIP to address Host Port: 5061
+//		            SIP tag: d45d67c1-82fe-e011-880f-68b599e80ba8
+//		        Contact: <sip:guic@10.10.10.248:5061>
+//		            Contact-URI: sip:guic@10.10.10.248:5061
+//		                Contactt-URI User Part: guic
+//		                Contact-URI Host Part: 10.10.10.248
+//		                Contact-URI Host Port: 5061
+//		        Allow: INVITE,ACK,OPTIONS,BYE,CANCEL,SUBSCRIBE,NOTIFY,REFER,MESSAGE,INFO,PING
+//		        Content-Type: application/sdp
+//		        Content-Length: 251
+//		Session Initiation Protocol
+//		    Request-Line: BYE sip:majo@10.10.10.248 SIP/2.0
+//		        Method: BYE
+//		        Request-URI: sip:majo@10.10.10.248
+//		            Request-URI User Part: majo
+//		            Request-URI Host Part: 10.10.10.248
+//		        [Resent Packet: False]
+//		    Message Header
+//		        CSeq: 2 BYE
+//		            Sequence Number: 2
+//		            Method: BYE
+//		        Via: SIP/2.0/UDP 10.10.10.248:5061;branch=z9hG4bK46dcecc3-82fe-e011-880f-68b599e80ba8;rport
+//		            Transport: UDP
+//		            Sent-by Address: 10.10.10.248
+//		            Sent-by port: 5061
+//		            Branch: z9hG4bK46dcecc3-82fe-e011-880f-68b599e80ba8
+//		            RPort: rport
+//		        From: <sip:guic@10.10.10.248:5061>;tag=d45d67c1-82fe-e011-880f-68b599e80ba8
+//		            SIP from address: sip:guic@10.10.10.248:5061
+//		                SIP from address User Part: guic
+//		                SIP from address Host Part: 10.10.10.248
+//		                SIP from address Host Port: 5061
+//		            SIP tag: d45d67c1-82fe-e011-880f-68b599e80ba8
+//		        Call-ID: 134096379
+//		        To: "majo" <sip:majo@10.10.10.248:5062>;tag=833511048
+//		            SIP Display info: "majo"
+//		            SIP to address: sip:majo@10.10.10.248:5062
+//		                SIP to address User Part: majo
+//		                SIP to address Host Part: 10.10.10.248
+//		                SIP to address Host Port: 5062
+//		            SIP tag: 833511048
+//		        Contact: <sip:guic@10.10.10.248:5061>
+//		            Contact-URI: sip:guic@10.10.10.248:5061
+//		                Contactt-URI User Part: guic
+//		                Contact-URI Host Part: 10.10.10.248
+//		                Contact-URI Host Port: 5061
+//		        Content-Length: 0
+//		        Max-Forwards: 70
+
+
+
 		DEBALO("VALO::onBye SODE_BKWD",this<<"]["<<_message)
 
 		DEBASSERT("implement nat!!!!")
