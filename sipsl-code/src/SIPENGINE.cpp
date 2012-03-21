@@ -153,6 +153,8 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
 	MESSAGE* _mess = (MESSAGE*)__mess;
 
+    _mess->fillIn();
+
     int type = _mess->getReqRepType();
     DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getFirstLine() << "] type[" <<type)
 

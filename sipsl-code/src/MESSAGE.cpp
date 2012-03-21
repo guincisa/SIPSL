@@ -91,7 +91,6 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	NEWPTR2(original_message, char[strlen(_incMessBuff)+1],"original_message "<<strlen(_incMessBuff)+1)
 	strcpy(original_message, _incMessBuff);
 
-
 	hasvialines				= false;
 	hasSdp					= false;
 	messageStatus			= 0;

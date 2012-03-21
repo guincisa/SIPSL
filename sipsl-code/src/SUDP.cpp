@@ -332,10 +332,45 @@ ALMGR* SUDP::getAlmgr(void){
 void SUDP::sendRequest(MESSAGE* _message){
 	DEBINFSUDP("void SUDP::sendRequest(MESSAGE* _message)",_message)
 
-    DEBMESSAGE("SUDP::sendRequest sending Message ", _message)
-
     TIMEDEF
     SETNOW
+
+#ifdef IPNUMERIC
+
+    pair<string,string> _pair;
+    if(_message->hasRoute()){
+    	_pair = _message->getRoute();
+        DEBOUT("hasroute",_pair.first<<"]["<<_pair.second)
+    }
+    else if (_message->natTraversal()){
+    	_pair = _message->getNatAddress();
+        DEBOUT("hasNat",_pair.first<<"]["<<_pair.second)
+    }
+    else{
+    	_pair = _message->getRequestUriProtocol();
+    	DEBOUT("use request",_pair.first<<"]["<<_pair.second)
+    }
+    DEBOUT("sending to",_pair.first<<"]["<<_pair.second)
+    const char* _hostchar = _pair.first.c_str();
+
+	struct sockaddr_in si_part;
+	si_part.sin_family = AF_INET;
+	si_part.sin_port = htons(atoi(_pair.second.c_str()));
+
+	inet_aton(_hostchar, &si_part.sin_addr);
+
+    int i = _message->getModulus() % SUDPTH;
+
+	sendto(sock_se[i], _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+    if (!_message->getLock()){
+        PURGEMESSAGE(_message)
+    }
+	PRINTDIFF("IPNUMERIC SUDP::sendRequest")
+
+    return;
+
+
+#else
 
     pair<string,string> _pair;
     if(_message->hasRoute()){
@@ -373,9 +408,10 @@ void SUDP::sendRequest(MESSAGE* _message){
         PURGEMESSAGE(_message)
     }
     freeaddrinfo(servinfo);
-	PRINTDIFF("SUDP::sendRequest")
+	PRINTDIFF("NON IPNUMERIC SUDP::sendRequest")
 
     return;
+#endif
 }
 
 void SUDP::sendReply(MESSAGE* _message){
@@ -383,6 +419,40 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	TIMEDEF
 	SETNOW
+
+#ifdef IPNUMERIC
+
+	string receivedProp = _message->getProperty("Via:","received");
+	const char* _hostchar;
+	string reportPro;
+	if (receivedProp.length() != 0){
+		reportPro = _message->getProperty("Via:","rport");
+		_hostchar = receivedProp.c_str();
+
+	}else{
+		_hostchar = _message->getViaUriHost().c_str();
+	}
+	DEBOUT("_hostchar",_hostchar)
+	DEBOUT("reportPro",reportPro)
+	DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
+
+	DEBOUT("reply message", _message->getMessageBuffer())
+
+	struct sockaddr_in si_part;
+	si_part.sin_family = AF_INET;
+	si_part.sin_port = _message->getEchoClntAddr().sin_port;
+
+	inet_aton(_hostchar, &si_part.sin_addr);
+	sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+
+    if (!_message->getLock()){
+        PURGEMESSAGE(_message)
+    }
+	PRINTDIFF("IPNUMERIC SUDP::sendReply")
+
+	return;
+
+#else
 
     //Reply uses topmost Via header
 
@@ -425,8 +495,10 @@ void SUDP::sendReply(MESSAGE* _message){
         PURGEMESSAGE(_message)
     }
     freeaddrinfo(servinfo);
-	PRINTDIFF("SUDP::sendReply")
+	PRINTDIFF("NON IPNUMERIC SUDP::sendReply")
     return;
+
+#endif
 }
 string SUDP::getLocalIp(void){
 	return localip;
