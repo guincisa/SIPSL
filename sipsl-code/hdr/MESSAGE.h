@@ -238,7 +238,7 @@ class MESSAGE {
 		// it must be called during compile message
 		// I can't do a setXXX using the variable like setBranch
 		// must be done on the vialine and branch must be cleared
-		void _clearStatus(void);
+		inline void _clearStatus(void);
 
 		char* message_char;
 		//this does not change:

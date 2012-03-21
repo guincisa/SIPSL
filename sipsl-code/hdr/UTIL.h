@@ -20,6 +20,7 @@
 //**********************************************************************************
 //**********************************************************************************
 
+
 #ifndef UTIL_H
 #define UTIL_H
 
@@ -110,6 +111,9 @@ class ThreadWrapper {
 #define USEMAPMODUL
 #define MAPMODULHYBRID
 
+//send reply and request are always with numeric IP
+#define IPNUMERIC
+
 //#define USETRYLOCK
 
 //Sudp threads
@@ -166,15 +170,16 @@ class ThreadWrapper {
 #define TABLES 2
 
 
-#define PROFILING
-#define PROFILELOCK
-#define PROFILELOCKCALC
+//uncomment for profiling
+//#define PROFILING
+//#define PROFILELOCK
+//#define PROFILELOCKCALC
 
 #define CHECKDOA
 
 #define NOWARNINGS
 
-#define LOGLEVL1
+//#define LOGLEVL1
 #ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
