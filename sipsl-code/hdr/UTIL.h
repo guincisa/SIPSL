@@ -28,6 +28,7 @@ extern double PERFARRAY[4][50];
 
 #define CALL_REALM 1
 #define MESSAGE_REALM 2
+#define SIPSL_REALM CALL_REALM
 
 #define SPARC
 
@@ -136,9 +137,9 @@ class ThreadWrapper {
 #define TRNSPRTMAPS 2
 
 //128
-#define SL_CCTH 5
+#define SL_CCTH 6
 //32
-#define SL_CCMAPS 5
+#define SL_CCMAPS 6
 
 //#define ENGINEMAPS 5
 #define ALARMTH 1
@@ -188,7 +189,7 @@ class ThreadWrapper {
 #define LOGSIPLOW
 #define LOGINF
 #define LOGDEV
-//#define LOGMEM
+#define LOGMEM
 #define DEBCODEALARM1
 #define LOGINFMESSAGE_MIN
 #define LOGINFCALLOSET
