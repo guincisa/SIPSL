@@ -247,6 +247,9 @@ void SUDP::listen(int _socknum) {
 
     DEBINFSUDP("SUDP::listen","listen " << _socknum)
     char echoBuffer[ECHOMAX];
+
+    sockaddr_inX _echoClntAddr;
+
     for (;;){
         /* Block until receive message from a client */
         memset(&echoBuffer, 0x0, ECHOMAX);
@@ -259,7 +262,7 @@ void SUDP::listen(int _socknum) {
         	_sok = sock_re;
         }
         if ((recvMsgSize = recvfrom(_sok, echoBuffer, ECHOMAX, 0,
-            (struct sockaddr *) &echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
+            (struct sockaddr *) &_echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
             DEBERROR("SUDP::listen() recvfrom() failed")
         }else if ( recvMsgSize < 1){
         	DEBERROR("SUDP::listen() abnormal message")
@@ -268,7 +271,8 @@ void SUDP::listen(int _socknum) {
             PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
-            CREATENEWMESSAGE_EXT(message, echoBuffer, _sok, echoClntAddr, SODE_NTWPOINT)
+
+            CREATENEWMESSAGE_EXT(message, echoBuffer, _sok, _echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
                 DEBMESSAGE("New message from buffer ", message)
 				DEBOUT("SINPORT",echoClntAddr.sin_port)
