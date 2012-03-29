@@ -167,7 +167,7 @@ public:
 //    PRINTDIFF("TESTENGINE_1::parse "<< ((TESTMESS*)__message)->id)
 //};
 
-const int SUDP::realm = MESSAGE_REALM;
+const int SUDP::realm = SIPSL_REALM;
 
 int main(int argc, const char* argv[]) {
 

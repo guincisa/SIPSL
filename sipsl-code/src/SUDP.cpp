@@ -277,6 +277,8 @@ void SUDP::listen(int _socknum) {
 				//problem if not sip...?
                 message->fillIn();
 
+                DEBOUT("MODULUS DEBUG",message->getModulus())
+
                 engine->p_w((void*)message);
                 PRINTDIFF("SUDP listen")
             }else {
