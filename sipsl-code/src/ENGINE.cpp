@@ -254,7 +254,7 @@ void * threadparser (void * _pt){
     ENGtuple *pt = (ENGtuple *)  _pt;
     int mmod = pt->mmod;
     ENGINE * ps = pt->ps;
-	BDEBUG("ENGINE TRHEAD CREATED ",pt->type <<"] id ["<<pthread_self())
+	BDEBUG("ENGINE THREAD CREATED ",pt->type <<"] id ["<<pthread_self())
     while(true) {
         DEBDEV("ENGINE thread",_pt)
             GETLOCK(&(ps->sb[mmod]->condvarmutex),"ps->sb["<<mmod<<"].condvarmutex",22);
