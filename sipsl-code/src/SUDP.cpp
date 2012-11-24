@@ -249,6 +249,7 @@ void SUDP::listen(int _socknum) {
     char echoBuffer[ECHOMAX];
 
     sockaddr_inX _echoClntAddr;
+    unsigned int _cliAddrLen;
 
     for (;;){
         /* Block until receive message from a client */
@@ -262,7 +263,7 @@ void SUDP::listen(int _socknum) {
         	_sok = sock_re;
         }
         if ((recvMsgSize = recvfrom(_sok, echoBuffer, ECHOMAX, 0,
-            (struct sockaddr *) &_echoClntAddr, (socklen_t*)&cliAddrLen)) < 0) {
+            (struct sockaddr *) &_echoClntAddr, (socklen_t*)&_cliAddrLen)) < 0) {
             DEBERROR("SUDP::listen() recvfrom() failed")
         }else if ( recvMsgSize < 1){
         	DEBERROR("SUDP::listen() abnormal message")

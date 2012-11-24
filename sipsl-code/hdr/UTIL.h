@@ -19,7 +19,14 @@
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************
-
+//Per far funzionare devi provisionare!!!
+//lancia sipsl
+//lancia su un'altra finestra sotto test-tools
+//java sendU3 grog
+//poi provisiona:
+//PD-SIPSL
+//0%i%127.0.0.1:5061%service@127.0.0.1:5061
+//send
 
 #ifndef UTIL_H
 #define UTIL_H
@@ -82,7 +89,7 @@ class ThreadWrapper {
 
 #ifdef SPARC
 
-#define GETDATA "service@10.21.99.79:5062"
+#define GETDATA "service@10.10.10.249:5062"
 //#define GETDATA "service@10.21.99.81:5062"
 
 //The call_oset and valo do not reinject the message
@@ -172,7 +179,7 @@ class ThreadWrapper {
 
 
 //uncomment for profiling
-//#define PROFILING
+#define PROFILING
 //#define PROFILELOCK
 //#define PROFILELOCKCALC
 
@@ -180,7 +187,7 @@ class ThreadWrapper {
 
 #define NOWARNINGS
 
-//#define LOGLEVL1
+#define LOGLEVL1
 #ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
@@ -198,7 +205,7 @@ class ThreadWrapper {
 //#define LOGLEVL2
 #ifdef LOGLEVL2
 #define LOGINFMESSAGE
-//#define LOGLOK
+#define LOGLOK
 
 //#define LOGINCOMAP_H
 
@@ -210,7 +217,7 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-//#define SHOWFLOWLOG
+#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
@@ -313,16 +320,16 @@ class ThreadWrapper {
 //COMAPS must be divisble by DOATH
 #define DOATH 2
 
-//#define PROFILING
-//#define PROFILELOCK
-//#define PROFILELOCKCALC
-//#define TUNEPERF
+#define PROFILING
+#define PROFILELOCK
+#define PROFILELOCKCALC
+#define TUNEPERF
 
 #define CHECKDOA
 
 #define NOWARNINGS
 
-//#define LOGLEVL1
+#define LOGLEVL1
 #ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
