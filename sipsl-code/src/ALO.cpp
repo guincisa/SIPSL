@@ -25,6 +25,7 @@
 #include <errno.h>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 #include <math.h>
 #include <memory>
 #include <pthread.h>

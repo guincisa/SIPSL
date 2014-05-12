@@ -1,0 +1,13 @@
+#!/bin/bash
+# find if Apache (httpd) running or not
+while :
+do
+echo "Check SIP..."
+ps -ef | grep  'SIPSL' | grep -v grep
+if [ $? -ne 0 ]
+then
+ echo "Starting SIP..."
+ /home/guic/DEV/workspace/SIPSL_SVN/Debug/SIPSL_SVN > /dev/null&
+fi
+sleep 5
+done

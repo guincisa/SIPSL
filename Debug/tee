@@ -1,0 +1,8 @@
+SIPSL main thread [140043780847424 1.319.626-932-083.776]../sipsl-code/src/test.cpp 177 [140043780847424]
+a1
+b1
+pippo0
+PROFILE DIFFERENCE  [140043780847424 1.319.626-932-098.292]../sipsl-code/src/test.cpp 332 [stringstream][14226]
+DEBOUT [140043780847424 1.319.626-932-098.308]../sipsl-code/src/test.cpp 333 [stringstream[aaa111aaa111]]
+PROFILE DIFFERENCE  [140043780847424 1.319.626-932-100.493]../sipsl-code/src/test.cpp 340 [char []][2177]
+DEBOUT [140043780847424 1.319.626-932-100.502]../sipsl-code/src/test.cpp 341 [char [][aaa111aaa111]]

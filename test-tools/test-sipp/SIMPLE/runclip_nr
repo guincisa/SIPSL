@@ -1,0 +1,2 @@
+sipp -nr -sn uac -rsa groog:5060 -p 5061 -m $1 -d $2 -r $3 -rp 1000 -trace_err groog:5062 
+
