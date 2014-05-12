@@ -1,0 +1,31 @@
+echo "SL_CO"
+grep "NEW \[SL_CO" log | wc
+grep "DELPTR\[SL_CO" log | wc
+echo "MESSAGE"
+grep "NEW \[MESSAGE" log| wc
+grep "DELPTR\[MESSAGE" log| wc
+echo "New Via"
+grep "NEW \[New via" log | wc
+grep "DELPTR\[Delete via" log | wc
+echo "C_H"
+grep "NEW \[C_H" log | wc
+grep "DELPTR\[C_H" log | wc
+echo "TRNSCT"
+grep "NEW \[TRNSCT" log | wc
+grep "DELPTR\[(TRNSCT" log | wc
+echo "ARR message_char"
+grep "DELPTRARR\[message_char" log | wc
+grep "NEW \[message_char" log | wc
+echo "ARR original_message -1 for Mainmessage"
+grep "DELPTRARR\[original_message" log | wc
+grep "NEW \[original_message" log | wc
+echo "ARR message_line"
+grep "DELPTRARR\[message_line" log | wc
+grep "NEW \[message_line" log | wc
+echo "ARR via_line"
+grep "DELPTRARR\[via_line" log | wc
+grep "NEW \[via_line" log | wc
+echo "ARR sdp_line"
+grep "DELPTRARR\[sdp_line" log | wc
+grep "NEW \[sdp_line" log | wc
+

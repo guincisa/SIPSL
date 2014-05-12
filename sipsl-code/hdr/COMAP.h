@@ -43,7 +43,7 @@ class COMAP {
 		int loktry[COMAPS];
 
 		//Call id x
-		map<string, CALL_OSET*> comap_mm[COMAPS];
+		unordered_map<string, CALL_OSET*> comap_mm[COMAPS];
 
 
 		//call id y to call id x

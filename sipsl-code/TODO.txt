@@ -1,3 +1,7 @@
+07/05/2014
+
+1. usare unorderd_map per accesso piu efficente alle mappe
+
 ISSUES
 
 messenger:

@@ -1,0 +1,11 @@
+window_sizes 1600 855 375 1219 538 246
+diagrams
+  active  sequencediagram_ref 128081 // CO-CL-SV end of call (old)
+    1219 538 100 3 0 0
+end
+show_stereotypes
+selected sequencediagram_ref 128081 // CO-CL-SV end of call (old)
+open
+  state_ref 128134 // CSL_CC_SM
+end
+end
