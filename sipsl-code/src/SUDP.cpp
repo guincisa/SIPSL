@@ -125,7 +125,7 @@ void * SUDPSTACK(void *_tgtObject) {
 // Initialize Stack
 // *****************************************************************************************
 // *****************************************************************************************
-void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm){
+void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread){
 
 	DEBINFSUDP("SUDP init",_domain)
 
@@ -141,8 +141,14 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 
     doa = _doa;
 
+    if ( singleThread ){
+    	threadNum = 1;
+    }else {
+        threadNum = SUDPTH;
+    }
+
     /* Create socket for sending datagrams */
-	for (int i = 0 ; i <SUDPTH ; i++){
+	for (int i = 0 ; i <threadNum ; i++){
 		if ((sock_se[i] = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 			DEBASSERT("socket() failed)")
 			return;
@@ -221,10 +227,10 @@ void SUDP::start(void) {
 
     // allocate thread and starts
 
-	DEBINFSUDP("SUDP::start threads",SUDPTH)
-	SUDPtuple *t1[SUDPTH*2];
+	DEBINFSUDP("SUDP::start threads",threadNum)
+	SUDPtuple *t1[threadNum*2];
 
-	for (int i = 0 ; i <(2*SUDPTH) ; i++){
+	for (int i = 0 ; i <(2*threadNum) ; i++){
 	    NEWPTR2(listenerThread[i], ThreadWrapper,"ThreadWrapper"<<i)
 
 	    NEWPTR2(t1[i], SUDPtuple,"SUDPtuple")
@@ -256,7 +262,7 @@ void SUDP::listen(int _socknum) {
         memset(&echoBuffer, 0x0, ECHOMAX);
         int recvMsgSize;
         int _sok;
-        if ( _socknum < SUDPTH ){
+        if ( _socknum < threadNum ){
         	_sok = sock_se[_socknum];
         }
         else {
@@ -327,7 +333,7 @@ ALMGR* SUDP::getAlmgr(void){
 //    //core qui
 //    si_part.sin_addr = *( struct in_addr*)( host -> h_addr_list[0]);
 //
-//    int i = _message->getModulus() % SUDPTH;
+//    int i = _message->getModulus() % threadNum;
 //
 //    sendto(sock_se[i], _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 //    if (!_message->getLock()){
@@ -366,7 +372,7 @@ void SUDP::sendRequest(MESSAGE* _message){
 
 	inet_aton(_hostchar, &si_part.sin_addr);
 
-    int i = _message->getModulus() % SUDPTH;
+    int i = _message->getModulus() % threadNum;
 
 	sendto(sock_se[i], _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
     if (!_message->getLock()){
@@ -407,7 +413,7 @@ void SUDP::sendRequest(MESSAGE* _message){
 		DEBASSERT("getaddrinfo")
 	}
 
-    int i = _message->getModulus() % SUDPTH;
+    int i = _message->getModulus() % threadNum;
 
     //CHECK ERROR HERE
     sendto(sock_se[i], _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, servinfo->ai_addr, servinfo->ai_addrlen);
