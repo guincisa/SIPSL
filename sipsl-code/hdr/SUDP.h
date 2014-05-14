@@ -61,7 +61,8 @@ class SUDP {
     public:
 
         // Init stack
-        void init(int _PORT, ENGINE* _ENGINE, DOA* _doa, string _domain, ALMGR* _alarm);
+		//singleThread will ignore the SUDPTH value and create a single threaded SUDP, that is used to listen to memory instantiations
+        void init(int _PORT, ENGINE* _ENGINE, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread);
 
         // Start call processing
         void start(void);
@@ -108,6 +109,9 @@ class SUDP {
         ALMGR* alarm;
 
         DOA* doa;
+
+        //Seamless failover
+        int threadNum; // one
 
 };
 #endif
