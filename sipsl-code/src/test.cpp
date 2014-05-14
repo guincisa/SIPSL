@@ -172,12 +172,16 @@ const int SUDP::realm = SIPSL_REALM;
 
 int main(int argc, const char* argv[]) {
 
+	//command line for seamless failover
+	// SIPSL P:STANDBYADDRRESS:PORTFAILOVER
+	// SIPSL S:ACTIVEADDRESS:PORTFAILOVER
+
 	 (void) signal(SIGSEGV, ex_program);
          (void) signal(SIGBUS, ex_program);
 
 	BDEBUG("SIPSL main thread",pthread_self())
 
-	if (argc == 1){
+	if (argc == 1 || argc == 2){
 
 		//clear perfaray
 		for (int i = 0 ; i < 50 ; i ++){
@@ -241,12 +245,24 @@ int main(int argc, const char* argv[]) {
 		NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH,ALARMMAPS,"ALMGR",sl_cc, 0, 10000000), "ALMGR")
 //		ALMGR alarm(&sl_cc, 0, 10000000);
 		alarm->initAlarm();
-		mystack->init(5060, sipeng, doa, "grog.sipsl.org", alarm);
+		mystack->init(5060, sipeng, doa, "grog.sipsl.org", alarm, false);
 		mystack->start();
 
+		// Seamless failover
+		char *saveptr1;
+		char str3[40];
+		strcpy (str3, argv[1]);
+		char* startType = strtok_r(str3, ":", &saveptr1);
+		char* mateAddress = strtok_r(NULL, ":", &saveptr1);
+		char* matePort = strtok_r(NULL, ":", &saveptr1);
+
+		BDEBUG("startType",startType)
+		BDEBUG("mateAddress",mateAddress)
+		BDEBUG("matePort",matePort)
+
 		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
-		int res = pthread_mutex_lock(&gu);
-		res = pthread_mutex_lock(&gu);
+		pthread_mutex_lock(&gu);
+		pthread_mutex_lock(&gu);
 		return 0;
 
 //    	//UDP perf begin
