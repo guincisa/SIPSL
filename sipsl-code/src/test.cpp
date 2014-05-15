@@ -249,6 +249,12 @@ int main(int argc, const char* argv[]) {
 		mystack->start();
 
 		// Seamless failover
+		NEWPTR(SUDP*, failoverStack, SUDP(),"SUDP_SF")
+		//create ROI-Heartbeat engine
+		//link to failoverStack
+//		mystack->init(5060, sipeng, doa, "grog.sipsl.org", alarm, false);
+//		mystack->start();
+
 		char *saveptr1;
 		char str3[40];
 		strcpy (str3, argv[1]);
