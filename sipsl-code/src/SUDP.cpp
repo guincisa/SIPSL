@@ -185,9 +185,10 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 #endif
 
     /* Bind to the local address */
-	if (bind(sock_re, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
-		DEBERROR("bind() failed)");
-	}
+	// moved to start
+//	if (bind(sock_re, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
+//		DEBERROR("bind() failed)");
+//	}
 
 	//DEFINE LOCAL ADDRESS for VIA
 	char hostname[1024];
@@ -226,6 +227,11 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 void SUDP::start(void) {
 
     // allocate thread and starts
+
+	if (bind(sock_re, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0) {
+		DEBERROR("bind() failed)");
+	}
+
 
 	DEBINFSUDP("SUDP::start threads",threadNum)
 	SUDPtuple *t1[threadNum*2];
