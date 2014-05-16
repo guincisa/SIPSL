@@ -24,10 +24,17 @@
 
 //Seamless failover system
 //this sends the instantiation messages to the mate
+typedef struct _hearBeatTuple {
+    timespec sleep_time;
+} HearBeatTuple;
+
 class SEAMFAILENG : public ENGINE {
 
     private:
         int dummy;
+        ThreadWrapper* heartBeat;
+        timespec sleep_time;
+
 
     public:
 

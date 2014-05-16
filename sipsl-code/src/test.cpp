@@ -102,6 +102,8 @@ pthread_mutex_t modulusMapMtx[PREMODMAP];
 #endif
 #endif
 
+//class DOA;
+
 MESSAGE* MainMessage;
 COMAP* Comap;
 //CALL_OSET* MainOset;
