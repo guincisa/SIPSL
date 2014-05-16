@@ -1,5 +1,7 @@
-- sudp single thread
- - ok il bind adesso e' enllos 
+- sudp per roi ok
+- gestione porte active e standby ok
+
+- heartbeat
  
 - roi parser
 - roi local instantiator standby

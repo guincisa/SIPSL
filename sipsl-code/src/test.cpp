@@ -183,7 +183,7 @@ int main(int argc, const char* argv[]) {
 
 	BDEBUG("SIPSL main thread",pthread_self())
 
-	if (argc == 1 || argc == 2){
+	if (argc == 1 || argc == 5){
 
 		//clear perfaray
 		for (int i = 0 ; i < 50 ; i ++){
@@ -211,23 +211,23 @@ int main(int argc, const char* argv[]) {
 //		NEWPTR2(MainOset, CALL_OSET((ENGINE*)0x0, (TRNSPRT*)0x0, "", 0),"Main CallOset")
 
 
-		NEWPTR(SUDP*, mystack, SUDP(),"SUDP")
+		NEWPTR(SUDP*, sipStack, SUDP(),"SUDP")
 		//SUDP* mystack ;
 
 		NEWPTR(TRNSPRT*, transport, TRNSPRT(TRNSPRTTH,TRNSPRTMAPS,"TRNSPRT"),"TRNSPRT")
-		transport->linkSUDP(mystack);
+		transport->linkSUDP(sipStack);
 
 		//Second stage engine: Call Control
 		NEWPTR(SL_CC*, sl_cc, SL_CC(SL_CCTH,SL_CCMAPS,"SL_CC"),"SL_CC")
 		//SL_CC sl_cc(SL_CCTH);
 		sl_cc->linkTransport(transport);
-		sl_cc->linkSUDP(mystack);
+		sl_cc->linkSUDP(sipStack);
 
 		//First stage engine: Lazy parser
 		NEWPTR(SIPENGINE*, sipeng, SIPENGINE(SIPENGINETH,SIPENGINMAPS,"SIPENGINE"), "SIPENGINE")
 //		SIPENGINE gg(SIPENGINETH);
 		sipeng->setSL_CC(sl_cc);
-		sipeng->linkSUDP(mystack);
+		sipeng->linkSUDP(sipStack);
 		sipeng->linkTransport(transport);
 
 		sl_cc->linkSipEngine(sipeng);
@@ -247,27 +247,37 @@ int main(int argc, const char* argv[]) {
 		NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH,ALARMMAPS,"ALMGR",sl_cc, 0, 10000000), "ALMGR")
 //		ALMGR alarm(&sl_cc, 0, 10000000);
 		alarm->initAlarm();
-		mystack->init(5060, sipeng, "groog.sipsl.org", alarm, false);
-		mystack->start();
+		sipStack->init(5060, sipeng, "groog.sipsl.org", alarm, false);
 
 		// Seamless failover
 		NEWPTR(SEAMFAILENG*, semaLessEng, SEAMFAILENG(1,1,"SEAMFAILENG"), "SEAMFAILENG")
 		NEWPTR(SUDP*, failoverStack, SUDP(),"SUDP_SF")
 		//create ROI-Heartbeat engine
 		//link to failoverStack
-		failoverStack->init(7060, semaLessEng, "groog.sispl.org", alarm, true);
-		failoverStack->start();
 
-		char *saveptr1;
-		char str3[40];
-		strcpy (str3, argv[1]);
-		char* startType = strtok_r(str3, ":", &saveptr1);
-		char* mateAddress = strtok_r(NULL, ":", &saveptr1);
-		char* matePort = strtok_r(NULL, ":", &saveptr1);
+		char startType[2];
+		char mateAddress[80];
+		char localPort_s[10];
+		char matePort_s[10];
+		strcpy (startType, argv[1]);
+		strcpy (mateAddress, argv[2]);
+		strcpy (localPort_s, argv[3]);
+		strcpy (matePort_s, argv[4]);
+
+		int matePort = atoi(matePort_s);
+		int localPort = atoi(localPort_s);
 
 		BDEBUG("startType",startType)
 		BDEBUG("mateAddress",mateAddress)
 		BDEBUG("matePort",matePort)
+
+		//if start type A standby then do activate sipStack
+		if (strcmp (startType,"A") == 0){
+			sipStack->start();
+		}
+
+		failoverStack->init(localPort, semaLessEng, "groog.sispl.org", alarm, true);
+		failoverStack->start();
 
 		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
 		pthread_mutex_lock(&gu);
