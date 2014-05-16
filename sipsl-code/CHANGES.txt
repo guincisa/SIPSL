@@ -1,3 +1,22 @@
+- sudp single thread
+ - ok il bind adesso e' enllos 
+ 
+- roi parser
+- roi local instantiator standby
+- roi active sender
+- dynamic sip port binder
+- heartbeat
+
+
+
+
+
+
+
+
+
+
+
 13 luglio
 
 

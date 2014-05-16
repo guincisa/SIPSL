@@ -125,7 +125,8 @@ void * SUDPSTACK(void *_tgtObject) {
 // Initialize Stack
 // *****************************************************************************************
 // *****************************************************************************************
-void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread){
+//void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread){
+void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool singleThread){
 
 	DEBINFSUDP("SUDP init",_domain)
 
@@ -139,7 +140,7 @@ void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _a
 
     alarm = _alarm;
 
-    doa = _doa;
+    //doa = _doa;
 
     if ( singleThread ){
     	threadNum = 1;
