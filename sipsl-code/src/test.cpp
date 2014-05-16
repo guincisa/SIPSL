@@ -5,7 +5,6 @@
 #include <errno.h>
 #include <iostream>
 #include <map>
-#include <unordered_map>
 #include <math.h>
 #include <memory>
 #include <pthread.h>
@@ -42,6 +41,9 @@ using namespace std;
 #endif
 #ifndef SIPENGINE_H
 #include "SIPENGINE.h"
+#endif
+#ifndef SEAMFAIL_H
+#include "SEAMFAIL.h"
 #endif
 #ifndef SL_CC_H
 #include "SL_CC.h"
@@ -245,15 +247,16 @@ int main(int argc, const char* argv[]) {
 		NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH,ALARMMAPS,"ALMGR",sl_cc, 0, 10000000), "ALMGR")
 //		ALMGR alarm(&sl_cc, 0, 10000000);
 		alarm->initAlarm();
-		mystack->init(5060, sipeng, doa, "grog.sipsl.org", alarm, false);
+		mystack->init(5060, sipeng, "groog.sipsl.org", alarm, false);
 		mystack->start();
 
 		// Seamless failover
+		NEWPTR(SEAMFAILENG*, semaLessEng, SEAMFAILENG(1,1,"SEAMFAILENG"), "SEAMFAILENG")
 		NEWPTR(SUDP*, failoverStack, SUDP(),"SUDP_SF")
 		//create ROI-Heartbeat engine
 		//link to failoverStack
-//		mystack->init(5060, sipeng, doa, "grog.sipsl.org", alarm, false);
-//		mystack->start();
+		failoverStack->init(7060, semaLessEng, "groog.sispl.org", alarm, true);
+		failoverStack->start();
 
 		char *saveptr1;
 		char str3[40];

@@ -25,6 +25,7 @@
 class ENGINE;
 class COMAP;
 class DAO;
+class TRNSPRT;
 //**********************************************************************************
 // * SL_CC
 // * Call Control second stage Engine

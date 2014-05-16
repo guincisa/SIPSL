@@ -24,14 +24,14 @@
 
 //Seamless failover system
 //this sends the instantiation messages to the mate
-class SEAMFAILSEND : public ENGINE {
+class SEAMFAILENG : public ENGINE {
 
     private:
         int dummy;
 
     public:
 
-        SEAMFAILSEND(int,int,std::string);
+        SEAMFAILENG(int,int,std::string);
 
         void parse(void*,int);
 
