@@ -108,10 +108,31 @@
 
 
 static SIPUTIL SipUtil;
+typedef struct ENGTuple;
+
+void * heartBeatMonitor (void * _pt){
+    HearBeatTuple *pt = (HearBeatTuple *)  _pt;
+
+	while (true){
+		BDEBUG("Hearbeat Pulse ",&(pt->sleep_time).tv_sec)
+        nanosleep(&(pt->sleep_time),NULL);
+	}
+    return (NULL);
+}
 
 //**********************************************************************************
 //**********************************************************************************
-SEAMFAILENG::SEAMFAILENG(int _i, int _m, string _s):ENGINE(_i,_m,_s){}
+SEAMFAILENG::SEAMFAILENG(int _i, int _m, string _s):ENGINE(_i,_m,_s){
+
+	sleep_time.tv_sec = HEARTBEATPULSE;
+	sleep_time.tv_nsec = 0;
+
+	NEWPTR2(heartBeat, ThreadWrapper(), "ThreadWrapper()")
+	HearBeatTuple* t = new HearBeatTuple;
+	t->sleep_time = sleep_time;
+	pthread_create(&(heartBeat->thread), NULL, heartBeatMonitor, (void *)t);
+
+}
 //**********************************************************************************
 //**********************************************************************************
 //**********************************************************************************

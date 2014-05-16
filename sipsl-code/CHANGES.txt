@@ -2,6 +2,8 @@
 - gestione porte active e standby ok
 
 - heartbeat
+  - thread funziona
+  - adesso deve mandare allo stand by
  
 - roi parser
 - roi local instantiator standby

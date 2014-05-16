@@ -231,6 +231,9 @@ class ThreadWrapper {
 //willgo getDoa everytime a call to call_oset is done
 //needed to check is call_oset is deleted
 
+//SEAMLESS FAILOVER
+//hearbeat
+#define HEARTBEATPULSE 5
 
 #else
 //#define GETDATA "service@10.21.99.79:5062"
