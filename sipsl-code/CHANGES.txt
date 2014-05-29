@@ -4,6 +4,11 @@
 - heartbeat
   - thread funziona
   - adesso deve mandare allo stand by
+  
+  startup:
+
+  ./SIPSL_R2 S 1.1.1.1. 7600 7601
+  
  
 - roi parser
 - roi local instantiator standby

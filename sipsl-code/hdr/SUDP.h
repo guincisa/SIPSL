@@ -83,6 +83,9 @@ class SUDP {
         void sendRequest(MESSAGE* message);
         void sendReply(MESSAGE* message);
 
+        void sendRawMessage(string* message, string address, int port);
+
+
         //ENGINE* getDoa();
         string getLocalIp(void);
         string getLocalPort(void);
