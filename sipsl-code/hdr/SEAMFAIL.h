@@ -26,6 +26,9 @@
 //this sends the instantiation messages to the mate
 typedef struct _hearBeatTuple {
     timespec sleep_time;
+    SUDP* hbSUDP;
+    string peerAddress;
+    int peerPort;
 } HearBeatTuple;
 
 class SEAMFAILENG : public ENGINE {
@@ -34,11 +37,15 @@ class SEAMFAILENG : public ENGINE {
         int dummy;
         ThreadWrapper* heartBeat;
         timespec sleep_time;
+        SUDP* hbSUDP;
+        string peerAddress;
+        int peerPort;
 
 
     public:
 
         SEAMFAILENG(int,int,std::string);
+        void setSUDP(SUDP*, string, int);
 
         void parse(void*,int);
 

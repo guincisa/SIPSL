@@ -113,8 +113,14 @@ typedef struct ENGTuple;
 void * heartBeatMonitor (void * _pt){
     HearBeatTuple *pt = (HearBeatTuple *)  _pt;
 
+    string* messageToPeer = new string("stronzone");
+    string peerAddress(pt->peerAddress);
 	while (true){
 		BDEBUG("Hearbeat Pulse ",&(pt->sleep_time).tv_sec)
+
+		//send heartbeat message to peer
+		(pt->hbSUDP)->sendRawMessage(messageToPeer,peerAddress,pt->peerPort);
+
         nanosleep(&(pt->sleep_time),NULL);
 	}
     return (NULL);
@@ -128,8 +134,19 @@ SEAMFAILENG::SEAMFAILENG(int _i, int _m, string _s):ENGINE(_i,_m,_s){
 	sleep_time.tv_nsec = 0;
 
 	NEWPTR2(heartBeat, ThreadWrapper(), "ThreadWrapper()")
+
+}
+//**********************************************************************************
+//**********************************************************************************
+void SEAMFAILENG::setSUDP(SUDP* _hbSUDP, string _peerAddress, int _peerPort){
+	hbSUDP = _hbSUDP;
+	peerAddress = _peerAddress;
+	peerPort = _peerPort;
 	HearBeatTuple* t = new HearBeatTuple;
 	t->sleep_time = sleep_time;
+	t->hbSUDP = hbSUDP;
+	t->peerAddress = peerAddress;
+	t->peerPort = peerPort;
 	pthread_create(&(heartBeat->thread), NULL, heartBeatMonitor, (void *)t);
 
 }

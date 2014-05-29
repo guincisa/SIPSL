@@ -349,6 +349,19 @@ ALMGR* SUDP::getAlmgr(void){
 //
 //    return;
 //}
+void SUDP::sendRawMessage(string* message, string address, int port){
+
+	struct sockaddr_in si_part;
+	si_part.sin_family = AF_INET;
+	si_part.sin_port = port;
+
+	inet_aton(address.c_str(), &si_part.sin_addr);
+
+	//heart beat messages always sent to socket 0
+	sendto(sock_se[0], message->c_str(), message->length(), 0, (struct sockaddr *)&si_part, sizeof(si_part));
+	DEBY
+
+}
 void SUDP::sendRequest(MESSAGE* _message){
 	DEBINFSUDP("void SUDP::sendRequest(MESSAGE* _message)",_message)
 

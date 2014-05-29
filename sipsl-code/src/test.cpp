@@ -252,8 +252,9 @@ int main(int argc, const char* argv[]) {
 		sipStack->init(5060, sipeng, "groog.sipsl.org", alarm, false);
 
 		// Seamless failover
-		NEWPTR(SEAMFAILENG*, semaLessEng, SEAMFAILENG(1,1,"SEAMFAILENG"), "SEAMFAILENG")
+		NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1,1,"SEAMFAILENG"), "SEAMFAILENG")
 		NEWPTR(SUDP*, failoverStack, SUDP(),"SUDP_SF")
+
 		//create ROI-Heartbeat engine
 		//link to failoverStack
 
@@ -272,13 +273,16 @@ int main(int argc, const char* argv[]) {
 		BDEBUG("startType",startType)
 		BDEBUG("mateAddress",mateAddress)
 		BDEBUG("matePort",matePort)
+		string ma(mateAddress);
+
+		seamLessEng->setSUDP(failoverStack, ma, matePort);
 
 		//if start type A standby then do activate sipStack
 		if (strcmp (startType,"A") == 0){
 			sipStack->start();
 		}
 
-		failoverStack->init(localPort, semaLessEng, "groog.sispl.org", alarm, true);
+		failoverStack->init(localPort, seamLessEng, "groog.sispl.org", alarm, true);
 		failoverStack->start();
 
 		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
@@ -337,46 +341,48 @@ int main(int argc, const char* argv[]) {
 
 
 
-	}
-	else {
+	}else{
+		cout << "mateAddress localPort_s matePort_s"<< endl;
 
-		char a[4];
-		sprintf(a,"123");
-		a[1] = '\0';
-		cout << "a"<<a<<endl;
-		char b[4];
-		sprintf(b,"123");
-		sprintf(b+1,"");
-		cout << "b"<<b<<endl;
-
-
-		string pippo = "";
-		cout << "pippo"<<pippo.length()<<endl;
-		//string management...
-		// concat aaa111aaa11
-		string aaa = "aaa";
-		int iii = 111;
-		string x;
-		TIMEDEF
-		SETNOW
-		for (int i = 0 ; i < 10000; i++){
-			stringstream xx;
-			xx << "aaa";
-			xx << iii;
-			xx << aaa;
-			xx << 111;
-			x = xx.str();
-		}
-		PRINTDIFF("stringstream")
-		DEBOUT("stringstream",x)
-		SETNOW
-		for (int i = 0 ; i < 10000; i++){
-			char xx[1024];
-			sprintf(xx,"aaa%d%s%d",iii,aaa.c_str(),111);
-			x = xx;
-		}
-		PRINTDIFF("char []")
-		DEBOUT("char []",x)
+//	else {
+//
+//		char a[4];
+//		sprintf(a,"123");
+//		a[1] = '\0';
+//		cout << "a"<<a<<endl;
+//		char b[4];
+//		sprintf(b,"123");
+//		sprintf(b+1,"");
+//		cout << "b"<<b<<endl;
+//
+//
+//		string pippo = "";
+//		cout << "pippo"<<pippo.length()<<endl;
+//		//string management...
+//		// concat aaa111aaa11
+//		string aaa = "aaa";
+//		int iii = 111;
+//		string x;
+//		TIMEDEF
+//		SETNOW
+//		for (int i = 0 ; i < 10000; i++){
+//			stringstream xx;
+//			xx << "aaa";
+//			xx << iii;
+//			xx << aaa;
+//			xx << 111;
+//			x = xx.str();
+//		}
+//		PRINTDIFF("stringstream")
+//		DEBOUT("stringstream",x)
+//		SETNOW
+//		for (int i = 0 ; i < 10000; i++){
+//			char xx[1024];
+//			sprintf(xx,"aaa%d%s%d",iii,aaa.c_str(),111);
+//			x = xx;
+//		}
+//		PRINTDIFF("char []")
+//		DEBOUT("char []",x)
 
 
 //		//NANOSPEE TEST
