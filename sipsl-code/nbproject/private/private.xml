@@ -12,8 +12,7 @@
         <group>
             <file>file:/home/guic/DEV/SIPSLNB/sipsl-code/Makefile</file>
             <file>file:/home/guic/DEV/SIPSLNB/sipsl-code/src/test.cpp</file>
-            <file>file:/home/guic/DEV/SIPSLNB/sipsl-code/hdr/COMAP.h</file>
-            <file>file:/home/guic/DEV/SIPSLNB/sipsl-code/src/SEAMFAIL.cpp</file>
+            <file>file:/home/guic/DEV/SIPSLNB/sipsl-code/hdr/UTIL.h</file>
             <file>file:/home/guic/DEV/SIPSLNB/sipsl-code/src/COMAP.cpp</file>
         </group>
     </open-files>
