@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="hdr" name="1">
+    </df>
+    <df root="." name="0">
+      <df name="GNU-amd64-Linux">
+      </df>
+      <df name="hdr">
+        <in>ACTION.h</in>
+        <in>ALARM.h</in>
+        <in>ALO.h</in>
+        <in>CALL_OSET.h</in>
+        <in>COMAP.h</in>
+        <in>CS_HEADERS.h</in>
+        <in>DAO.h</in>
+        <in>DOA.h</in>
+        <in>ENGINE.h</in>
+        <in>MESSAGE.h</in>
+        <in>SEAMFAIL.h</in>
+        <in>SIPENGINE.h</in>
+        <in>SIPUTIL.h</in>
+        <in>SIP_PROPERTIES.h</in>
+        <in>SL_CC.h</in>
+        <in>SPIN.h</in>
+        <in>SUDP.h</in>
+        <in>TRNSCT_SM.h</in>
+        <in>TRNSPRT.h</in>
+        <in>UTIL.h</in>
+        <in>VALO.h</in>
+      </df>
+      <df name="src">
+        <in>ACTION.cpp</in>
+        <in>ALARM.cpp</in>
+        <in>ALO.cpp</in>
+        <in>CALL_OSET.cpp</in>
+        <in>COMAP.cpp</in>
+        <in>CS_HEADERS.cpp</in>
+        <in>DAO.cpp</in>
+        <in>DOA.cpp</in>
+        <in>ENGINE.cpp</in>
+        <in>MESSAGE.cpp</in>
+        <in>SEAMFAIL.cpp</in>
+        <in>SIPENGINE.cpp</in>
+        <in>SIPUTIL.cpp</in>
+        <in>SL_CC.cpp</in>
+        <in>SPIN.cpp</in>
+        <in>SUDP.cpp</in>
+        <in>TRNSCT_SM.cpp</in>
+        <in>TRNSPRT.cpp</in>
+        <in>VALO.cpp</in>
+        <in>test.cpp</in>
+      </df>
+      <df name="utest">
+        <in>HEADERS_TEST.cpp</in>
+        <in>UTESTTOOL.cpp</in>
+      </df>
+    </df>
+    <df root="src" name="2">
+    </df>
+    <itemPath>Makefile</itemPath>
+  </logicalFolder>
+  <projectmakefile>../Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <rundir>..</rundir>
+        <buildfirst>false</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>

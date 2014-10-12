@@ -1,0 +1,158 @@
+## -*- Makefile -*-
+##
+## User: guic
+## Time: 12-Oct-2014 16:22:21
+## Makefile created by Oracle Solaris Studio.
+##
+## This file is generated automatically.
+##
+
+
+#### Compiler and tool definitions shared by all build targets #####
+CCC = g++
+CXX = g++
+BASICOPTS = -O -s -m64 -std=gnu++11
+CCFLAGS = $(BASICOPTS)
+CXXFLAGS = $(BASICOPTS)
+CCADMIN = 
+
+
+# Define the target directories.
+TARGETDIR__SIPSL=GNU-amd64-Linux
+
+
+all: $(TARGETDIR__SIPSL)/_SIPSL
+
+## Target: _SIPSL
+OBJS__SIPSL =  \
+	$(TARGETDIR__SIPSL)/SEAMFAIL.o \
+	$(TARGETDIR__SIPSL)/test.o \
+	$(TARGETDIR__SIPSL)/CALL_OSET.o \
+	$(TARGETDIR__SIPSL)/MESSAGE.o \
+	$(TARGETDIR__SIPSL)/VALO.o \
+	$(TARGETDIR__SIPSL)/DOA.o \
+	$(TARGETDIR__SIPSL)/ENGINE.o \
+	$(TARGETDIR__SIPSL)/SPIN.o \
+	$(TARGETDIR__SIPSL)/SIPUTIL.o \
+	$(TARGETDIR__SIPSL)/CS_HEADERS.o \
+	$(TARGETDIR__SIPSL)/SIPENGINE.o \
+	$(TARGETDIR__SIPSL)/TRNSPRT.o \
+	$(TARGETDIR__SIPSL)/SUDP.o \
+	$(TARGETDIR__SIPSL)/ACTION.o \
+	$(TARGETDIR__SIPSL)/TRNSCT_SM.o \
+	$(TARGETDIR__SIPSL)/DAO.o \
+	$(TARGETDIR__SIPSL)/SL_CC.o \
+	$(TARGETDIR__SIPSL)/COMAP.o \
+	$(TARGETDIR__SIPSL)/ALARM.o \
+	$(TARGETDIR__SIPSL)/ALO.o
+SYSLIBS__SIPSL = -lpthread 
+USERLIBS__SIPSL = $(SYSLIBS__SIPSL) 
+DEPLIBS__SIPSL =
+LDLIBS__SIPSL = $(USERLIBS__SIPSL)
+
+
+# Link or archive
+$(TARGETDIR__SIPSL)/_SIPSL: $(TARGETDIR__SIPSL) $(OBJS__SIPSL) $(DEPLIBS__SIPSL)
+	$(LINK.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ $(OBJS__SIPSL) $(LDLIBS__SIPSL)
+
+
+# Compile source files into .o files
+$(TARGETDIR__SIPSL)/SEAMFAIL.o: $(TARGETDIR__SIPSL) src/SEAMFAIL.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/SEAMFAIL.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/test.o: $(TARGETDIR__SIPSL) src/test.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/test.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/CALL_OSET.o: $(TARGETDIR__SIPSL) src/CALL_OSET.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/CALL_OSET.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/MESSAGE.o: $(TARGETDIR__SIPSL) src/MESSAGE.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/MESSAGE.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/VALO.o: $(TARGETDIR__SIPSL) src/VALO.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/VALO.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/DOA.o: $(TARGETDIR__SIPSL) src/DOA.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/DOA.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/ENGINE.o: $(TARGETDIR__SIPSL) src/ENGINE.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/ENGINE.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/SPIN.o: $(TARGETDIR__SIPSL) src/SPIN.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/SPIN.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/SIPUTIL.o: $(TARGETDIR__SIPSL) src/SIPUTIL.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/SIPUTIL.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/CS_HEADERS.o: $(TARGETDIR__SIPSL) src/CS_HEADERS.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/CS_HEADERS.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/SIPENGINE.o: $(TARGETDIR__SIPSL) src/SIPENGINE.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/SIPENGINE.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/TRNSPRT.o: $(TARGETDIR__SIPSL) src/TRNSPRT.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/TRNSPRT.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/SUDP.o: $(TARGETDIR__SIPSL) src/SUDP.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/SUDP.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/ACTION.o: $(TARGETDIR__SIPSL) src/ACTION.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/ACTION.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/TRNSCT_SM.o: $(TARGETDIR__SIPSL) src/TRNSCT_SM.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/TRNSCT_SM.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/DAO.o: $(TARGETDIR__SIPSL) src/DAO.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/DAO.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/SL_CC.o: $(TARGETDIR__SIPSL) src/SL_CC.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/SL_CC.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/COMAP.o: $(TARGETDIR__SIPSL) src/COMAP.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/COMAP.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/ALARM.o: $(TARGETDIR__SIPSL) src/ALARM.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/ALARM.cpp -I hdr
+
+$(TARGETDIR__SIPSL)/ALO.o: $(TARGETDIR__SIPSL) src/ALO.cpp
+	$(COMPILE.cc) $(CCFLAGS__SIPSL) $(CPPFLAGS__SIPSL) -o $@ src/ALO.cpp -I hdr
+
+
+
+#### Clean target deletes all generated files ####
+clean:
+	rm -f \
+		$(TARGETDIR__SIPSL)/_SIPSL \
+		$(TARGETDIR__SIPSL)/SEAMFAIL.o \
+		$(TARGETDIR__SIPSL)/test.o \
+		$(TARGETDIR__SIPSL)/CALL_OSET.o \
+		$(TARGETDIR__SIPSL)/MESSAGE.o \
+		$(TARGETDIR__SIPSL)/VALO.o \
+		$(TARGETDIR__SIPSL)/DOA.o \
+		$(TARGETDIR__SIPSL)/ENGINE.o \
+		$(TARGETDIR__SIPSL)/SPIN.o \
+		$(TARGETDIR__SIPSL)/SIPUTIL.o \
+		$(TARGETDIR__SIPSL)/CS_HEADERS.o \
+		$(TARGETDIR__SIPSL)/SIPENGINE.o \
+		$(TARGETDIR__SIPSL)/TRNSPRT.o \
+		$(TARGETDIR__SIPSL)/SUDP.o \
+		$(TARGETDIR__SIPSL)/ACTION.o \
+		$(TARGETDIR__SIPSL)/TRNSCT_SM.o \
+		$(TARGETDIR__SIPSL)/DAO.o \
+		$(TARGETDIR__SIPSL)/SL_CC.o \
+		$(TARGETDIR__SIPSL)/COMAP.o \
+		$(TARGETDIR__SIPSL)/ALARM.o \
+		$(TARGETDIR__SIPSL)/ALO.o
+	$(CCADMIN)
+	rm -f -r $(TARGETDIR__SIPSL)
+
+
+# Create the target directory (if needed)
+$(TARGETDIR__SIPSL):
+	mkdir -p $(TARGETDIR__SIPSL)
+
+
+# Enable dependency checking
+.KEEP_STATE:
+.KEEP_STATE_FILE:.make.state.GNU-amd64-Linux
+
