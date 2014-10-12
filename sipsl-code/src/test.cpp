@@ -177,8 +177,8 @@ int main(int argc, const char* argv[]) {
 
     //command line for seamless failover
     // SIPSL A address localPort_s matePort_s
-    // SIPSL S:ACTIVEADDRESS:PORTFAILOVER
 
+    
     (void) signal(SIGSEGV, ex_program);
     (void) signal(SIGBUS, ex_program);
     if (argc == 5) {
@@ -201,12 +201,10 @@ int main(int argc, const char* argv[]) {
         NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr), "Main Message")
         MainMessage->setValid(1);
 
-        //		NEWPTR2(MainOset, CALL_OSET((ENGINE*)0x0, (TRNSPRT*)0x0, "", 0),"Main CallOset")
-
-
+        //UDP stack
         NEWPTR(SUDP*, sipStack, SUDP(), "SUDP")
-        //SUDP* mystack ;
-
+           
+        //TRANSPORT stack
         NEWPTR(TRNSPRT*, transport, TRNSPRT(TRNSPRTTH, TRNSPRTMAPS, "TRNSPRT"), "TRNSPRT")
         transport->linkSUDP(sipStack);
 
@@ -218,7 +216,7 @@ int main(int argc, const char* argv[]) {
 
         //First stage engine: Lazy parser
         NEWPTR(SIPENGINE*, sipeng, SIPENGINE(SIPENGINETH, SIPENGINMAPS, "SIPENGINE"), "SIPENGINE")
-        //		SIPENGINE gg(SIPENGINETH);
+        //SIPENGINE gg(SIPENGINETH);
         sipeng->setSL_CC(sl_cc);
         sipeng->linkSUDP(sipStack);
         sipeng->linkTransport(transport);
@@ -232,13 +230,13 @@ int main(int argc, const char* argv[]) {
 
 
         NEWPTR(DOA*, doa, DOA(sl_cc, DOA_CLEANUP, 0), "DOA")
-        //		DOA doa(&sl_cc, DOA_CLEANUP, 0);
+        //DOA doa(&sl_cc, DOA_CLEANUP, 0);
         doa->init();
 
         //Alarm setup
         //sec , nsec
         NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH, ALARMMAPS, "ALMGR", sl_cc, 0, 10000000), "ALMGR")
-        //		ALMGR alarm(&sl_cc, 0, 10000000);
+        //ALMGR alarm(&sl_cc, 0, 10000000);
         alarm->initAlarm();
         sipStack->init(5060, sipeng, "groog.sipsl.org", alarm, false);
 
