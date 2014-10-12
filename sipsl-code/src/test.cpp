@@ -116,18 +116,16 @@ COMAP* Comap;
 //[3] average
 double PERFARRAY[4][50];
 
-
-
 void ex_program(int sig) {
-	DEBOUT("SIG", sig);
-	DEBASSERT("...")
-// (void) signal(SIGINT, SIG_DFL);
+    DEBOUT("SIG", sig);
+    DEBASSERT("...")
+            // (void) signal(SIGINT, SIG_DFL);
 }
 
 class TESTMESS {
 public:
-	string message;
-	int id;
+    string message;
+    int id;
 };
 //class TESTENGINE_1 : public ENGINE {
 //
@@ -177,119 +175,119 @@ const int SUDP::realm = SIPSL_REALM;
 
 int main(int argc, const char* argv[]) {
 
-	//command line for seamless failover
-	// SIPSL A address localPort_s matePort_s
-	// SIPSL S:ACTIVEADDRESS:PORTFAILOVER
+    //command line for seamless failover
+    // SIPSL A address localPort_s matePort_s
+    // SIPSL S:ACTIVEADDRESS:PORTFAILOVER
 
-	 (void) signal(SIGSEGV, ex_program);
-         (void) signal(SIGBUS, ex_program);
+    (void) signal(SIGSEGV, ex_program);
+    (void) signal(SIGBUS, ex_program);
+    if (argc == 5) {
 
-	BDEBUG("SIPSL main thread",pthread_self())
+        BDEBUG("SIPSL main thread", pthread_self())
+        for (int i = 0; i < 50; i++) {
+            PERFARRAY[0][i] = 0;
+            PERFARRAY[1][i] = 999999999;
+            PERFARRAY[2][i] = 0;
+            PERFARRAY[3][i] = 0;
+        }
 
-	if (argc == 1 || argc == 5){
+        //This message is used for consitency checks
+        //When a message is deleted, his pointer to set to MainMessage
+        //any method call to the main message generates assert
+        string empty = "EMPTY";
+        sockaddr_inX echoClntAddr;
+        SysTime inTime;
+        GETTIME(inTime);
+        NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr), "Main Message")
+        MainMessage->setValid(1);
 
-		//clear perfaray
-		for (int i = 0 ; i < 50 ; i ++){
-			PERFARRAY[0][i] = 0;
-			PERFARRAY[1][i] = 999999999;
-			PERFARRAY[2][i] = 0;
-			PERFARRAY[3][i] = 0;
-		}
-
-		//This message is used for consitency checks
-		//When a message is deleted, his pointer to set to MainMessage
-		//any method call to the main message generates assert
-		string empty="EMPTY";
-		sockaddr_inX echoClntAddr;
-		SysTime inTime;
-		GETTIME(inTime);
-		NEWPTR2(MainMessage, MESSAGE(empty.c_str(), SODE_NOPOINT, inTime, 0, echoClntAddr),"Main Message")
-		MainMessage->setValid(1);
-
-		char pippo[5];
-		strcpy(pippo,"abcd");
-		DEBOUT("pippo",pippo<<"]["<<&pippo<<"]["<<(&pippo)+1<<"]["<<(&pippo)+2)
+        //		NEWPTR2(MainOset, CALL_OSET((ENGINE*)0x0, (TRNSPRT*)0x0, "", 0),"Main CallOset")
 
 
-//		NEWPTR2(MainOset, CALL_OSET((ENGINE*)0x0, (TRNSPRT*)0x0, "", 0),"Main CallOset")
+        NEWPTR(SUDP*, sipStack, SUDP(), "SUDP")
+        //SUDP* mystack ;
+
+        NEWPTR(TRNSPRT*, transport, TRNSPRT(TRNSPRTTH, TRNSPRTMAPS, "TRNSPRT"), "TRNSPRT")
+        transport->linkSUDP(sipStack);
+
+        //Second stage engine: Call Control
+        NEWPTR(SL_CC*, sl_cc, SL_CC(SL_CCTH, SL_CCMAPS, "SL_CC"), "SL_CC")
+        //SL_CC sl_cc(SL_CCTH);
+        sl_cc->linkTransport(transport);
+        sl_cc->linkSUDP(sipStack);
+
+        //First stage engine: Lazy parser
+        NEWPTR(SIPENGINE*, sipeng, SIPENGINE(SIPENGINETH, SIPENGINMAPS, "SIPENGINE"), "SIPENGINE")
+        //		SIPENGINE gg(SIPENGINETH);
+        sipeng->setSL_CC(sl_cc);
+        sipeng->linkSUDP(sipStack);
+        sipeng->linkTransport(transport);
+
+        sl_cc->linkSipEngine(sipeng);
+
+        //data layer
+        NEWPTR(DAO*, daog, DAO(1, 1, "DAO", sl_cc, sipeng, transport), "DAO")
+        sipeng->setDAO(daog);
+        sl_cc->setDAO(daog);
 
 
-		NEWPTR(SUDP*, sipStack, SUDP(),"SUDP")
-		//SUDP* mystack ;
+        NEWPTR(DOA*, doa, DOA(sl_cc, DOA_CLEANUP, 0), "DOA")
+        //		DOA doa(&sl_cc, DOA_CLEANUP, 0);
+        doa->init();
 
-		NEWPTR(TRNSPRT*, transport, TRNSPRT(TRNSPRTTH,TRNSPRTMAPS,"TRNSPRT"),"TRNSPRT")
-		transport->linkSUDP(sipStack);
+        //Alarm setup
+        //sec , nsec
+        NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH, ALARMMAPS, "ALMGR", sl_cc, 0, 10000000), "ALMGR")
+        //		ALMGR alarm(&sl_cc, 0, 10000000);
+        alarm->initAlarm();
+        sipStack->init(5060, sipeng, "groog.sipsl.org", alarm, false);
 
-		//Second stage engine: Call Control
-		NEWPTR(SL_CC*, sl_cc, SL_CC(SL_CCTH,SL_CCMAPS,"SL_CC"),"SL_CC")
-		//SL_CC sl_cc(SL_CCTH);
-		sl_cc->linkTransport(transport);
-		sl_cc->linkSUDP(sipStack);
+        // Seamless failover
+        NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1, 1, "SEAMFAILENG"), "SEAMFAILENG")
+        NEWPTR(SUDP*, failoverStack, SUDP(), "SUDP_SF")
 
-		//First stage engine: Lazy parser
-		NEWPTR(SIPENGINE*, sipeng, SIPENGINE(SIPENGINETH,SIPENGINMAPS,"SIPENGINE"), "SIPENGINE")
-//		SIPENGINE gg(SIPENGINETH);
-		sipeng->setSL_CC(sl_cc);
-		sipeng->linkSUDP(sipStack);
-		sipeng->linkTransport(transport);
+                //clear perfaray
 
-		sl_cc->linkSipEngine(sipeng);
+                //create ROI-Heartbeat engine
+                //link to failoverStack
 
-		//data layer
-		NEWPTR(DAO*, daog, DAO(1,1,"DAO",sl_cc, sipeng, transport), "DAO")
-		sipeng->setDAO(daog);
-		sl_cc->setDAO(daog);
+                char startType[2];
+        char mateAddress[80];
+        char localPort_s[10];
+        char matePort_s[10];
+        strcpy(startType, argv[1]);
+        strcpy(mateAddress, argv[2]);
+        strcpy(localPort_s, argv[3]);
+        strcpy(matePort_s, argv[4]);
 
+        int matePort = atoi(matePort_s);
+        int localPort = atoi(localPort_s);
 
-		NEWPTR(DOA*, doa, DOA(sl_cc, DOA_CLEANUP, 0),"DOA")
-//		DOA doa(&sl_cc, DOA_CLEANUP, 0);
-		doa->init();
+        BDEBUG("startType", startType)
+        BDEBUG("mateAddress", mateAddress)
+        BDEBUG("matePort", matePort)
+        string ma(mateAddress);
 
-		//Alarm setup
-		//sec , nsec
-		NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH,ALARMMAPS,"ALMGR",sl_cc, 0, 10000000), "ALMGR")
-//		ALMGR alarm(&sl_cc, 0, 10000000);
-		alarm->initAlarm();
-		sipStack->init(5060, sipeng, "groog.sipsl.org", alarm, false);
+        seamLessEng->setSUDP(failoverStack, ma, matePort);
 
-		// Seamless failover
-		NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1,1,"SEAMFAILENG"), "SEAMFAILENG")
-		NEWPTR(SUDP*, failoverStack, SUDP(),"SUDP_SF")
+        //if start type A standby then do activate sipStack
 
-		//create ROI-Heartbeat engine
-		//link to failoverStack
+        failoverStack->init(localPort, seamLessEng, "groog.sispl.org", alarm, true);
+        failoverStack->start();
 
-		char startType[2];
-		char mateAddress[80];
-		char localPort_s[10];
-		char matePort_s[10];
-		strcpy (startType, argv[1]);
-		strcpy (mateAddress, argv[2]);
-		strcpy (localPort_s, argv[3]);
-		strcpy (matePort_s, argv[4]);
+        if (strcmp(startType, "A") == 0) {
+            sipStack->start();
+        }
+    } else {
+        cout << " <A or P> mateAddress localPort_s matePort_s" << endl;
+        return 0;
+    }
 
-		int matePort = atoi(matePort_s);
-		int localPort = atoi(localPort_s);
-
-		BDEBUG("startType",startType)
-		BDEBUG("mateAddress",mateAddress)
-		BDEBUG("matePort",matePort)
-		string ma(mateAddress);
-
-		seamLessEng->setSUDP(failoverStack, ma, matePort);
-
-		//if start type A standby then do activate sipStack
-		if (strcmp (startType,"A") == 0){
-			sipStack->start();
-		}
-
-		failoverStack->init(localPort, seamLessEng, "groog.sispl.org", alarm, true);
-		failoverStack->start();
-
-		pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
-		pthread_mutex_lock(&gu);
-		pthread_mutex_lock(&gu);
-		return 0;
+    pthread_mutex_t gu = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&gu);
+    pthread_mutex_lock(&gu);
+    return 0;
+}
 
 //    	//UDP perf begin
 //
@@ -340,10 +338,6 @@ int main(int argc, const char* argv[]) {
 //    	//UDP perf end
 
 
-
-
-	}else{
-		cout << "mateAddress localPort_s matePort_s"<< endl;
 
 //	else {
 //
@@ -415,7 +409,7 @@ int main(int argc, const char* argv[]) {
 //		nanosleep(&sleep_time,NULL);
 //		PRINTDIFF("1 sec")
 
-	}
+
 //		//Engine test
 //		cout << "Engine test" << endl;
 //
@@ -641,4 +635,4 @@ int main(int argc, const char* argv[]) {
 //
 //	}
 
-}
+

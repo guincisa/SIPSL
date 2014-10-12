@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="95">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <df root="hdr" name="1">
+    <df root="hdr" name="0">
+      <in>ACTION.h</in>
+      <in>ALARM.h</in>
+      <in>ALO.h</in>
+      <in>CALL_OSET.h</in>
+      <in>COMAP.h</in>
+      <in>CS_HEADERS.h</in>
+      <in>DAO.h</in>
+      <in>DOA.h</in>
+      <in>ENGINE.h</in>
+      <in>MESSAGE.h</in>
+      <in>SEAMFAIL.h</in>
+      <in>SIPENGINE.h</in>
+      <in>SIPUTIL.h</in>
+      <in>SIP_PROPERTIES.h</in>
+      <in>SL_CC.h</in>
+      <in>SPIN.h</in>
+      <in>SUDP.h</in>
+      <in>TRNSCT_SM.h</in>
+      <in>TRNSPRT.h</in>
+      <in>UTIL.h</in>
+      <in>VALO.h</in>
     </df>
-    <df root="." name="0">
+    <df root="." name="1">
       <df name="GNU-amd64-Linux">
       </df>
       <df name="hdr">
-        <in>ACTION.h</in>
-        <in>ALARM.h</in>
-        <in>ALO.h</in>
-        <in>CALL_OSET.h</in>
-        <in>COMAP.h</in>
-        <in>CS_HEADERS.h</in>
-        <in>DAO.h</in>
-        <in>DOA.h</in>
-        <in>ENGINE.h</in>
-        <in>MESSAGE.h</in>
-        <in>SEAMFAIL.h</in>
-        <in>SIPENGINE.h</in>
-        <in>SIPUTIL.h</in>
-        <in>SIP_PROPERTIES.h</in>
-        <in>SL_CC.h</in>
-        <in>SPIN.h</in>
-        <in>SUDP.h</in>
-        <in>TRNSCT_SM.h</in>
-        <in>TRNSPRT.h</in>
-        <in>UTIL.h</in>
-        <in>VALO.h</in>
       </df>
       <df name="src">
         <in>ACTION.cpp</in>
