@@ -21,6 +21,7 @@
 //**********************************************************************************
 //Per far funzionare devi provisionare!!!
 //lancia sipsl
+//SIPSL A 127.0.0.1 9000 9001 (active mateadrress mateport)
 //lancia su un'altra finestra sotto test-tools
 //java sendU3 grog
 //poi provisiona:
