@@ -136,7 +136,7 @@ CALL_OSET* COMAP::getCALL_OSET_XMain(string _callId_X, int _mod){
     }
 
     CALL_OSET* tmp = 0x0;
-    map<string, CALL_OSET*>::iterator p;
+    unordered_map<string, CALL_OSET*>::iterator p;
 
     p = comap_mm[_mod].find(_callId_X);
     if (p != comap_mm[_mod].end()){
@@ -170,8 +170,8 @@ CALL_OSET* COMAP::getCALL_OSET_YDerived(string _callId_Y, int _mod){
 
     CALL_OSET* tmp = 0x0;
     string tmp2 = "";
-    map<string, CALL_OSET*>::iterator p;
-    map<string, string>::iterator p2;
+    unordered_map<string, CALL_OSET*>::iterator p;
+    unordered_map<string, string>::iterator p2;
 
     p2 = call_id_y2x[_mod].find(_callId_Y);
 
@@ -224,11 +224,11 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     TIMEDEF
     SETNOW
 
-    map<string, CALL_OSET*>::iterator p_comap_mm;
-    map<CALL_OSET*,int>::iterator p_doamap;
-    map<string,string>::iterator p_cally2x;
-    map<string,string>::iterator p_callx2y;
-    map<CALL_OSET*, lli>::iterator p_ttl, p_ttldel;
+    unordered_map<string, CALL_OSET*>::iterator p_comap_mm;
+    unordered_map<CALL_OSET*,int>::iterator p_doamap;
+    unordered_map<string,string>::iterator p_cally2x;
+    unordered_map<string,string>::iterator p_callx2y;
+    unordered_map<CALL_OSET*, lli>::iterator p_ttl, p_ttldel;
 
     if (_mod >= COMAPS){
         DEBASSERT("invalid comap index")
@@ -240,7 +240,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     DEBCOMAP_L("COMAP::setCALL_OSET inserting ", _callId_X << "] [" << call_oset << " comap [" << _mod)
 
     //comap
-    pair<map<string, CALL_OSET*>::iterator, bool> ret1;
+    pair<unordered_map<string, CALL_OSET*>::iterator, bool> ret1;
     ret1 = comap_mm[_mod].insert(pair<string, CALL_OSET*>(_callId_X, call_oset));
     if (!ret1.second){
         DEBDEV("p_comap_mm = comap_mm[_mod].find(_callId_X)",_callId_X )
@@ -248,7 +248,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     }
 
     //doa state
-    pair<map<CALL_OSET*,int>::iterator,bool> ret2;
+    pair<unordered_map<CALL_OSET*,int>::iterator,bool> ret2;
     ret2 = call_oset_doa_state[_mod].insert(pair<CALL_OSET*, int>(call_oset, NOT_DOA));
     if(!ret2.second){
         DEBDEV("p_doamap = call_oset_doa_state[_mod].find(call_oset)",call_oset )
@@ -256,7 +256,7 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     }
 
     //ttl
-    pair<map<CALL_OSET*, lli>::iterator,bool> ret3;
+    pair<unordered_map<CALL_OSET*, lli>::iterator,bool> ret3;
     ret3 = call_oset_ttl[_mod].insert(pair<CALL_OSET*, lli>(call_oset, 0));
     if(!ret3.second){
         DEBDEV("p_ttl = call_oset_ttl[_mod].find(call_oset);",call_oset )
@@ -271,8 +271,8 @@ CALL_OSET* COMAP::setCALL_OSET(string _callId_X, int _mod, ENGINE* _sl_cc, TRNSP
     }
 
     // x2y
-    pair<map<string,string>::iterator,bool> ret4;
-    pair<map<string,string>::iterator,bool> ret5;
+    pair<unordered_map<string,string>::iterator,bool> ret4;
+    pair<unordered_map<string,string>::iterator,bool> ret5;
 
     char callIdtmp[512];
     if(COMAPS_DIG == 1){
@@ -335,7 +335,7 @@ void COMAP::setDoa(CALL_OSET* _call_oset, int _doa, int _mod){
             DEBASSERT("invalid comap index "<<_mod)
     }
 
-    pair<map<CALL_OSET*, int>::iterator,bool> ret;
+    pair<unordered_map<CALL_OSET*, int>::iterator,bool> ret;
     ret = call_oset_doa_state[_mod].insert(pair<CALL_OSET*, int>(_call_oset,_doa));
     if(!ret.second){
     	call_oset_doa_state[_mod].erase(ret.first);
@@ -362,7 +362,7 @@ int COMAP::getDoaState(CALL_OSET* _call_oset, int _mod){
         DEBASSERT("invalid comap index "<<_mod)
     }
 
-    map<CALL_OSET*, int>::iterator p;
+    unordered_map<CALL_OSET*, int>::iterator p;
     int tmp;
     p = call_oset_doa_state[_mod].find(_call_oset);
     if (p!=	call_oset_doa_state[_mod].end()){
@@ -386,7 +386,7 @@ int COMAP::getDoa(CALL_OSET* _call_oset, int _mod){
         DEBASSERT("invalid comap index "<<_mod)
     }
 
-    map<CALL_OSET*, int>::iterator p;
+    unordered_map<CALL_OSET*, int>::iterator p;
     int tmp;
     p = call_oset_doa_state[_mod].find(_call_oset);
     if (p!=	call_oset_doa_state[_mod].end()){
@@ -524,7 +524,7 @@ void COMAP::purgeDOA(int _comapset){
 	int ex2 = _comapset * COMAPS / DOATH + COMAPS / DOATH - 1;
 
     for ( mod= ex1; mod < ex2; mod++){
-        map<string, CALL_OSET*>::iterator p_comap_mm;
+        unordered_map<string, CALL_OSET*>::iterator p_comap_mm;
         CALL_OSET* call_oset;
         stack<string> todel_cx;
 
@@ -580,7 +580,7 @@ void COMAP::purgeDOA(int _comapset){
                 SysTime afterT;
                 GETTIME(afterT);
                 lli now = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec;
-                map<CALL_OSET*, lli>::iterator p_ttl;
+                unordered_map<CALL_OSET*, lli>::iterator p_ttl;
                 p_ttl = call_oset_ttl[mod].find(call_oset);
                 if (p_ttl == call_oset_ttl[mod].end()){
                         DEBASSERT("call_oset_ttl inexistent")
@@ -606,7 +606,7 @@ void COMAP::purgeDOA(int _comapset){
                 SysTime afterT;
                 GETTIME(afterT);
                 lli now = ((lli) afterT.tv.tv_sec)*1000000+(lli)afterT.tv.tv_usec;
-                map<CALL_OSET*, lli>::iterator p_ttl_del;
+                unordered_map<CALL_OSET*, lli>::iterator p_ttl_del;
                 p_ttl_del = call_oset_ttl_delete[mod].find(call_oset);
                 if (p_ttl_del == call_oset_ttl_delete[mod].end()){
                         DEBASSERT("call_oset_ttl insistent")
@@ -657,7 +657,7 @@ void COMAP::resetDoaRequestTimer(CALL_OSET* _call_oset,int _modulus){
     SETNOW
 
     //Reset delete timer
-    map<CALL_OSET*, lli>::iterator p_ttl;
+    unordered_map<CALL_OSET*, lli>::iterator p_ttl;
     p_ttl = call_oset_ttl[_modulus].find(_call_oset);
     if (p_ttl == call_oset_ttl[_modulus].end()){
         DEBWARNING("call_oset_ttl inexistent",_call_oset )

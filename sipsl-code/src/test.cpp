@@ -178,7 +178,7 @@ const int SUDP::realm = SIPSL_REALM;
 int main(int argc, const char* argv[]) {
 
 	//command line for seamless failover
-	// SIPSL P:STANDBYADDRRESS:PORTFAILOVER
+	// SIPSL A address localPort_s matePort_s
 	// SIPSL S:ACTIVEADDRESS:PORTFAILOVER
 
 	 (void) signal(SIGSEGV, ex_program);

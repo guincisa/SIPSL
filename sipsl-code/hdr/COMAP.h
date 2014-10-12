@@ -32,7 +32,7 @@
 
 
 //map to associate callId_Y to callId_X
-typedef map<string, string> CALL_ID_Y2X;
+typedef unordered_map<string, string> CALL_ID_Y2X;
 
 
 //Call Object Map
@@ -47,19 +47,19 @@ class COMAP {
 
 
 		//call id y to call id x
-		map<string, string> call_id_y2x[COMAPS];
+		unordered_map<string, string> call_id_y2x[COMAPS];
                 //Questo serve quando creo una nuova call
                 //tramite un call_x emi serve per trovare 
                 //la entry nella tabella call_id_y2x
-                map<string, string> call_id_x2y[COMAPS];
+                unordered_map<string, string> call_id_x2y[COMAPS];
 
 		//Map of call_osets and doa
 		//doa can't be stored into call_oset
-		map<CALL_OSET*, int> call_oset_doa_state[COMAPS];
+		unordered_map<CALL_OSET*, int> call_oset_doa_state[COMAPS];
 
 		//Time to live
-		map<CALL_OSET*, lli> call_oset_ttl[COMAPS];
-		map<CALL_OSET*, lli> call_oset_ttl_delete[COMAPS];
+		unordered_map<CALL_OSET*, lli> call_oset_ttl[COMAPS];
+		unordered_map<CALL_OSET*, lli> call_oset_ttl_delete[COMAPS];
 
 		void setDoa(CALL_OSET*, int,int);
 		int getDoa(CALL_OSET*,int);
