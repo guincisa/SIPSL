@@ -14,6 +14,7 @@ CPP_SRCS += \
 ../sipsl-code/src/DOA.cpp \
 ../sipsl-code/src/ENGINE.cpp \
 ../sipsl-code/src/MESSAGE.cpp \
+../sipsl-code/src/SEAMFAIL.cpp \
 ../sipsl-code/src/SIPENGINE.cpp \
 ../sipsl-code/src/SIPUTIL.cpp \
 ../sipsl-code/src/SL_CC.cpp \
@@ -35,6 +36,7 @@ OBJS += \
 ./sipsl-code/src/DOA.o \
 ./sipsl-code/src/ENGINE.o \
 ./sipsl-code/src/MESSAGE.o \
+./sipsl-code/src/SEAMFAIL.o \
 ./sipsl-code/src/SIPENGINE.o \
 ./sipsl-code/src/SIPUTIL.o \
 ./sipsl-code/src/SL_CC.o \
@@ -56,6 +58,7 @@ CPP_DEPS += \
 ./sipsl-code/src/DOA.d \
 ./sipsl-code/src/ENGINE.d \
 ./sipsl-code/src/MESSAGE.d \
+./sipsl-code/src/SEAMFAIL.d \
 ./sipsl-code/src/SIPENGINE.d \
 ./sipsl-code/src/SIPUTIL.d \
 ./sipsl-code/src/SL_CC.d \
@@ -71,7 +74,7 @@ CPP_DEPS += \
 sipsl-code/src/%.o: ../sipsl-code/src/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -DCOMPILEFORSUSE -I"/home/guic/DEV/wscpp/SIPSL_SVN/sipsl-code/hdr" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -DCOMPILEFORSUSE -I"/home/guic/DEV/SIPSL/SIPSL_SVN_2/sipsl-code/hdr" -O0 -g3 -Wall -c -fmessage-length=0 -std=gnu++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
