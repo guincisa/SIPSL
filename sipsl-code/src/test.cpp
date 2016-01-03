@@ -236,7 +236,7 @@ int main(int argc, const char* argv[]) {
         NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH, ALARMMAPS, "ALMGR", sl_cc, 0, 10000000), "ALMGR")
         //ALMGR alarm(&sl_cc, 0, 10000000);
         alarm->initAlarm();
-        sipStack->init(5060, sipeng, "groog.sipsl.org", alarm, false);
+        sipStack->init(5060, sipeng, "krook", alarm, false);
 
         // Seamless failover
         NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1, 1, "SEAMFAILENG"), "SEAMFAILENG")
@@ -268,7 +268,7 @@ int main(int argc, const char* argv[]) {
 
         //if start type A standby then do activate sipStack
 
-        failoverStack->init(localPort, seamLessEng, "groog.sispl.org", alarm, true);
+        failoverStack->init(localPort, seamLessEng, "krook", alarm, true);
         failoverStack->start();
 
         if (strcmp(startType, "A") == 0) {

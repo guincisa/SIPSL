@@ -83,7 +83,7 @@ class ThreadWrapper {
 #define SPINSTL
 
 #ifndef SPARC
-#define ADDRESSPACE 5
+#define ADDRESSPACE 8
 #else
 #define ADDRESSPACE 8
 #endif
@@ -202,16 +202,17 @@ class ThreadWrapper {
 #define DEBCODEALARM1
 #define LOGINFMESSAGE_MIN
 #define LOGINFCALLOSET
+//end if SPARC
 #endif
 
-//#define LOGLEVL2
+#define LOGLEVL2
 #ifdef LOGLEVL2
 #define LOGINFMESSAGE
 #define LOGLOK
 
 //#define LOGINCOMAP_H
 
-//#define LOGINFSUDP
+#define LOGINFSUDP
 //#define LOGMIN
 //#define LOGNTW
 //#define SELFCHECK
@@ -349,22 +350,22 @@ class ThreadWrapper {
 #define LOGINFCALLOSET
 #endif
 
-//#define LOGLEVL2
+#define LOGLEVL2
 #ifdef LOGLEVL2
 #define LOGINFMESSAGE
 //#define LOGLOK
 
 //#define LOGINCOMAP_H
 
-//#define LOGINFSUDP
+#define LOGINFSUDP
 //#define LOGMIN
 //#define LOGNTW
 //#define SELFCHECK
-//#define DEBCODE
+#define DEBCODE
 //#define MESSAGEUSAGE
 #endif
 
-//#define SHOWFLOWLOG
+#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
