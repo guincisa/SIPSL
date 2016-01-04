@@ -179,7 +179,7 @@ int main(int argc, const char* argv[]) {
     
     (void) signal(SIGSEGV, ex_program);
     (void) signal(SIGBUS, ex_program);
-    if (argc == 5) {
+    if (argc == 6) {
 
         BDEBUG("SIPSL main thread", pthread_self())
         for (int i = 0; i < 50; i++) {
@@ -236,7 +236,10 @@ int main(int argc, const char* argv[]) {
         NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH, ALARMMAPS, "ALMGR", sl_cc, 0, 10000000), "ALMGR")
         //ALMGR alarm(&sl_cc, 0, 10000000);
         alarm->initAlarm();
-        sipStack->init(5060, sipeng, "krook", alarm, false);
+	char SIPPORT[8];
+	strcpy(SIPPORT,argv[5]);
+	int SIPPORT_i = atoi(SIPPORT);
+        sipStack->init(SIPPORT_i, sipeng, "krook", alarm, false);
 
         // Seamless failover
         NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1, 1, "SEAMFAILENG"), "SEAMFAILENG")
