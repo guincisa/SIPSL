@@ -202,7 +202,6 @@ class ThreadWrapper {
 #define DEBCODEALARM1
 #define LOGINFMESSAGE_MIN
 #define LOGINFCALLOSET
-//end if SPARC
 #endif
 
 #define LOGLEVL2
@@ -490,6 +489,7 @@ class ThreadWrapper {
 
 
 #endif
+//end if SPARC
 
 
 //Mandatory
