@@ -2408,6 +2408,9 @@ bool MESSAGE::buildCommand(vector< pair<int,pair<int, pair<string,string> > > >&
 	 i operation
 	 127.0.0.1:5061 key
 	 service@127.0.0.1:5061 data
+
+	 dump all regitrations
+	 0%q%all%
 	 */
 
 	vector< pair<char*, bool> >::iterator m_l;
@@ -2439,6 +2442,10 @@ bool MESSAGE::buildCommand(vector< pair<int,pair<int, pair<string,string> > > >&
 		}
 		else if (s[1].compare("d")  == 0){
 			k = 2;
+		}
+		else if (s[1].compare("q") == 0){
+			//query
+			k = 3;
 		}
 		else if (s[1].compare("t")  == 0){
 			k = 20;
