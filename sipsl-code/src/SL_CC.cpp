@@ -268,6 +268,7 @@ void SL_CC::parse(void* __mess, int _mmod){
         }
         else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == REGISTER_REQUEST) {
 
+        	//Inserting regiter data into dao and reply 200 OK
         	DEBOUT("username@domain",_mess->getFromUser())
 			DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
 			DEBOUT("REGISTER address",inet_ntoa(_mess->getEchoClntAddr().sin_addr))

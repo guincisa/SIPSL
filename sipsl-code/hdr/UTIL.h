@@ -41,6 +41,15 @@ extern double PERFARRAY[4][50];
 
 #define SPARC
 
+//set SIPSL to work with Vodafone bb
+// SIPSL run on linux behind Vodafone router
+// Vodafone router modifies URI putting the local address of the server:
+// REGISTER sip:192.168.1.9:5060 SIP/2.0^M
+// this can be avoided by changing the sip default, but then the 200OK is not sent back correctly (to be investigated)
+//
+// V1 changes to set up the call
+#define VODAFONEBB
+
 using namespace std;
 
 #define WINDOWS

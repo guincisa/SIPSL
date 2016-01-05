@@ -165,6 +165,18 @@ void DAO::parse(void* __mess, int _mmod) {
             //send
 
         }
+        if (m_l_2.first == 3){
+            GETLOCK(&mutex,"DAO mutex",20)
+            DEBOUT("void DAO::parse dumping registration table size", datatable[table].size());
+            vector< pair<string, string>::iterator reg_l;
+            reg_l = datatable[table].begin();
+            while (reg_l  != datatable.end()){
+            	DEBOUT("void DAO::parse record ", reg_l->first << "][" << reg_l>second);
+            }
+            DEBOUT("void DAO::parse dumping registration end","");
+
+			RELLOCK(&mutex,"DAO mutex")
+        }
         if (m_l_2.first == 20){
             //PD-SIPSL
             //t%SL_CC%10
@@ -194,7 +206,7 @@ void DAO::parse(void* __mess, int _mmod) {
 
 }
 void DAO::putData(int _table,pair<string,string> _tuple){
-
+	//Register data
 	GETLOCK(&mutex,"DAO mutex",20)
 	DEBOUT("void DAO::putData",_tuple.first << "]["<<_tuple.second)
 	datatable[_table].insert(_tuple);
