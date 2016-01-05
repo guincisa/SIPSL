@@ -268,6 +268,17 @@ void SL_CC::parse(void* __mess, int _mmod){
         }
         else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == REGISTER_REQUEST) {
 
+
+#ifdef VODAFONEBB
+        	//Using VIA
+        	DEBOUT("username@domain",_mess->getFromUser())
+        	DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
+			DEBOUT("REGISTER port",_mess->getViaUriPort())
+			stringstream _xx;
+			_xx << _mess->getFromUser() << ":" << _mess->getViaUriPort());
+			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
+
+#else
         	//Inserting regiter data into dao and reply 200 OK
         	DEBOUT("username@domain",_mess->getFromUser())
 			DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
@@ -275,7 +286,9 @@ void SL_CC::parse(void* __mess, int _mmod){
 			stringstream _xx;
 			_xx << inet_ntoa(_mess->getEchoClntAddr().sin_addr) << ":" << ntohs((_mess->getEchoClntAddr()).sin_port);
 			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
-        	CREATEMESSAGE(OKregister, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)
+#endif
+
+			CREATEMESSAGE(OKregister, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)
 			SipUtil.genASideReplyFromRequest(_mess,OKregister);
 			OKregister->setHeadSipReply("200 OK");
         	OKregister->dropHeader("Contact:");
