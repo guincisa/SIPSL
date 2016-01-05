@@ -273,9 +273,9 @@ void SL_CC::parse(void* __mess, int _mmod){
         	//Using VIA
         	DEBOUT("username@domain",_mess->getFromUser())
         	DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
-			DEBOUT("REGISTER port",_mess->getViaUriPort())
+			DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
 			stringstream _xx;
-			_xx << _mess->getFromUser() << ":" << _mess->getViaUriPort());
+			_xx << _mess->getFromUser() << ":" << ntohs(_mess->getEchoClntAddr().sin_port);
 			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
 
 #else
