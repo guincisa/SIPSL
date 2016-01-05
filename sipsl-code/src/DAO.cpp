@@ -168,7 +168,7 @@ void DAO::parse(void* __mess, int _mmod) {
         if (m_l_2.first == 3){
             GETLOCK(&mutex,"DAO mutex",20)
             DEBOUT("void DAO::parse dumping registration table size", datatable[table].size());
-            vector< pair<string, string>::iterator reg_l;
+            vector< pair<string, string> >::iterator reg_l;
             reg_l = datatable[table].begin();
             while (reg_l  != datatable.end()){
             	DEBOUT("void DAO::parse record ", reg_l->first << "][" << reg_l>second);
