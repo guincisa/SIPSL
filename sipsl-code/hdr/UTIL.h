@@ -97,6 +97,7 @@ class ThreadWrapper {
 #define ADDRESSPACE 8
 #endif
 
+#define VODAFONEBBB
 
 #ifdef SPARC
 
