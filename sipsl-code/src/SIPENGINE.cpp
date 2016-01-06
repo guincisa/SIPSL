@@ -159,7 +159,8 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
     //will crash if invalid
     int type = _mess->getReqRepType();
-    DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getFirstLine() << "] type[" <<type)
+    DEBY
+    //DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getFirstLine() << "] type[" <<type)
 
     if (type == REQSUPP) {
 
