@@ -85,6 +85,7 @@ class SUDP {
 
         void sendRawMessage(string* message, string address, int port);
 
+        void setDAO(DAO* dao);
 
         //ENGINE* getDoa();
         string getLocalIp(void);
@@ -108,6 +109,8 @@ class SUDP {
         sockaddr_inX echoClntAddr;
 
         static const int realm;
+
+        DAO* dao;
 
 
         ALMGR* alarm;

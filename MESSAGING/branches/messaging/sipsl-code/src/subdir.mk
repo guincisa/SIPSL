@@ -68,7 +68,7 @@ CPP_DEPS += \
 branches/messaging/sipsl-code/src/%.o: ../branches/messaging/sipsl-code/src/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -DCOMPILEFORSUSE -I"/home/guic/DEV/workspace/SIPSL_SVN/sipsl-code/hdr" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -DCOMPILEFORSUSE -I"C:\Users\incisadicameranag\Documents\NOC\TOOLS\EclipsePortable\Data\workspace\SIPSL_SVN_2\sipsl-code\hdr" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

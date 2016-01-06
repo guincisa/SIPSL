@@ -187,7 +187,8 @@ class ThreadWrapper {
 //DATA TABLES
 #define TBL_ROUTE 0
 #define TBL_NAT 1
-#define TABLES 2
+#define TBL_REGISTER 2
+#define TABLES 3
 
 
 //uncomment for profiling
