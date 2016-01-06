@@ -2083,63 +2083,46 @@ int MESSAGE::getReqRepType(void){
 		char snum[strlen(message_line[0].first) +1];
 		strcpy(snum, message_line[0].first+8);
 		headSipReply = snum;
+		DEBY
 	}
-	DEBY
-
 	else if(strncmp(message_line[0].first,"INVITE",6) == 0){
 		reqRep = REQSUPP;
 		requestCode = INVITE_REQUEST;
 		headSipRequest = "INVITE";
 	}
-	DEBY
-
 	else if(strncmp(message_line[0].first,"ACK",3) == 0){
 		reqRep = REQSUPP;
 		requestCode = ACK_REQUEST;
 		headSipRequest = "ACK";
 	}
-	DEBY
-
 	else if(strncmp(message_line[0].first,"BYE",3) == 0){
 		reqRep = REQSUPP;
 		requestCode = BYE_REQUEST;
 		headSipRequest = "BYE";
 	}
-	DEBY
-
 	else if(strncmp(message_line[0].first,"CANCEL",6) == 0){
 		reqRep = REQSUPP;
 		requestCode = CANCEL_REQUEST;
 		headSipRequest = "CANCEL";
 	}
-	DEBY
-
 	else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
 		reqRep = REQSUPP;
 		requestCode = REGISTER_REQUEST;
 		headSipRequest = "REGISTER";
 	}
-	DEBY
-
 	else if(strncmp(message_line[0].first,"MESSAGE",7) == 0){
 		reqRep = REQSUPP;
 		requestCode = MESSAGE_REQUEST;
 		headSipRequest = "MESSAGE";
 	}
-	DEBY
-
 	else if(strncmp(message_line[0].first,"PD-SIPSL",8) == 0){
 		reqRep = RECOMMPD;
 		headSipRequest = "PD-SIPSL";
 	}
-	DEBY
-
 	else if(strncmp(message_line[0].first,"OM-SIPSL",8) == 0){
 		reqRep = RECOMMOM;
 		headSipRequest = "OM-SIPSL";
 	}
-	DEBY
-
 	else{
 		reqRep = REQUNSUPP;
 		headSipRequest = "???";
