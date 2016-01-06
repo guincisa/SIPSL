@@ -273,10 +273,10 @@ void SL_CC::parse(void* __mess, int _mmod){
         	//Using VIA
         	DEBOUT("username@domain",_mess->getFromUser())
         	DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
-			DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
-			stringstream _xx;
-			_xx << _mess->getFromUser() << ":" << ntohs(_mess->getEchoClntAddr().sin_port);
-			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
+		DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
+		stringstream _xx;
+		_xx << _mess->getViaUriHost() << ":5060" ;
+		dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
 
 #else
         	//Inserting regiter data into dao and reply 200 OK
