@@ -2052,29 +2052,20 @@ int MESSAGE::getReqRepType(void){
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getReqRepType invalid")
 
-	DEBY
-
 	TIMEDEF
 	SETNOW
-
-	DEBY
-
 
 	if(messageStatus !=1){
 		fillIn();
 	}
-
-	DEBY
 
 	if (reqRep != 0) {
 		DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
 		PRINTDIFF("MESSAGE::getReqRepType - already parsed")
 		return reqRep;
 	}
-	DEBY
 
 	if (message_line.size() == 0){
-		//probably rubbish
 		reqRep = REQUNSUPP;
 		headSipRequest = "???";
 	} else{
@@ -2084,13 +2075,11 @@ int MESSAGE::getReqRepType(void){
 			char num[4];
 			DEBY
 			strncpy(num, message_line[0].first+8, 3);
-			DEBY
 			num[3] = '\0';
 			replyCode = atoi(num);
 			char snum[strlen(message_line[0].first) +1];
 			strcpy(snum, message_line[0].first+8);
 			headSipReply = snum;
-			DEBY
 		}
 		else if(strncmp(message_line[0].first,"INVITE",6) == 0){
 			reqRep = REQSUPP;
@@ -2134,7 +2123,6 @@ int MESSAGE::getReqRepType(void){
 			reqRep = REQUNSUPP;
 			headSipRequest = "???";
 		}
-		DEBY
 
 		DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
 		PRINTDIFF("MESSAGE::getReqRepType - parsed")
