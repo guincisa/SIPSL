@@ -2073,7 +2073,7 @@ int MESSAGE::getReqRepType(void){
 	}
 	DEBY
 
-	if (strlen(message_line.size()) == 0){
+	if (message_line.size() == 0){
 		//probably rubbish
 		reqRep = REQUNSUPP;
 		headSipRequest = "???";
