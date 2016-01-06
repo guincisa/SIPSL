@@ -2073,64 +2073,71 @@ int MESSAGE::getReqRepType(void){
 	}
 	DEBY
 
-	if(strncmp(message_line[0].first,"SIP",3) == 0){
-		reqRep = REPSUPP;
-		//Parse "SIP/2.0 200 OK"
-		char num[4];
-		strncpy(num, message_line[0].first+8, 3);
-		num[3] = '\0';
-		replyCode = atoi(num);
-		char snum[strlen(message_line[0].first) +1];
-		strcpy(snum, message_line[0].first+8);
-		headSipReply = snum;
-		DEBY
-	}
-	else if(strncmp(message_line[0].first,"INVITE",6) == 0){
-		reqRep = REQSUPP;
-		requestCode = INVITE_REQUEST;
-		headSipRequest = "INVITE";
-	}
-	else if(strncmp(message_line[0].first,"ACK",3) == 0){
-		reqRep = REQSUPP;
-		requestCode = ACK_REQUEST;
-		headSipRequest = "ACK";
-	}
-	else if(strncmp(message_line[0].first,"BYE",3) == 0){
-		reqRep = REQSUPP;
-		requestCode = BYE_REQUEST;
-		headSipRequest = "BYE";
-	}
-	else if(strncmp(message_line[0].first,"CANCEL",6) == 0){
-		reqRep = REQSUPP;
-		requestCode = CANCEL_REQUEST;
-		headSipRequest = "CANCEL";
-	}
-	else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
-		reqRep = REQSUPP;
-		requestCode = REGISTER_REQUEST;
-		headSipRequest = "REGISTER";
-	}
-	else if(strncmp(message_line[0].first,"MESSAGE",7) == 0){
-		reqRep = REQSUPP;
-		requestCode = MESSAGE_REQUEST;
-		headSipRequest = "MESSAGE";
-	}
-	else if(strncmp(message_line[0].first,"PD-SIPSL",8) == 0){
-		reqRep = RECOMMPD;
-		headSipRequest = "PD-SIPSL";
-	}
-	else if(strncmp(message_line[0].first,"OM-SIPSL",8) == 0){
-		reqRep = RECOMMOM;
-		headSipRequest = "OM-SIPSL";
-	}
-	else{
+	if (strln(message_line[0] < 3)){
+		//probably rubbish
 		reqRep = REQUNSUPP;
 		headSipRequest = "???";
-	}
-	DEBY
+	} else{
+		if(strncmp(message_line[0].first,"SIP",3) == 0){
+			reqRep = REPSUPP;
+			//Parse "SIP/2.0 200 OK"
+			char num[4];
+			strncpy(num, message_line[0].first+8, 3);
+			num[3] = '\0';
+			replyCode = atoi(num);
+			char snum[strlen(message_line[0].first) +1];
+			strcpy(snum, message_line[0].first+8);
+			headSipReply = snum;
+			DEBY
+		}
+		else if(strncmp(message_line[0].first,"INVITE",6) == 0){
+			reqRep = REQSUPP;
+			requestCode = INVITE_REQUEST;
+			headSipRequest = "INVITE";
+		}
+		else if(strncmp(message_line[0].first,"ACK",3) == 0){
+			reqRep = REQSUPP;
+			requestCode = ACK_REQUEST;
+			headSipRequest = "ACK";
+		}
+		else if(strncmp(message_line[0].first,"BYE",3) == 0){
+			reqRep = REQSUPP;
+			requestCode = BYE_REQUEST;
+			headSipRequest = "BYE";
+		}
+		else if(strncmp(message_line[0].first,"CANCEL",6) == 0){
+			reqRep = REQSUPP;
+			requestCode = CANCEL_REQUEST;
+			headSipRequest = "CANCEL";
+		}
+		else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
+			reqRep = REQSUPP;
+			requestCode = REGISTER_REQUEST;
+			headSipRequest = "REGISTER";
+		}
+		else if(strncmp(message_line[0].first,"MESSAGE",7) == 0){
+			reqRep = REQSUPP;
+			requestCode = MESSAGE_REQUEST;
+			headSipRequest = "MESSAGE";
+		}
+		else if(strncmp(message_line[0].first,"PD-SIPSL",8) == 0){
+			reqRep = RECOMMPD;
+			headSipRequest = "PD-SIPSL";
+		}
+		else if(strncmp(message_line[0].first,"OM-SIPSL",8) == 0){
+			reqRep = RECOMMOM;
+			headSipRequest = "OM-SIPSL";
+		}
+		else{
+			reqRep = REQUNSUPP;
+			headSipRequest = "???";
+		}
+		DEBY
 
-	DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
-	PRINTDIFF("MESSAGE::getReqRepType - parsed")
+		DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
+		PRINTDIFF("MESSAGE::getReqRepType - parsed")
+	}
+
 	return reqRep;
 
 }
