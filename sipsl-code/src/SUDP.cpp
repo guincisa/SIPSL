@@ -120,7 +120,13 @@ void * SUDPSTACK(void *_tgtObject) {
 
     return (NULL);
 }
-
+// *****************************************************************************************
+// Set DAO
+// *****************************************************************************************
+// *****************************************************************************************
+void SUDP::setDAO(DAO* _dao) {
+    dao = _dao;
+}
 // *****************************************************************************************
 // SUDP
 // Initialize Stack
@@ -381,13 +387,8 @@ void SUDP::sendRequest(MESSAGE* _message){
         DEBOUT("hasNat",_pair.first<<"]["<<_pair.second)
     }
     else{
-#ifdef VODAFONEBB
     	_pair = _message->getRequestUriProtocol();
     	DEBOUT("use request",_pair.first<<"]["<<_pair.second)
-#else
-    	_pair = _message->getRequestUriProtocol();
-    	DEBOUT("use request",_pair.first<<"]["<<_pair.second)
-#endif
     }
     DEBOUT("sending to",_pair.first<<"]["<<_pair.second)
     const char* _hostchar = _pair.first.c_str();

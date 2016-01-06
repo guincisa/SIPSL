@@ -268,24 +268,28 @@ void SL_CC::parse(void* __mess, int _mmod){
         }
         else if (call_oset == 0x0 && _mess->getReqRepType() == REQSUPP && _mess->getHeadSipRequestCode() == REGISTER_REQUEST) {
 
-
+        //Register
 #ifdef VODAFONEBB
-        	//Using VIA
-        	DEBOUT("username@domain",_mess->getFromUser())
-        	DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
+        //Using VIA
+        DEBOUT("username@domain",_mess->getFromUser())
+        DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
 		DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
 		stringstream _xx;
 		_xx << _mess->getViaUriHost() << ":5060" ;
-		dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
+		dao->putData(TBL_REGISTER,make_pair(_mess->getFromUser(),_xx.str()));
 
 #else
-        	//Inserting regiter data into dao and reply 200 OK
+        	//Inserting regiter data
+		into dao and reply 200 OK
         	DEBOUT("username@domain",_mess->getFromUser())
 			DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
 			DEBOUT("REGISTER address",inet_ntoa(_mess->getEchoClntAddr().sin_addr))
 			stringstream _xx;
 			_xx << inet_ntoa(_mess->getEchoClntAddr().sin_addr) << ":" << ntohs((_mess->getEchoClntAddr()).sin_port);
-			dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
+			// TBL nat never put
+			//dao->putData(TBL_NAT,make_pair(_mess->getFromUser(),_xx.str()));
+			dao->putData(TBL_ROUTE,make_pair(_mess->getFromUser(),_xx.str()));
+
 #endif
 
 			CREATEMESSAGE(OKregister, _mess, SODE_TRNSCT_SV,SODE_NTWPOINT)

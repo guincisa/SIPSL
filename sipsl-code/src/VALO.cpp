@@ -221,8 +221,12 @@ void VALO::onInvite(MESSAGE* _message){
 		sprintf(css,"%s",tp.first.c_str());
 	}
 	DEBY
+#ifdef VODAFONEBB
+	string tmpR = ((SL_CC*)sl_cc)->getDAO()->getData(TBL_REGISTER,css);
+#else
 	string tmpR = ((SL_CC*)sl_cc)->getDAO()->getData(TBL_ROUTE,css);
-	DEBOUT("tmpR", tmpR)
+#endif
+	DEBOUT("getDAO()->getData tmpR", tmpR)
 	if (tmpR.length() != 0){
 		DEBY
 		size_t found = tmpR.find(":");
