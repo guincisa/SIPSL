@@ -165,6 +165,7 @@ class MESSAGE {
 
 	////////////////////////////////
 	public:
+        //Called at SUDP
 		MESSAGE(const char* incMessBuff,
 				int genEntity,
 				SysTime inc_ts,

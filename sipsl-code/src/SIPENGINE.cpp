@@ -154,8 +154,10 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
 	MESSAGE* _mess = (MESSAGE*)__mess;
 
+    //TODO is that needed? already done in SUDP)
     _mess->fillIn();
 
+    //will crash if invalid
     int type = _mess->getReqRepType();
     DEBSIP("SIPENGINE::parse", _mess << "] ["<<_mess->getFirstLine() << "] type[" <<type)
 
