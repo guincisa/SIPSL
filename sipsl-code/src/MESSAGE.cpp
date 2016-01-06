@@ -2082,7 +2082,9 @@ int MESSAGE::getReqRepType(void){
 			reqRep = REPSUPP;
 			//Parse "SIP/2.0 200 OK"
 			char num[4];
+			DEBY
 			strncpy(num, message_line[0].first+8, 3);
+			DEBY
 			num[3] = '\0';
 			replyCode = atoi(num);
 			char snum[strlen(message_line[0].first) +1];
