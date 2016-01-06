@@ -209,7 +209,7 @@ void DAO::parse(void* __mess, int _mmod) {
 void DAO::putData(int _table,pair<string,string> _tuple){
 	//Register data
 	GETLOCK(&mutex,"DAO mutex",20)
-	DEBOUT("void DAO::putData",_tuple.first << "]["<<_tuple.second)
+	DEBOUT("void DAO::putData",_table <<"]["<<_tuple.first << "]["<<_tuple.second)
 	datatable[_table].insert(_tuple);
 	RELLOCK(&mutex,"DAO mutex")
 }

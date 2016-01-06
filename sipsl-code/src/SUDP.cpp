@@ -98,6 +98,10 @@
 #ifndef TRNSPRT_H
 #include "TRNSPRT.h"
 #endif
+#ifndef DAO_H
+#include "DAO.h"
+#endif
+
 
 static SIPUTIL SipUtil;
 
