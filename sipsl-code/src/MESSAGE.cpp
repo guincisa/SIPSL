@@ -75,6 +75,7 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 				int _sock,
 				struct sockaddr_in _echoClntAddr){
 
+	//Nee anti rubbish protection
 	DEBINFMESSAGE_MIN("MESSAGE::MESSAGE(MESSAGE* _sourceMessage,int _genEntity,SysTime _creaTime)",this)
 
 	sourceMessage 			= MainMessage;
@@ -2045,21 +2046,33 @@ void MESSAGE::unsetRoute(void){
 }
 int MESSAGE::getReqRepType(void){
 	DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this)
+
+	DEBY
+
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getReqRepType invalid")
+
+	DEBY
 
 	TIMEDEF
 	SETNOW
 
+	DEBY
+
+
 	if(messageStatus !=1){
 		fillIn();
 	}
+
+	DEBY
 
 	if (reqRep != 0) {
 		DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
 		PRINTDIFF("MESSAGE::getReqRepType - already parsed")
 		return reqRep;
 	}
+	DEBY
+
 	if(strncmp(message_line[0].first,"SIP",3) == 0){
 		reqRep = REPSUPP;
 		//Parse "SIP/2.0 200 OK"
@@ -2071,48 +2084,68 @@ int MESSAGE::getReqRepType(void){
 		strcpy(snum, message_line[0].first+8);
 		headSipReply = snum;
 	}
+	DEBY
+
 	else if(strncmp(message_line[0].first,"INVITE",6) == 0){
 		reqRep = REQSUPP;
 		requestCode = INVITE_REQUEST;
 		headSipRequest = "INVITE";
 	}
+	DEBY
+
 	else if(strncmp(message_line[0].first,"ACK",3) == 0){
 		reqRep = REQSUPP;
 		requestCode = ACK_REQUEST;
 		headSipRequest = "ACK";
 	}
+	DEBY
+
 	else if(strncmp(message_line[0].first,"BYE",3) == 0){
 		reqRep = REQSUPP;
 		requestCode = BYE_REQUEST;
 		headSipRequest = "BYE";
 	}
+	DEBY
+
 	else if(strncmp(message_line[0].first,"CANCEL",6) == 0){
 		reqRep = REQSUPP;
 		requestCode = CANCEL_REQUEST;
 		headSipRequest = "CANCEL";
 	}
+	DEBY
+
 	else if(strncmp(message_line[0].first,"REGISTER",8) == 0){
 		reqRep = REQSUPP;
 		requestCode = REGISTER_REQUEST;
 		headSipRequest = "REGISTER";
 	}
+	DEBY
+
 	else if(strncmp(message_line[0].first,"MESSAGE",7) == 0){
 		reqRep = REQSUPP;
 		requestCode = MESSAGE_REQUEST;
 		headSipRequest = "MESSAGE";
 	}
+	DEBY
+
 	else if(strncmp(message_line[0].first,"PD-SIPSL",8) == 0){
 		reqRep = RECOMMPD;
 		headSipRequest = "PD-SIPSL";
 	}
+	DEBY
+
 	else if(strncmp(message_line[0].first,"OM-SIPSL",8) == 0){
 		reqRep = RECOMMOM;
 		headSipRequest = "OM-SIPSL";
 	}
+	DEBY
+
 	else{
 		reqRep = REQUNSUPP;
 		headSipRequest = "???";
 	}
+	DEBY
+
 	DEBINFMESSAGE("int MESSAGE::getReqRepType(void)",this<<"]["<<reqRep)
 	PRINTDIFF("MESSAGE::getReqRepType - parsed")
 	return reqRep;
