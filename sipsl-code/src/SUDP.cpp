@@ -391,8 +391,16 @@ void SUDP::sendRequest(MESSAGE* _message){
         DEBOUT("hasNat",_pair.first<<"]["<<_pair.second)
     }
     else{
+#ifdef VODAFONEBB
+    	//get the called user id
+        DEBOUT("username@domain",_message->getToUser())
+		_pair = brkin2string(dao->getData(TBL_REGISTER,_message->getToUser()), ":");
+    	DEBOUT("Use REGISTER table",_pair.first<<"]["<<_pair.second)
+
+#else
     	_pair = _message->getRequestUriProtocol();
     	DEBOUT("use request",_pair.first<<"]["<<_pair.second)
+#endif
     }
     DEBOUT("sending to",_pair.first<<"]["<<_pair.second)
     const char* _hostchar = _pair.first.c_str();
