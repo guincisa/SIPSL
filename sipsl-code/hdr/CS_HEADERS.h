@@ -148,6 +148,14 @@ inline Tuple brkin2(string couple, string separator) {
 
     return tt;
 }
+inline pair<string,string> brkin2string(string couple, string separator) {
+
+    Tuple tt = brkin2(couple, separator);
+    pair<string,string> p;
+    p = make_pair (tt.Lvalue,tt.Rvalue);
+    return p;
+}
+
 inline int hasQuote(string s) {
 
     int a = s.find("\"", 0);
