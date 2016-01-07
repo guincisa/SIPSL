@@ -1939,10 +1939,10 @@ string MESSAGE::getContactUri(void){
 
 #ifdef VODAFONEBB
 	pair<pair<string,string>,pair<string,string> > split = splitUri(cont);
-	contactUri = split.first().first();
-	contactName = split.first().second();
-	contactAddress = split.second().first();
-	contactPort = split.second().second();
+	contactUri = split.first.first;
+	contactName = split.first.second;
+	contactAddress = split.second.first;
+	contactPort = split.second.second;
 #else
     char contch[cont.length() +1];
     strcpy(contch, cont.c_str());
