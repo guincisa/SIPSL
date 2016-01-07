@@ -1878,7 +1878,7 @@ string MESSAGE::getHeadTo(void){
 	DEBINFMESSAGE("string MESSAGE::getHeadTo(void)", this<<"]["<<headTo)
 	return headTo;
 }
-string getHeadToAddress(void){
+string MESSAGE::getHeadToAddress(void){
 	DEBINFMESSAGE("string MESSAGE::getHeadToAddress(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadToAddress invalid")
@@ -1893,7 +1893,7 @@ string getHeadToAddress(void){
 	DEBINFMESSAGE("string MESSAGE::getHeadTo(void)",this<<"]["<<headToAddress)
 	return headToAddress;
 }
-string getHeadToPort(void){
+string MESSAGE::getHeadToPort(void){
 	DEBINFMESSAGE("string MESSAGE::getHeadToPort(void)",this)
 	if (invalid == 1)
 		DEBASSERT("MESSAGE::getHeadToPort invalid")
