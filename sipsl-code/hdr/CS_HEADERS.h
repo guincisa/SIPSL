@@ -266,7 +266,7 @@ inline pair<pair<string,string>,pair<string,string> > splitUri(string uri){
     char* pun4;
 	if (pun3 == NULL){
 		pun3 = contch2;
-		split[1] = "";
+		p2 = "";
 		pun4 = pun3;
 	}else{
 		*pun3 = '\0';
@@ -278,7 +278,7 @@ inline pair<pair<string,string>,pair<string,string> > splitUri(string uri){
 	//192.168.0.100:5062
     char* pun5 = strchr(pun4,':');
 	if (pun5 == NULL){
-		split[3] = "5060";
+		p4 = "5060";
 	}else{
 		*pun5 = '\0';
 		char* pun6 = strchr(pun5+1,';');
