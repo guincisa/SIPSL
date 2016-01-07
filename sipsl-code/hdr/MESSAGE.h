@@ -400,7 +400,7 @@ class MESSAGE {
     	string headToUri;
     	string headToParms;
     	string headToAddress;
-    	string headToPort
+    	string headToPort;
     	bool parsedTo;
 //    	bool parsedToName;
 //    	bool parsedToUri;
