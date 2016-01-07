@@ -237,10 +237,11 @@ inline Tuple getLRvalue(string couple) {
 }
 
 // <name@host:port>
-inline string[] splitUri(string uri){
+inline pair<pair<string,string>,pair<string,string> > splitUri(string uri){
 
 	//remove brackets <>
-	string split [4];
+	pair<pair<string,string>,pair<string,string> > split;
+	string p1,p2,p3,p4;
 	DEBOUT("inline string[] splitUri(string uri)", uri)
     char contch[uri.length() +1];
     strcpy(contch, uri.c_str());
@@ -249,12 +250,12 @@ inline string[] splitUri(string uri){
     if ( pun1 != NULL){
         char* pun2 = strchr(contch,'>');
         *pun2 = '\0';
-        split[0] = pun1+5;
-		DEBOUT("splitUri no <>",split[0])
+        p1 = pun1+5;
+		DEBOUT("splitUri getUri <>",p1)
     }
     else {
-    	contactUri = contch;
-		DEBOUT("splitUri::getContactUri",contactUri)
+    	p1 = contch;
+		DEBOUT("splitUri::getUri <>",p1)
     }
 
     //majo@192.168.0.100:5062
@@ -269,11 +270,10 @@ inline string[] splitUri(string uri){
 		pun4 = pun3;
 	}else{
 		*pun3 = '\0';
-		split[1] = contch2;
+		p2 = contch2;
 		pun4 = pun3 +1;
 	}
-	DEBOUT("splitUri split[0]",split[1])
-	DEBOUT("pun4", pun4)
+	DEBOUT("splitUri name",p2)
 
 	//192.168.0.100:5062
     char* pun5 = strchr(pun4,':');
@@ -286,11 +286,13 @@ inline string[] splitUri(string uri){
 			//;transport=...
 			*pun6 = '\0';
 		}
-		split[3] = pun5 +1;
+		p4 = pun5 +1;
 	}
-	split[2] = pun4;
-	DEBOUT("splitUri split[1]",split[1])
-	DEBOUT("splitUri split[2]",split[2])
+	p3 = pun4;
+	DEBOUT("splitUri address",p3)
+	DEBOUT("splitUri port",p4)
+
+    split = make_pair (make_pair(p1,p2),make_pair(p3,p4));
 
 	return split;
 }
