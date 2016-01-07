@@ -167,9 +167,6 @@ MESSAGE::MESSAGE(const char* _incMessBuff,
 	headToUri				= "";
 	headToParms				= "";
 	parsedTo				= false;
-	parsedToName			= false;
-	parsedToUri				= false;
-	parsedToParms			= false;
 
 	parsedContact			= false;
 	contactUri				= "";
@@ -266,9 +263,6 @@ MESSAGE::MESSAGE(MESSAGE* _sourceMessage,
 	headToUri				= "";
 	headToParms				= "";
 	parsedTo				= false;
-	parsedToName			= false;
-	parsedToUri				= false;
-	parsedToParms			= false;
 
 	parsedContact			= false;
 	contactUri				= "";
@@ -321,10 +315,6 @@ void MESSAGE::_clearStatus(void){
 	headToUri				= "";
 	headToParms				= "";
 	parsedTo				= false;
-	parsedToName			= false;
-	parsedToUri				= false;
-	parsedToParms			= false;
-
 
 	reqRep					= 0;
 	headSipRequest			= "";
