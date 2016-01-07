@@ -396,6 +396,8 @@ void SUDP::sendRequest(MESSAGE* _message){
         DEBOUT("getHeadTo",_message->getHeadTo())
 		DEBOUT("getHeadToName",_message->getHeadToName())
 
+		//non arriva
+		//riprova 5060
 
 		_pair = brkin2string(dao->getData(TBL_REGISTER,_message->getHeadToName()), ":");
     	DEBOUT("Use REGISTER table",_pair.first<<"]["<<_pair.second)
