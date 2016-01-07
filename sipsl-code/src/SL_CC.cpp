@@ -274,8 +274,11 @@ void SL_CC::parse(void* __mess, int _mmod){
         DEBOUT("username@domain",_mess->getFromUser())
         DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
 		DEBOUT("REGISTER port",_mess->getViaUriPort())
+		DEBOUT("REGISTER port using default","5060")
+
 		stringstream _xx;
-		_xx << _mess->getViaUriHost() << ":"<<_mess->getViaUriPort() ;
+		//_xx << _mess->getViaUriHost() << ":"<<_mess->getViaUriPort() ;
+		_xx << _mess->getViaUriHost() << ":5060";
 		dao->putData(TBL_REGISTER,make_pair(_mess->getFromUser(),_xx.str()));
 
 #else
