@@ -392,15 +392,21 @@ class MESSAGE {
     	string getHeadToName(void);
     	string getHeadToUri(void);
     	string getHeadToParams(void);
+    	string getHeadToAddress(void);
+    	string getHeadToPort(void);
 	private:
     	string headTo;
     	string headToName;
     	string headToUri;
     	string headToParms;
+    	string headToAddress;
+    	string headToPort
     	bool parsedTo;
-    	bool parsedToName;
-    	bool parsedToUri;
-    	bool parsedToParms;
+//    	bool parsedToName;
+//    	bool parsedToUri;
+//    	bool parsedToParms;
+//    	bool parsedToAddress;
+//    	bool parsedToPort;
 	private:
     	string contactUri;
     	string contactName;
