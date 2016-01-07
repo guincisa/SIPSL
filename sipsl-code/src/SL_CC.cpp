@@ -273,9 +273,9 @@ void SL_CC::parse(void* __mess, int _mmod){
         //Using VIA
         DEBOUT("username@domain",_mess->getFromUser())
         DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
-		DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
+		DEBOUT("REGISTER port",_mess->getViaUriPort())
 		stringstream _xx;
-		_xx << _mess->getViaUriHost() << ":"<<_mess->getEchoClntAddr().sin_port ;
+		_xx << _mess->getViaUriHost() << ":"<<_mess->getViaUriPort() ;
 		dao->putData(TBL_REGISTER,make_pair(_mess->getFromUser(),_xx.str()));
 
 #else
