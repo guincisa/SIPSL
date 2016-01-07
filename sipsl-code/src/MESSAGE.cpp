@@ -1936,7 +1936,14 @@ string MESSAGE::getContactUri(void){
 	//Contact: <sip:192.168.0.100:5062>
 
 	string cont = getGenericHeader("Contact:");
-	//remove brackets <>
+
+#ifdef VODAFONEBB
+	string split[4] = splitUri(cont);
+	contactUri = split[0];
+	contactName = split[1];
+	contactAddress = split[2];
+	contactPort = split[3];
+#else
     char contch[cont.length() +1];
     strcpy(contch, cont.c_str());
     char* pun1 = strchr(contch,'<');
@@ -1983,6 +1990,9 @@ string MESSAGE::getContactUri(void){
 		contactPort = pun5 +1;
 	}
 	contactAddress = pun4;
+#endif
+	DEBOUT("MESSAGE::getContactUri",contactUri)
+	DEBOUT("MESSAGE::getContactUri contactName",contactName)
 	DEBOUT("MESSAGE::getContactUri contactAddress",contactAddress)
 	DEBOUT("MESSAGE::getContactUri contactPort",contactPort)
 

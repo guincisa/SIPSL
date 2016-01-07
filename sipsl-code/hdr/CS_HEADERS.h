@@ -236,6 +236,66 @@ inline Tuple getLRvalue(string couple) {
     return tt;
 }
 
+// <name@host:port>
+inline string[] splitUri(string uri){
+
+	//remove brackets <>
+	string split [4];
+	DEBOUT("inline string[] splitUri(string uri)", uri)
+    char contch[uri.length() +1];
+    strcpy(contch, uri.c_str());
+	DEBOUT("contch, cont.c_str()", contch)
+    char* pun1 = strchr(contch,'<');
+    if ( pun1 != NULL){
+        char* pun2 = strchr(contch,'>');
+        *pun2 = '\0';
+        split[0] = pun1+5;
+		DEBOUT("splitUri no <>",split[0])
+    }
+    else {
+    	contactUri = contch;
+		DEBOUT("splitUri::getContactUri",contactUri)
+    }
+
+    //majo@192.168.0.100:5062
+    //192.168.0.100:5062
+    char contch2[contactUri.length() +1];
+    strcpy(contch2, contactUri.c_str());
+    char* pun3 = strchr(contch2,'@');
+    char* pun4;
+	if (pun3 == NULL){
+		pun3 = contch2;
+		split[1] = "";
+		pun4 = pun3;
+	}else{
+		*pun3 = '\0';
+		split[1] = contch2;
+		pun4 = pun3 +1;
+	}
+	DEBOUT("splitUri split[0]",split[1])
+	DEBOUT("pun4", pun4)
+
+	//192.168.0.100:5062
+    char* pun5 = strchr(pun4,':');
+	if (pun5 == NULL){
+		split[3] = "5060";
+	}else{
+		*pun5 = '\0';
+		char* pun6 = strchr(pun5+1,';');
+		if (pun6 != NULL){
+			//;transport=...
+			*pun6 = '\0';
+		}
+		split[3] = pun5 +1;
+	}
+	split[2] = pun4;
+	DEBOUT("splitUri split[1]",split[1])
+	DEBOUT("splitUri split[2]",split[2])
+
+	return split;
+}
+
+
 class HeaderException  {
 
 	private:

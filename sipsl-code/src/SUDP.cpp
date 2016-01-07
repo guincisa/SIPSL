@@ -394,11 +394,10 @@ void SUDP::sendRequest(MESSAGE* _message){
 #ifdef VODAFONEBB
     	//get the called user id
         DEBOUT("getHeadTo",_message->getHeadTo())
-		DEBOUT("getHeadToName",_message->getHeadToName())
-		DEBOUT("getHeadToUri",_message->getHeadToUri())
-		DEBOUT("getHeadToParams",_message->getHeadToParams())
+		DEBOUT("getHeadToName",_message->getHeadToUri())
 
-		_pair = brkin2string(dao->getData(TBL_REGISTER,_message->getHeadToName()), ":");
+
+		_pair = brkin2string(dao->getData(TBL_REGISTER,_message->getHeadToUri()), ":");
     	DEBOUT("Use REGISTER table",_pair.first<<"]["<<_pair.second)
 
 #else
