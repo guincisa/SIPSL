@@ -236,7 +236,7 @@ inline Tuple getLRvalue(string couple) {
     return tt;
 }
 
-// <name@host:port>
+// "Gugli" <sip:Gugli@90.255.164.231:123>
 inline pair<pair<string,string>,pair<string,string> > splitUri(string uri){
 
 	//remove brackets <>
@@ -260,8 +260,8 @@ inline pair<pair<string,string>,pair<string,string> > splitUri(string uri){
 
     //majo@192.168.0.100:5062
     //192.168.0.100:5062
-    char contch2[uri.length() +1];
-    strcpy(contch2, uri.c_str());
+    char contch2[p1.length() +1];
+    strcpy(contch2, p1.c_str());
     char* pun3 = strchr(contch2,'@');
     char* pun4;
 	if (pun3 == NULL){
