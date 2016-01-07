@@ -1938,11 +1938,11 @@ string MESSAGE::getContactUri(void){
 	string cont = getGenericHeader("Contact:");
 
 #ifdef VODAFONEBB
-	string split[4] = splitUri(cont);
-	contactUri = split[0];
-	contactName = split[1];
-	contactAddress = split[2];
-	contactPort = split[3];
+	pair<pair<string,string>,pair<string,string> > split = splitUri(cont);
+	contactUri = split.first().first();
+	contactName = split.first().second();
+	contactAddress = split.second().first();
+	contactPort = split.second().second();
 #else
     char contch[cont.length() +1];
     strcpy(contch, cont.c_str());
