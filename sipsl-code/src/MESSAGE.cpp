@@ -1871,12 +1871,54 @@ string MESSAGE::getHeadTo(void){
 	}
 
 	if(!parsedTo){
+
 		headTo = getGenericHeader("To:");
+
+#ifdef VODAFONEBB
+		pair<pair<string,string>,pair<string,string> > split = splitUri(headTo);
+		headToUri = split.first.first;
+		headToName = split.first.second;
+		headToAddress = split.second.first;
+		headToPort = split.second.second;
+#else
+#endif
+
 		parsedTo = true;
 	}
 	DEBINFMESSAGE("string MESSAGE::getHeadTo(void)", this<<"]["<<headTo)
 	return headTo;
 }
+string getHeadToAddress(void){
+	DEBINFMESSAGE("string MESSAGE::getHeadToAddress(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadToAddress invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+	if(!parsedTo){
+		getHeadTo();
+	}
+	DEBINFMESSAGE("string MESSAGE::getHeadTo(void)",this<<"]["<<headToAddress)
+	return headToAddress;
+}
+string getHeadToPort(void){
+	DEBINFMESSAGE("string MESSAGE::getHeadToPort(void)",this)
+	if (invalid == 1)
+		DEBASSERT("MESSAGE::getHeadToPort invalid")
+
+	if(messageStatus !=1){
+		fillIn();
+	}
+
+	if(!parsedTo){
+		getHeadTo();
+	}
+	DEBINFMESSAGE("string MESSAGE::getHeadToPort(void)",this<<"]["<<headToPort)
+	return headToPort;
+}
+
 string MESSAGE::getHeadToName(void){
 	DEBINFMESSAGE("string MESSAGE::getHeadToName(void)",this)
 	if (invalid == 1)
@@ -1886,8 +1928,8 @@ string MESSAGE::getHeadToName(void){
 		fillIn();
 	}
 
-	if(!parsedToName){
-		DEBASSERT("")
+	if(!parsedTo){
+		getHeadTo();
 	}
 	DEBINFMESSAGE("string MESSAGE::getHeadToName(void)",this<<"]["<<headToName)
 	return headToName;
@@ -1901,8 +1943,8 @@ string MESSAGE::getHeadToUri(void){
 		fillIn();
 	}
 
-	if(!parsedToUri){
-		DEBASSERT("")
+	if(!parsedTo){
+		getHeadTo();
 	}
 	DEBINFMESSAGE("string MESSAGE::getHeadToUri(void)",this<<"]["<<headToUri)
 	return headToUri;
@@ -1916,7 +1958,7 @@ string MESSAGE::getHeadToParams(void){
 		fillIn();
 	}
 
-	if(!parsedToParms){
+	if(!parsedTo){
 		DEBASSERT("")
 	}
 	DEBINFMESSAGE("string MESSAGE::getHeadToParams(void)",this<<"]["<<headToParms)
