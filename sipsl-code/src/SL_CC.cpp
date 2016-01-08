@@ -270,16 +270,25 @@ void SL_CC::parse(void* __mess, int _mmod){
 
         //Register
 #ifdef VODAFONEBB
-        //Using VIA
-        DEBOUT("username@domain",_mess->getFromUser())
-        DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
-		DEBOUT("REGISTER port",_mess->getViaUriPort())
-		DEBOUT("REGISTER port using default","5060")
+//        //Using VIA
+//        DEBOUT("username@domain",_mess->getFromUser())
+//        DEBOUT("REGISTER getViaUriHost",_mess->getViaUriHost())
+//		DEBOUT("REGISTER port",_mess->getViaUriPort())
+//		DEBOUT("REGISTER port using default","5060")
+//
+//		stringstream _xx;
+//		//_xx << _mess->getViaUriHost() << ":"<<_mess->getViaUriPort() ;
+//		_xx << _mess->getViaUriHost() << ":5060";
+
+        DEBOUT("username",_mess->getContactName())
+        DEBOUT("address ",_mess->getContactAddress())
+        DEBOUT("address ",_mess->getContactPort())
 
 		stringstream _xx;
 		//_xx << _mess->getViaUriHost() << ":"<<_mess->getViaUriPort() ;
-		_xx << _mess->getViaUriHost() << ":5060";
-		dao->putData(TBL_REGISTER,make_pair(_mess->getFromUser(),_xx.str()));
+		_xx << _mess->getContactAddress() << ":" << _mess->getContactPort();
+
+		dao->putData(TBL_REGISTER,make_pair(_mess->getContactName(),_xx.str()));
 
 #else
         	//Inserting regiter data
