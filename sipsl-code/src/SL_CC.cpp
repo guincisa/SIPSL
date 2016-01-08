@@ -280,13 +280,13 @@ void SL_CC::parse(void* __mess, int _mmod){
 //		//_xx << _mess->getViaUriHost() << ":"<<_mess->getViaUriPort() ;
 //		_xx << _mess->getViaUriHost() << ":5060";
 
-        DEBOUT("username",_mess->getContactName())
-        DEBOUT("address ",_mess->getContactAddress())
-        DEBOUT("address ",_mess->getContactPort())
+        DEBOUT("REGISTER username",_mess->getContactName())
+        DEBOUT("REGISTER address ",_mess->getContactAddress())
+        DEBOUT("REGISTER port using default 5060, not ",_mess->getContactPort())
 
 		stringstream _xx;
 		//_xx << _mess->getViaUriHost() << ":"<<_mess->getViaUriPort() ;
-		_xx << _mess->getContactAddress() << ":" << _mess->getContactPort();
+		_xx << _mess->getContactAddress() << ":5060";
 
 		dao->putData(TBL_REGISTER,make_pair(_mess->getContactName(),_xx.str()));
 
