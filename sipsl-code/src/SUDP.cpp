@@ -224,7 +224,9 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool 
 	localip = str;
 	DEBINFSUDP("local ip address",localip<<"]["<<localport)
 	// END DEFINE LOCAL ADDRESS
-
+#ifdef VODAFONEBB
+	localip = "gincisa.ddns.net";
+#endif
 	_engine->linkSUDP(this);
 
     DEBINFSUDP("SUDP init done","")
