@@ -239,6 +239,7 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 
 	_gted->setGenericHeader("Call-ID:", _callidy);
 	char cons[GENSTRINGLEN];
+
 	sprintf(cons,"<sip:sipsl@%s:%s>",sudp->getLocalIp().c_str(),sudp->getLocalPort().c_str());
 
 	_gted->setGenericHeader("Contact:", cons);
