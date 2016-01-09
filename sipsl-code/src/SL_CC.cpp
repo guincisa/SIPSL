@@ -286,7 +286,7 @@ void SL_CC::parse(void* __mess, int _mmod){
 
 		stringstream _xx;
 		//_xx << _mess->getViaUriHost() << ":"<<_mess->getViaUriPort() ;
-		_xx << _mess->getContactAddress() << ":5060";
+		_xx << _mess->getContactAddress() << ":" << _mess->getContactPort();
 
 		dao->putData(TBL_REGISTER,make_pair(_mess->getContactName(),_xx.str()));
 
