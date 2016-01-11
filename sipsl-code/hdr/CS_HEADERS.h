@@ -237,6 +237,9 @@ inline Tuple getLRvalue(string couple) {
 }
 
 // "Gugli" <sip:Gugli@90.255.164.231:123>
+// or
+// sip:samsung@gincisa.ddns.net^M
+
 inline pair<pair<string,string>,pair<string,string> > splitUri(string uri){
 
 	//remove brackets <>
@@ -253,8 +256,8 @@ inline pair<pair<string,string>,pair<string,string> > splitUri(string uri){
         p1 = pun1+5;
 		DEBOUT("splitUri getUri <>",p1)
     }
-    else {
-    	p1 = contch;
+    else {// sip:
+    	p1 = contch+4;
 		DEBOUT("splitUri::getUri <>",p1)
     }
 
