@@ -491,9 +491,9 @@ void SUDP::sendReply(MESSAGE* _message){
 	}else{
 		_hostchar = _message->getViaUriHost().c_str();
 	}
-	DEBOUT("_hostchar",_hostchar)
+	DEBOUT("ReplyHOst:PORT",_hostchar << ":"<<_message->getEchoClntAddr().sin_port)
 	DEBOUT("reportPro",reportPro)
-	DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
+	//DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
 
 	DEBOUT("reply message", _message->getMessageBuffer())
 
