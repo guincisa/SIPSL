@@ -528,7 +528,7 @@ class ThreadWrapper {
 		char bu2[200];\
 		cout.precision(20);\
 		TIME_S\
-		xx << m1 << "\n" << " [" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << "\n[" << m2 << "]\n"; \
+		"+++\n"<<xx << m1 << "\n" << "[" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << "\n[" << m2 << "]\n---"; \
 		cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBASSERT
