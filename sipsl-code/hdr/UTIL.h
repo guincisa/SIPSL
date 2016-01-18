@@ -515,10 +515,7 @@ class ThreadWrapper {
 ////Mandatory
 
 #define TIME_S {SysTime mytime; gettimeofday(&mytime.tv, &mytime.tz);\
-		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
-		sprintf(bu, "%llu",num);\
 		char _bu2[64];\
-		char _bu3[64];\
            time_t t;\
            struct tm *tmp;\
            t = time(NULL);\
@@ -528,13 +525,11 @@ class ThreadWrapper {
        	   }
 
 #define BDEBUG(m1, m2) {stringstream xx ; \
-		char bu[128];\
 		char bu2[200];\
 		cout.precision(20);\
 		TIME_S\
 		string time(bu);\
-		xx << m1 << " [" << pthread_self() <<" " << bu2 <<" " << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3) << "]"\
-		<<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
+		xx << m1 << " [" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
 		cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBASSERT
