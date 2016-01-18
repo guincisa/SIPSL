@@ -528,11 +528,11 @@ class ThreadWrapper {
 		char bu2[200];\
 		cout.precision(20);\
 		TIME_S\
-		xx <<"+++\n"<< m1 << "\n" << "[" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << "\n[" << m2 << "]\n---"; \
+		xx <<"+++\n"<< m1 << "\n" << "[" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << "\n[" << m2 << "]\n---\n"; \
 		cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBASSERT
-#define DEBASSERT(m1)  {stringstream xx ; xx << "\n\nDEBASSERT [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< "\n ************ \n"<< m1 << "\n ************ \n"; cout << xx.str();cout.flush();assert(0);}
+#define DEBASSERT(m1)  {DBEBUG("DEBASSERT",m1);assert(0);}
 
 #ifndef NOWARNINGS
 #undef DEBWARNING
@@ -736,7 +736,7 @@ class ThreadWrapper {
 
 	//**********************************************************
 #undef DEBSIP
-#define DEBSIP(m1,m2)  {stringstream xx ; xx << "DEBSIP [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "[" << m2 << "]\n"; cout << xx.str();cout.flush();}
+#define DEBSIP(m1,m2)  {BDEBUG("DEBSIP",m2)}
 	//**********************************************************
 #else
 #define DEBSIP(m1,m2)
