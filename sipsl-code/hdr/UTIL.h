@@ -528,7 +528,7 @@ class ThreadWrapper {
 		char bu2[200];\
 		cout.precision(20);\
 		TIME_S\
-		char pad ="                                                                  ";\
+		char pad[68] ="                                                                  ";\
 		char padded[64];\
 		sprintf(padded, "%s",m.str(),substr(pad,strlen(padded) - m1.length()));\
 		xx << m1 << " [" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
