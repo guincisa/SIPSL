@@ -502,19 +502,34 @@ class ThreadWrapper {
 #endif
 //end if SPARC
 
-
-//Mandatory
+//struct timeval tv;
+//time_t nowtime;
+//struct tm *nowtm;
+//char tmbuf[64], buf[64];
+//
+//gettimeofday(&tv, NULL);
+//nowtime = tv.tv_sec;
+//nowtm = localtime(&nowtime);
+//strftime(tmbuf, sizeof tmbuf, "%Y-%m-%d %H:%M:%S", nowtm);
+//snprintf(buf, sizeof buf, "%s.%06d", tmbuf, tv.tv_usec);
+////Mandatory
 
 #define TIME_S {SysTime mytime; gettimeofday(&mytime.tv, &mytime.tz);\
 		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
-		sprintf(bu, "%llu",num);}
+		sprintf(bu, "%llu",num);
+		char tmbuf[64], buf[64];
+		strftime(tmbuf, sizeof tmbuf, "%Y-%m-%d %H:%M:%S", localtime(&mytime.tv.tv_sec);
+		snprintf(buf, sizeof buf, "%s.%06ld", tmbuf, mytime.tv.tv_usec);
+		sprintf(bu2,"%s%s",tmbuf,buf);
+	}
 
 #define BDEBUG(m1, m2) {stringstream xx ; \
 		char bu[128];\
+		char bu2[128];\
 		cout.precision(20);\
 		TIME_S\
 		string time(bu);\
-		xx << m1 << " [" << pthread_self() << " " << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3) << "]"\
+		xx << m1 << " [" << pthread_self() <<" " << bu2 <<" " << time.substr(0,1) << "." << time.substr(1,3) << "." << time.substr(4,3)<< "-" << time.substr(7,3)<< "-" << time.substr(10,3)<< "." << time.substr(13,3) << "]"\
 		<<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
 		cout << xx.str();cout.flush();}
 //**********************************************************
