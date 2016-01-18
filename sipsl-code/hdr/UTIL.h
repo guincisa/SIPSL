@@ -528,7 +528,6 @@ class ThreadWrapper {
 		char bu2[200];\
 		cout.precision(20);\
 		TIME_S\
-		string time(bu);\
 		xx << m1 << " [" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
 		cout << xx.str();cout.flush();}
 //**********************************************************
