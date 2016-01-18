@@ -517,16 +517,20 @@ class ThreadWrapper {
 #define TIME_S {SysTime mytime; gettimeofday(&mytime.tv, &mytime.tz);\
 		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
 		sprintf(bu, "%llu",num);\
+		char _bu2[64];
+		char _bu3[64];
            time_t t;\
            struct tm *tmp;\
            t = time(NULL);\
            tmp = localtime(&t);\
-           strftime(bu2, sizeof(bu2), "%Y-%m-%d %H:%M:%S", tmp);\
+           strftime(_bu2, sizeof(_bu2), "%Y-%m-%d %H:%M:%S", tmp);\
+           snprintf(_bu3, sizeof _bu3, "%s.%06ld", tmbuf, tv.tv_usec);\
+           sprintf(bu2,"%s.%s",_bu2,_bu3);\
        	   }
 
 #define BDEBUG(m1, m2) {stringstream xx ; \
 		char bu[128];\
-		char bu2[128];\
+		char bu2[200];\
 		cout.precision(20);\
 		TIME_S\
 		string time(bu);\
