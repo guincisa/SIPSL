@@ -521,7 +521,7 @@ class ThreadWrapper {
            struct tm *tmp;\
            t = time(NULL);\
            tmp = localtime(&t);\
-           strftime(outstr, sizeof(outstr), "%Y-%m-%d %H:%M:%S", tmp);\
+           strftime(bu2, sizeof(bu2), "%Y-%m-%d %H:%M:%S", tmp);\
        	   }
 
 #define BDEBUG(m1, m2) {stringstream xx ; \
