@@ -529,9 +529,7 @@ class ThreadWrapper {
 		cout.precision(20);\
 		TIME_S\
 		char pad[68] ="                                                                  ";\
-		char padded[64];\
-		sprintf(padded, "%s",m1.c_str(),substr(pad,strlen(padded) - m1.length()));\
-		xx << m1 << " [" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
+		xx << m1 << substr(pad,strlen(68) - m1.length())<< " [" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << " [" << m2 << "]\n"; \
 		cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBASSERT
