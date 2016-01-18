@@ -532,8 +532,7 @@ class ThreadWrapper {
 		cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBASSERT
-#define DEBASSERT(m1)  {DBEBUG("DEBASSERT",m1);assert(0);}
-
+#define DEBASSERT(m1)  {BDEBUG("DEBASSERT",m1);assert(0);}
 #ifndef NOWARNINGS
 #undef DEBWARNING
 #define DEBWARNING(m1,m2)  BDEBUG("******************************\n   WARNING   \n******************************\n"<<m1,m2)
