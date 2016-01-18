@@ -516,12 +516,12 @@ class ThreadWrapper {
 
 #define TIME_S {SysTime mytime; gettimeofday(&mytime.tv, &mytime.tz);\
 		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
-		sprintf(bu, "%llu",num);
-           time_t t;
-           struct tm *tmp;
-           t = time(NULL);
-           tmp = localtime(&t);
-           strftime(outstr, sizeof(outstr), "%Y-%m-%d %H:%M:%S", tmp);
+		sprintf(bu, "%llu",num);\
+           time_t t;\
+           struct tm *tmp;\
+           t = time(NULL);\
+           tmp = localtime(&t);\
+           strftime(outstr, sizeof(outstr), "%Y-%m-%d %H:%M:%S", tmp);\
        	   }
 
 #define BDEBUG(m1, m2) {stringstream xx ; \
