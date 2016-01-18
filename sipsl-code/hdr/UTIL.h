@@ -518,11 +518,11 @@ class ThreadWrapper {
 		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
 		sprintf(bu, "%llu",num);
 		char tmbuf[64], buf[64];
-		struct tm *nowtm;
-		nowtm = localtime(&nowtime);
-		strftime(tmbuf, sizeof tmbuf, "%Y-%m-%d %H:%M:%S", nowtm);
-		snprintf(buf, sizeof buf, "%s.%06ld", tmbuf, mytime.tv.tv_usec);
-		sprintf(bu2,"%s%s",tmbuf,buf);
+		  time_t rawtime;
+		  struct tm * timeinfo;
+		  time (&rawtime);
+		  timeinfo = localtime (&rawtime);
+		  strftime (bu2,80,"%Y-%m-%d %H:%M:%S",timeinfo);
 	}
 
 #define BDEBUG(m1, m2) {stringstream xx ; \
