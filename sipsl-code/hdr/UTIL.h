@@ -517,8 +517,8 @@ class ThreadWrapper {
 #define TIME_S {SysTime mytime; gettimeofday(&mytime.tv, &mytime.tz);\
 		long long int num = ((long long int) mytime.tv.tv_sec)*1000000+(long long int)mytime.tv.tv_usec;\
 		sprintf(bu, "%llu",num);\
-		char _bu2[64];
-		char _bu3[64];
+		char _bu2[64];\
+		char _bu3[64];\
            time_t t;\
            struct tm *tmp;\
            t = time(NULL);\
