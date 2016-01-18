@@ -523,9 +523,8 @@ class ThreadWrapper {
            struct tm *tmp;\
            t = time(NULL);\
            tmp = localtime(&t);\
-           strftime(_bu2, sizeof(_bu2), "%Y-%m-%d %H:%M:%S", tmp);\
-           snprintf(_bu3, sizeof _bu3, "%s.%06ld", tmbuf, tv.tv_usec);\
-           sprintf(bu2,"%s.%s",_bu2,_bu3);\
+           strftime(_bu2, sizeof _bu2 , "%Y-%m-%d %H:%M:%S", tmp);\
+           sprintf(bu2,"%s.%06ld",_bu2,mytime.tv.tv_usec);\
        	   }
 
 #define BDEBUG(m1, m2) {stringstream xx ; \
