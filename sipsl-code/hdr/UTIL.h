@@ -528,7 +528,7 @@ class ThreadWrapper {
 		char bu2[200];\
 		cout.precision(20);\
 		TIME_S\
-		xx <<"+++\n"<< m1 << "\n" << "[" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << "\n[" << m2 << "]\n---\n"; \
+		xx <<"+++ "<< m1 << "\n" << "[" << pthread_self() <<" " << bu2 <<"]" <<  __FILE__ << " " <<__LINE__ << "\n[" << m2 << "]\n---\n"; \
 		cout << xx.str();cout.flush();}
 //**********************************************************
 #undef DEBASSERT
@@ -744,7 +744,7 @@ class ThreadWrapper {
 #endif
 #ifdef LOGSIPHIGH
 #undef DEBMESSAGE
-#define DEBMESSAGE(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "] Gen [" <<m2->getGenEntity() << "] Dest ["<<m2->getDestEntity() <<"]\n["<< m2->getOriginalString() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
+#define DEBMESSAGE(m1,m2) {BDEBUG("DEBMESS",m1 << "\n" << "**************** MESSAGE CONTENT ***************************\n[" <<m2->getKey() << "] Gen [" <<m2->getGenEntity() << "] Dest ["<<m2->getDestEntity() <<"]\n["<< m2->getOriginalString() << "]\n*********************************************************\n")}
 //**********************************************************
 #undef DEBMESSAGESHORT
 #define DEBMESSAGESHORT(m1,m2) {stringstream xx ; xx << "DEBMESS [" << pthread_self() << "]" <<  __FILE__ <<" " <<__LINE__<< " "<< m1 << "\n" << "**************** MESSAGE EXTRACTS ***************************\n[" << m2 << "]\n[" <<m2->getKey() << "]\n["<< m2->getFirstLine() << "]\n*********************************************************\n"; cout << xx.str();cout.flush();}
