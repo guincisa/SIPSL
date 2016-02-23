@@ -152,7 +152,7 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool 
     alarm = _alarm;
 
     loadBalancer = _loadBalancer;
-    clientProcessors = 1;
+    clientProcessors = 0;
 
     //doa = _doa;
 
