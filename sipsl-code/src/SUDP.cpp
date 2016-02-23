@@ -137,7 +137,7 @@ void SUDP::setDAO(DAO* _dao) {
 // *****************************************************************************************
 // *****************************************************************************************
 //void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread){
-void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool singleThread){
+void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool singleThread, bool _loadBalancer){
 
 	DEBINFSUDP("SUDP init",_domain)
 
@@ -150,6 +150,9 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool 
     cliAddrLen = sizeof(echoClntAddr);
 
     alarm = _alarm;
+
+    loadBalancer = _loadBalancer;
+    clientProcessors = 1;
 
     //doa = _doa;
 
@@ -310,6 +313,12 @@ void SUDP::listen(int _socknum) {
 
                 DEBOUT("MODULUS DEBUG",message->getModulus())
 
+                //SIPSL_LB we already know the modulus here!
+                // if setting = LB
+                if (loadBalancer){
+                	sendRequestClientProcessor(_message);
+                }
+
                 engine->p_w((void*)message);
                 PRINTDIFF("SUDP listen")
             }else {
@@ -374,6 +383,38 @@ void SUDP::sendRawMessage(string* message, string address, int port){
 	sendto(sock_se[0], message->c_str(), message->length(), 0, (struct sockaddr *)&si_part, sizeof(si_part));
 	DEBY
 
+	//TODO finish LB
+
+}
+void SUDP::addCP(string _ip, int _port){
+
+      if (clientProcessorPointer >= CP_SIPSL){
+    	  return;
+      }
+
+	  clientProcessor[clientProcessorPointer].sin_family = AF_INET;
+	  clientProcessor[clientProcessorPointer].sin_port = = htons(_port);
+	  inet_aton(_hostchar, &sclientProcessor[clientProcessorPointer].sin_addr);
+	  clientProcessorPointer++;
+}
+
+void SUDP::sendRequestClientProcessor(MESSAGE* _message)
+	DEBINFSUDP("void SUDP::sendRequestClientProcessor(MESSAGE* _message)",_message)
+
+    TIMEDEF
+    SETNOW
+
+	//TODO not sure all CP will get hit uniformously
+    int i = _message->getModulus();
+	int j = _message->getModulus() % clientProcessors;
+
+	sendto(sock_se[i], _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&(clientProcessor[j].si_part), sizeof(clientProcessor[j].si_part));
+	if (!_message->getLock()){
+		PURGEMESSAGE(_message)
+	}
+	PRINTDIFF("IPNUMERIC SUDP::sendRequestClientProcessor")
+
+	return;
 }
 void SUDP::sendRequest(MESSAGE* _message){
 	DEBINFSUDP("void SUDP::sendRequest(MESSAGE* _message)",_message)
