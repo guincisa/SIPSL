@@ -178,6 +178,25 @@ void DAO::parse(void* __mess, int _mmod) {
 
 			RELLOCK(&mutex,"DAO mutex")
         }
+        if ( m_l_2.first == 4 ){
+        	// add clientProcess
+        	//0%a%IP:PORT
+        	DEBOUT("void DAO::parse",m_l_2.first << "]["<<((pair <string,string>)m_l_2.second).first<<"]["<<((pair <string,string>)m_l_2.second).second)
+
+
+        }
+        if ( m_l_2.first == 5 ){
+        	// remove client processor
+        	//0%r%N
+
+        }
+        if ( m_l_2.first == 6 ){
+        	// dump client processor
+        	//0%s    		 show clientProcessor table
+        	//1,IP,port
+
+        }
+
         if (m_l_2.first == 20){
             //PD-SIPSL
             //t%SL_CC%10

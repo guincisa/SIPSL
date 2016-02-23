@@ -160,6 +160,9 @@ class ThreadWrapper {
 //32
 #define SL_CCMAPS 6
 
+//SIPSL MAX Client Processors
+#define CP_SIPSL 10
+
 //#define ENGINEMAPS 5
 #define ALARMTH 1
 #define ALARMMAPS 1

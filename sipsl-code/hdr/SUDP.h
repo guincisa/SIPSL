@@ -94,6 +94,10 @@ class SUDP {
 
         static int getRealm(void);
 
+        void addCP(string ip, int port);
+        void removeCP(int);
+        void sendRequestClientProcessor(MESSAGE* _message);
+
 
     private:
 
@@ -110,6 +114,13 @@ class SUDP {
         sockaddr_inX echoClntAddr;
 
         static const int realm;
+
+        bool loadBalancer;
+        int clientProcessors;
+        int clientProcessorPointer; //
+        struct sockaddr_in clientProcessor[CP_SIPSL];
+        void compactCPArray(void);
+
 
         DAO* dao;
 
