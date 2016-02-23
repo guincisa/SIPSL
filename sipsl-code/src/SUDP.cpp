@@ -388,6 +388,7 @@ void SUDP::sendRawMessage(string* message, string address, int port){
 }
 void SUDP::addCP(string _ip, int _port){
 
+        //TODO access is not regulated
       if (clientProcessorPointer >= CP_SIPSL){
     	  return;
       }
