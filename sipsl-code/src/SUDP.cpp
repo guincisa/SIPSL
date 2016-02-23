@@ -316,7 +316,7 @@ void SUDP::listen(int _socknum) {
                 //SIPSL_LB we already know the modulus here!
                 // if setting = LB
                 if (loadBalancer){
-                	sendRequestClientProcessor(_message);
+                	sendRequestClientProcessor(message);
                 }
 
                 engine->p_w((void*)message);
@@ -393,12 +393,12 @@ void SUDP::addCP(string _ip, int _port){
       }
 
 	  clientProcessor[clientProcessorPointer].sin_family = AF_INET;
-	  clientProcessor[clientProcessorPointer].sin_port = = htons(_port);
-	  inet_aton(_hostchar, &sclientProcessor[clientProcessorPointer].sin_addr);
+	  clientProcessor[clientProcessorPointer].sin_port = htons(_port);
+	  inet_aton(_ip, &(clientProcessor[clientProcessorPointer].sin_addr));
 	  clientProcessorPointer++;
 }
 
-void SUDP::sendRequestClientProcessor(MESSAGE* _message)
+void SUDP::sendRequestClientProcessor(MESSAGE* _message){
 	DEBINFSUDP("void SUDP::sendRequestClientProcessor(MESSAGE* _message)",_message)
 
     TIMEDEF
