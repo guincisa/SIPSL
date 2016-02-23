@@ -315,7 +315,7 @@ void SUDP::listen(int _socknum) {
 
                 //SIPSL_LB we already know the modulus here!
                 // if setting = LB
-                if (loadBalancer){
+                if (loadBalancer && message->getReqRepType() != RECOMMPD){
                 	sendRequestClientProcessor(message);
                 }
 
