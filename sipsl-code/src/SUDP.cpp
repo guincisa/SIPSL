@@ -408,7 +408,7 @@ void SUDP::sendRequestClientProcessor(MESSAGE* _message){
     int i = _message->getModulus();
 	int j = _message->getModulus() % clientProcessors;
 
-	sendto(sock_se[i], _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&(clientProcessor[j].si_part), sizeof(clientProcessor[j].si_part));
+	sendto(sock_se[i], _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&(clientProcessor[j]), sizeof(clientProcessor[j].si_part));
 	if (!_message->getLock()){
 		PURGEMESSAGE(_message)
 	}
