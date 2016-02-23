@@ -394,7 +394,7 @@ void SUDP::addCP(string _ip, int _port){
 
 	  clientProcessor[clientProcessorPointer].sin_family = AF_INET;
 	  clientProcessor[clientProcessorPointer].sin_port = htons(_port);
-	  inet_aton(_ip, &(clientProcessor[clientProcessorPointer].sin_addr));
+	  inet_aton(_ip.c_str(), &(clientProcessor[clientProcessorPointer].sin_addr));
 	  clientProcessorPointer++;
 }
 
