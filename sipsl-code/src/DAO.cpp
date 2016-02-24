@@ -182,7 +182,7 @@ void DAO::parse(void* __mess, int _mmod) {
         	// add clientProcess
         	//0%a%IP:PORT
         	DEBOUT("void DAO::parse",m_l_2.first << "]["<<((pair <string,string>)m_l_2.second).first<<"]["<<((pair <string,string>)m_l_2.second).second)
-
+			trnsprt->getSUDP()->addCP(((pair <string,string>)m_l_2.second).first,atoi(((pair <string,string>)m_l_2.second).second)));
 
         }
         if ( m_l_2.first == 5 ){
