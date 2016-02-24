@@ -543,6 +543,7 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	string receivedProp = _message->getProperty("Via:","received");
 	const char* _hostchar;
+	int _hostPort;
 	string reportPro;
 	if (receivedProp.length() != 0){
 		reportPro = _message->getProperty("Via:","rport");
@@ -550,20 +551,37 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	}else{
 		_hostchar = _message->getViaUriHost().c_str();
+		_hostPort = _message->getViaUriPort();
 	}
-	DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_message->getEchoClntAddr().sin_port)
-	DEBOUT("reportPro",reportPro)
-	//DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
+	//TODO not work with LB
+	if (!loadBalancer){
+		DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_message->getEchoClntAddr().sin_port)
+		DEBOUT("reportPro",reportPro)
+		//DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
 
-	DEBOUT("reply message", _message->getMessageBuffer())
+		DEBOUT("reply message", _message->getMessageBuffer())
 
-	struct sockaddr_in si_part;
-	si_part.sin_family = AF_INET;
-	si_part.sin_port = _message->getEchoClntAddr().sin_port;
+		struct sockaddr_in si_part;
+		si_part.sin_family = AF_INET;
+		si_part.sin_port = _message->getEchoClntAddr().sin_port;
 
-	inet_aton(_hostchar, &si_part.sin_addr);
-	sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+		inet_aton(_hostchar, &si_part.sin_addr);
+		sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+	}
+	else{//Lb
 
+		DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_hostPort)
+
+		DEBOUT("reply message", _message->getMessageBuffer())
+
+		struct sockaddr_in si_part;
+		si_part.sin_family = AF_INET;
+		si_part.sin_port = _hostPort;
+
+		inet_aton(_hostchar, &si_part.sin_addr);
+		sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+
+	}
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
     }
