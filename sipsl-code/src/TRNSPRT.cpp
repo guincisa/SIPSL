@@ -189,7 +189,8 @@ void TRNSPRT::parse(void* __message, int _mmod){
 		}
 
 		if (!getSUDP()->isClientProcess()){
-			_hostPort = _message->getEchoClntAddr().sin_port;
+			_hostchar = _message->getContactAddress();
+			_hostPort = _message->getContactPort();
 
 		}
 		else{//Lb
