@@ -320,7 +320,7 @@ void SUDP::listen(int _socknum) {
                 	sendRequestClientProcessor(message);
                 	return;
                 }
-                if ( clientProcessorPointer == -1){
+                if ( clientProcessorPointer == -1 && message->getReqRepType() != RECOMMPD){
                 	//block traffic if no processors
                 	return;
                 }
