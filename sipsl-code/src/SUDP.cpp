@@ -423,8 +423,8 @@ void SUDP::sendRequestClientProcessor(MESSAGE* _message){
 	//TODO not sure all CP will get hit uniformously
     int i = _message->getModulus();
 	DEBOUT("i modulus", i)
-	int j = _message->getModulus() % clientProcessorPointer;
 	DEBOUT("clientProcessor", clientProcessorPointer)
+	int j = i % clientProcessorPointer;
 	DEBOUT("j modulus", j)
 
 	sendto(sock_se[i], _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&(clientProcessor[j]), sizeof(clientProcessor[j]));
