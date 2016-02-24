@@ -536,6 +536,9 @@ void SUDP::sendRequest(MESSAGE* _message){
 }
 
 void SUDP::sendReply(MESSAGE* _message){
+
+	DEBOUT("****** THIS IS DEPRECATED ************","")
+
 	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
 
 	TIMEDEF
@@ -639,6 +642,83 @@ void SUDP::sendReply(MESSAGE* _message){
 
 #endif
 }
+bool SUDP::isClientProcess(void){
+	return clientProcess;
+}
+
+void SUDP::sendReply(MESSAGE* _message, string _host, int _port){
+
+	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
+
+	TIMEDEF
+	SETNOW
+
+#ifdef IPNUMERIC
+
+		struct sockaddr_in si_part;
+		si_part.sin_family = AF_INET;
+		si_part.sin_port = _port;
+
+		inet_aton(_host, &si_part.sin_addr);
+		sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+
+	}
+    if (!_message->getLock()){
+        PURGEMESSAGE(_message)
+    }
+	PRINTDIFF("IPNUMERIC SUDP::sendReply")
+
+	return;
+
+#else
+
+    //Reply uses topmost Via header
+
+    DEBMESSAGE("SUDP::sendReply sending Message ", _message)
+    struct addrinfo hints,*servinfo;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_NUMERICHOST;
+
+//    string receivedProp = _message->getProperty("Via:","received");
+//    if (receivedProp.length() != 0){
+//        string reportPro = _message->getProperty("Via:","rport");
+//        const char* _hostchar = receivedProp.c_str();
+//        int res = getaddrinfo(_hostchar,reportPro.c_str(),&hints, &servinfo);
+//        if (res != 0){
+//        	DEBASSERT("getaddrinfo")
+//        }
+//
+//    }else{
+//        const char* _hostchar = _message->getViaUriHost().c_str();
+//        int res = getaddrinfo(_hostchar,_message->getViaUriProtocol().c_str(),&hints, &servinfo);
+//        if (res != 0){
+//        	DEBASSERT("getaddrinfo")
+//        }
+//    }
+	const char* _hostchar = inet_ntoa(_message->getEchoClntAddr().sin_addr);
+	char xx[GENSTRINGLEN];
+	sprintf(xx,"%d",ntohs((_message->getEchoClntAddr()).sin_port));
+
+	DEBOUT("sendReply to", _hostchar <<"]["<<xx)
+	int res = getaddrinfo(_hostchar,xx,&hints, &servinfo);
+	if (res != 0){
+		DEBASSERT("getaddrinfo")
+	}
+
+    //CHECK ERROR HERE
+    sendto(sock_re,  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, servinfo->ai_addr, servinfo->ai_addrlen);
+    if (!_message->getLock()){
+        PURGEMESSAGE(_message)
+    }
+    freeaddrinfo(servinfo);
+	PRINTDIFF("NON IPNUMERIC SUDP::sendReply")
+    return;
+
+#endif
+}
+
 string SUDP::getLocalIp(void){
 	return localip;
 }

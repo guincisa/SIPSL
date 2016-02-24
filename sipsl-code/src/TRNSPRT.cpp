@@ -175,8 +175,29 @@ void TRNSPRT::parse(void* __message, int _mmod){
 //		xx << ntohs((_message->getEchoClntAddr()).sin_port);
 //		_message->setProperty("Via:","rport",xx.str());
 
+		string receivedProp = _message->getProperty("Via:","received");
+		const char* _hostchar;
+		int _hostPort;
+		string reportPro;
+		if (receivedProp.length() != 0){
+			reportPro = _message->getProperty("Via:","rport");
+			_hostchar = receivedProp.c_str();
 
-		getSUDP()->sendReply(_message);
+		}else{
+			_hostchar = _message->getViaUriHost().c_str();
+			_hostPort = _message->getViaUriPort();
+		}
+
+		if (!getSUDP()->isClientProcess()){
+			_hostPort = _message->getEchoClntAddr().sin_port;
+			DEBOUT("reply to host",_hostchar << ":"<<_hostPort)
+
+		}
+		else{//Lb
+
+		}
+
+		getSUDP()->sendReply(_message, _hostchar, _hostPort);
 
 	}
 	else if (_message->getReqRepType() == REQSUPP) {
