@@ -395,14 +395,23 @@ void SUDP::sendRawMessage(string* message, string address, int port){
 void SUDP::addCP(string _ip, int _port){
 
         //TODO access is not regulated
-		clientProcessorPointer++;
+		DEBOUT("addCP", clientProcessorPointer)
+
 		if (clientProcessorPointer >= CP_SIPSL){
 		  return;
 		}
+		clientProcessorPointer++;
+
+		DEBOUT("addCP 2", clientProcessorPointer)
 
 		clientProcessor[clientProcessorPointer].sin_family = AF_INET;
 		clientProcessor[clientProcessorPointer].sin_port = htons(_port);
 		inet_aton(_ip.c_str(), &(clientProcessor[clientProcessorPointer].sin_addr));
+
+		DEBOUT("addCP 3", clientProcessorPointer)
+		DEBOUT("addCP _port", _port)
+		DEBOUT("addCP _ip", _ip)
+
 }
 
 void SUDP::sendRequestClientProcessor(MESSAGE* _message){
