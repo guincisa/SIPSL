@@ -189,7 +189,7 @@ void TRNSPRT::parse(void* __message, int _mmod){
 		}
 
 		if (!getSUDP()->isClientProcess()){
-			_hostchar = _message->getContactAddress();
+			_hostchar = _message->getContactAddress().c_str();
 			_hostPort = atoi(_message->getContactPort().c_str());
 
 		}
