@@ -655,14 +655,13 @@ void SUDP::sendReply(MESSAGE* _message, string _host, int _port){
 
 #ifdef IPNUMERIC
 
-		struct sockaddr_in si_part;
-		si_part.sin_family = AF_INET;
-		si_part.sin_port = _port;
+	struct sockaddr_in si_part;
+	si_part.sin_family = AF_INET;
+	si_part.sin_port = _port;
 
-		inet_aton(_host, &si_part.sin_addr);
-		sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
+	inet_aton(_host.c_str(), &si_part.sin_addr);
+	sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
-	}
     if (!_message->getLock()){
         PURGEMESSAGE(_message)
     }
