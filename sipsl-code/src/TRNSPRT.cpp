@@ -192,10 +192,13 @@ void TRNSPRT::parse(void* __message, int _mmod){
 			_hostPort = _message->getEchoClntAddr().sin_port;
 
 		}
-		else{//Lb
+		else{//processor
 			_hostchar = _message->getContactAddress().c_str();
 			_hostPort = atoi(_message->getContactPort().c_str());
 		}
+
+		DEBOUT("Send Reply to address",_hostchar)
+		DEBOUT("Send Reply to port",_hostPort)
 
 		getSUDP()->sendReply(_message, _hostchar, _hostPort);
 
