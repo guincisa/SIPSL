@@ -424,7 +424,7 @@ void SUDP::sendRequestClientProcessor(MESSAGE* _message){
     int i = _message->getModulus();
 	DEBOUT("i modulus", i)
 	DEBOUT("clientProcessor", clientProcessorPointer)
-	int j = i % clientProcessorPointer;
+	int j =  i % (clientProcessorPointer+1);
 	DEBOUT("j modulus", j)
 
 	sendto(sock_se[i], _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&(clientProcessor[j]), sizeof(clientProcessor[j]));
