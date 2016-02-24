@@ -279,7 +279,7 @@ int main(int argc, const char* argv[]) {
         failoverStack->init(localPort, seamLessEng, "krook", alarm, true, false);
         failoverStack->start();
 
-        if (strcmp(startType, "A") == 0 || strcmp(startType, "L" || strcmp(startType, "P") == 0) {
+        if (strcmp(startType, "A") == 0 || strcmp(startType, "L") || strcmp(startType, "P") == 0) {
             sipStack->start();
         }
     } else {
