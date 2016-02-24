@@ -276,7 +276,7 @@ int main(int argc, const char* argv[]) {
 
         //if start type A standby then do activate sipStack
 
-        failoverStack->init(localPort, seamLessEng, "krook", alarm, true, false);
+        failoverStack->init(localPort, seamLessEng, "krook", alarm, true, false, false);
         failoverStack->start();
 
         if (strcmp(startType, "A") == 0 || strcmp(startType, "L") || strcmp(startType, "P") == 0) {
