@@ -153,7 +153,7 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool 
 
     loadBalancer = _loadBalancer;
     clientProcessors = 0;
-    clientProcessorPointer = 0;
+    clientProcessorPointer = -1;
 
     //doa = _doa;
 
@@ -318,6 +318,11 @@ void SUDP::listen(int _socknum) {
                 // if setting = LB
                 if (loadBalancer && message->getReqRepType() != RECOMMPD){
                 	sendRequestClientProcessor(message);
+                	return;
+                }
+                if ( clientProcessorPointer == -1){
+                	//block traffic if no processors
+                	return;
                 }
 
                 engine->p_w((void*)message);
@@ -390,14 +395,15 @@ void SUDP::sendRawMessage(string* message, string address, int port){
 void SUDP::addCP(string _ip, int _port){
 
         //TODO access is not regulated
-      if (clientProcessorPointer >= CP_SIPSL){
-    	  return;
-      }
+		clientProcessorPointer++;
+		if (clientProcessorPointer >= CP_SIPSL){
+		  return;
+		}
 
-	  clientProcessor[clientProcessorPointer].sin_family = AF_INET;
-	  clientProcessor[clientProcessorPointer].sin_port = htons(_port);
-	  inet_aton(_ip.c_str(), &(clientProcessor[clientProcessorPointer].sin_addr));
-	  clientProcessorPointer++;
+		clientProcessor[clientProcessorPointer].sin_family = AF_INET;
+		clientProcessor[clientProcessorPointer].sin_port = htons(_port);
+		inet_aton(_ip.c_str(), &(clientProcessor[clientProcessorPointer].sin_addr));
+		clientProcessorPointer++;
 }
 
 void SUDP::sendRequestClientProcessor(MESSAGE* _message){
