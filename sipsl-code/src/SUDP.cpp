@@ -319,14 +319,16 @@ void SUDP::listen(int _socknum) {
                 //SIPSL_LB we already know the modulus here!
                 // if setting = LB
                 if (loadBalancer && message->getReqRepType() != RECOMMPD){
+                	DEBOUT("Traffic diverted","")
                 	sendRequestClientProcessor(message);
                 	return;
                 }
                 if ( loadBalancer && clientProcessorPointer == -1 && message->getReqRepType() != RECOMMPD){
                 	//block traffic if no processors
+                	DEBOUT("Traffic blocked","")
                 	return;
                 }
-
+                DEBOUT("Traffic processed","")
                 engine->p_w((void*)message);
                 PRINTDIFF("SUDP listen")
             }else {
