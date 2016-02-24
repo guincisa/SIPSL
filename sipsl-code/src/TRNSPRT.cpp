@@ -194,7 +194,7 @@ void TRNSPRT::parse(void* __message, int _mmod){
 		}
 		else{//Lb
 			_hostchar = _message->getContactAddress().c_str();
-			_hostPort = atoi(_message->getContactPort().c_str())
+			_hostPort = atoi(_message->getContactPort().c_str());
 		}
 
 		getSUDP()->sendReply(_message, _hostchar, _hostPort);
