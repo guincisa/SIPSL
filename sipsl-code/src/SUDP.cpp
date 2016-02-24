@@ -137,7 +137,7 @@ void SUDP::setDAO(DAO* _dao) {
 // *****************************************************************************************
 // *****************************************************************************************
 //void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread){
-void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool singleThread, bool _loadBalancer){
+void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool singleThread, bool _loadBalancer, bool _clientProcessor){
 
 	DEBINFSUDP("SUDP init",_domain)
 
@@ -154,6 +154,8 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool 
     loadBalancer = _loadBalancer;
     clientProcessors = 0;
     clientProcessorPointer = -1;
+
+    clientProcessor = _clientProcessor;
 
     //doa = _doa;
 
@@ -554,7 +556,7 @@ void SUDP::sendReply(MESSAGE* _message){
 		_hostPort = _message->getViaUriPort();
 	}
 	//TODO not work with LB
-	if (!loadBalancer){
+	if (!clientProcessor){
 		DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_message->getEchoClntAddr().sin_port)
 		DEBOUT("reportPro",reportPro)
 		//DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
