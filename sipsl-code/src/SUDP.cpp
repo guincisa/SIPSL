@@ -298,7 +298,7 @@ void SUDP::listen(int _socknum) {
         }else if ( recvMsgSize < 1){
         	DEBERROR("SUDP::listen() abnormal message")
         }else {
-        	SETNOW
+
             PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
