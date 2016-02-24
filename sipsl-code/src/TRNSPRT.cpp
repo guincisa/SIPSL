@@ -190,12 +190,12 @@ void TRNSPRT::parse(void* __message, int _mmod){
 
 		if (!getSUDP()->isClientProcess()){
 			_hostPort = _message->getEchoClntAddr().sin_port;
-			DEBOUT("reply to host",_hostchar << ":"<<_hostPort)
 
 		}
 		else{//Lb
 
 		}
+		DEBOUT("reply to host",_hostchar << ":"<<_hostPort)
 
 		getSUDP()->sendReply(_message, _hostchar, _hostPort);
 
