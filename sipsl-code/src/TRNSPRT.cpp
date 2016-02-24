@@ -189,14 +189,13 @@ void TRNSPRT::parse(void* __message, int _mmod){
 		}
 
 		if (!getSUDP()->isClientProcess()){
-			_hostchar = _message->getContactAddress().c_str();
-			_hostPort = atoi(_message->getContactPort().c_str());
+			_hostPort = _message->getEchoClntAddr().sin_port;
 
 		}
 		else{//Lb
-
+			_hostchar = _message->getContactAddress().c_str();
+			_hostPort = atoi(_message->getContactPort().c_str())
 		}
-		DEBOUT("reply to host",_hostchar << ":"<<_hostPort)
 
 		getSUDP()->sendReply(_message, _hostchar, _hostPort);
 
