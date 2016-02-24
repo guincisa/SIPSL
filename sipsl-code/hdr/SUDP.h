@@ -116,7 +116,7 @@ class SUDP {
         static const int realm;
 
         bool loadBalancer;
-        bool clientProcessor;
+        bool clientProcess;
         int clientProcessors;
         int clientProcessorPointer; //
         struct sockaddr_in clientProcessor[CP_SIPSL];
