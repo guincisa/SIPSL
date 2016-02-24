@@ -83,6 +83,10 @@ class SUDP {
 
         void sendRequest(MESSAGE* message);
         void sendReply(MESSAGE* message);
+        void sendReply(MESSAGE* message, string host, int port);
+
+        bool isClientProcess(void);
+
 
         void sendRawMessage(string* message, string address, int port);
 
