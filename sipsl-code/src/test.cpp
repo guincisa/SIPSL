@@ -245,7 +245,8 @@ int main(int argc, const char* argv[]) {
         strcpy(startType, argv[1]);
 
         bool isLoadBalancer = (strcmp(startType, "L") == 0);
-        sipStack->init(SIPPORT_i, sipeng, "krook", alarm, false, isLoadBalancer);
+        bool clientProcessor = (strcmp(startType, "P") == 0);
+        sipStack->init(SIPPORT_i, sipeng, "krook", alarm, false, isLoadBalancer, clientProcessor);
 
         // Seamless failover
         NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1, 1, "SEAMFAILENG"), "SEAMFAILENG")
@@ -278,7 +279,7 @@ int main(int argc, const char* argv[]) {
         failoverStack->init(localPort, seamLessEng, "krook", alarm, true, false);
         failoverStack->start();
 
-        if (strcmp(startType, "A") == 0 || strcmp(startType, "L") == 0) {
+        if (strcmp(startType, "A") == 0 || strcmp(startType, "L" || strcmp(startType, "P") == 0) {
             sipStack->start();
         }
     } else {
