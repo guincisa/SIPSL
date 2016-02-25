@@ -2466,16 +2466,6 @@ bool MESSAGE::buildCommand(vector< pair<int,pair<int, pair<string,string> > > >&
 
 	 dump all regitrations
 	 0%q%all%
-
-	 add clientProcess
-	 0%a%IP:PORT
-	 remove clientProcess
-	 0%r%N
-
-	 0%s
-	 show clientProcessor table
-	 1,IP,port
-
 	 */
 
 	vector< pair<char*, bool> >::iterator m_l;
@@ -2512,20 +2502,12 @@ bool MESSAGE::buildCommand(vector< pair<int,pair<int, pair<string,string> > > >&
 			//query
 			k = 3;
 		}
-		else if (s[1].compare("a") == 0){
-			k = 4;
-		}
-		else if (s[1].compare("r") == 0){
-			k = 5;
-		}
-		else if (s[1].compare("s") == 0){
-			k = 6;
-		}
 		else if (s[1].compare("t")  == 0){
 			k = 20;
 		}
 
 		_command.push_back(make_pair(table,make_pair(k, make_pair(s[2],s[3]))));
+		DEBOUT("MESSAGE::buildCommand",k<<"]["<<s[1]<<"]["<<s[2])
 		DEBOUT("MESSAGE::buildCommand",k<<"]["<<s[1]<<"]["<<s[2]<<"]["<<s[3])
 
 		m_l++;

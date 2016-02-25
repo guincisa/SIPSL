@@ -131,17 +131,13 @@ void * SUDPSTACK(void *_tgtObject) {
 void SUDP::setDAO(DAO* _dao) {
     dao = _dao;
 }
-DAO* SUDP::getDAO(void){
-	return dao;
-}
-
 // *****************************************************************************************
 // SUDP
 // Initialize Stack
 // *****************************************************************************************
 // *****************************************************************************************
 //void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread){
-void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool singleThread, bool _loadBalancer, bool _clientProcessor){
+void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool singleThread){
 
 	DEBINFSUDP("SUDP init",_domain)
 
@@ -154,12 +150,6 @@ void SUDP::init(int _port, ENGINE *_engine, string _domain, ALMGR* _alarm, bool 
     cliAddrLen = sizeof(echoClntAddr);
 
     alarm = _alarm;
-
-    loadBalancer = _loadBalancer;
-    clientProcessors = 0;
-    clientProcessorPointer = -1;
-
-    clientProcess = _clientProcessor;
 
     //doa = _doa;
 
@@ -304,7 +294,7 @@ void SUDP::listen(int _socknum) {
         }else if ( recvMsgSize < 1){
         	DEBERROR("SUDP::listen() abnormal message")
         }else {
-
+        	SETNOW
             PROFILE("SUDP:Message arrived from socket")
             //Message handling
             MESSAGE* message=0x0;
@@ -320,19 +310,6 @@ void SUDP::listen(int _socknum) {
 
                 DEBOUT("MODULUS DEBUG",message->getModulus())
 
-                //SIPSL_LB we already know the modulus here!
-                // if setting = LB
-                if (loadBalancer && message->getReqRepType() != RECOMMPD){
-                	DEBOUT("Traffic diverted","")
-                	sendRequestClientProcessor(message);
-                	return;
-                }
-                if ( loadBalancer && clientProcessorPointer == -1 && message->getReqRepType() != RECOMMPD){
-                	//block traffic if no processors
-                	DEBOUT("Traffic blocked","")
-                	return;
-                }
-                DEBOUT("Traffic processed","")
                 engine->p_w((void*)message);
                 PRINTDIFF("SUDP listen")
             }else {
@@ -397,51 +374,6 @@ void SUDP::sendRawMessage(string* message, string address, int port){
 	sendto(sock_se[0], message->c_str(), message->length(), 0, (struct sockaddr *)&si_part, sizeof(si_part));
 	DEBY
 
-	//TODO finish LB
-
-}
-void SUDP::addCP(string _ip, int _port){
-
-        //TODO access is not regulated
-		DEBOUT("addCP", clientProcessorPointer)
-
-		if (clientProcessorPointer >= CP_SIPSL){
-		  return;
-		}
-		clientProcessorPointer++;
-
-		DEBOUT("addCP 2", clientProcessorPointer)
-
-		clientProcessor[clientProcessorPointer].sin_family = AF_INET;
-		clientProcessor[clientProcessorPointer].sin_port = htons(_port);
-		inet_aton(_ip.c_str(), &(clientProcessor[clientProcessorPointer].sin_addr));
-
-		DEBOUT("addCP 3", clientProcessorPointer)
-		DEBOUT("addCP _port", _port)
-		DEBOUT("addCP _ip", _ip)
-
-}
-
-void SUDP::sendRequestClientProcessor(MESSAGE* _message){
-	DEBINFSUDP("void SUDP::sendRequestClientProcessor(MESSAGE* _message)",_message)
-
-    TIMEDEF
-    SETNOW
-
-	//TODO not sure all CP will get hit uniformously
-    int i = _message->getModulus();
-	DEBOUT("i modulus", i)
-	DEBOUT("clientProcessor", clientProcessorPointer)
-	int j =  i % (clientProcessorPointer+1);
-	DEBOUT("j modulus", j)
-
-	sendto(sock_se[i], _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&(clientProcessor[j]), sizeof(clientProcessor[j]));
-	if (!_message->getLock()){
-		PURGEMESSAGE(_message)
-	}
-	PRINTDIFF("IPNUMERIC SUDP::sendRequestClientProcessor")
-
-	return;
 }
 void SUDP::sendRequest(MESSAGE* _message){
 	DEBINFSUDP("void SUDP::sendRequest(MESSAGE* _message)",_message)
@@ -542,9 +474,6 @@ void SUDP::sendRequest(MESSAGE* _message){
 }
 
 void SUDP::sendReply(MESSAGE* _message){
-
-	DEBOUT("****** THIS IS DEPRECATED ************","")
-
 	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
 
 	TIMEDEF
@@ -554,7 +483,6 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	string receivedProp = _message->getProperty("Via:","received");
 	const char* _hostchar;
-	int _hostPort;
 	string reportPro;
 	if (receivedProp.length() != 0){
 		reportPro = _message->getProperty("Via:","rport");
@@ -562,110 +490,18 @@ void SUDP::sendReply(MESSAGE* _message){
 
 	}else{
 		_hostchar = _message->getViaUriHost().c_str();
-		_hostPort = _message->getViaUriPort();
 	}
-	//TODO not work with LB
-	if (!clientProcess){
-		DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_message->getEchoClntAddr().sin_port)
-		DEBOUT("reportPro",reportPro)
-		//DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
+	DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_message->getEchoClntAddr().sin_port)
+	DEBOUT("reportPro",reportPro)
+	//DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
 
-		DEBOUT("reply message", _message->getMessageBuffer())
-
-		struct sockaddr_in si_part;
-		si_part.sin_family = AF_INET;
-		si_part.sin_port = _message->getEchoClntAddr().sin_port;
-
-		inet_aton(_hostchar, &si_part.sin_addr);
-		sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
-	}
-	else{//Lb
-
-		DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_hostPort)
-
-		DEBOUT("reply message", _message->getMessageBuffer())
-
-		struct sockaddr_in si_part;
-		si_part.sin_family = AF_INET;
-		si_part.sin_port = _hostPort;
-
-		inet_aton(_hostchar, &si_part.sin_addr);
-		sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
-
-	}
-    if (!_message->getLock()){
-        PURGEMESSAGE(_message)
-    }
-	PRINTDIFF("IPNUMERIC SUDP::sendReply")
-
-	return;
-
-#else
-
-    //Reply uses topmost Via header
-
-    DEBMESSAGE("SUDP::sendReply sending Message ", _message)
-    struct addrinfo hints,*servinfo;
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_DGRAM;
-    hints.ai_flags = AI_NUMERICHOST;
-
-//    string receivedProp = _message->getProperty("Via:","received");
-//    if (receivedProp.length() != 0){
-//        string reportPro = _message->getProperty("Via:","rport");
-//        const char* _hostchar = receivedProp.c_str();
-//        int res = getaddrinfo(_hostchar,reportPro.c_str(),&hints, &servinfo);
-//        if (res != 0){
-//        	DEBASSERT("getaddrinfo")
-//        }
-//
-//    }else{
-//        const char* _hostchar = _message->getViaUriHost().c_str();
-//        int res = getaddrinfo(_hostchar,_message->getViaUriProtocol().c_str(),&hints, &servinfo);
-//        if (res != 0){
-//        	DEBASSERT("getaddrinfo")
-//        }
-//    }
-	const char* _hostchar = inet_ntoa(_message->getEchoClntAddr().sin_addr);
-	char xx[GENSTRINGLEN];
-	sprintf(xx,"%d",ntohs((_message->getEchoClntAddr()).sin_port));
-
-	DEBOUT("sendReply to", _hostchar <<"]["<<xx)
-	int res = getaddrinfo(_hostchar,xx,&hints, &servinfo);
-	if (res != 0){
-		DEBASSERT("getaddrinfo")
-	}
-
-    //CHECK ERROR HERE
-    sendto(sock_re,  _message->getMessageBuffer(), strlen(_message->getMessageBuffer()) , 0, servinfo->ai_addr, servinfo->ai_addrlen);
-    if (!_message->getLock()){
-        PURGEMESSAGE(_message)
-    }
-    freeaddrinfo(servinfo);
-	PRINTDIFF("NON IPNUMERIC SUDP::sendReply")
-    return;
-
-#endif
-}
-bool SUDP::isClientProcess(void){
-	return clientProcess;
-}
-
-void SUDP::sendReply(MESSAGE* _message, string _host, int _port){
-
-	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
-
-	TIMEDEF
-	SETNOW
-
-#ifdef IPNUMERIC
+	DEBOUT("reply message", _message->getMessageBuffer())
 
 	struct sockaddr_in si_part;
 	si_part.sin_family = AF_INET;
-	si_part.sin_port = _port;
+	si_part.sin_port = _message->getEchoClntAddr().sin_port;
 
-	inet_aton(_host.c_str(), &si_part.sin_addr);
+	inet_aton(_hostchar, &si_part.sin_addr);
 	sendto(sock_re, _message->getMessageBuffer(),strlen(_message->getMessageBuffer()) , 0, (struct sockaddr *)&si_part, sizeof(si_part));
 
     if (!_message->getLock()){
@@ -723,7 +559,6 @@ void SUDP::sendReply(MESSAGE* _message, string _host, int _port){
 
 #endif
 }
-
 string SUDP::getLocalIp(void){
 	return localip;
 }
