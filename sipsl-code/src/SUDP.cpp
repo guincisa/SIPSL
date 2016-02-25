@@ -131,7 +131,7 @@ void * SUDPSTACK(void *_tgtObject) {
 void SUDP::setDAO(DAO* _dao) {
     dao = _dao;
 }
-DAO* getDAO(void){
+DAO* SUDP::getDAO(void){
 	return dao;
 }
 
