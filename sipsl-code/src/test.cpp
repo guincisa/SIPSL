@@ -237,16 +237,10 @@ int main(int argc, const char* argv[]) {
         NEWPTR(ALMGR*, alarm, ALMGR(ALARMTH, ALARMMAPS, "ALMGR", sl_cc, 0, 10000000), "ALMGR")
         //ALMGR alarm(&sl_cc, 0, 10000000);
         alarm->initAlarm();
-        char SIPPORT[8];
-	     strcpy(SIPPORT,argv[5]);
-	     int SIPPORT_i = atoi(SIPPORT);
-
-         char startType[2];
-        strcpy(startType, argv[1]);
-
-        bool isLoadBalancer = (strcmp(startType, "L") == 0);
-        bool clientProcessor = (strcmp(startType, "P") == 0);
-        sipStack->init(SIPPORT_i, sipeng, "krook", alarm, false, isLoadBalancer, clientProcessor);
+	char SIPPORT[8];
+	strcpy(SIPPORT,argv[5]);
+	int SIPPORT_i = atoi(SIPPORT);
+        sipStack->init(SIPPORT_i, sipeng, "krook", alarm, false);
 
         // Seamless failover
         NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1, 1, "SEAMFAILENG"), "SEAMFAILENG")
@@ -257,9 +251,11 @@ int main(int argc, const char* argv[]) {
                 //create ROI-Heartbeat engine
                 //link to failoverStack
 
+                char startType[2];
         char mateAddress[80];
         char localPort_s[10];
         char matePort_s[10];
+        strcpy(startType, argv[1]);
         strcpy(mateAddress, argv[2]);
         strcpy(localPort_s, argv[3]);
         strcpy(matePort_s, argv[4]);
@@ -276,10 +272,10 @@ int main(int argc, const char* argv[]) {
 
         //if start type A standby then do activate sipStack
 
-        failoverStack->init(localPort, seamLessEng, "krook", alarm, true, false, false);
+        failoverStack->init(localPort, seamLessEng, "krook", alarm, true);
         failoverStack->start();
 
-        if (strcmp(startType, "A") == 0 || strcmp(startType, "L") == 0 || strcmp(startType, "P") == 0) {
+        if (strcmp(startType, "A") == 0) {
             sipStack->start();
         }
     } else {

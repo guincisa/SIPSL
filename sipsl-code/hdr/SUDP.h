@@ -64,7 +64,7 @@ class SUDP {
         // Init stack
 		//singleThread will ignore the SUDPTH value and create a single threaded SUDP, that is used to listen to memory instantiations
         //void init(int _PORT, ENGINE* _ENGINE, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread);
-		void init(int _PORT, ENGINE* _ENGINE, string _domain, ALMGR* _alarm, bool singleThread, bool loadBalancer, bool clientProcessor);
+		void init(int _PORT, ENGINE* _ENGINE, string _domain, ALMGR* _alarm, bool singleThread);
 
         // Start call processing
         void start(void);
@@ -83,25 +83,16 @@ class SUDP {
 
         void sendRequest(MESSAGE* message);
         void sendReply(MESSAGE* message);
-        void sendReply(MESSAGE* message, string host, int port);
-
-        bool isClientProcess(void);
-
 
         void sendRawMessage(string* message, string address, int port);
 
         void setDAO(DAO* dao);
-        DAO* getDAO(void);
 
         //ENGINE* getDoa();
         string getLocalIp(void);
         string getLocalPort(void);
 
         static int getRealm(void);
-
-        void addCP(string ip, int port);
-        void removeCP(int);
-        void sendRequestClientProcessor(MESSAGE* _message);
 
 
     private:
@@ -119,14 +110,6 @@ class SUDP {
         sockaddr_inX echoClntAddr;
 
         static const int realm;
-
-        bool loadBalancer;
-        bool clientProcess;
-        int clientProcessors;
-        int clientProcessorPointer; //
-        struct sockaddr_in clientProcessor[CP_SIPSL];
-        void compactCPArray(void);
-
 
         DAO* dao;
 

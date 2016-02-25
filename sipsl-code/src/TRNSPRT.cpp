@@ -99,9 +99,6 @@
 #ifndef TRNSPRT_H
 #include "TRNSPRT.h"
 #endif
-#ifndef DAO_H
-#include "DAO.h"
-#endif
 
 TRNSPRT::TRNSPRT(int _i, int _m, string _s):ENGINE(_i, _m, _s){}
 
@@ -178,35 +175,8 @@ void TRNSPRT::parse(void* __message, int _mmod){
 //		xx << ntohs((_message->getEchoClntAddr()).sin_port);
 //		_message->setProperty("Via:","rport",xx.str());
 
-		string receivedProp = _message->getProperty("Via:","received");
-		const char* _hostchar;
-		int _hostPort;
-		string reportPro;
-		if (receivedProp.length() != 0){
-			reportPro = _message->getProperty("Via:","rport");
-			_hostchar = receivedProp.c_str();
 
-		}else{
-			_hostchar = _message->getViaUriHost().c_str();
-			_hostPort = _message->getViaUriPort();
-		}
-
-		if (!getSUDP()->isClientProcess()){
-			_hostPort = _message->getEchoClntAddr().sin_port;
-
-		}
-		else{//processor
-		    pair<string,string> _pair = brkin2string(getSUDP()->getDAO()->getData(TBL_REGISTER,_message->getHeadToName()), ":");
-	    	DEBOUT("Use REGISTER table",_pair.first<<"]["<<_pair.second)
-
-			_hostchar = _pair.first.c_str();
-			_hostPort = 5060; //atoi(_pair.second.c_str());
-		}
-
-		DEBOUT("Send Reply to address",_hostchar)
-		DEBOUT("Send Reply to port",_hostPort)
-
-		getSUDP()->sendReply(_message, _hostchar, _hostPort);
+		getSUDP()->sendReply(_message);
 
 	}
 	else if (_message->getReqRepType() == REQSUPP) {
