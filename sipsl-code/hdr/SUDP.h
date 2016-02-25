@@ -91,6 +91,7 @@ class SUDP {
         void sendRawMessage(string* message, string address, int port);
 
         void setDAO(DAO* dao);
+        DAO* getDAO(void);
 
         //ENGINE* getDoa();
         string getLocalIp(void);

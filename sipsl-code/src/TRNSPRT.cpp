@@ -193,8 +193,11 @@ void TRNSPRT::parse(void* __message, int _mmod){
 
 		}
 		else{//processor
-			_hostchar = _message->getContactAddress().c_str();
-			_hostPort = atoi(_message->getContactPort().c_str());
+		    pair<string,string> _pair = brkin2string(getSUDP()->getDAO()->getData(TBL_REGISTER,_message->getHeadToName()), ":");
+	    	DEBOUT("Use REGISTER table",_pair.first<<"]["<<_pair.second)
+
+			_hostchar = _pair.first.c_str();
+			_hostPort = atoi(_pair.second.c_str());
 		}
 
 		DEBOUT("Send Reply to address",_hostchar)
