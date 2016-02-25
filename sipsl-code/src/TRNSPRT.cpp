@@ -99,6 +99,9 @@
 #ifndef TRNSPRT_H
 #include "TRNSPRT.h"
 #endif
+#ifndef DAO_H
+#include "DAO.h"
+#endif
 
 TRNSPRT::TRNSPRT(int _i, int _m, string _s):ENGINE(_i, _m, _s){}
 
