@@ -200,7 +200,7 @@ void TRNSPRT::parse(void* __message, int _mmod){
 	    	DEBOUT("Use REGISTER table",_pair.first<<"]["<<_pair.second)
 
 			_hostchar = _pair.first.c_str();
-			_hostPort = atoi(_pair.second.c_str());
+			_hostPort = 5060; //atoi(_pair.second.c_str());
 		}
 
 		DEBOUT("Send Reply to address",_hostchar)
