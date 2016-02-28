@@ -45,7 +45,7 @@ class TRNSPRT : public ENGINE {
 
         void parse(void*,int); //downcall
 
-        void setSipEngine(ENGINE* sipengine);
+        void setSipEngine(SIPENGINE* sipengine);
 
 };
 #endif
