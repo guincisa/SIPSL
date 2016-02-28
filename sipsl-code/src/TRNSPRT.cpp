@@ -111,7 +111,7 @@ void TRNSPRT::upCall(MESSAGE* _message){
     sipengine->p_w((void*)_message);
 
 }
-void TRNSPRT::setSipEngine(ENGINE* _sipengine){
+void TRNSPRT::setSipEngine(SIPENGINE* _sipengine){
 	sipengine = _sipengine;
 }
 
