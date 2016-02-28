@@ -101,7 +101,7 @@ class SUDP {
     private:
 
         //ENGINE* engine;
-        TRSNPRT* transport;
+        TRNSPRT* transport;
         ThreadWrapper *listenerThread[2*SUDPTH];
         string domain;
         string localip;
