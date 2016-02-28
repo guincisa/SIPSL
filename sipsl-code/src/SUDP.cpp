@@ -137,7 +137,7 @@ void SUDP::setDAO(DAO* _dao) {
 // *****************************************************************************************
 // *****************************************************************************************
 //void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread){
-void SUDP::init(int _port, ENGINE* _engine, string _domain, ALMGR* _alarm, bool singleThread){
+void SUDP::init(int _port, TRNSPRT* _engine, string _domain, ALMGR* _alarm, bool singleThread){
 
 	DEBINFSUDP("SUDP init",_domain)
 
