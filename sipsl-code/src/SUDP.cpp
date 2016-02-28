@@ -227,7 +227,7 @@ void SUDP::init(int _port, TRNSPRT* _engine, string _domain, ALMGR* _alarm, bool
 #ifdef VODAFONEBB
 	localip = "gincisa.ddns.net";
 #endif
-	sipengine->linkSUDP(this);
+	//sipengine->linkSUDP(this);
 
     DEBINFSUDP("SUDP init done","")
 
