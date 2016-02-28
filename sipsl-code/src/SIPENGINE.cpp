@@ -178,7 +178,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
         }
         else{
-            _sl_cc->p_w((void*)_mess);
+            sl_cc->p_w((void*)_mess);
             //transport->upCall(_mess, (SL_CC*)sl_cc);
             PRINTDIFF("SIPENGINE p_w")
         }
