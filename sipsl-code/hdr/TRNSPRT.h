@@ -22,6 +22,9 @@
 #ifndef TRNSPRT_H
 #define TRNSPRT_H
 
+class SIPENGINE;
+
+
 //Is a global object but not an engine, it runs
 //inside SIPENGINE when up
 //inside SL_CC when down
