@@ -160,6 +160,11 @@ class ThreadWrapper {
 //32
 #define SL_CCMAPS 6
 
+#define CALLPROCESSOR 3
+#define LOADBALANCER 2
+#define STANDALONE 1
+
+
 //#define ENGINEMAPS 5
 #define ALARMTH 1
 #define ALARMMAPS 1

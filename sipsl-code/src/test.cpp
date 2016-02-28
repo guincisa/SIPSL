@@ -219,6 +219,9 @@ int main(int argc, const char* argv[]) {
         sipeng->linkSUDP(sipStack);
         sipeng->linkTransport(transport);
 
+        transport->setSipEngine(sipeng);
+
+
         sl_cc->linkSipEngine(sipeng);
 
         //data layer

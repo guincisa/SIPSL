@@ -64,7 +64,7 @@ class SUDP {
         // Init stack
 		//singleThread will ignore the SUDPTH value and create a single threaded SUDP, that is used to listen to memory instantiations
         //void init(int _PORT, ENGINE* _ENGINE, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread);
-		void init(int _PORT, ENGINE* _ENGINE, string _domain, ALMGR* _alarm, bool singleThread);
+		void init(int _PORT, TRSNPRT* _transport, string _domain, ALMGR* _alarm, bool singleThread);
 
         // Start call processing
         void start(void);
@@ -94,10 +94,13 @@ class SUDP {
 
         static int getRealm(void);
 
+        TRNSPRT* getTRNSPRT(void);
+
 
     private:
 
-        ENGINE* engine;
+        //ENGINE* engine;
+        TRSNPRT* transport;
         ThreadWrapper *listenerThread[2*SUDPTH];
         string domain;
         string localip;
