@@ -36,7 +36,7 @@ class TRNSPRT : public ENGINE {
 
     public:
         
-        TRNSPRT(ENGINE*, int,int,string);
+        TRNSPRT(int,int,string);
 
         void upCall(MESSAGE*);
 
