@@ -106,6 +106,8 @@ void TRNSPRT::upCall(MESSAGE* _message){
 
 	//timing recorded into SIPENGINE
     DEBNTW("TRNSPRT::upCall", _message)
+
+	//Routing logic here
     sipengine->p_w((void*)_message);
 
 }
