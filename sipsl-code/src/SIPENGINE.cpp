@@ -178,7 +178,8 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
         }
         else{
-            transport->upCall(_mess, (SL_CC*)sl_cc);
+            _sl_cc->p_w((void*)_mess);
+            //transport->upCall(_mess, (SL_CC*)sl_cc);
             PRINTDIFF("SIPENGINE p_w")
         }
     }
@@ -187,7 +188,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
         DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply())
 
         //All replies must be considered
-        transport->upCall(_mess, (SL_CC*)sl_cc);
+		_sl_cc->p_w((void*)_mess);
         PRINTDIFF("SIPENGINE p_w")
 
     }

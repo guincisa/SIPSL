@@ -102,14 +102,17 @@
 
 TRNSPRT::TRNSPRT(int _i, int _m, string _s):ENGINE(_i, _m, _s){}
 
-void TRNSPRT::upCall(MESSAGE* _message, SL_CC* _sl_cc){
+void TRNSPRT::upCall(MESSAGE* _message){
 
 	//timing recorded into SIPENGINE
     DEBNTW("TRNSPRT::upCall", _message)
-    _sl_cc->p_w((void*)_message);
-
+    sipengine->p_w((void*)_message);
 
 }
+void TRNSPRT::setSipEngine(ENGINE* _sipengine){
+	sipengine = _sipengine;
+}
+
 void TRNSPRT::parse(void* __message, int _mmod){
 
 	//RETRANSMISSIONS

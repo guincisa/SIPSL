@@ -1,0 +1,6 @@
+1. insert transport layer between SUDP and SIPENGINE
+
+in prog
+
+2. introduce the three execution types
+3. develop routing on TRANSPORT

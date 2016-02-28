@@ -32,13 +32,17 @@ class TRNSPRT : public ENGINE {
 
     private:
         int dummy;
+        SIPENGINE* sipengine;
 
     public:
         
-        TRNSPRT(int,int,string);
+        TRNSPRT(ENGINE*, int,int,string);
 
-        void upCall(MESSAGE*, SL_CC*);
+        void upCall(MESSAGE*);
+
         void parse(void*,int); //downcall
+
+        void setSipEngine(ENGINE* sipengine);
 
 };
 #endif

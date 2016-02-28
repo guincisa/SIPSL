@@ -310,7 +310,8 @@ void SUDP::listen(int _socknum) {
 
                 DEBOUT("MODULUS DEBUG",message->getModulus())
 
-                engine->p_w((void*)message);
+                //engine->p_w((void*)message);
+                transport->upCall(message);
                 PRINTDIFF("SUDP listen")
             }else {
                 DEBERROR("SUDP::listen() could not allocate memory for incoming message")
