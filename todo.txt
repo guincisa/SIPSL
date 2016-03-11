@@ -1,6 +1,15 @@
 1. insert transport layer between SUDP and SIPENGINE
 
-in prog
+done
 
 2. introduce the three execution types
+
+need to define a criteria which decides from where the message comes from :
+network or call _ processor
+
+
 3. develop routing on TRANSPORT
+
+4. implement authentication
+-> register will only accept users in the DB
+-> how passwords are managed?

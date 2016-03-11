@@ -68,7 +68,8 @@ class SUDP {
 		void init(int _PORT, TRNSPRT* _engine, string _domain, ALMGR* _alarm, bool singleThread);
 
         // Start call processing
-        void start(void);
+		//set processing type here now
+        void start(int processingType);
 
         // Suspend call processing, finish active calls
         //void suspend(void);
@@ -97,6 +98,8 @@ class SUDP {
 
         TRNSPRT* getTRNSPRT(void);
 
+        int getProcessingType(void);
+
 
     private:
 
@@ -112,6 +115,8 @@ class SUDP {
         unsigned short echoServPort;
         unsigned int cliAddrLen;
         sockaddr_inX echoClntAddr;
+
+        int processingType;
 
         static const int realm;
 

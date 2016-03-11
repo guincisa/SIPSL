@@ -39,6 +39,11 @@ extern double PERFARRAY[4][50];
 #define MESSAGE_REALM 2
 #define SIPSL_REALM CALL_REALM
 
+//Processing type
+#define STAND_ALONE 0
+#define CALL_DISTRIBUTOR 1
+#define CALL_PROCESSOR 2
+
 #define SPARC
 
 //set SIPSL to work with Vodafone bb

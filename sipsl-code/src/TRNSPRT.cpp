@@ -108,7 +108,14 @@ void TRNSPRT::upCall(MESSAGE* _message){
     DEBNTW("TRNSPRT::upCall", _message)
 
 	//Routing logic here
-    sipengine->p_w((void*)_message);
+	if (getSUDP->getProcessingType() == STAND_ALONE){
+		sipengine->p_w((void*)_message);
+	}
+	else if (getSUDP->getProcessingType() == CALL_DISTRIBUTOR){
+		//check originator
+		//TODO HERE
+		//understand where the message comes from
+	}
 
 }
 void TRNSPRT::setSipEngine(SIPENGINE* _sipengine){
