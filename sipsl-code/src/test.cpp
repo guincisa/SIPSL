@@ -243,7 +243,7 @@ int main(int argc, const char* argv[]) {
 	char SIPPORT[8];
 	strcpy(SIPPORT,argv[5]);
 	int SIPPORT_i = atoi(SIPPORT);
-        sipStack->init(SIPPORT_i, transport, "krook", alarm, false);
+        sipStack->init(SIPPORT_i, transport, ok"krook", alarm, false);
 
         // Seamless failover
         NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1, 1, "SEAMFAILENG"), "SEAMFAILENG")
@@ -263,6 +263,7 @@ int main(int argc, const char* argv[]) {
         strcpy(localPort_s, argv[3]);
         strcpy(matePort_s, argv[4]);
 
+
         int matePort = atoi(matePort_s);
         int localPort = atoi(localPort_s);
 
@@ -278,8 +279,15 @@ int main(int argc, const char* argv[]) {
 //        failoverStack->init(localPort, seamLessEng, "krook", alarm, true);
 //        failoverStack->start();
 
+        //Active
         if (strcmp(startType, "A") == 0) {
-            sipStack->start();
+            sipStack->start(STAND_ALONE);
+        }
+        //Router or Call Distributor
+        else if (strcmp(startType, "R") == 0) {
+            sipStack->start(CALL_DISTRIBUTOR);
+        }else if (strcmp(startType, "P") == 0) {
+            sipStack->start(CALL_PROCESSOR);
         }
     } else {
         cout << " <A or P> mateAddress localPort_s matePort_s" << endl;

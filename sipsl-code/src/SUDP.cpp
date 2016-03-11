@@ -132,6 +132,13 @@ void SUDP::setDAO(DAO* _dao) {
     dao = _dao;
 }
 // *****************************************************************************************
+// Return processing type
+// *****************************************************************************************
+// *****************************************************************************************
+int SUDP::getProcessingType(void){
+	return processingType;
+}
+// *****************************************************************************************
 // SUDP
 // Initialize Stack
 // *****************************************************************************************
@@ -238,7 +245,9 @@ void SUDP::init(int _port, TRNSPRT* _engine, string _domain, ALMGR* _alarm, bool
 // Start Stack
 // *****************************************************************************************
 // *****************************************************************************************
-void SUDP::start(void) {
+void SUDP::start(int _processingType) {
+
+	processingType = _processingType;
 
     // allocate thread and starts
 
@@ -268,6 +277,12 @@ void SUDP::start(void) {
 // Listen to network
 // *****************************************************************************************
 void SUDP::listen(int _socknum) {
+
+	//processing type
+	// If router then I can receive
+	//  [network] -> SUDP
+	//  [C_PROC] -> SUDP
+	// we distinguish in transport
 
     TIMEDEF
 
