@@ -4,8 +4,6 @@ done
 
 2. introduce the three execution types
 
-need to define a criteria which decides from where the message comes from :
-network or call _ processor
 
 
 3. develop routing on TRANSPORT

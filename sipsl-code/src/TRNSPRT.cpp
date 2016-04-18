@@ -115,6 +115,27 @@ void TRNSPRT::upCall(MESSAGE* _message){
 		//check originator
 		//TODO HERE
 		//understand where the message comes from
+		//		REQ = requets
+		//		REP = reply
+		//		GENID= generic or external call id
+		//		CMPID = Comap Call Ind = SIPSL generated
+		//
+		//		routing rules
+		//		1) REQ + GENID : NTW -> SIPSL_LB -> SIPSL_n
+		//		2) REP + GENID : SIPSL_n -> SIPSL_LB -> NTW
+		//		3) REQ + CMPID : SIPSL_n -> SIPSL_LB -> NTW
+		//		4) REP + CMPID : NTW -> SIPSL_LB -> SIPSL_n
+
+		//will not change message call id
+		// get username
+		// get id from table # 11 = TBL_SUBSCRIBER_PROC
+		// get ip address from table # 10 : TBL_SIPSL_PROC
+
+
+	}else if (getSUDP->getProcessingType() == CALL_PROCESSOR){
+		//probably like StandAlone
+		// but will always reply to incoming socket
+
 	}
 
 }
