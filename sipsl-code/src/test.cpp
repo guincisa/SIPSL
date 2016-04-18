@@ -243,7 +243,7 @@ int main(int argc, const char* argv[]) {
 	char SIPPORT[8];
 	strcpy(SIPPORT,argv[5]);
 	int SIPPORT_i = atoi(SIPPORT);
-        sipStack->init(SIPPORT_i, transport, ok"krook", alarm, false);
+        sipStack->init(SIPPORT_i, transport, "krook", alarm, false);
 
         // Seamless failover
         NEWPTR(SEAMFAILENG*, seamLessEng, SEAMFAILENG(1, 1, "SEAMFAILENG"), "SEAMFAILENG")
