@@ -108,10 +108,10 @@ void TRNSPRT::upCall(MESSAGE* _message){
     DEBNTW("TRNSPRT::upCall", _message)
 
 	//Routing logic here
-	if (getSUDP->getProcessingType() == STAND_ALONE){
+	if (getSUDP()->getProcessingType() == STAND_ALONE){
 		sipengine->p_w((void*)_message);
 	}
-	else if (getSUDP->getProcessingType() == CALL_DISTRIBUTOR){
+	else if (getSUDP()->getProcessingType() == CALL_DISTRIBUTOR){
 		//check originator
 		//TODO HERE
 		//understand where the message comes from
@@ -132,7 +132,7 @@ void TRNSPRT::upCall(MESSAGE* _message){
 		// get ip address from table # 10 : TBL_SIPSL_PROC
 
 
-	}else if (getSUDP->getProcessingType() == CALL_PROCESSOR){
+	}else if (getSUDP()->getProcessingType() == CALL_PROCESSOR){
 		//probably like StandAlone
 		// but will always reply to incoming socket
 
