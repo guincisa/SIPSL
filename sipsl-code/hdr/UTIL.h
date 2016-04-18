@@ -198,7 +198,9 @@ class ThreadWrapper {
 #define TBL_ROUTE 0
 #define TBL_NAT 1
 #define TBL_REGISTER 2
-#define TABLES 3
+#define TBL_SIPSL_PROC 10
+#define TBL_SUBSCRIBER_PROC 11
+#define TABLES 12
 
 
 //uncomment for profiling

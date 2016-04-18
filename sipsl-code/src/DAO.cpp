@@ -154,7 +154,11 @@ void DAO::parse(void* __mess, int _mmod) {
     	}
         pair<int, pair<string,string> >  m_l_2;
         m_l_2 = m_l->second;
-        if (m_l_2.first == 1){
+        // m_l_2.first is the oeration
+        // i = i insert
+        // d = 2 delete
+        // q = 3 query/dump
+        if (m_l_2.first == 1){ //INSERT
             GETLOCK(&mutex,"DAO mutex",20)
             DEBOUT("void DAO::parse",m_l_2.first << "]["<<((pair <string,string>)m_l_2.second).first<<"]["<<((pair <string,string>)m_l_2.second).second)
             datatable[table].insert(make_pair( ((pair <string,string>)m_l_2.second).first,((pair <string,string>)m_l_2.second).second));
@@ -165,7 +169,7 @@ void DAO::parse(void* __mess, int _mmod) {
             //send
 
         }
-        if (m_l_2.first == 3){
+        if (m_l_2.first == 3){ //DUMP
             GETLOCK(&mutex,"DAO mutex",20)
             DEBOUT("void DAO::parse dumping registration table size", datatable[table].size());
             map <string,string>::iterator reg_l;

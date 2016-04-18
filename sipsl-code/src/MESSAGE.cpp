@@ -2468,6 +2468,18 @@ bool MESSAGE::buildCommand(vector< pair<int,pair<int, pair<string,string> > > >&
 	 0%q%all%
 	 */
 
+	/* call processors configuration
+	 * 10%i%address%id
+	 * s[0] table
+	 * s[1] insert , k = 1
+	 * s[2] ip address
+	 * s[3] call processor id = will match subscriber position
+	 */
+
+	/* subscriber config processor routing table
+	 * 11%i%username%processorId
+	 */
+
 	vector< pair<char*, bool> >::iterator m_l;
 
 	m_l = message_line.begin();
