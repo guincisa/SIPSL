@@ -498,16 +498,15 @@ void SUDP::sendReply(MESSAGE* _message){
 #ifdef IPNUMERIC
 
 	string receivedProp = _message->getProperty("Via:","received");
-	const char* _hostchar;
+	const char* _hostchar = new char [256];
 	string reportPro;
 	DEBOUT("receivedProp",receivedProp)
 	if (receivedProp.length() != 0){
 		reportPro = _message->getProperty("Via:","rport");
-		_hostchar = receivedProp.c_str();
-
+		std::strcpy(_hostchar, receivedProp.c_str());
 	}else{
 		DEBOUT("_message->getViaUriHost()",_message->getViaUriHost())
-		_hostchar = _message->getViaUriHost().c_str();
+		std::strcpy(_hostchar, _message->getViaUriHost().c_str());
 	}
 	DEBOUT("PORT",_message->getEchoClntAddr().sin_port)
 	DEBOUT("ReplyHost",_hostchar)
