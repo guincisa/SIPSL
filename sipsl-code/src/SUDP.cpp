@@ -500,6 +500,7 @@ void SUDP::sendReply(MESSAGE* _message){
 	string receivedProp = _message->getProperty("Via:","received");
 	const char* _hostchar;
 	string reportPro;
+	DEBOUT("receivedProp",receivedProp)
 	if (receivedProp.length() != 0){
 		reportPro = _message->getProperty("Via:","rport");
 		_hostchar = receivedProp.c_str();
