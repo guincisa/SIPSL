@@ -508,6 +508,7 @@ void SUDP::sendReply(MESSAGE* _message){
 	}else{
 		DEBOUT("_message->getViaUriHost()",_message->getViaUriHost())
 		_hostchar = _message->getViaUriHost().c_str();
+		DEBOUT("_message->getViaUriHost()",_message->getViaUriHost().c_str())
 	}
 	DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_message->getEchoClntAddr().sin_port)
 	DEBOUT("reportPro",reportPro)
