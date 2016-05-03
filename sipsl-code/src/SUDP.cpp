@@ -506,6 +506,7 @@ void SUDP::sendReply(MESSAGE* _message){
 		_hostchar = receivedProp.c_str();
 
 	}else{
+		DEBOUT("_message->getViaUriHost()",_message->getViaUriHost())
 		_hostchar = _message->getViaUriHost().c_str();
 	}
 	DEBOUT("ReplyHost:PORT",_hostchar << ":"<<_message->getEchoClntAddr().sin_port)
