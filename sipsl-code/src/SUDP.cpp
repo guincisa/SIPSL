@@ -503,10 +503,10 @@ void SUDP::sendReply(MESSAGE* _message){
 	DEBOUT("receivedProp",receivedProp)
 	if (receivedProp.length() != 0){
 		reportPro = _message->getProperty("Via:","rport");
-		std::strcpy(_hostchar, receivedProp.c_str());
+		strcpy(_hostchar, receivedProp.c_str());
 	}else{
 		DEBOUT("_message->getViaUriHost()",_message->getViaUriHost())
-		std::strcpy(_hostchar, _message->getViaUriHost().c_str());
+		strcpy(_hostchar, _message->getViaUriHost().c_str());
 	}
 	DEBOUT("PORT",_message->getEchoClntAddr().sin_port)
 	DEBOUT("ReplyHost",_hostchar)
