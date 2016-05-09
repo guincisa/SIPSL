@@ -165,7 +165,7 @@ void DAO::parse(void* __mess, int _mmod) {
         	RELLOCK(&mutex,"DAO mutex")
 
             //PD-SIPSL
-            //0%i%127.0.0.1:5061%service@127.0.0.1:5061
+            //0%i%sipsl:5061%service@sipsl:5061
             //send
 
         }
