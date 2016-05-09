@@ -1,1 +1,1 @@
-sipp -sn uac -rsa grog.sipsl.org:5060 -p 5061 -m 1 -d 10000 grog.sipsl.org:5062
+sipp -sn uac -rsa sipsl.ddns.net:5060 -p 5061 -m 1 -d 10000 sipsl.ddns.net:5062

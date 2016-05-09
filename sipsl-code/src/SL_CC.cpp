@@ -292,7 +292,7 @@ void SL_CC::parse(void* __mess, int _mmod){
 
 #else
         	//Inserting regiter data
-		into dao and reply 200 OK
+		//into dao and reply 200 OK
         	DEBOUT("username@domain",_mess->getFromUser())
 			DEBOUT("REGISTER port",ntohs(_mess->getEchoClntAddr().sin_port))
 			DEBOUT("REGISTER address",inet_ntoa(_mess->getEchoClntAddr().sin_addr))
