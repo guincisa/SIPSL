@@ -204,7 +204,7 @@ class ThreadWrapper {
 
 
 //uncomment for profiling
-#define PROFILING
+//#define PROFILING
 //#define PROFILELOCK
 //#define PROFILELOCKCALC
 
@@ -242,7 +242,7 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-#define SHOWFLOWLOG
+//#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
