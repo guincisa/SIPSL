@@ -53,7 +53,7 @@ extern double PERFARRAY[4][50];
 // this can be avoided by changing the sip default, but then the 200OK is not sent back correctly (to be investigated)
 //
 // V1 changes to set up the call
-#define VODAFONEBB
+//#define VODAFONEBB
 
 using namespace std;
 
