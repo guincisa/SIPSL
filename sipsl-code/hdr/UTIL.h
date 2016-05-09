@@ -227,7 +227,7 @@ class ThreadWrapper {
 #define LOGINFCALLOSET
 #endif
 
-#define LOGLEVL2
+//#define LOGLEVL2
 #ifdef LOGLEVL2
 #define LOGINFMESSAGE
 #define LOGLOK
@@ -929,7 +929,7 @@ class ThreadWrapper {
 		r = pthread_mutex_trylock(m);
 #ifdef LOGLOK
 #undef GETLOCK
-#define GETLOCK(m,message) \
+#define GETLOCK(m,message,i) \
 		DEBOUT("Reaching lock " << message, m)\
 		pthread_mutex_lock(m);\
 		DEBOUT("Acquired lock " << message, m)
