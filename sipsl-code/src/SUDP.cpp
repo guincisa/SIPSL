@@ -113,14 +113,14 @@ extern "C" void* SUPDSTACK (void*);
 
 void * SUDPSTACK(void *_tgtObject) {
 
-	BDEBUG("SUDPSTACK thread id",pthread_self())
-	DEBINFSUDP("SUDPSTACK start","")
+	DBSUDP_3("SUDPSTACK thread id",pthread_self())
+	DBSUDP_3("SUDPSTACK start","")
 
     SUDPtuple *tgtObject = (SUDPtuple *)_tgtObject;
 
     tgtObject->st->listen(tgtObject->thid);
 
-    DEBINFSUDP("SUDPSTACK started","")
+    DBSUDP_3("SUDPSTACK started","")
 
     return (NULL);
 }
@@ -402,11 +402,11 @@ void SUDP::sendRequest(MESSAGE* _message){
     pair<string,string> _pair;
     if(_message->hasRoute()){
     	_pair = _message->getRoute();
-        DEBSUP("hasroute",_pair.first<<"]["<<_pair.second)
+    	DBSUDP("hasroute",_pair.first<<"]["<<_pair.second)
     }
     else if (_message->natTraversal()){
     	_pair = _message->getNatAddress();
-    	DEBSUP("hasNat",_pair.first<<"]["<<_pair.second)
+    	DBSUDP("hasNat",_pair.first<<"]["<<_pair.second)
     }
     else{
 #ifdef VODAFONEBB
@@ -422,10 +422,10 @@ void SUDP::sendRequest(MESSAGE* _message){
 
 #else
     	_pair = _message->getRequestUriProtocol();
-    	DEBSUP("use request",_pair.first<<"]["<<_pair.second)
+    	DBSUDP("use request",_pair.first<<"]["<<_pair.second)
 #endif
     }
-    DEBSUP("sending to",_pair.first<<"]["<<_pair.second)
+    DBSUDP("sending to",_pair.first<<"]["<<_pair.second)
     const char* _hostchar = _pair.first.c_str();
 
 	struct sockaddr_in si_part;
@@ -490,7 +490,7 @@ void SUDP::sendRequest(MESSAGE* _message){
 }
 
 void SUDP::sendReply(MESSAGE* _message){
-	DEBSUP_3("void SUDP::sendReply(MESSAGE* _message)",_message)
+	DBSUDP_3("void SUDP::sendReply(MESSAGE* _message)",_message)
 
 	TIMEDEF
 	SETNOW
@@ -501,21 +501,21 @@ void SUDP::sendReply(MESSAGE* _message){
 	const char* _hostchar;
 	char cstr[256];
 	string reportPro;
-	DEBSUP("receivedProp",receivedProp)
+	DBSUDP("receivedProp",receivedProp)
 	if (receivedProp.length() != 0){
 		reportPro = _message->getProperty("Via:","rport");
 		strcpy(cstr, receivedProp.c_str());
 	}else{
-		DEBSUP("_message->getViaUriHost()",_message->getViaUriHost())
+		DBSUDP("_message->getViaUriHost()",_message->getViaUriHost())
 		strcpy(cstr, _message->getViaUriHost().c_str());
 	}
 	_hostchar = cstr;
-	DEBSUP("PORT",_message->getEchoClntAddr().sin_port)
-	DEBSUP("ReplyHost",_hostchar)
-	DEBSUP("reportPro",reportPro)
+	DBSUDP("PORT",_message->getEchoClntAddr().sin_port)
+	DBSUDP("ReplyHost",_hostchar)
+	DBSUDP("reportPro",reportPro)
 	//DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
 
-	DEBSUP("reply message", _message->getMessageBuffer())
+	DBSUDP("reply message", _message->getMessageBuffer())
 
 	struct sockaddr_in si_part;
 	si_part.sin_family = AF_INET;
