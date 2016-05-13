@@ -62,12 +62,15 @@
 // *****************************************************************************************
 // *****************************************************************************************
 ACTION::ACTION(void){
+	DEBUGACTION_3("ACTION::ACTION(void)","")
 	return;
 }
 void ACTION::addSingleAction(SingleAction _sa){
+	DEBUGACTION_3("ACTION::addSingleAction",_sa)
 	act_item.push(_sa);
 }
 stack<SingleAction> ACTION::getActionList(void){
+	DEBUGACTION_3("ACTION::getActionList(void)","")
 	return act_item;
 }
 // *****************************************************************************************
@@ -82,10 +85,12 @@ stack<SingleAction> ACTION::getActionList(void){
 //	message = _message;
 //}
 SingleAction::SingleAction(MESSAGE* _message){
+	DEBUGACTION_3("SingleAction::SingleAction(MESSAGE* _message)",_message)
 	message = _message;
 }
 // *****************************************************************************************
 // *****************************************************************************************
 MESSAGE* SingleAction::getMessage(void){
+	DEBUGACTION_3("MESSAGE* SingleAction::getMessage","")
 	return message;
 }

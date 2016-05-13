@@ -536,6 +536,7 @@ class ThreadWrapper {
            sprintf(bu2,"%s.%06ld",_bu2,mytime.tv.tv_usec);\
        	   }
 
+//BASE logger
 #define BDEBUG(m1, m2) {stringstream xx ; \
 		char bu2[200];\
 		cout.precision(20);\
@@ -697,45 +698,7 @@ class ThreadWrapper {
 				__mess->setKey(key);}}
 
 #endif
-//**********************************************************
-#ifdef PROFILING
-//#define PROFILE(m) DEBOUT("PROFILING",m)
-#define PROFILE(m)
-#define TIMEDEF SysTime mytime1111;
-#define SETNOW gettimeofday(&mytime1111.tv, &mytime1111.tz);;
-#define PRINTDIFF(m) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
-		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
-                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
-                BDEBUG("PROFILE DIFFERENCE ", m << "]["<<num)}
-#define PRINTDIFF_A(m,m2) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
-		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
-                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
-                BDEBUG("PROFILE DIFFERENCE ", m << "]["<<num)\
-				if (num > m2){ DEBASSERT("TIME EXCEEDED" << m << "]["<<num)}}
-#define PRINTDIFFMIN(m,min) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
-		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
-                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
-		if (num >= min ){ BDEBUG("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")\
-			if (num > 10000) BDEBUG("Waited too long","")}}
 
-#define CALCPERF(mess,n) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
-		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
-                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
-                if (PERFARRAY[0][n] <  num){ \
-                	PERFARRAY[0][n]  = num;}\
-                if (PERFARRAY[1][n] > num) {\
-                	PERFARRAY[1][n]  = num;}\
-                PERFARRAY[3][n] = (PERFARRAY[2][n] * PERFARRAY[3][n] + num ) / (PERFARRAY[2][n] + 1);\
-                PERFARRAY[2][n] ++; BDEBUG("CALCPERF ",mess <<" Avg["<<PERFARRAY[3][n]<<"] Min["<<PERFARRAY[1][n]<<"] Max["<<PERFARRAY[0][n])}
-
-
-#else
-#define PROFILE(m)
-#define TIMEDEF
-#define SETNOW
-#define PRINTDIFF(m)
-#define CALCPERF(m1,m2)
-#endif
 //**********************************************************
 #ifdef LOGALO
 #define DEBALO(m1,m2) DEBOUT("DEBALO " << m1, m2)
@@ -976,6 +939,169 @@ class ThreadWrapper {
 #undef TRYLOCK
 #define TRYLOCK(m,message,r)\
 		r = pthread_mutex_trylock(m);
+#endif
+//**********************************************************
+//**********************************************************
+//**********************************************************
+//**********************************************************
+//**********************************************************
+//**********************************************************
+// new logging done per source file
+// debug info
+#ifdef DEBUGSUDP
+#define DBSUDP(m1, m2) BDEBUG(m1,m2)
+#else
+#define DBSUDP(m1, m2)
+#endif
+//low
+#ifdef DEBUGSUDP_2
+#define DBSUDP_2(m1, m2) BDEBUG(m1,m2)
+#else
+#define DBSUDP_2(m1, m2)
+#endif
+//iperlow
+#ifdef DEBUGSUDP_3
+#define DBSUDP_3(m1, m2) BDEBUG(m1,m2)
+#else
+#define DBSUDP_3(m1, m2)
+#endif
+//**********************************************************
+//**********************************************************
+#ifdef DEBUGSIPENGINE
+#define DEBUGSIPENGINE(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSIPENGINE(m1, m2)
+#endif
+//low
+#ifdef DEBUGSIPENGINE_2
+#define DEBUGSIPENGINE_2(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSIPENGINE_2(m1, m2)
+#endif
+//iperlow
+#ifdef DEBUGSIPENGINE_3
+#define DEBUGSIPENGINE_3(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSIPENGINE_3(m1, m2)
+#endif
+//**********************************************************
+//**********************************************************
+#ifdef DEBUGSL_CC
+#define DEBUGSL_CC(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSL_CC(m1, m2)
+#endif
+//low
+#ifdef DEBUGSL_CC_2
+#define DEBUGSL_CC_2(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSL_CC_2(m1, m2)
+#endif
+//iperlow
+#ifdef DEBUGSL_CC_3
+#define DEBUGSL_CC_3(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSL_CC_3(m1, m2)
+#endif
+//**********************************************************
+//**********************************************************
+#ifdef DEBUGSIPUTIL
+#define DEBUGSIPUTIL(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSIPUTIL(m1, m2)
+#endif
+//low
+#ifdef DEBUGSIPUTIL_2
+#define DEBUGSIPUTIL_2(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSIPUTIL_2(m1, m2)
+#endif
+//iperlow
+#ifdef DEBUGSIPUTIL_3
+#define DEBUGSIPUTIL_3(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGSIPUTIL_3(m1, m2)
+#endif
+//**********************************************************
+//**********************************************************
+#ifdef DEBUGACTION
+#define DEBUGACTION(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGACTION(m1, m2)
+#endif
+//low
+#ifdef DEBUGACTION_2
+#define DEBUGACTION_2(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGACTION_2(m1, m2)
+#endif
+//iperlow
+#ifdef DEBUGACTION_3
+#define DEBUGACTION_3(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGACTION_3(m1, m2)
+#endif
+//**********************************************************
+//**********************************************************
+#ifdef DEBUGCALL_OSET
+#define DEBUGCALL_OSET(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGCALL_OSET(m1, m2)
+#endif
+//low
+#ifdef DEBUGCALL_OSET_2
+#define DEBUGCALL_OSET_2(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGCALL_OSET_2(m1, m2)
+#endif
+//iperlow
+#ifdef DEBUGCALL_OSET_3
+#define DEBUGCALL_OSET_3(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGCALL_OSET_3(m1, m2)
+#endif
+
+//**********************************************************
+//**********************************************************
+//**********************************************************
+//PERFORMANCE
+#ifdef PROFILING
+//#define PROFILE(m) DEBOUT("PROFILING",m)
+#define PROFILE(m)
+#define TIMEDEF SysTime mytime1111;
+#define SETNOW gettimeofday(&mytime1111.tv, &mytime1111.tz);;
+#define PRINTDIFF(m) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
+		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
+                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
+                BDEBUG("PROFILE DIFFERENCE ", m << "]["<<num)}
+#define PRINTDIFF_A(m,m2) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
+		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
+                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
+                BDEBUG("PROFILE DIFFERENCE ", m << "]["<<num)\
+				if (num > m2){ DEBASSERT("TIME EXCEEDED" << m << "]["<<num)}}
+#define PRINTDIFFMIN(m,min) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
+		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
+                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
+		if (num >= min ){ BDEBUG("PROFILE DIFFERENCE ", m << "][#"<<num<<"#")\
+			if (num > 10000) BDEBUG("Waited too long","")}}
+
+#define CALCPERF(mess,n) {SysTime mytime2222; gettimeofday(&mytime2222.tv, &mytime2222.tz);\
+		long long int num = ((long long int) ( mytime2222.tv.tv_sec - mytime1111.tv.tv_sec))*1000000+((long long int)(mytime2222.tv.tv_usec - mytime1111.tv.tv_usec));\
+                gettimeofday(&mytime1111.tv, &mytime1111.tz);\
+                if (PERFARRAY[0][n] <  num){ \
+                	PERFARRAY[0][n]  = num;}\
+                if (PERFARRAY[1][n] > num) {\
+                	PERFARRAY[1][n]  = num;}\
+                PERFARRAY[3][n] = (PERFARRAY[2][n] * PERFARRAY[3][n] + num ) / (PERFARRAY[2][n] + 1);\
+                PERFARRAY[2][n] ++; BDEBUG("CALCPERF ",mess <<" Avg["<<PERFARRAY[3][n]<<"] Min["<<PERFARRAY[1][n]<<"] Max["<<PERFARRAY[0][n])}
+
+
+#else
+#define PROFILE(m)
+#define TIMEDEF
+#define SETNOW
+#define PRINTDIFF(m)
+#define CALCPERF(m1,m2)
 #endif
 //**********************************************************
 //**********************************************************
