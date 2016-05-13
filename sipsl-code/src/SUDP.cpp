@@ -146,7 +146,7 @@ int SUDP::getProcessingType(void){
 //void SUDP::init(int _port, ENGINE *_engine, DOA* _doa, string _domain, ALMGR* _alarm, bool singleThread){
 void SUDP::init(int _port, TRNSPRT* _engine, string _domain, ALMGR* _alarm, bool singleThread){
 
-	DEBINFSUDP("SUDP init",_domain)
+	DBSUDP_3("SUDP init",_domain)
 
     domain = _domain;
 
@@ -229,14 +229,14 @@ void SUDP::init(int _port, TRNSPRT* _engine, string _domain, ALMGR* _alarm, bool
 	}
 	inet_ntop(AF_INET, &((struct sockaddr_in *) info->ai_addr)->sin_addr, str, INET_ADDRSTRLEN);
 	localip = str;
-	DEBINFSUDP("local ip address",localip<<"]["<<localport)
+	DBSUDP("local ip address",localip<<"]["<<localport)
 	// END DEFINE LOCAL ADDRESS
 #ifdef VODAFONEBB
 	localip = "sipsl.ddns.net";
 #endif
 	//sipengine->linkSUDP(this);
 
-    DEBINFSUDP("SUDP init done","")
+	DBSUDP_3("SUDP init done","")
 
     return;
 }
@@ -256,7 +256,7 @@ void SUDP::start(int _processingType) {
 	}
 
 
-	DEBINFSUDP("SUDP::start threads",threadNum)
+	DBSUDP_3("SUDP::start threads",threadNum)
 	SUDPtuple *t1[threadNum*2];
 
 	for (int i = 0 ; i <(2*threadNum) ; i++){
@@ -286,7 +286,7 @@ void SUDP::listen(int _socknum) {
 
     TIMEDEF
 
-    DEBINFSUDP("SUDP::listen","listen " << _socknum)
+	DBSUDP_3("SUDP::listen","listen " << _socknum)
     char echoBuffer[ECHOMAX];
 
     sockaddr_inX _echoClntAddr;
@@ -316,9 +316,9 @@ void SUDP::listen(int _socknum) {
 
             CREATENEWMESSAGE_EXT(message, echoBuffer, _sok, _echoClntAddr, SODE_NTWPOINT)
             if (message != 0x0 ){
-                DEBMESSAGE("New message from buffer ", message)
-				DEBOUT("SINPORT",echoClntAddr.sin_port)
-				DEBOUT("SINPORT",ntohs(echoClntAddr.sin_port))
+            	DBSUDP_3("New message from buffer ", message)
+				DBSUDP("SINPORT",echoClntAddr.sin_port)
+				DBSUDP("SINPORT",ntohs(echoClntAddr.sin_port))
 
 				//problem if not sip...?
                 message->fillIn();
@@ -392,7 +392,7 @@ void SUDP::sendRawMessage(string* message, string address, int port){
 
 }
 void SUDP::sendRequest(MESSAGE* _message){
-	DEBINFSUDP("void SUDP::sendRequest(MESSAGE* _message)",_message)
+	DBSUDP_3("void SUDP::sendRequest(MESSAGE* _message)",_message)
 
     TIMEDEF
     SETNOW
@@ -402,30 +402,30 @@ void SUDP::sendRequest(MESSAGE* _message){
     pair<string,string> _pair;
     if(_message->hasRoute()){
     	_pair = _message->getRoute();
-        DEBOUT("hasroute",_pair.first<<"]["<<_pair.second)
+        DEBSUP("hasroute",_pair.first<<"]["<<_pair.second)
     }
     else if (_message->natTraversal()){
     	_pair = _message->getNatAddress();
-        DEBOUT("hasNat",_pair.first<<"]["<<_pair.second)
+    	DEBSUP("hasNat",_pair.first<<"]["<<_pair.second)
     }
     else{
 #ifdef VODAFONEBB
     	//get the called user id
-        DEBOUT("getHeadTo",_message->getHeadTo())
-		DEBOUT("getHeadToName",_message->getHeadToName())
+    	DEBSUP("getHeadTo",_message->getHeadTo())
+		DEBSUP("getHeadToName",_message->getHeadToName())
 
 		//non arriva
 		//riprova 5060
 
 		_pair = brkin2string(dao->getData(TBL_REGISTER,_message->getHeadToName()), ":");
-    	DEBOUT("Use REGISTER table",_pair.first<<"]["<<_pair.second)
+    	DEBSUP("Use REGISTER table",_pair.first<<"]["<<_pair.second)
 
 #else
     	_pair = _message->getRequestUriProtocol();
-    	DEBOUT("use request",_pair.first<<"]["<<_pair.second)
+    	DEBSUP("use request",_pair.first<<"]["<<_pair.second)
 #endif
     }
-    DEBOUT("sending to",_pair.first<<"]["<<_pair.second)
+    DEBSUP("sending to",_pair.first<<"]["<<_pair.second)
     const char* _hostchar = _pair.first.c_str();
 
 	struct sockaddr_in si_part;
@@ -490,7 +490,7 @@ void SUDP::sendRequest(MESSAGE* _message){
 }
 
 void SUDP::sendReply(MESSAGE* _message){
-	DEBINFSUDP("void SUDP::sendReply(MESSAGE* _message)",_message)
+	DEBSUP_3("void SUDP::sendReply(MESSAGE* _message)",_message)
 
 	TIMEDEF
 	SETNOW
@@ -501,21 +501,21 @@ void SUDP::sendReply(MESSAGE* _message){
 	const char* _hostchar;
 	char cstr[256];
 	string reportPro;
-	DEBOUT("receivedProp",receivedProp)
+	DEBSUP("receivedProp",receivedProp)
 	if (receivedProp.length() != 0){
 		reportPro = _message->getProperty("Via:","rport");
 		strcpy(cstr, receivedProp.c_str());
 	}else{
-		DEBOUT("_message->getViaUriHost()",_message->getViaUriHost())
+		DEBSUP("_message->getViaUriHost()",_message->getViaUriHost())
 		strcpy(cstr, _message->getViaUriHost().c_str());
 	}
 	_hostchar = cstr;
-	DEBOUT("PORT",_message->getEchoClntAddr().sin_port)
-	DEBOUT("ReplyHost",_hostchar)
-	DEBOUT("reportPro",reportPro)
+	DEBSUP("PORT",_message->getEchoClntAddr().sin_port)
+	DEBSUP("ReplyHost",_hostchar)
+	DEBSUP("reportPro",reportPro)
 	//DEBOUT("PORT",_message->getEchoClntAddr().sin_port);
 
-	DEBOUT("reply message", _message->getMessageBuffer())
+	DEBSUP("reply message", _message->getMessageBuffer())
 
 	struct sockaddr_in si_part;
 	si_part.sin_family = AF_INET;
@@ -536,7 +536,7 @@ void SUDP::sendReply(MESSAGE* _message){
 
     //Reply uses topmost Via header
 
-    DEBMESSAGE("SUDP::sendReply sending Message ", _message)
+	DEBSUP_3("SUDP::sendReply sending Message ", _message)
     struct addrinfo hints,*servinfo;
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
@@ -563,7 +563,7 @@ void SUDP::sendReply(MESSAGE* _message){
 	char xx[GENSTRINGLEN];
 	sprintf(xx,"%d",ntohs((_message->getEchoClntAddr()).sin_port));
 
-	DEBOUT("sendReply to", _hostchar <<"]["<<xx)
+	DEBSUP("sendReply to", _hostchar <<"]["<<xx)
 	int res = getaddrinfo(_hostchar,xx,&hints, &servinfo);
 	if (res != 0){
 		DEBASSERT("getaddrinfo")

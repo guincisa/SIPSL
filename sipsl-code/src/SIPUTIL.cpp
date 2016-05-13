@@ -99,7 +99,7 @@
 
 
 void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted, SUDP* _sudp){
-	DEBINF("void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted)",_gtor<<"]["<<__gtor<<"]["<<_gted)
+	DEBUGSIPUTIL_3("void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* _gted)",_gtor<<"]["<<__gtor<<"]["<<_gted)
 
 	TIMEDEF
 	SETNOW
@@ -173,7 +173,7 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 //	}
 
 	string totag = __gtor->getToTag();
-	DEBINF("SIPUTIL::genASideReplyFromBReply __gtor->getToTag()", totag)
+	DEBUGSIPUTIL("SIPUTIL::genASideReplyFromBReply __gtor->getToTag()", totag)
 	if( totag.length()!= 0 ){
 		_gted->setProperty("To:", "tag", totag.c_str());
 	}
@@ -199,7 +199,7 @@ void SIPUTIL::genASideReplyFromBReply(MESSAGE* _gtor, MESSAGE* __gtor, MESSAGE* 
 }
 
 void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
-	DEBINF("void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted)",_gtor<<"]["<<_gted)
+	DEBUGSIPUTIL_3("void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted)",_gtor<<"]["<<_gted)
 
 	TIMEDEF
 	SETNOW
@@ -226,7 +226,7 @@ void SIPUTIL::genASideReplyFromRequest(MESSAGE* _gtor, MESSAGE* _gted){
 }
 
 void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, string _callidy){
-	DEBINF("void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, string _callidy)",_gtor<<"]["<<_gted<<"]["<<sudp<<"]["<<_callidy)
+	DEBUGSIPUTIL_3("void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, string _callidy)",_gtor<<"]["<<_gted<<"]["<<sudp<<"]["<<_callidy)
 
 	TIMEDEF
 	SETNOW
@@ -256,7 +256,7 @@ void SIPUTIL::genBInvitefromAInvite(MESSAGE* _gtor, MESSAGE* _gted, SUDP* sudp, 
 }
 
 void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
-	DEBINF("void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry)",_invite<<"]["<<_etry)
+	DEBUGSIPUTIL_3("void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry)",_invite<<"]["<<_etry)
 
 	TIMEDEF
 	SETNOW
@@ -272,7 +272,7 @@ void SIPUTIL::genTryFromInvite(MESSAGE* _invite, MESSAGE* _etry){
 
 }
 void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header){
-	DEBINF("void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header)",_invite<<"]["<<_qrep<<"]["<<_header)
+	DEBUGSIPUTIL_3("void SIPUTIL::genQuickReplyFromInvite(MESSAGE* _invite, MESSAGE* _qrep, string _header)",_invite<<"]["<<_qrep<<"]["<<_header)
 	//DEBOUT("Reply",_header)
 	TIMEDEF
 	SETNOW

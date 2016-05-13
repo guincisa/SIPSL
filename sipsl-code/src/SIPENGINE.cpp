@@ -143,7 +143,7 @@ DAO* SIPENGINE::getDAO(void) {
 //**********************************************************************************
 //**********************************************************************************
 void SIPENGINE::parse(void* __mess, int _mmod) {
-	DEBINF("void SIPENGINE::parse(void* __mess, int _mmod)",__mess<<"]["<<_mmod)
+	DEBUGSIPENGINE_3("void SIPENGINE::parse(void* __mess, int _mmod)",__mess<<"]["<<_mmod)
 
     RELLOCK(&(sb[_mmod]->condvarmutex),"sb"<<_mmod<<".condvarmutex");
 
@@ -162,7 +162,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
     if (type == REQSUPP) {
 
-        DEBSIP("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest())
+    	DEBUGSIPENGINE("SIPENGINE::parse getHeadSipRequest content", _mess->getHeadSipRequest())
 
         int method = _mess->getHeadSipRequestCode();
 
@@ -173,7 +173,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
             method != REGISTER_REQUEST &&
             method != MESSAGE_REQUEST) {
 
-			DEBSIP("SIPENGINE::parse unsupported METHOD ",_mess->getOriginalString())
+        	DEBUGSIPENGINE("SIPENGINE::parse unsupported METHOD ",_mess->getOriginalString())
 			PURGEMESSAGE(_mess)
 
         }
@@ -185,7 +185,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
     }
     else if ( type == REPSUPP) {
 
-        DEBSIP("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply())
+    	DEBUGSIPENGINE("SIPENGINE::parse getHeadSipReply content", _mess->getHeadSipReply())
 
         //All replies must be considered
 		sl_cc->p_w((void*)_mess);
@@ -193,7 +193,7 @@ void SIPENGINE::parse(void* __mess, int _mmod) {
 
     }
     else if (type == RECOMMPD){
-    	DEBOUT("Provisioning and diagnostic",_mess)
+    	DEBUGSIPENGINE("Provisioning and diagnostic",_mess)
     	dao->p_w(_mess);
     }
     else {
