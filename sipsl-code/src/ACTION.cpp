@@ -66,7 +66,7 @@ ACTION::ACTION(void){
 	return;
 }
 void ACTION::addSingleAction(SingleAction _sa){
-	DEBUGACTION_3("ACTION::addSingleAction",_sa)
+	DEBUGACTION_3("ACTION::addSingleAction",_sa.getMessage())
 	act_item.push(_sa);
 }
 stack<SingleAction> ACTION::getActionList(void){
