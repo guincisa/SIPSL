@@ -213,7 +213,7 @@ class ThreadWrapper {
 #define NOWARNINGS
 
 //define this to full log (old method)
-#define LOGLEVL1
+//#define LOGLEVL1
 #ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
@@ -243,7 +243,7 @@ class ThreadWrapper {
 //#define MESSAGEUSAGE
 #endif
 
-//#define SHOWFLOWLOG
+#define SHOWFLOWLOG
 #ifdef SHOWFLOWLOG
 #undef NOWARNINGS
 #define LOGMIN
