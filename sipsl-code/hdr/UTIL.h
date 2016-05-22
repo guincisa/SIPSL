@@ -949,155 +949,155 @@ class ThreadWrapper {
 //**********************************************************
 // new logging done per source file
 // debug info
-#define DEBUGSUDP
-#define DEBUGSUDP_2
-#define DEBUGSUDP_3
-#define DEBUGSIPENGINE
-#define DEBUGSIPENGINE_2
-#define DEBUGSIPENGINE_3
-#define DEBUGSL_CC
-#define DEBUGSL_CC_2
-#define DEBUGSL_CC_3
-#define DEBUGSIPUTIL
-#define DEBUGSIPUTIL_2
-#define DEBUGSIPUTIL_3
-#define DEBUGACTION
-#define DEBUGACTION_2
-#define DEBUGACTION_3
-#define DEBUGCALL_OSET
-#define DEBUGCALL_OSET_2
-#define DEBUGCALL_OSET_3
-#define DEBUGCOMAP
-#define DEBUGCOMAP_2
-#define DEBUGCOMAP_3
+#define LOGSUDP
+#define LOGSUDP_2
+#define LOGSUDP_3
+#define LOGSIPENGINE
+#define LOGSIPENGINE_2
+#define LOGSIPENGINE_3
+#define LOGSL_CC
+#define LOGSL_CC_2
+#define LOGSL_CC_3
+#define LOGSIPUTIL
+#define LOGSIPUTIL_2
+#define LOGSIPUTIL_3
+#define LOGACTION
+#define LOGACTION_2
+#define LOGACTION_3
+#define LOGCALL_OSET
+#define LOGCALL_OSET_2
+#define LOGCALL_OSET_3
+#define LOGOMAP
+#define LOGCOMAP_2
+#define LOGCOMAP_3
 
-#ifdef DEBUGSUDP
+#ifdef LOGSUDP
 #define DBSUDP(m1, m2) BDEBUG(m1,m2)
 #else
 #define DBSUDP(m1, m2)
 #endif
 //low
-#ifdef DEBUGSUDP_2
+#ifdef LOGSUDP_2
 #define DBSUDP_2(m1, m2) BDEBUG(m1,m2)
 #else
 #define DBSUDP_2(m1, m2)
 #endif
 //iperlow
-#ifdef DEBUGSUDP_3
+#ifdef LOGSUDP_3
 #define DBSUDP_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DBSUDP_3(m1, m2)
 #endif
 //**********************************************************
 //**********************************************************
-#ifdef DEBUGSIPENGINE
+#ifdef LOGSIPENGINE
 #define DEBUGSIPENGINE(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSIPENGINE(m1, m2)
 #endif
 //low
-#ifdef DEBUGSIPENGINE_2
+#ifdef LOGSIPENGINE_2
 #define DEBUGSIPENGINE_2(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSIPENGINE_2(m1, m2)
 #endif
 //iperlow
-#ifdef DEBUGSIPENGINE_3
+#ifdef LOGSIPENGINE_3
 #define DEBUGSIPENGINE_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSIPENGINE_3(m1, m2)
 #endif
 //**********************************************************
 //**********************************************************
-#ifdef DEBUGSL_CC
+#ifdef LOGSL_CC
 #define DEBUGSL_CC(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSL_CC(m1, m2)
 #endif
 //low
-#ifdef DEBUGSL_CC_2
+#ifdef LOGSL_CC_2
 #define DEBUGSL_CC_2(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSL_CC_2(m1, m2)
 #endif
 //iperlow
-#ifdef DEBUGSL_CC_3
+#ifdef LOGSL_CC_3
 #define DEBUGSL_CC_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSL_CC_3(m1, m2)
 #endif
 //**********************************************************
 //**********************************************************
-#ifdef DEBUGSIPUTIL
+#ifdef LOGSIPUTIL
 #define DEBUGSIPUTIL(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSIPUTIL(m1, m2)
 #endif
 //low
-#ifdef DEBUGSIPUTIL_2
+#ifdef LOGSIPUTIL_2
 #define DEBUGSIPUTIL_2(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSIPUTIL_2(m1, m2)
 #endif
 //iperlow
-#ifdef DEBUGSIPUTIL_3
+#ifdef LOGSIPUTIL_3
 #define DEBUGSIPUTIL_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGSIPUTIL_3(m1, m2)
 #endif
 //**********************************************************
 //**********************************************************
-#ifdef DEBUGACTION
+#ifdef LOGACTION
 #define DEBUGACTION(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGACTION(m1, m2)
 #endif
 //low
-#ifdef DEBUGACTION_2
+#ifdef LOGACTION_2
 #define DEBUGACTION_2(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGACTION_2(m1, m2)
 #endif
 //iperlow
-#ifdef DEBUGACTION_3
+#ifdef LOGACTION_3
 #define DEBUGACTION_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGACTION_3(m1, m2)
 #endif
 //**********************************************************
 //**********************************************************
-#ifdef DEBUGCALL_OSET
+#ifdef LOGCALL_OSET
 #define DEBUGCALL_OSET(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGCALL_OSET(m1, m2)
 #endif
 //low
-#ifdef DEBUGCALL_OSET_2
+#ifdef LOGCALL_OSET_2
 #define DEBUGCALL_OSET_2(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGCALL_OSET_2(m1, m2)
 #endif
 //iperlow
-#ifdef DEBUGCALL_OSET_3
+#ifdef LOGCALL_OSET_3
 #define DEBUGCALL_OSET_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGCALL_OSET_3(m1, m2)
 #endif
 //**********************************************************
 //**********************************************************
-#ifdef DEBUGCOMAP
-#define DEBUGCOMAP_3(m1, m2) BDEBUG(m1,m2)
+#ifdef LOGCOMAP
+#define LOGCOMAP_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGCOMAP(m1, m2)
 #endif
 //low
-#ifdef DEBUGCOMAP_2
+#ifdef LOGCOMAP_2
 #define DEBUGCOMAP_2(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGCOMAP_2(m1, m2)
 #endif
 //iperlow
-#ifdef DEBUGCOMAP_3
+#ifdef LOGCOMAP_3
 #define DEBUGCOMAP_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGCOMAP_3(m1, m2)
