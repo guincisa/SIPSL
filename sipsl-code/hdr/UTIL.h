@@ -212,7 +212,8 @@ class ThreadWrapper {
 
 #define NOWARNINGS
 
-//#define LOGLEVL1
+//define this to full log (old method)
+#define LOGLEVL1
 #ifdef LOGLEVL1
 #define LOGMIN
 #define PROFILELOCK
@@ -948,6 +949,28 @@ class ThreadWrapper {
 //**********************************************************
 // new logging done per source file
 // debug info
+#define DEBUGSUDP
+#define DEBUGSUDP_2
+#define DEBUGSUDP_3
+#define DEBUGSIPENGINE
+#define DEBUGSIPENGINE_2
+#define DEBUGSIPENGINE_3
+#define DEBUGSL_CC
+#define DEBUGSL_CC_2
+#define DEBUGSL_CC_3
+#define DEBUGSIPUTIL
+#define DEBUGSIPUTIL_2
+#define DEBUGSIPUTIL_3
+#define DEBUGACTION
+#define DEBUGACTION_2
+#define DEBUGACTION_3
+#define DEBUGCALL_OSET
+#define DEBUGCALL_OSET_2
+#define DEBUGCALL_OSET_3
+#define DEBUGCOMAP
+#define DEBUGCOMAP_2
+#define DEBUGCOMAP_3
+
 #ifdef DEBUGSUDP
 #define DBSUDP(m1, m2) BDEBUG(m1,m2)
 #else
@@ -1059,6 +1082,25 @@ class ThreadWrapper {
 #define DEBUGCALL_OSET_3(m1, m2) BDEBUG(m1,m2)
 #else
 #define DEBUGCALL_OSET_3(m1, m2)
+#endif
+//**********************************************************
+//**********************************************************
+#ifdef DEBUGCOMAP
+#define DEBUGCOMAP_3(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGCOMAP(m1, m2)
+#endif
+//low
+#ifdef DEBUGCOMAP_2
+#define DEBUGCOMAP_2(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGCOMAP_2(m1, m2)
+#endif
+//iperlow
+#ifdef DEBUGCOMAP_3
+#define DEBUGCOMAP_3(m1, m2) BDEBUG(m1,m2)
+#else
+#define DEBUGCOMAP_3(m1, m2)
 #endif
 
 //**********************************************************
