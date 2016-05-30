@@ -411,14 +411,14 @@ void SUDP::sendRequest(MESSAGE* _message){
     else{
 #ifdef VODAFONEBB
     	//get the called user id
-    	DEBSUP("getHeadTo",_message->getHeadTo())
-		DEBSUP("getHeadToName",_message->getHeadToName())
+    	DBSUDP("getHeadTo",_message->getHeadTo())
+		DBSUDP("getHeadToName",_message->getHeadToName())
 
 		//non arriva
 		//riprova 5060
 
 		_pair = brkin2string(dao->getData(TBL_REGISTER,_message->getHeadToName()), ":");
-    	DEBSUP("Use REGISTER table",_pair.first<<"]["<<_pair.second)
+    	DBSUDP("Use REGISTER table",_pair.first<<"]["<<_pair.second)
 
 #else
     	_pair = _message->getRequestUriProtocol();
